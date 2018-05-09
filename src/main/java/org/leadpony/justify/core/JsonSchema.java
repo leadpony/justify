@@ -22,7 +22,7 @@ import java.util.Collections;
 
 import javax.json.stream.JsonGenerator;
 
-import org.leadpony.justify.core.spi.JsonSchemaProvider;
+import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
 /**
  * JSON schema.
@@ -52,15 +52,15 @@ public interface JsonSchema {
      * @return the instance of boolean JSON schema, never be {@code null}.
      */
     static JsonSchema valueOf(boolean value) {
-        return JsonSchemaProvider.provider().createBooleanSchema(value);
+        return JsonValidationServiceProvider.provider().createBooleanSchema(value);
     }
     
     static JsonSchema load(InputStream in) {
-        return JsonSchemaProvider.provider().loadSchema(in);
+        return JsonValidationServiceProvider.provider().loadSchema(in);
     }
 
     static JsonSchema load(Reader reader) {
-        return JsonSchemaProvider.provider().loadSchema(reader);
+        return JsonValidationServiceProvider.provider().loadSchema(reader);
     }
 
     default Collection<Evaluator> createEvaluators(InstanceType type) {

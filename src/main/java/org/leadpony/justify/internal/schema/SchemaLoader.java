@@ -35,6 +35,7 @@ public class SchemaLoader {
     
     private final JsonParser parser;
     private final JsonSchemaBuilderFactory factory;
+    @SuppressWarnings("unused")
     private final JsonProvider provider;
     
     public SchemaLoader(JsonParser parser, JsonSchemaBuilderFactory factory, JsonProvider provider) {
@@ -131,17 +132,20 @@ public class SchemaLoader {
                     types.add(findType(parser.getString()));
                 }
             }
+            builder.withType(types);
         }
     }
     
     private void addRequired(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.START_ARRAY) {
+        Event event = parser.next();
+        if (event == Event.START_ARRAY) {
             Set<String> names = new HashSet<>();
-            while (parser.next() != Event.END_ARRAY) {
-                if (parser.next() == Event.VALUE_STRING) {
+            while ((event = parser.next()) != Event.END_ARRAY) {
+                if (event == Event.VALUE_STRING) {
                     names.add(parser.getString());
                 }
             }
+            builder.withRequired(names);
         }
     }
     

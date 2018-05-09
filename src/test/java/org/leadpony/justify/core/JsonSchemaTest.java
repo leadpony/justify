@@ -20,12 +20,6 @@ import org.junit.Test;
 import org.leadpony.justify.core.JsonSchema;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.leadpony.justify.core.Resources.newInputStream;
-import static org.leadpony.justify.core.Resources.newReader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 
 /**
  * @author leadpony
@@ -51,27 +45,5 @@ public class JsonSchemaTest {
         JsonSchema schema = JsonSchema.valueOf(false);
         
         assertThat(schema).hasToString("false");
-    }
-
-    @Test
-    public void load_shouldLoadJsonSchemaFromStream() {
-        JsonSchema schema = null;
-        try (InputStream in = newInputStream("/example/person/schema.json")) {
-            schema = JsonSchema.load(in);
-        } catch (IOException e) {
-        }
-        
-        assertThat(schema).isNotNull();
-    }
-    
-    @Test
-    public void load_shouldLoadJsonSchemaFromReader() {
-        JsonSchema schema = null;
-        try (Reader reader = newReader("/example/person/schema.json")) {
-            schema = JsonSchema.load(reader);
-        } catch (IOException e) {
-        }
-        
-        assertThat(schema).isNotNull();
     }
 }

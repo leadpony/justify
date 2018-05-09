@@ -26,9 +26,12 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Assertion described by "type" keyword.
+ * 
  * @author leadpony
  */
 public class Type implements SimpleAssertion {
@@ -42,25 +45,10 @@ public class Type implements SimpleAssertion {
 
     @Override
     public Status evaluate(Event event, JsonParser parser, Consumer<Problem> collector) {
-        switch (event) {
-        case START_ARRAY:
-            return testType(InstanceType.ARRAY, collector);
-        case START_OBJECT:
-            return testType(InstanceType.OBJECT, collector);
-        case VALUE_STRING:
-            return testType(InstanceType.STRING, collector);
-        case VALUE_NUMBER:
-            if (parser.isIntegralNumber()) {
-                return testType(InstanceType.INTEGER, collector);
-            } else {
-                return testType(InstanceType.NUMBER, collector);
-            }
-        case VALUE_TRUE:
-        case VALUE_FALSE:
-            return testType(InstanceType.BOOLEAN, collector);
-        case VALUE_NULL:
-            return testType(InstanceType.NULL, collector);
-        default:
+        InstanceType type = InstanceTypes.fromEvent(event, parser);
+        if (type != null) {
+            return testType(type, collector);
+        } else {
             return Status.CONTINUED;
         }
     }
@@ -83,9 +71,11 @@ public class Type implements SimpleAssertion {
     private Status testType(InstanceType type, Consumer<Problem> collector) {
         if (types.contains(type)) {
             return Status.TRUE;
+        } else if (type == InstanceType.INTEGER && types.contains(InstanceType.NUMBER)) {
+            return Status.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder()
-                    .withMessage("message.type")
+                    .withMessage("instance.problem.type")
                     .withParameter("actual", type)
                     .withParameter("expected", types)
                     .build();

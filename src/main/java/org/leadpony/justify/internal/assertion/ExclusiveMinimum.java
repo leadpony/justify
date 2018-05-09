@@ -18,10 +18,10 @@ package org.leadpony.justify.internal.assertion;
 
 import java.math.BigDecimal;
 
-public class ExclusiveMinimum extends NumericBoundAssertion {
+public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMinimum(BigDecimal bound) {
-        super(bound, "exclusiveMinimum", "message.exclusive.minimum");
+        super(bound, "exclusiveMinimum", "instance.problem.exclusive.minimum");
     }
 
     @Override

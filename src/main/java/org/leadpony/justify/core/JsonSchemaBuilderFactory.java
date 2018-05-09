@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.core;
 
-import org.leadpony.justify.core.spi.JsonSchemaProvider;
+import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
 /**
  * Factory of JSON schema builders.
@@ -35,7 +35,7 @@ public interface JsonSchemaBuilderFactory {
      * @return the newly created instance of this class.
      */
     static JsonSchemaBuilderFactory newFactory() {
-        return JsonSchemaProvider.provider().createSchemaBuilderFactory();
+        return JsonValidationServiceProvider.provider().createSchemaBuilderFactory();
     }
 
     /**

@@ -25,7 +25,7 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import org.leadpony.justify.core.spi.JsonSchemaProvider;
+import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
 /**
  * Factory for producing parsers and readers that will validate 
@@ -46,7 +46,7 @@ public interface JsonValidatorFactory {
      * @throws NullPointerException if the specified parameter was {@code null}.
      */
     static JsonValidatorFactory newFactory(JsonSchema schema) {
-        return JsonSchemaProvider.provider().createValidatorFactory(schema);
+        return JsonValidationServiceProvider.provider().createValidatorFactory(schema);
     }
     
     JsonParserFactory createParserFactory(Map<String,?> config);

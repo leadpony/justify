@@ -20,18 +20,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonValidator;
+import org.leadpony.justify.core.ValidationResult;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
 
 /**
@@ -40,7 +41,7 @@ import org.leadpony.justify.internal.base.JsonParserDecorator;
  * @author leadpony
  */
 class ValidatingJsonParser extends JsonParserDecorator 
-    implements JsonValidator, Consumer<Problem> {
+    implements ValidationResult, Consumer<Problem> {
     
     private final JsonSchema rootSchema;
 
@@ -48,17 +49,6 @@ class ValidatingJsonParser extends JsonParserDecorator
     
     private Visitor visitor;
     
-    @SuppressWarnings("serial")
-    private static final Map<Event, InstanceType> eventToTypeMap = new HashMap<Event, InstanceType>() {{
-        put(Event.START_OBJECT, InstanceType.OBJECT);
-        put(Event.START_ARRAY, InstanceType.ARRAY);
-        put(Event.VALUE_NUMBER, InstanceType.NUMBER);
-        put(Event.VALUE_STRING, InstanceType.STRING);
-        put(Event.VALUE_TRUE, InstanceType.BOOLEAN);
-        put(Event.VALUE_FALSE, InstanceType.BOOLEAN);
-        put(Event.VALUE_NULL, InstanceType.NULL);
-    }};
-
     ValidatingJsonParser(JsonParser real, JsonSchema rootSchema) {
         super(real);
         this.rootSchema = rootSchema;
@@ -68,7 +58,9 @@ class ValidatingJsonParser extends JsonParserDecorator
     @Override
     public Event next() {
         Event event = real.next();
-        processEvent(event);
+        if (this.visitor != null) {
+            visitInstance(event);
+        }
         return event;
     }
   
@@ -79,8 +71,8 @@ class ValidatingJsonParser extends JsonParserDecorator
     }
     
     @Override
-    public boolean hasProblem() {
-        return !problems.isEmpty();
+    public boolean wasSuccess() {
+        return problems.isEmpty();
     }
 
     @Override
@@ -88,13 +80,16 @@ class ValidatingJsonParser extends JsonParserDecorator
         return Collections.unmodifiableList(problems);
     }
 
-    private void processEvent(Event event) {
+    private void visitInstance(Event event) {
         Visitor nextVisitor = this.visitor.visit(event);
+        if (nextVisitor != this.visitor && nextVisitor != null) {
+            nextVisitor.visit(event);
+        }
         this.visitor = nextVisitor;
     }
     
-    private void evaluateLeafInstance(Event event, Collection<JsonSchema> schemas) {
-        InstanceType type = mapToType(event);
+    private void validateLeafInstance(Event event, Collection<JsonSchema> schemas) {
+        InstanceType type = InstanceTypes.fromEvent(event, real);
         for (JsonSchema schema : schemas) {
             for (Evaluator evaluator : schema.createEvaluators(type)) {
                 evaluator.evaluate(event, real, this);
@@ -102,30 +97,37 @@ class ValidatingJsonParser extends JsonParserDecorator
         }
     }
     
-    private InstanceType mapToType(Event event) {
-        InstanceType type = eventToTypeMap.get(event);
-        if (type == InstanceType.NUMBER && real.isIntegralNumber()) {
-            return InstanceType.INTEGER;
-        }
-        return type;
-    }
-    
     /**
      * Visitor of JSON instance.
      */
     private static abstract class Visitor {
         
-        protected final Visitor parent;
-        protected final Collection<JsonSchema> schemas;
+        private final Collection<JsonSchema> schemas;
+        private final int depth;
+        private final Visitor parent;
         
         protected Visitor(JsonSchema schema) {
-            this.parent = null;
             this.schemas = Arrays.asList(schema);
+            this.depth = 0;
+            this.parent = null;
         }
         
-        protected Visitor(Visitor parent, Collection<JsonSchema> schemas) {
-            this.parent = parent;
+        protected Visitor(Collection<JsonSchema> schemas, int depth, Visitor parent) {
             this.schemas = schemas;
+            this.depth = depth;
+            this.parent = parent;
+        }
+        
+        Collection<JsonSchema> schemas() {
+            return schemas;
+        }
+        
+        int depth() {
+            return depth;
+        }
+
+        Visitor parent() {
+            return parent;
         }
         
         abstract Visitor visit(Event event);
@@ -140,77 +142,102 @@ class ValidatingJsonParser extends JsonParserDecorator
         @Override
         public Visitor visit(Event event) {
             if (event == Event.START_OBJECT) {
-                return new ObjectVisitor(null, this.schemas);
+                return new ObjectVisitor(schemas(), 0, this);
             } else if (event == Event.START_ARRAY) {
-                return new ArrayVisitor(null, this.schemas);
+                return new ArrayVisitor(schemas(), 0, this);
             } else {
-                evaluateLeafInstance(event, schemas);
+                validateLeafInstance(event, schemas());
                 return null;
             }
         }
     }
     
-    private class ObjectVisitor extends Visitor {
+    private abstract class ContainerVisitor extends Visitor {
+        
+        private final List<Evaluator> evaluators;
+
+        protected ContainerVisitor(Collection<JsonSchema> schemas, int depth, Visitor parent, InstanceType type) {
+            super(schemas, depth, parent);
+            this.evaluators = schemas.stream()
+                    .flatMap(schema->schema.createEvaluators(type).stream())
+                    .collect(Collectors.toList());
+        }
+        
+        protected void validateContainer(Event event) {
+            Iterator<Evaluator> it = evaluators.iterator();
+            while (it.hasNext()) {
+                Evaluator e = it.next();
+                Evaluator.Status status = e.evaluate(event, real, ValidatingJsonParser.this);
+                if (status != Evaluator.Status.CONTINUED) {
+                    it.remove();
+                }
+            }
+        }
+    }
+    
+    private class ObjectVisitor extends ContainerVisitor {
 
         private String propertyName;
         
-        ObjectVisitor(Visitor parent, Collection<JsonSchema> schemas) {
-            super(parent, schemas);
+        ObjectVisitor(Collection<JsonSchema> schemas, int depth, Visitor parent) {
+            super(schemas, depth, parent, InstanceType.OBJECT);
         }
         
         @Override
         public Visitor visit(Event event) {
+            validateContainer(event);
             switch (event) {
             case START_OBJECT:
-                return new ObjectVisitor(this, findChildSchemas(propertyName));
+                return new ObjectVisitor(findChildSchemas(propertyName), depth() + 1, this);
             case START_ARRAY:
-                return new ArrayVisitor(this, findChildSchemas(propertyName));
+                return new ArrayVisitor(findChildSchemas(propertyName), depth() + 1, this);
             case END_OBJECT:
-                return parent;
+                return parent();
             case KEY_NAME:
                 this.propertyName = real.getString();
                 return this;
             default:
-                evaluateLeafInstance(event, findChildSchemas(propertyName));
+                validateLeafInstance(event, findChildSchemas(propertyName));
                 return this;
             }
         }
         
         private Collection<JsonSchema> findChildSchemas(String propertyName) {
             List<JsonSchema> children = new ArrayList<>();
-            for (JsonSchema schema: this.schemas) {
+            for (JsonSchema schema: schemas()) {
                 schema.collectChildSchema(propertyName, children);
             }
             return children;
         }
     }
 
-    private class ArrayVisitor extends Visitor {
+    private class ArrayVisitor extends ContainerVisitor {
 
         private int itemIndex;
         
-        ArrayVisitor(Visitor parent, Collection<JsonSchema> schemas) {
-            super(parent, schemas);
+        ArrayVisitor(Collection<JsonSchema> schemas, int depth, Visitor parent) {
+            super(schemas, depth, parent, InstanceType.ARRAY);
         }
 
         @Override
         public Visitor visit(Event event) {
+            validateContainer(event);
             switch (event) {
             case START_OBJECT:
-                return new ObjectVisitor(this, findChildSchemas(itemIndex++));
+                return new ObjectVisitor(findChildSchemas(itemIndex++), depth() + 1, this);
             case START_ARRAY:
-                return new ArrayVisitor(this, findChildSchemas(itemIndex++));
+                return new ArrayVisitor(findChildSchemas(itemIndex++), depth() + 1, this);
             case END_ARRAY:
-                return parent;
+                return parent();
             default:
-                evaluateLeafInstance(event, findChildSchemas(itemIndex++));
+                validateLeafInstance(event, findChildSchemas(itemIndex));
                 return this;
             }
         }
         
         private Collection<JsonSchema> findChildSchemas(int itemIndex) {
             List<JsonSchema> children = new ArrayList<>();
-            for (JsonSchema schema: this.schemas) {
+            for (JsonSchema schema: schemas()) {
                 schema.collectChildSchema(itemIndex, children);
             }
             return children;

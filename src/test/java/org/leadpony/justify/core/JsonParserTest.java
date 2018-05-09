@@ -16,103 +16,63 @@
 
 package org.leadpony.justify.core;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.leadpony.justify.core.Resources.newInputStream;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * @author leadpony
  */
-public class JsonParserTest {
-    
-    private static JsonValidatorFactory factory;
-    
-    @BeforeClass
-    public static void setUpOnce() throws IOException {
-        JsonSchema schema = null;
-        try (InputStream in = newInputStream("/example/person/schema.json")) {
-            schema = JsonSchema.load(in);
-        }
-        factory = JsonValidatorFactory.newFactory(schema);
+@RunWith(Parameterized.class)
+public class JsonParserTest extends AbstractSpecTest {
+
+    private static final String[] NAMES = {
+        "/additional/person.json"
+    };
+   
+    public JsonParserTest(String name, int testIndex, String description, Fixture fixture) {
+        super(name, testIndex, description, fixture);
+    }
+
+    @Parameters(name = "{0}@{1}: {2}")
+    public static Iterable<Object[]> parameters() {
+        return parameters(NAMES);
     }
     
     @Test
-    public void parse_parseValidJson() throws IOException {
-        String name = "/example/person/person-1-ok.json";
-        List<Event> actual = new ArrayList<>();
-        JsonParser parser = parseAndValidate(name, actual);
-        JsonValidator validator = (JsonValidator)parser;
-        Collection<Event> expected = getExpectedEvents(name);
-        
-        assertThat(actual).containsExactlyElementsOf(expected);
-        assertThat(validator.hasProblem()).isFalse();
-        assertThat(validator.problems()).isEmpty();
-    }
-    
-    @Test
-    public void parse_detectTypeMismatch() throws IOException {
-        String name = "/example/person/person-2-ng.json";
-        List<Event> actual = new ArrayList<>();
-        JsonParser parser = parseAndValidate(name, actual);
-        JsonValidator validator = (JsonValidator)parser;
-        Collection<Event> expected = getExpectedEvents(name);
-        
-        assertThat(actual).containsExactlyElementsOf(expected);
-        assertThat(validator.hasProblem()).isTrue();
-        assertThat(validator.problems()).hasSize(1);
-        printProblems(validator.problems());
-    }
-
-    @Test
-    public void parse_detectIllegalNumber() throws IOException {
-        String name = "/example/person/person-3-ng.json";
-        List<Event> actual = new ArrayList<>();
-        JsonParser parser = parseAndValidate(name, actual);
-        JsonValidator validator = (JsonValidator)parser;
-        Collection<Event> expected = getExpectedEvents(name);
-        
-        assertThat(actual).containsExactlyElementsOf(expected);
-        assertThat(validator.hasProblem()).isTrue();
-        assertThat(validator.problems()).hasSize(1);
-        printProblems(validator.problems());
-    }
-
-    private JsonParser parseAndValidate(String name, Collection<Event> events) throws IOException {
-        try (InputStream in = newInputStream(name)) {
-            try (JsonParser parser = factory.createParser(in)) {
-                while (parser.hasNext()) {
-                    events.add(parser.next());
-                }
-                return parser;
-            }
-        }
-    }
-
-    private Collection<Event> getExpectedEvents(String name) throws IOException {
+    public void testParserEvent() {
         List<Event> events = new ArrayList<>();
-        try (InputStream in = newInputStream(name)) {
-            try (JsonParser parser = Json.createParser(in)) {
-                while (parser.hasNext()) {
-                    events.add(parser.next());
-                }
+        JsonParser parser = createValidator();
+        while (parser.hasNext()) {
+            events.add(parser.next());
+        }
+        parser.close();
+        Collection<Event> expected = getExpectedEvents(fixture.instance());
+        
+        assertThat(events).containsExactlyElementsOf(expected);
+    }
+
+    private Collection<Event> getExpectedEvents(JsonValue instance) {
+        List<Event> events = new ArrayList<>();
+        StringReader reader = new StringReader(instance.toString());
+        try (JsonParser parser = Json.createParser(reader)) {
+            while (parser.hasNext()) {
+                events.add(parser.next());
             }
         }
         return events;
-    }
-    
-    private static void printProblems(Iterable<Problem> problem) {
-        problem.forEach(System.err::println);
     }
 }

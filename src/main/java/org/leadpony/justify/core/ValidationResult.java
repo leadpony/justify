@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.core;
 
-import java.math.BigDecimal;
+/**
+ * Result obtained by JSON validation.
+ * 
+ * @author leadpony
+ */
+public interface ValidationResult {
 
-public class Maximum extends AbstractNumericBoundAssertion {
-
-    public Maximum(BigDecimal bound) {
-        super(bound, "maximum", "instance.problem.maximum");
-    }
+    /**
+     * Checks if the validation was completed without any problem.
+     * 
+     * @return {@code true} if the validation was done without problem, 
+     *         {@code false} otherwise.
+     */
+    boolean wasSuccess();
     
-    @Override
-    protected boolean testNumber(BigDecimal actual) {
-        return actual.compareTo(bound()) <= 0;
-    }
+    /**
+     * Returns all problems found in the process of validation.
+     * 
+     * @return the object to iterate problems, never be {@code null}.
+     */
+    Iterable<Problem> problems();
 }

@@ -38,9 +38,9 @@ public class MessageFormatterTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("actual", InstanceType.STRING);
         parameters.put("expected", EnumSet.of(InstanceType.INTEGER));
-        String message = sut.format("message.type", parameters, Locale.ENGLISH);
+        String message = sut.format("instance.problem.type", parameters, Locale.ENGLISH);
         
-        String expectedMessage = "Type string is not allowed here, must be one of [integer].";
+        String expectedMessage = "Type string is not expected, must be one of [integer].";
         assertThat(message).isEqualTo(expectedMessage);
     }
 }

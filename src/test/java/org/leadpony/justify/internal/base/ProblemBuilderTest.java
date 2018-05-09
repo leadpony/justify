@@ -35,12 +35,12 @@ public class ProblemBuilderTest {
     public void build_shouldBuildProblem() {
         ProblemBuilder builder = ProblemBuilder.newBuilder();
         Problem problem = builder
-                .withMessage("message.type")
+                .withMessage("instance.problem.type")
                 .withParameter("actual", InstanceType.STRING)
                 .withParameter("expected", EnumSet.of(InstanceType.INTEGER))
                 .build();
         
-        String expectedMessage = "Type string is not allowed here, must be one of [integer].";
+        String expectedMessage = "Type string is not expected, must be one of [integer].";
         assertThat(problem.getMessage(Locale.ENGLISH)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)

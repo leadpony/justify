@@ -18,10 +18,15 @@ package org.leadpony.justify.internal.assertion;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.core.Evaluator;
 
 /**
@@ -43,7 +48,7 @@ public class Required implements Assertion {
 
     @Override
     public Evaluator createEvaluator() {
-        return null;
+        return new PropertyEvaluator(names);
     }
 
     @Override
@@ -51,5 +56,39 @@ public class Required implements Assertion {
         generator.writeStartArray("required");
         names.forEach(generator::write);
         generator.writeEnd();
+    }
+    
+    private static class PropertyEvaluator implements Evaluator {
+        
+        private final Set<String> remaining;
+        
+        private PropertyEvaluator(Set<String> required) {
+            this.remaining = new HashSet<>(required);
+        }
+
+        @Override
+        public Status evaluate(Event event, JsonParser parser, Consumer<Problem> collector) {
+            if (event == Event.KEY_NAME) {
+                remaining.remove(parser.getString());
+                return Status.CONTINUED;
+            } else if (event == Event.END_OBJECT) {
+                return checkRequiredProperties(collector);
+            } else {
+                return Status.CONTINUED;
+            }
+        }
+        
+        private Status checkRequiredProperties(Consumer<Problem> collector) {
+            if (remaining.isEmpty()) {
+                return Status.TRUE;
+            } else {
+                Problem p = ProblemBuilder.newBuilder()
+                        .withMessage("instance.problem.required")
+                        .withParameter("expected", remaining)
+                        .build();
+                collector.accept(p);
+                return Status.FALSE;
+            }
+        }
     }
 }
