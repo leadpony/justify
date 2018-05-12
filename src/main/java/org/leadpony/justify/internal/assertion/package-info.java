@@ -15,7 +15,8 @@
  */
 
 /**
+ * Provides various kinds of assertions.
+ *  
  * @author leadpony
- *
  */
 package org.leadpony.justify.internal.assertion;

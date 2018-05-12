@@ -14,36 +14,34 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.core;
+package org.leadpony.justify.internal.schema;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.json.stream.JsonGenerator;
 
+import org.leadpony.justify.core.JsonSchema;
+
 /**
- * Empty JSON schema.
- * 
  * @author leadpony
  */
-class EmptyJsonSchema implements JsonSchema {
+public abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
 
-    EmptyJsonSchema() {
-    }
-    
-    @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        Objects.requireNonNull(type, "type must not be null.");
-        return Evaluator.ALWAYS_TRUE;
-    }
-    
-    @Override
-    public void toJson(JsonGenerator generator) {
-        Objects.requireNonNull(generator, "generator must not be null.");
-        generator.writeStartObject().writeEnd();
+    protected final List<JsonSchema> subschemas;
+
+    /**
+     * @param subschemas
+     */
+    protected NaryBooleanLogicSchema(Collection<JsonSchema> subschemas) {
+        this.subschemas = new ArrayList<>(subschemas);
     }
 
-    @Override 
-    public String toString() {
-        return "{}";
+    protected void toJson(JsonGenerator generator, String name) {
+        generator.writeKey(name);
+        generator.writeStartArray();
+        this.subschemas.forEach(s->s.toJson(generator));
+        generator.writeEnd();
     }
 }

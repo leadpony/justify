@@ -19,11 +19,14 @@ package org.leadpony.justify.internal.schema;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
@@ -41,12 +44,16 @@ import org.leadpony.justify.internal.assertion.Type;
  */
 public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     
+    private boolean empty;
+    private boolean hasSubschema;
+
     private String title;
     private String description;
     private final List<Assertion> assertions = new ArrayList<>();
     
     private final Map<String, JsonSchema> properties = new HashMap<>();
     private final List<JsonSchema> items = new ArrayList<>();
+    private final List<JsonSchema> subschemas = new ArrayList<>();
     
     String title() {
         return title;
@@ -68,114 +75,152 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         return Collections.unmodifiableList(items);
     }
 
+    List<JsonSchema> subschemas() {
+        return Collections.unmodifiableList(subschemas);
+    }
+
     boolean isEmpty() {
-        return title == null &&
-               description == null &&
-               assertions.isEmpty() &&
-               properties.isEmpty() &&
-               items.isEmpty()
-               ;
+        return empty;
+    }
+    
+    boolean hasSubschema() {
+        return hasSubschema;
     }
     
     @Override
     public JsonSchema build() {
         if (isEmpty()) {
             return JsonSchema.empty();
+        } else if (hasSubschema()) {
+            return new ComplexSchema(this);
         } else {
-            return new ObjectSchema(this);
+            return new SimpleSchema(this);
         }
     }
 
     @Override
     public JsonSchemaBuilder withTitle(String title) {
-        Objects.requireNonNull(title, "title must not be null");
+        Objects.requireNonNull(title, "title must not be null.");
         this.title = title;
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withDescription(String description) {
-        Objects.requireNonNull(description, "description must not be null");
+        Objects.requireNonNull(description, "description must not be null.");
         this.description = description;
-        return this;
+        return nonEmpty();
     }
 
     @Override
-    public DefaultSchemaBuilder withType(InstanceType... types) {
-        Objects.requireNonNull(types, "types must not be null");
-        return withType(Arrays.asList(types));
+    public JsonSchemaBuilder withType(InstanceType... types) {
+        Objects.requireNonNull(types, "types must not be null.");
+        return withType(new HashSet<>(Arrays.asList(types)));
     }
     
     @Override
-    public DefaultSchemaBuilder withType(Iterable<InstanceType> types) {
-        Objects.requireNonNull(types, "types must not be null");
+    public JsonSchemaBuilder withType(Set<InstanceType> types) {
+        Objects.requireNonNull(types, "types must not be null.");
         assertions.add(new Type(types));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withRequired(String... names) {
-        Objects.requireNonNull(names, "names must not be null");
-        return withRequired(Arrays.asList(names));
+        Objects.requireNonNull(names, "names must not be null.");
+        return withRequired(new HashSet<>(Arrays.asList(names)));
     }
 
     @Override
-    public JsonSchemaBuilder withRequired(Iterable<String> names) {
-        Objects.requireNonNull(names, "names must not be null");
+    public JsonSchemaBuilder withRequired(Set<String> names) {
+        Objects.requireNonNull(names, "names must not be null.");
         assertions.add(new Required(names));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal bound) {
-        Objects.requireNonNull(bound, "bound must not be null");
+        Objects.requireNonNull(bound, "bound must not be null.");
         assertions.add(new Maximum(bound));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMaximum(BigDecimal bound) {
-        Objects.requireNonNull(bound, "bound must not be null");
+        Objects.requireNonNull(bound, "bound must not be null.");
         assertions.add(new ExclusiveMaximum(bound));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withMinimum(BigDecimal bound) {
-        Objects.requireNonNull(bound, "bound must not be null");
+        Objects.requireNonNull(bound, "bound must not be null.");
         assertions.add(new Minimum(bound));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMinimum(BigDecimal bound) {
-        Objects.requireNonNull(bound, "bound must not be null");
+        Objects.requireNonNull(bound, "bound must not be null.");
         assertions.add(new ExclusiveMinimum(bound));
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
-        Objects.requireNonNull(name, "name must not be null");
-        Objects.requireNonNull(subschema, "subschema must not be null");
+        Objects.requireNonNull(name, "name must not be null.");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
         properties.put(name, subschema);
-        return this;
+        return havingSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
-        Objects.requireNonNull(subschema, "subschema must not be null");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
         addItem(subschema);
-        return this;
+        return nonEmpty();
     }
 
     @Override
     public JsonSchemaBuilder withItems(JsonSchema... subschemas) {
-        Objects.requireNonNull(subschemas, "subschemas must not be null");
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
         for (JsonSchema subschema : subschemas) {
             addItem(subschema);
         }
+        return havingSubschema();
+    }
+  
+    @Override
+    public JsonSchemaBuilder withAllOf(JsonSchema... subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        return withAllOf(Arrays.asList(subschemas));
+    }
+
+    @Override
+    public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        this.subschemas.add(new AllOf(subschemas));
+        return havingSubschema();
+    }
+    
+    /**
+     * Marks this builder as non-empty.
+     * 
+     * @return this builder.
+     */
+    private JsonSchemaBuilder nonEmpty() {
+        this.empty = false;
         return this;
+    }
+    
+    /**
+     * Marks this builder as having subschema.
+     * 
+     * @return this builder.
+     */
+    private JsonSchemaBuilder havingSubschema() {
+        this.hasSubschema = true;
+        return nonEmpty();
     }
     
     private void addItem(JsonSchema subschema) {

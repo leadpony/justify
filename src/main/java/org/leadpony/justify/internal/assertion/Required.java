@@ -27,7 +27,6 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.core.Evaluator;
 
 /**
  * @author leadpony
@@ -42,12 +41,12 @@ public class Required implements Assertion {
     }
 
     @Override
-    public boolean isApplicableTo(InstanceType type) {
+    public boolean canApplyTo(InstanceType type) {
         return type == InstanceType.OBJECT;
     }
 
     @Override
-    public Evaluator createEvaluator() {
+    public AssertionEvaluator createEvaluator() {
         return new PropertyEvaluator(names);
     }
 
@@ -58,7 +57,7 @@ public class Required implements Assertion {
         generator.writeEnd();
     }
     
-    private static class PropertyEvaluator implements Evaluator {
+    private static class PropertyEvaluator implements AssertionEvaluator {
         
         private final Set<String> remaining;
         
@@ -67,18 +66,18 @@ public class Required implements Assertion {
         }
 
         @Override
-        public Status evaluate(Event event, JsonParser parser, Consumer<Problem> collector) {
+        public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
-                return Status.CONTINUED;
-            } else if (event == Event.END_OBJECT) {
-                return checkRequiredProperties(collector);
+                return remaining.isEmpty() ? Status.TRUE : Status.CONTINUED;
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                return checkRequiredProperties(consumer);
             } else {
                 return Status.CONTINUED;
             }
         }
         
-        private Status checkRequiredProperties(Consumer<Problem> collector) {
+        private Status checkRequiredProperties(Consumer<Problem> consumer) {
             if (remaining.isEmpty()) {
                 return Status.TRUE;
             } else {
@@ -86,7 +85,7 @@ public class Required implements Assertion {
                         .withMessage("instance.problem.required")
                         .withParameter("expected", remaining)
                         .build();
-                collector.accept(p);
+                consumer.accept(p);
                 return Status.FALSE;
             }
         }

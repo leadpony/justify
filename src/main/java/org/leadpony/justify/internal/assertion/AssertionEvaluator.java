@@ -16,22 +16,12 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import javax.json.stream.JsonGenerator;
-
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Evaluator;
 
 /**
- * Assertion on JSON instances.
+ * Evaluator of assertions.
  * 
  * @author leadpony
  */
-public interface Assertion {
-    
-    default boolean canApplyTo(InstanceType type) {
-        return true;
-    }
-    
-    AssertionEvaluator createEvaluator();
-    
-    void toJson(JsonGenerator generator);
+public interface AssertionEvaluator extends Evaluator {
 }

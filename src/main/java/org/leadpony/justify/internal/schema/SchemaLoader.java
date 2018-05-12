@@ -16,7 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.json.spi.JsonProvider;
@@ -49,11 +51,11 @@ public class SchemaLoader {
     }
     
     private JsonSchema rootSchema() {
-        switch (parser.next()) {
+        Event event = parser.next();
+        switch (event) {
         case VALUE_TRUE:
-            return BooleanSchema.valueOf(true);
         case VALUE_FALSE:
-            return BooleanSchema.valueOf(false);
+            return literalSchema(event);
         case START_OBJECT:
             return objectSchema();
         default:
@@ -77,51 +79,65 @@ public class SchemaLoader {
         return null;
     }
     
+    private JsonSchema literalSchema(Event event) {
+        switch (event) {
+        case VALUE_TRUE:
+            return JsonSchemas.alwaysTrue();
+        case VALUE_FALSE:
+            return JsonSchemas.alwaysFalse();
+        default:
+            return null;
+        }
+    }
+    
     private void populateSchema(String keyName, JsonSchemaBuilder builder) {
         switch (keyName) {
         case "title":
-            addTitle(builder);
+            appendTitle(builder);
             break;
         case "description":
-            addDescription(builder);
+            appendDescription(builder);
             break;
         case "type":
-            addType(builder);
+            appendType(builder);
             break;
         case "required":
-            addRequired(builder);
+            appendRequired(builder);
             break;
         case "properties":
-            addProperties(builder);
+            appendProperties(builder);
             break;
         case "maximum":
-            addMaximum(builder);
+            appendMaximum(builder);
             break;
         case "exclusiveMaximum":
-            addExclusiveMaximum(builder);
+            appendExclusiveMaximum(builder);
             break;
         case "minimum":
-            addMinimum(builder);
+            appendMinimum(builder);
             break;
         case "exclusiveMinimum":
-            addExclusiveMinimum(builder);
+            appendExclusiveMinimum(builder);
+            break;
+        case "allOf":
+            appendAllOf(builder);
             break;
         }
     }
     
-    private void addTitle(JsonSchemaBuilder builder) {
+    private void appendTitle(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_STRING) {
             builder.withTitle(parser.getString());
         }
     }
     
-    private void addDescription(JsonSchemaBuilder builder) {
+    private void appendDescription(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_STRING) {
             builder.withDescription(parser.getString());
         }
     }
     
-    private void addType(JsonSchemaBuilder builder) {
+    private void appendType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
             builder.withType(findType(parser.getString()));
@@ -136,7 +152,7 @@ public class SchemaLoader {
         }
     }
     
-    private void addRequired(JsonSchemaBuilder builder) {
+    private void appendRequired(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
             Set<String> names = new HashSet<>();
@@ -149,7 +165,7 @@ public class SchemaLoader {
         }
     }
     
-    private void addProperties(JsonSchemaBuilder builder) {
+    private void appendProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
             return;
@@ -158,15 +174,14 @@ public class SchemaLoader {
             event = parser.next();
             if (event == Event.KEY_NAME) {
                 String keyName = parser.getString();
-                switch (parser.next()) {
+                event = parser.next();
+                switch (event) {
                 case START_OBJECT:
                     builder.withProperty(keyName, objectSchema());
                     break;
                 case VALUE_TRUE:
-                    builder.withProperty(keyName, BooleanSchema.valueOf(true));
-                    break;
                 case VALUE_FALSE:
-                    builder.withProperty(keyName, BooleanSchema.valueOf(false));
+                    builder.withProperty(keyName, literalSchema(event));
                     break;
                 default:
                     break;
@@ -177,27 +192,48 @@ public class SchemaLoader {
         }
     }
     
-    private void addMaximum(JsonSchemaBuilder builder) {
+    private void appendMaximum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMaximum(parser.getBigDecimal());
         }
     }
 
-    private void addExclusiveMaximum(JsonSchemaBuilder builder) {
+    private void appendExclusiveMaximum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withExclusiveMaximum(parser.getBigDecimal());
         }
     }
 
-    private void addMinimum(JsonSchemaBuilder builder) {
+    private void appendMinimum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMinimum(parser.getBigDecimal());
         }
     }
 
-    private void addExclusiveMinimum(JsonSchemaBuilder builder) {
+    private void appendExclusiveMinimum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withExclusiveMinimum(parser.getBigDecimal());
+        }
+    }
+    
+    private void appendAllOf(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.START_ARRAY) {
+            List<JsonSchema> subschemas = new ArrayList<>();
+            while ((event = parser.next()) != Event.END_ARRAY) {
+                switch (event) {
+                case START_OBJECT:
+                    subschemas.add(objectSchema());
+                    break;
+                case VALUE_TRUE:
+                case VALUE_FALSE:
+                    subschemas.add(literalSchema(event));
+                    break;
+                default:
+                    break;
+                }
+            }
+            builder.withAllOf(subschemas);
         }
     }
 

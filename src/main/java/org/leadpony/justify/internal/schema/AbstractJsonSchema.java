@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.internal.schema;
 
+import java.io.StringWriter;
+
+import javax.json.Json;
+import javax.json.JsonException;
 import javax.json.stream.JsonGenerator;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Assertion on JSON instances.
+ * Skeletal implementation of {@link JsonSchema}.
  * 
  * @author leadpony
  */
-public interface Assertion {
-    
-    default boolean canApplyTo(InstanceType type) {
-        return true;
+abstract class AbstractJsonSchema implements JsonSchema {
+
+    @Override
+    public String toString() {
+        StringWriter writer = new StringWriter();
+        try (JsonGenerator generator = Json.createGenerator(writer)) {
+            toJson(generator);
+        } catch (JsonException e) {
+        }
+        return writer.toString();
     }
-    
-    AssertionEvaluator createEvaluator();
-    
-    void toJson(JsonGenerator generator);
 }

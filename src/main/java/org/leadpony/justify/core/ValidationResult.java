@@ -17,7 +17,7 @@
 package org.leadpony.justify.core;
 
 /**
- * Result obtained by JSON validation.
+ * Result obtained by process of JSON validation.
  * 
  * @author leadpony
  */
@@ -29,7 +29,7 @@ public interface ValidationResult {
      * @return {@code true} if the validation was done without problem, 
      *         {@code false} otherwise.
      */
-    boolean wasSuccess();
+    boolean wasValid();
     
     /**
      * Returns all problems found in the process of validation.

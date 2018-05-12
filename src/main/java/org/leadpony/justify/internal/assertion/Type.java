@@ -44,10 +44,10 @@ public class Type implements SimpleAssertion {
     }
 
     @Override
-    public Status evaluate(Event event, JsonParser parser, Consumer<Problem> collector) {
+    public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
-            return testType(type, collector);
+            return testType(type, consumer);
         } else {
             return Status.CONTINUED;
         }
@@ -68,7 +68,7 @@ public class Type implements SimpleAssertion {
         }
     }
     
-    private Status testType(InstanceType type, Consumer<Problem> collector) {
+    private Status testType(InstanceType type, Consumer<Problem> consumer) {
         if (types.contains(type)) {
             return Status.TRUE;
         } else if (type == InstanceType.INTEGER && types.contains(InstanceType.NUMBER)) {
@@ -79,7 +79,7 @@ public class Type implements SimpleAssertion {
                     .withParameter("actual", type)
                     .withParameter("expected", types)
                     .build();
-            collector.accept(p);
+            consumer.accept(p);
             return Status.FALSE;
         }
     }

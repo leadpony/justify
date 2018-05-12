@@ -31,23 +31,32 @@ public interface Evaluator {
      * Status of evaluation.
      */
     enum Status {
-        /** Evaluated to true. */
+        /** Evaluated as true. */
         TRUE,
-        /** Evaluated to false. */
+        /** Evaluated as false. */
         FALSE,
         /** Evaluation is continued. */
         CONTINUED,
-        /** Evaluation is canceled. */
-        CANCELED
     };
     
     /**
-     * Evaluates JSON schema or its assertion.
+     * Evaluates JSON schema.
      * 
      * @param event the event triggered by JSON parser.
      * @param parser the JSON parser.
-     * @param collector the collector of detected problems.
+     * @param depth the depth where the event occurred.
+     * @param consumer the consumer of the found problems.
      * @return the status of this evaluator.
      */
-    Status evaluate(JsonParser.Event event, JsonParser parser, Consumer<Problem> collector);
+    Status evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
+
+    /**
+     * The evaluator that always return true.
+     */
+    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Status.TRUE;
+
+    /**
+     * The evaluator that always return false.
+     */
+    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->Status.FALSE;
 }

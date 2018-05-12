@@ -29,6 +29,8 @@ import org.junit.runners.Parameterized.Parameters;
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
+        "/spec/tests/draft7/allOf.json",
+
         "/spec/tests/draft7/exclusiveMaximum.json",
         "/spec/tests/draft7/exclusiveMinimum.json",
         "/spec/tests/draft7/maximum.json",

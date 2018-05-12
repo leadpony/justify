@@ -67,13 +67,13 @@ public class ProblemBuilder {
         
         @Override
         public String getMessage(Locale locale) {
-            Objects.requireNonNull(locale, "locale must not be null");
+            Objects.requireNonNull(locale, "locale must not be null.");
             return messageFormatter.format(messageKey, parametersAsMap(), locale);
         }
         
         @Override
         public String getContextualMessage(Locale locale) {
-            Objects.requireNonNull(locale, "locale must not be null");
+            Objects.requireNonNull(locale, "locale must not be null.");
             return formatContextualMessage(getMessage(locale), locale);
         }
     
@@ -84,7 +84,7 @@ public class ProblemBuilder {
         
         @Override
         public void setLocation(JsonLocation location) {
-            Objects.requireNonNull(location, "location must not be null");
+            Objects.requireNonNull(location, "location must not be null.");
             this.location = location;
         }
         

@@ -25,13 +25,13 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.internal.schema.SchemaLoader;
+import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactory;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonValidatorFactory;
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
-import org.leadpony.justify.internal.schema.BooleanSchema;
-import org.leadpony.justify.internal.schema.DefaultJsonValidatorFactory;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.JsonSchemas;
 
 /**
  * Default implementation of {@link JsonValidationServiceProvider}.
@@ -48,12 +48,12 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
 
     @Override
     public JsonSchema createBooleanSchema(boolean value) {
-        return BooleanSchema.valueOf(value);
+        return value ? JsonSchemas.alwaysTrue() : JsonSchemas.alwaysFalse();
     }
     
     @Override
     public JsonSchema loadSchema(InputStream in) {
-        Objects.requireNonNull(in, "in must not be null");
+        Objects.requireNonNull(in, "in must not be null.");
         try (JsonParser parser = this.parserFactory.createParser(in)) {
             return loadSchema(parser);
         }
@@ -61,7 +61,7 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
 
     @Override
     public JsonSchema loadSchema(Reader reader) {
-        Objects.requireNonNull(reader, "reader must not be null");
+        Objects.requireNonNull(reader, "reader must not be null.");
         try (JsonParser parser = this.parserFactory.createParser(reader)) {
             return loadSchema(parser);
         }

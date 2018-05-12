@@ -17,6 +17,8 @@
 package org.leadpony.justify.core;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Builder of JSON schemas.
@@ -38,11 +40,11 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withType(InstanceType... types);
 
-    JsonSchemaBuilder withType(Iterable<InstanceType> types);
+    JsonSchemaBuilder withType(Set<InstanceType> types);
 
     JsonSchemaBuilder withRequired(String... names);
 
-    JsonSchemaBuilder withRequired(Iterable<String> names);
+    JsonSchemaBuilder withRequired(Set<String> names);
 
     /**
      * Specifies the upper bound for numeric value.
@@ -161,4 +163,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withItem(JsonSchema subschema);
 
     JsonSchemaBuilder withItems(JsonSchema... subschemas);
+    
+    JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
+
+    JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas);
 }

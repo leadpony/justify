@@ -43,12 +43,12 @@ abstract class AbstractNumericBoundAssertion implements SimpleAssertion {
     }
     
     @Override
-    public boolean isApplicableTo(InstanceType type) {
+    public boolean canApplyTo(InstanceType type) {
         return type.isNumeric();
     }
    
     @Override
-    public Status evaluate(Event event, JsonParser parser, Consumer<Problem> collector) {
+    public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         BigDecimal actual = parser.getBigDecimal();
         if (testNumber(actual)) {
             return Status.TRUE;
@@ -58,7 +58,7 @@ abstract class AbstractNumericBoundAssertion implements SimpleAssertion {
                     .withParameter("actual", actual)
                     .withParameter("bound", this.bound)
                     .build();
-            collector.accept(p);
+            consumer.accept(p);
             return Status.FALSE;
         }
     }

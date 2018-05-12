@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
-
-import javax.json.stream.JsonGenerator;
-
-import org.leadpony.justify.core.InstanceType;
-
 /**
- * Assertion on JSON instances.
- * 
+ * Provides the implementation of API.
+ *  
  * @author leadpony
  */
-public interface Assertion {
-    
-    default boolean canApplyTo(InstanceType type) {
-        return true;
-    }
-    
-    AssertionEvaluator createEvaluator();
-    
-    void toJson(JsonGenerator generator);
-}
+package org.leadpony.justify.internal;

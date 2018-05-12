@@ -17,8 +17,8 @@ package org.leadpony.justify.core;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.json.stream.JsonGenerator;
 
@@ -63,30 +63,58 @@ public interface JsonSchema {
         return JsonValidationServiceProvider.provider().loadSchema(reader);
     }
 
-    default Collection<Evaluator> createEvaluators(InstanceType type) {
+    /**
+     * Creates an evaluator of this schema.
+     * 
+     * @param type the type of the instance to which this schema will be applied.
+     * @return the evaluator of this schema.
+     * @throw NullPointerException if {@code type} is {@code null}.
+     */
+    Evaluator createEvaluator(InstanceType type);
+
+    /**
+     * Finds child schemas to be applied to the specified property in object.
+     * 
+     * @param propertyName the name of the property.
+     * @return the child schema if found , {@code null} otherwise.
+     * @throw NullPointerException if {@code propertyName} is {@code null}.
+     */
+    default JsonSchema findChildSchema(String propertyName) {
+        return null;
+    }
+    
+    /**
+     * Finds child schemas to be applied to the specified item in array.
+     * 
+     * @param itemIndex the index of the item.
+     * @return the child schema if found , {@code null} otherwise.
+     */
+    default JsonSchema findChildSchema(int itemIndex) {
+        return null;
+    }
+    
+    /**
+     * Returns all subschemas contained directly by this schema.
+     * 
+     * @return direct subschemas of this schema, may be empty but never be {@code null}.
+     */
+    default List<JsonSchema> subschemas() {
         return Collections.emptyList();
     }
     
     /**
-     * Collects child schemas to be applied to the specified property in object.
+     * Generates a JSON representation of this schema.
      * 
-     * @param propertyName the name of the property.
-     * @param schemas the child schemas collected.
+     * @param generator the generator of the JSON document.
+     * @throws NullPointerException if {@code generator} is {@code null}.
      */
-    default void collectChildSchema(String propertyName, Collection<JsonSchema> schemas) {
-    }
-
-    /**
-     * Collects child schemas to be applied to the specified item in array.
-     * 
-     * @param itemIndex the index of the item.
-     * @param schemas the child schemas collected.
-     */
-    default void collectChildSchema(int itemIndex, Collection<JsonSchema> schemas) {
-    }
-    
     void toJson(JsonGenerator generator);
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @return the string representation of this schema.
+     */
     @Override
     String toString();
 }

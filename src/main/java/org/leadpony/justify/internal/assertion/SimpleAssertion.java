@@ -16,14 +16,12 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import org.leadpony.justify.core.Evaluator;
-
 /**
  * @author leadpony
  */
-public interface SimpleAssertion extends Assertion, Evaluator {
+public interface SimpleAssertion extends Assertion, AssertionEvaluator {
 
-    default Evaluator createEvaluator() {
+    default AssertionEvaluator createEvaluator() {
         return this;
     }
 }

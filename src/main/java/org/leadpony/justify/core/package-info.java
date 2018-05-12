@@ -15,6 +15,6 @@
  */
 
 /**
- * Provides API to validate JSON. 
+ * Provides API for validating JSON documents. 
  */
 package org.leadpony.justify.core;
