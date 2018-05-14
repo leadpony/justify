@@ -46,9 +46,9 @@ public class SimpleEvaluator implements Evaluator {
     }
 
     @Override
-    public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        return evaluateAssertions(event, parser, depth, consumer) ?
-                Status.TRUE : Status.FALSE;
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        boolean continued = evaluateAssertions(event, parser, depth, consumer);
+        return continued ? Result.TRUE : Result.FALSE;
     }
 
     private void createAssertionEvaluators(InstanceType type, Collection<Evaluator> assertEvaluators) {
@@ -76,10 +76,10 @@ public class SimpleEvaluator implements Evaluator {
         Iterator<Evaluator> it = evaluators.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
-            Status status = evaluator.evaluate(event, parser, depth, consumer);
-            if (status != Status.CONTINUED) {
+            Result result = evaluator.evaluate(event, parser, depth, consumer);
+            if (result != Result.CONTINUED) {
                 it.remove();
-                if (status == Status.FALSE) {
+                if (result == Result.FALSE) {
                     return false;
                 }
             }

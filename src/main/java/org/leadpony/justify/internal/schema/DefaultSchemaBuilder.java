@@ -34,7 +34,9 @@ import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.assertion.ExclusiveMaximum;
 import org.leadpony.justify.internal.assertion.ExclusiveMinimum;
+import org.leadpony.justify.internal.assertion.MaxLength;
 import org.leadpony.justify.internal.assertion.Maximum;
+import org.leadpony.justify.internal.assertion.MinLength;
 import org.leadpony.justify.internal.assertion.Minimum;
 import org.leadpony.justify.internal.assertion.Required;
 import org.leadpony.justify.internal.assertion.Type;
@@ -167,6 +169,18 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     }
 
     @Override
+    public JsonSchemaBuilder withMaxLength(int bound) {
+        assertions.add(new MaxLength(bound));
+        return nonEmpty();
+    }
+
+    @Override
+    public JsonSchemaBuilder withMinLength(int bound) {
+        assertions.add(new MinLength(bound));
+        return nonEmpty();
+    }
+    
+    @Override
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
@@ -200,6 +214,32 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         this.subschemas.add(new AllOf(subschemas));
+        return havingSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withAnyOf(JsonSchema... subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        return withAnyOf(Arrays.asList(subschemas));
+    }
+
+    @Override
+    public JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        this.subschemas.add(new AnyOf(subschemas));
+        return havingSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withOneOf(JsonSchema... subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        return withOneOf(Arrays.asList(subschemas));
+    }
+
+    @Override
+    public JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        this.subschemas.add(new OneOf(subschemas));
         return havingSubschema();
     }
     

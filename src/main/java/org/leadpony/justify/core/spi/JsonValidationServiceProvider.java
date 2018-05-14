@@ -60,8 +60,12 @@ public abstract class JsonValidationServiceProvider {
     protected JsonValidationServiceProvider() {
     }
     
-    public abstract JsonSchema createBooleanSchema(boolean value);
+    public abstract JsonSchema emptySchema();
     
+    public abstract JsonSchema alwaysTrueSchema();
+    
+    public abstract JsonSchema alwaysFalseSchema();
+
     public abstract JsonSchema loadSchema(InputStream in);
 
     public abstract JsonSchema loadSchema(Reader reader);

@@ -14,36 +14,24 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.core;
-
-import java.util.Objects;
-
-import javax.json.stream.JsonGenerator;
+package org.leadpony.justify.internal.assertion;
 
 /**
- * Empty JSON schema.
- * 
  * @author leadpony
  */
-class EmptyJsonSchema implements JsonSchema {
+public class ExclusiveMaxLength extends AbstractStringLengthAssertion {
 
-    EmptyJsonSchema() {
-    }
-    
-    @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        Objects.requireNonNull(type, "type must not be null.");
-        return Evaluator.ALWAYS_TRUE;
-    }
-    
-    @Override
-    public void toJson(JsonGenerator generator) {
-        Objects.requireNonNull(generator, "generator must not be null.");
-        generator.writeStartObject().writeEnd();
+    public ExclusiveMaxLength(int bound) {
+        super(bound, "exclusiveMaxLength", "instance.problem.exclusive.max.length");
     }
 
-    @Override 
-    public String toString() {
-        return "{}";
+    @Override
+    protected boolean test(int actualLength, int bound) {
+        return actualLength < bound;
+    }
+
+    @Override
+    protected AbstractAssertion createNegatedAssertion() {
+        return new MinLength(bound);
     }
 }

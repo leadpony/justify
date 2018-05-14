@@ -19,9 +19,10 @@ package org.leadpony.justify.internal.assertion;
 /**
  * @author leadpony
  */
-public interface SimpleAssertion extends Assertion, AssertionEvaluator {
+public abstract class SimpleAssertion extends AbstractAssertion implements AssertionEvaluator {
 
-    default AssertionEvaluator createEvaluator() {
+    @Override
+    public AssertionEvaluator createEvaluator() {
         return this;
     }
 }

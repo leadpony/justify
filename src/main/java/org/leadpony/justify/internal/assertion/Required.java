@@ -29,15 +29,16 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Assertion specified by "required" keyword.
+ * 
  * @author leadpony
  */
-public class Required implements Assertion {
+public class Required extends AbstractAssertion {
     
-    private final Set<String> names;
+    protected final Set<String> names;
     
-    public Required(Iterable<String> names) {
-        this.names = new HashSet<>();
-        names.forEach(this.names::add);
+    public Required(Set<String> names) {
+        this.names = new HashSet<>(names);
     }
 
     @Override
@@ -47,7 +48,7 @@ public class Required implements Assertion {
 
     @Override
     public AssertionEvaluator createEvaluator() {
-        return new PropertyEvaluator(names);
+        return new Evaluator(names);
     }
 
     @Override
@@ -57,36 +58,98 @@ public class Required implements Assertion {
         generator.writeEnd();
     }
     
-    private static class PropertyEvaluator implements AssertionEvaluator {
+    @Override
+    protected AbstractAssertion createNegatedAssertion() {
+        return new NotRequired(names);
+    }
+
+    private static class Evaluator implements AssertionEvaluator {
         
-        private final Set<String> remaining;
+        protected final Set<String> remaining;
         
-        private PropertyEvaluator(Set<String> required) {
+        private Evaluator(Set<String> required) {
             this.remaining = new HashSet<>(required);
         }
 
         @Override
-        public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
-                return remaining.isEmpty() ? Status.TRUE : Status.CONTINUED;
+                return test(consumer, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return checkRequiredProperties(consumer);
+                return test(consumer, true);
             } else {
-                return Status.CONTINUED;
+                return Result.CONTINUED;
             }
         }
         
-        private Status checkRequiredProperties(Consumer<Problem> consumer) {
+        protected Result test(Consumer<Problem> consumer, boolean last) {
             if (remaining.isEmpty()) {
-                return Status.TRUE;
-            } else {
+                return Result.TRUE;
+            } else if (last) {
                 Problem p = ProblemBuilder.newBuilder()
                         .withMessage("instance.problem.required")
                         .withParameter("expected", remaining)
                         .build();
                 consumer.accept(p);
-                return Status.FALSE;
+                return Result.FALSE;
+            } else {
+                return Result.CONTINUED;
+            }
+        }
+    }
+    
+    private static class NotRequired extends Required {
+
+        private NotRequired(Set<String> names) {
+            super(names);
+        }
+
+        @Override
+        public AssertionEvaluator createEvaluator() {
+            return new NegatedEvaluator(names);
+        }
+
+        @Override
+        protected AbstractAssertion createNegatedAssertion() {
+            return new Required(this.names);
+        }
+    }
+    
+    private static class NegatedEvaluator extends Evaluator {
+        
+        private final Set<String> names;
+        
+        private NegatedEvaluator(Set<String> names) {
+            super(names);
+            this.names = names;
+        }
+
+        @Override
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+            if (event == Event.KEY_NAME) {
+                remaining.remove(parser.getString());
+                return test(consumer, false);
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                return test(consumer, true);
+            } else {
+                return Result.CONTINUED;
+            }
+        }
+
+        @Override
+        protected Result test(Consumer<Problem> consumer, boolean last) {
+            if (remaining.isEmpty()) {
+                Problem p = ProblemBuilder.newBuilder()
+                        .withMessage("instance.problem.not.required")
+                        .withParameter("expected", this.names)
+                        .build();
+                consumer.accept(p);
+                return Result.FALSE;
+            } else if (last) {
+                return Result.TRUE;
+            } else {
+                return Result.CONTINUED;
             }
         }
     }

@@ -69,7 +69,7 @@
                 <version>3.0.0</version>
                 <configuration>
                     <locale>en_US</locale>
-                    <excludePackageNames>org.leadpony.justify.internal.*</excludePackageNames>
+                    <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>

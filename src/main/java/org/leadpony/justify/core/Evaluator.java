@@ -28,9 +28,9 @@ import javax.json.stream.JsonParser;
 public interface Evaluator {
 
     /**
-     * Status of evaluation.
+     * Result of evaluation.
      */
-    enum Status {
+    enum Result {
         /** Evaluated as true. */
         TRUE,
         /** Evaluated as false. */
@@ -46,17 +46,17 @@ public interface Evaluator {
      * @param parser the JSON parser.
      * @param depth the depth where the event occurred.
      * @param consumer the consumer of the found problems.
-     * @return the status of this evaluator.
+     * @return the result of the evaluation.
      */
-    Status evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
+    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
 
     /**
-     * The evaluator that always return true.
+     * The evaluator that always returns true.
      */
-    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Status.TRUE;
+    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
 
     /**
-     * The evaluator that always return false.
+     * The evaluator that always returns false.
      */
-    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->Status.FALSE;
+    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->Result.FALSE;
 }

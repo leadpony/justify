@@ -16,21 +16,22 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.math.BigDecimal;
+/**
+ * @author leadpony
+ */
+public class MinLength extends AbstractStringLengthAssertion {
 
-public class Maximum extends AbstractNumericBoundAssertion {
-
-    public Maximum(BigDecimal bound) {
-        super(bound, "maximum", "instance.problem.maximum");
+    public MinLength(int bound) {
+        super(bound, "minLength", "instance.problem.min.length");
     }
-    
+
     @Override
-    protected boolean test(BigDecimal actual, BigDecimal bound) {
-        return actual.compareTo(bound) <= 0;
+    protected boolean test(int actualLength, int bound) {
+        return actualLength >= bound;
     }
 
     @Override
     protected AbstractAssertion createNegatedAssertion() {
-        return new ExclusiveMinimum(this.bound);
+        return new ExclusiveMaxLength(bound);
     }
 }

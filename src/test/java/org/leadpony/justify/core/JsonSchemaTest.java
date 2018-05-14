@@ -35,14 +35,14 @@ public class JsonSchemaTest {
 
     @Test
     public void valueOf_shouldReturnTrueBooleanSchema() {
-        JsonSchema schema = JsonSchema.valueOf(true);
+        JsonSchema schema = JsonSchema.alwaysTrue();
         
         assertThat(schema).hasToString("true");
     }
 
     @Test
     public void valueOf_shouldReturnFalseBooleanSchema() {
-        JsonSchema schema = JsonSchema.valueOf(false);
+        JsonSchema schema = JsonSchema.alwaysFalse();
         
         assertThat(schema).hasToString("false");
     }

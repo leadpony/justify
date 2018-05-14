@@ -52,14 +52,15 @@ class ValidatingJsonParser extends JsonParserDecorator
  
     @Override
     public Event next() {
-        Event event = real.next();
-        evaluateRoot(event, real);
+        JsonParser parser = realParser();
+        Event event = parser.next();
+        evaluateRoot(event, parser);
         return event;
     }
   
     @Override
     public void accept(Problem problem) {
-        problem.setLocation(real.getLocation());
+        problem.setLocation(realParser().getLocation());
         problems.add(problem);
     }
     

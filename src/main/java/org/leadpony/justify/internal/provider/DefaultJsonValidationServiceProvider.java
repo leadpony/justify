@@ -47,10 +47,20 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
     }
 
     @Override
-    public JsonSchema createBooleanSchema(boolean value) {
-        return value ? JsonSchemas.alwaysTrue() : JsonSchemas.alwaysFalse();
+    public JsonSchema emptySchema() {
+        return JsonSchemas.empty();
     }
     
+    @Override
+    public JsonSchema alwaysTrueSchema() {
+        return JsonSchemas.alwaysTrue();
+    }
+    
+    @Override
+    public JsonSchema alwaysFalseSchema() {
+        return JsonSchemas.alwaysFalse();
+    }
+
     @Override
     public JsonSchema loadSchema(InputStream in) {
         Objects.requireNonNull(in, "in must not be null.");

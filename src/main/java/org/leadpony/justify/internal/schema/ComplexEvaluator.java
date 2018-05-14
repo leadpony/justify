@@ -76,10 +76,10 @@ public abstract class ComplexEvaluator extends SimpleEvaluator {
         }
 
         @Override
-        public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            boolean result = evaluateAssertions(event, parser, depth, consumer) &&
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+            boolean continued = evaluateAssertions(event, parser, depth, consumer) &&
                              evaluateSubschemas(event, parser, depth, consumer); 
-            return result ? Status.TRUE : Status.FALSE;
+            return continued ? Result.TRUE : Result.FALSE;
         }
     }
 
@@ -92,14 +92,14 @@ public abstract class ComplexEvaluator extends SimpleEvaluator {
         }
 
         @Override
-        public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            boolean result = evaluateAssertions(event, parser, depth, consumer) &&
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+            boolean continued = evaluateAssertions(event, parser, depth, consumer) &&
                              evaluateSubschemas(event, parser, depth, consumer) &&
                              invokeChildEvaluator(event, parser, depth, consumer);
-            if (result) {
-                return canContinue(event, depth) ? Status.CONTINUED : Status.TRUE;
+            if (continued) {
+                return canContinue(event, depth) ? Result.CONTINUED : Result.TRUE;
             } else {
-                return Status.FALSE;
+                return Result.FALSE;
             }
         }
 
@@ -110,10 +110,10 @@ public abstract class ComplexEvaluator extends SimpleEvaluator {
             if (child == null) {
                 return true;
             }
-            Status status = child.evaluate(event, parser, depth - 1, consumer);
-            if (status != Status.CONTINUED) {
+            Result result = child.evaluate(event, parser, depth - 1, consumer);
+            if (result != Result.CONTINUED) {
                 child = null;
-                return status != Status.FALSE;
+                return result != Result.FALSE;
             } else {
                 return true;
             }

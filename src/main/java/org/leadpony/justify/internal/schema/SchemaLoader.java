@@ -119,8 +119,20 @@ public class SchemaLoader {
         case "exclusiveMinimum":
             appendExclusiveMinimum(builder);
             break;
+        case "maxLength":
+            appendMaxLength(builder);
+            break;
+        case "minLength":
+            appendMinLength(builder);
+            break;
         case "allOf":
             appendAllOf(builder);
+            break;
+        case "anyOf":
+            appendAnyOf(builder);
+            break;
+        case "oneOf":
+            appendOneOf(builder);
             break;
         }
     }
@@ -216,10 +228,38 @@ public class SchemaLoader {
         }
     }
     
+    private void appendMaxLength(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMaxLength(parser.getInt());
+        }
+    }
+    
+    private void appendMinLength(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMinLength(parser.getInt());
+        }
+    }
+
     private void appendAllOf(JsonSchemaBuilder builder) {
+        builder.withAllOf(subschemaArray());
+    }
+
+    private void appendAnyOf(JsonSchemaBuilder builder) {
+        builder.withAnyOf(subschemaArray());
+    }
+
+    private void appendOneOf(JsonSchemaBuilder builder) {
+        builder.withOneOf(subschemaArray());
+    }
+
+    private static InstanceType findType(String name) {
+        return InstanceType.valueOf(name.toUpperCase());
+    }
+    
+    private List<JsonSchema> subschemaArray() {
+        List<JsonSchema> subschemas = new ArrayList<>();
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            List<JsonSchema> subschemas = new ArrayList<>();
             while ((event = parser.next()) != Event.END_ARRAY) {
                 switch (event) {
                 case START_OBJECT:
@@ -233,11 +273,7 @@ public class SchemaLoader {
                     break;
                 }
             }
-            builder.withAllOf(subschemas);
         }
-    }
-
-    private static InstanceType findType(String name) {
-        return InstanceType.valueOf(name.toUpperCase());
+        return subschemas;
     }
 }

@@ -18,24 +18,32 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
 
+import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
-public abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
+abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
 
-    protected final List<JsonSchema> subschemas;
+    private final List<JsonSchema> subschemas;
 
-    /**
-     * @param subschemas
-     */
     protected NaryBooleanLogicSchema(Collection<JsonSchema> subschemas) {
         this.subschemas = new ArrayList<>(subschemas);
+    }
+
+    @Override
+    public List<JsonSchema> subschemas() {
+        return subschemas;
     }
 
     protected void toJson(JsonGenerator generator, String name) {
@@ -43,5 +51,40 @@ public abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
         generator.writeStartArray();
         this.subschemas.forEach(s->s.toJson(generator));
         generator.writeEnd();
+    }
+    
+    static abstract class DisjunctionEvaluator implements Evaluator {
+        
+        protected final List<DelayedEvaluator> running;
+        protected List<DelayedEvaluator> failed;
+
+        DisjunctionEvaluator(InstanceType type, List<JsonSchema> subschemas) {
+            this.running = createEvaluators(type, subschemas);
+        }
+
+        private List<DelayedEvaluator> createEvaluators(InstanceType type, List<JsonSchema> subschemas) {
+            List<DelayedEvaluator> evaluators = new LinkedList<>();
+            for (JsonSchema schema : subschemas) {
+                evaluators.add(new DelayedEvaluator(schema.createEvaluator(type)));
+            }
+            return evaluators;
+        }
+        
+        protected void addFailed(DelayedEvaluator evaluator) {
+            if (failed == null) {
+                failed = new ArrayList<>();
+            }
+            failed.add(evaluator);
+        }
+
+        protected Result deliverProblems(Consumer<Problem> consumer) {
+            if (failed.isEmpty()) {
+                return Result.TRUE;
+            }
+            Collections.sort(failed, (a, b)->a.countProblems() - b.countProblems());
+            DelayedEvaluator first = failed.get(0);
+            first.problems().forEach(consumer);
+            return Result.FALSE;
+        }
     }
 }

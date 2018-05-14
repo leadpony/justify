@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.math.BigDecimal;
 import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
@@ -30,32 +29,33 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 /**
  * @author leadpony
  */
-abstract class AbstractNumericBoundAssertion extends SimpleAssertion {
-
-    protected final BigDecimal bound;
+abstract class AbstractStringLengthAssertion extends SimpleAssertion {
+    
+    protected final int bound;
     private final String name;
     private final String message;
     
-    protected AbstractNumericBoundAssertion(BigDecimal bound, String name, String message) {
+    protected AbstractStringLengthAssertion(int bound, String name, String message) {
         this.bound = bound;
         this.name = name;
         this.message = message;
     }
-    
+
     @Override
     public boolean canApplyTo(InstanceType type) {
-        return type.isNumeric();
+        return type == InstanceType.STRING;
     }
-   
+    
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        BigDecimal actual = parser.getBigDecimal();
-        if (test(actual, this.bound)) {
+        String actual = parser.getString();
+        int actualLength = actual.codePointCount(0, actual.length());
+        if (test(actualLength, this.bound)) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder()
                     .withMessage(this.message)
-                    .withParameter("actual", actual)
+                    .withParameter("actual", actual.length())
                     .withParameter("bound", this.bound)
                     .build();
             consumer.accept(p);
@@ -68,5 +68,5 @@ abstract class AbstractNumericBoundAssertion extends SimpleAssertion {
         generator.write(this.name, this.bound);
     }
     
-    protected abstract boolean test(BigDecimal actual, BigDecimal bound);
+    protected abstract boolean test(int actualLength, int bound);
 }

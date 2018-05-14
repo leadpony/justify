@@ -25,7 +25,12 @@ public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
     }
 
     @Override
-    protected boolean testNumber(BigDecimal actual) {
-        return actual.compareTo(bound()) > 0;
+    protected boolean test(BigDecimal actual, BigDecimal bound) {
+        return actual.compareTo(bound) > 0;
+    }
+
+    @Override
+    protected AbstractAssertion createNegatedAssertion() {
+        return new Maximum(this.bound);
     }
 }

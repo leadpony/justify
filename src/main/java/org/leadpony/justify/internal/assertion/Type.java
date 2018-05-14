@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -30,37 +30,36 @@ import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion described by "type" keyword.
+ * Assertion specified by "type" keyword.
  * 
  * @author leadpony
  */
-public class Type implements SimpleAssertion {
+public class Type extends SimpleAssertion {
     
-    private final Set<InstanceType> types;
+    protected final Set<InstanceType> typeSet;
     
-    public Type(Iterable<InstanceType> types) {
-        this.types = EnumSet.noneOf(InstanceType.class);
-        types.forEach(this.types::add);
+    public Type(Set<InstanceType> types) {
+        this.typeSet = new HashSet<>(types);
     }
 
     @Override
-    public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
             return testType(type, consumer);
         } else {
-            return Status.CONTINUED;
+            return Result.CONTINUED;
         }
     }
   
     @Override
     public void toJson(JsonGenerator generator) {
-        if (types.size() <= 1) {
-            InstanceType type = types.iterator().next();
+        if (typeSet.size() <= 1) {
+            InstanceType type = typeSet.iterator().next();
             generator.write("type", type.name().toLowerCase());
         } else {
             generator.writeStartArray("type");
-            types.stream()
+            typeSet.stream()
                 .map(InstanceType::name)
                 .map(String::toLowerCase)
                 .forEach(generator::write);
@@ -68,19 +67,57 @@ public class Type implements SimpleAssertion {
         }
     }
     
-    private Status testType(InstanceType type, Consumer<Problem> consumer) {
-        if (types.contains(type)) {
-            return Status.TRUE;
-        } else if (type == InstanceType.INTEGER && types.contains(InstanceType.NUMBER)) {
-            return Status.TRUE;
+    protected boolean contains(InstanceType type) {
+        return typeSet.contains(type) ||
+               (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
+    }
+    
+    protected Result testType(InstanceType type, Consumer<Problem> consumer) {
+        if (contains(type)) {
+            return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder()
                     .withMessage("instance.problem.type")
                     .withParameter("actual", type)
-                    .withParameter("expected", types)
+                    .withParameter("expected", typeSet)
                     .build();
             consumer.accept(p);
-            return Status.FALSE;
+            return Result.FALSE;
+        }
+    }
+
+    @Override
+    protected AbstractAssertion createNegatedAssertion() {
+        return new NotType(this.typeSet);
+    }
+    
+    /**
+     * Negated type.
+     */
+    private static class NotType extends Type {
+
+        private NotType(Set<InstanceType> types) {
+            super(types);
+        }
+        
+        @Override
+        protected Result testType(InstanceType type, Consumer<Problem> consumer) {
+            if (!contains(type)) {
+                return Result.TRUE;
+            } else {
+                Problem p = ProblemBuilder.newBuilder()
+                        .withMessage("instance.problem.not.type")
+                        .withParameter("actual", type)
+                        .withParameter("expected", typeSet)
+                        .build();
+                consumer.accept(p);
+                return Result.FALSE;
+            }
+        }
+
+        @Override
+        protected AbstractAssertion createNegatedAssertion() {
+            return new Type(this.typeSet);
         }
     }
 }

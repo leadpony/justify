@@ -29,16 +29,19 @@ import org.junit.runners.Parameterized.Parameters;
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
-        "/spec/tests/draft7/allOf.json",
-
-        "/spec/tests/draft7/exclusiveMaximum.json",
-        "/spec/tests/draft7/exclusiveMinimum.json",
-        "/spec/tests/draft7/maximum.json",
-        "/spec/tests/draft7/minimum.json",
-        "/spec/tests/draft7/required.json",
-        "/spec/tests/draft7/type.json"
-    };
-
+            "/spec/tests/draft7/allOf.json",
+            "/spec/tests/draft7/anyOf.json",
+            "/spec/tests/draft7/exclusiveMaximum.json",
+            "/spec/tests/draft7/exclusiveMinimum.json",
+            "/spec/tests/draft7/maximum.json",
+            "/spec/tests/draft7/maxLength.json",
+            "/spec/tests/draft7/minimum.json",
+            "/spec/tests/draft7/minLength.json",
+            "/spec/tests/draft7/oneOf.json",
+            "/spec/tests/draft7/required.json",
+            "/spec/tests/draft7/type.json"
+        };
+    
     public SpecTest(String name, int testIndex, String description, Fixture fixture) {
         super(name, testIndex, description, fixture);
     }

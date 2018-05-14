@@ -157,6 +157,10 @@ public interface JsonSchemaBuilder {
      * @return this builder.
      */
     JsonSchemaBuilder withExclusiveMinimum(BigDecimal bound);
+    
+    JsonSchemaBuilder withMaxLength(int bound);
+
+    JsonSchemaBuilder withMinLength(int bound);
 
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
 
@@ -167,4 +171,12 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
 
     JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas);
+
+    JsonSchemaBuilder withAnyOf(JsonSchema... subschemas);
+
+    JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas);
+
+    JsonSchemaBuilder withOneOf(JsonSchema... subschemas);
+
+    JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas);
 }

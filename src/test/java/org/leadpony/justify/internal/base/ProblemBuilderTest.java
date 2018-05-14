@@ -40,7 +40,7 @@ public class ProblemBuilderTest {
                 .withParameter("expected", EnumSet.of(InstanceType.INTEGER))
                 .build();
         
-        String expectedMessage = "Type string is not expected, must be one of [integer].";
+        String expectedMessage = "string type is not allowed. It must be any of [integer].";
         assertThat(problem.getMessage(Locale.ENGLISH)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)

@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -34,48 +33,44 @@ import org.leadpony.justify.core.Problem;
 /**
  * @author leadpony
  */
-public class AllOf extends NaryBooleanLogicSchema {
+public class AnyOf extends NaryBooleanLogicSchema {
 
-    public AllOf(Collection<JsonSchema> subschemas) {
+    public AnyOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return new ConjunctionEvaluator(type, subschemas());
+        return new InclusiveDisjunctionEvaluator(type, subschemas());
     }
 
     @Override
     public void toJson(JsonGenerator generator) {
-        super.toJson(generator, "allOf");
+        super.toJson(generator, "anyOf");
     }
-    
-    private static class ConjunctionEvaluator implements Evaluator {
-        
-        private final List<Evaluator> running;
-        private Result finalResult = Result.TRUE;
-        
-        private ConjunctionEvaluator(InstanceType type, List<JsonSchema> subschemas) {
-            this.running = new LinkedList<>();
-            for (JsonSchema schema : subschemas) {
-                this.running.add(schema.createEvaluator(type));
-            }
+
+    static class InclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
+       
+        InclusiveDisjunctionEvaluator(InstanceType type, List<JsonSchema> subschemas) {
+            super(type, subschemas);
         }
 
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            Iterator<Evaluator> it = running.iterator();
+            Iterator<DelayedEvaluator> it = running.iterator();
             while (it.hasNext()) {
-                Evaluator evaluator = it.next();
+                DelayedEvaluator evaluator = it.next();
                 Result result = evaluator.evaluate(event, parser, depth, consumer);
                 if (result != Result.CONTINUED) {
                     it.remove();
-                    if (result == Result.FALSE) {
-                        this.finalResult = Result.FALSE;
+                    if (result == Result.TRUE) {
+                        return Result.TRUE;
+                    } else {
+                        addFailed(evaluator);
                     }
                 }
             }
-            return running.isEmpty() ? this.finalResult : Result.CONTINUED;
+            return running.isEmpty() ? deliverProblems(consumer) : Result.CONTINUED;
         }
     }
 }

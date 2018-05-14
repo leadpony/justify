@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -30,52 +29,71 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * @author leadpony
  */
-public class AllOf extends NaryBooleanLogicSchema {
+public class OneOf extends NaryBooleanLogicSchema {
 
-    public AllOf(Collection<JsonSchema> subschemas) {
+    public OneOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return new ConjunctionEvaluator(type, subschemas());
+        return new ExclusiveDisjunctionEvalutor(type, subschemas());
     }
 
     @Override
     public void toJson(JsonGenerator generator) {
-        super.toJson(generator, "allOf");
+        super.toJson(generator, "oneOf");
     }
     
-    private static class ConjunctionEvaluator implements Evaluator {
+    static class ExclusiveDisjunctionEvalutor extends DisjunctionEvaluator {
+
+        private int numberOfTrueEvaluations;
         
-        private final List<Evaluator> running;
-        private Result finalResult = Result.TRUE;
-        
-        private ConjunctionEvaluator(InstanceType type, List<JsonSchema> subschemas) {
-            this.running = new LinkedList<>();
-            for (JsonSchema schema : subschemas) {
-                this.running.add(schema.createEvaluator(type));
-            }
+        ExclusiveDisjunctionEvalutor(InstanceType type, List<JsonSchema> subschemas) {
+            super(type, subschemas);
         }
 
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            Iterator<Evaluator> it = running.iterator();
+            Iterator<DelayedEvaluator> it = running.iterator();
             while (it.hasNext()) {
-                Evaluator evaluator = it.next();
+                DelayedEvaluator evaluator = it.next();
                 Result result = evaluator.evaluate(event, parser, depth, consumer);
                 if (result != Result.CONTINUED) {
                     it.remove();
-                    if (result == Result.FALSE) {
-                        this.finalResult = Result.FALSE;
+                    if (result == Result.TRUE) {
+                        if (++numberOfTrueEvaluations > 1) {
+                            return tooManyTrueEvaluations(consumer);
+                        }
+                    } else {
+                        addFailed(evaluator);
                     }
                 }
             }
-            return running.isEmpty() ? this.finalResult : Result.CONTINUED;
+            return running.isEmpty() ? deliverProblems(consumer) : Result.CONTINUED;
+        }
+
+        @Override
+        protected Result deliverProblems(Consumer<Problem> consumer) {
+            if (numberOfTrueEvaluations == 1) {
+                return Result.TRUE;
+            } else {
+                return super.deliverProblems(consumer);
+            }
+        }
+        
+        private Result tooManyTrueEvaluations(Consumer<Problem> consumer) {
+            Problem p = ProblemBuilder.newBuilder()
+                    .withMessage("instance.problem.one.of")
+                    .withParameter("actual", numberOfTrueEvaluations)
+                    .build();
+            consumer.accept(p);
+            return Result.FALSE;
         }
     }
 }

@@ -67,12 +67,27 @@ public class JsonSchemas {
     private static final Evaluator NEGATIVE_EVALUATOR = new Evaluator() {
  
         @Override
-        public Status evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             Problem p = ProblemBuilder.newBuilder()
                     .withMessage("instance.problem.unknown")
                     .build();
             consumer.accept(p);
-            return Status.FALSE;
+            return Result.FALSE;
+        }
+    };
+    
+    private static final JsonSchema EMPTY = new AbstractJsonSchema() {
+        
+        @Override
+        public Evaluator createEvaluator(InstanceType type) {
+            Objects.requireNonNull(type, "type must not be null.");
+            return Evaluator.ALWAYS_TRUE;
+        }
+
+        @Override
+        public void toJson(JsonGenerator generator) {
+            Objects.requireNonNull(generator, "generator must not be null.");
+            generator.writeStartObject().writeEnd();
         }
     };
 
@@ -82,5 +97,9 @@ public class JsonSchemas {
 
     public static JsonSchema alwaysFalse() {
         return ALWAYS_FALSE;
+    }
+
+    public static JsonSchema empty() {
+        return EMPTY;
     }
 }

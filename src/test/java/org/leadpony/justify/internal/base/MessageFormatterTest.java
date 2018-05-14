@@ -40,7 +40,7 @@ public class MessageFormatterTest {
         parameters.put("expected", EnumSet.of(InstanceType.INTEGER));
         String message = sut.format("instance.problem.type", parameters, Locale.ENGLISH);
         
-        String expectedMessage = "Type string is not expected, must be one of [integer].";
+        String expectedMessage = "string type is not allowed. It must be any of [integer].";
         assertThat(message).isEqualTo(expectedMessage);
     }
 }

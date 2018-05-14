@@ -32,29 +32,32 @@ import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 public interface JsonSchema {
   
     /**
-     * The singleton representing empty JSON schema.
-     */
-    public static final JsonSchema EMPTY = new EmptyJsonSchema();
-    
-    /**
      * Returns the empty JSON schema.
      * 
      * @return the instance of empty JSON schema, never be {@code null}.
      */
     static JsonSchema empty() {
-        return EMPTY;
+        return JsonValidationServiceProvider.provider().emptySchema();
     }
     
     /**
-     * Returns a boolean JSON schema.
+     * Returns the JSON schema which approves any JSON instances.
      * 
-     * @param value the boolean value of the schema.
-     * @return the instance of boolean JSON schema, never be {@code null}.
+     * @return the instance of the JSON schema, never be {@code null}.
      */
-    static JsonSchema valueOf(boolean value) {
-        return JsonValidationServiceProvider.provider().createBooleanSchema(value);
+    static JsonSchema alwaysTrue() {
+        return JsonValidationServiceProvider.provider().alwaysTrueSchema();
     }
     
+    /**
+     * Returns the JSON schema which rejects any JSON instances.
+     * 
+     * @return the instance of the JSON schema, never be {@code null}.
+     */
+    static JsonSchema alwaysFalse() {
+        return JsonValidationServiceProvider.provider().alwaysFalseSchema();
+    }
+
     static JsonSchema load(InputStream in) {
         return JsonValidationServiceProvider.provider().loadSchema(in);
     }
@@ -68,7 +71,7 @@ public interface JsonSchema {
      * 
      * @param type the type of the instance to which this schema will be applied.
      * @return the evaluator of this schema.
-     * @throw NullPointerException if {@code type} is {@code null}.
+     * @throws NullPointerException if {@code type} is {@code null}.
      */
     Evaluator createEvaluator(InstanceType type);
 
@@ -77,7 +80,7 @@ public interface JsonSchema {
      * 
      * @param propertyName the name of the property.
      * @return the child schema if found , {@code null} otherwise.
-     * @throw NullPointerException if {@code propertyName} is {@code null}.
+     * @throws NullPointerException if {@code propertyName} is {@code null}.
      */
     default JsonSchema findChildSchema(String propertyName) {
         return null;
@@ -111,9 +114,9 @@ public interface JsonSchema {
     void toJson(JsonGenerator generator);
 
     /**
-     * {@inheritDoc}
+     * Returns the string representation of this schema.
      * 
-     * @return the string representation of this schema.
+     * @return the string representation of this schema, never be {@code null}.
      */
     @Override
     String toString();

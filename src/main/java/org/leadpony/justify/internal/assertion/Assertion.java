@@ -33,5 +33,7 @@ public interface Assertion {
     
     AssertionEvaluator createEvaluator();
     
+    Assertion negate();
+    
     void toJson(JsonGenerator generator);
 }

@@ -16,21 +16,23 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.math.BigDecimal;
-
-public class Maximum extends AbstractNumericBoundAssertion {
-
-    public Maximum(BigDecimal bound) {
-        super(bound, "maximum", "instance.problem.maximum");
-    }
+/**
+ * Skeletal implementation of {@link Assertion}.
+ * 
+ * @author leadpony
+ */
+abstract class AbstractAssertion implements Assertion {
+   
+    private AbstractAssertion negated;
     
     @Override
-    protected boolean test(BigDecimal actual, BigDecimal bound) {
-        return actual.compareTo(bound) <= 0;
+    public Assertion negate() {
+        if (this.negated != null) {
+            this.negated =  createNegatedAssertion();
+            this.negated.negated = this;
+        }
+        return this.negated;
     }
-
-    @Override
-    protected AbstractAssertion createNegatedAssertion() {
-        return new ExclusiveMinimum(this.bound);
-    }
+    
+    protected abstract AbstractAssertion createNegatedAssertion();
 }

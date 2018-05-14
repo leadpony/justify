@@ -28,10 +28,14 @@ import javax.json.stream.JsonParser;
  */
 public class JsonParserDecorator implements JsonParser {
     
-    protected final JsonParser real;
+    private final JsonParser real;
     
     public JsonParserDecorator(JsonParser real) {
         this.real = real;
+    }
+    
+    public JsonParser realParser() {
+        return real;
     }
 
     @Override
