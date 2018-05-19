@@ -17,29 +17,28 @@
 package org.leadpony.justify.internal.schema;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Optional;
 
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
+ * Utility class operating on {@link JsonSchema} instances.
+ * 
  * @author leadpony
  */
-public class JsonSchemas {
+public interface JsonSchemas {
     
-    private static final JsonSchema ALWAYS_TRUE = new AbstractJsonSchema() {
+    JsonSchema ALWAYS_TRUE = new AbstractJsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Optional<Evaluator> createEvaluator(InstanceType type) {
             Objects.requireNonNull(type, "type must not be null.");
-            return Evaluator.ALWAYS_TRUE;
+            return Optional.of(Evaluators.ALWAYS_TRUE);
         }
 
         @Override
@@ -49,12 +48,12 @@ public class JsonSchemas {
         }
     };
     
-    private static final JsonSchema ALWAYS_FALSE = new AbstractJsonSchema() {
+    JsonSchema ALWAYS_FALSE = new AbstractJsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Optional<Evaluator> createEvaluator(InstanceType type) {
             Objects.requireNonNull(type, "type must not be null.");
-            return NEGATIVE_EVALUATOR;
+            return Optional.of(Evaluators.ALWAYS_FALSE);
         }
 
         @Override
@@ -64,24 +63,12 @@ public class JsonSchemas {
         }
     };
     
-    private static final Evaluator NEGATIVE_EVALUATOR = new Evaluator() {
- 
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            Problem p = ProblemBuilder.newBuilder()
-                    .withMessage("instance.problem.unknown")
-                    .build();
-            consumer.accept(p);
-            return Result.FALSE;
-        }
-    };
-    
-    private static final JsonSchema EMPTY = new AbstractJsonSchema() {
+    JsonSchema EMPTY = new AbstractJsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Optional<Evaluator> createEvaluator(InstanceType type) {
             Objects.requireNonNull(type, "type must not be null.");
-            return Evaluator.ALWAYS_TRUE;
+            return Optional.of(Evaluators.ALWAYS_TRUE);
         }
 
         @Override
@@ -90,16 +77,4 @@ public class JsonSchemas {
             generator.writeStartObject().writeEnd();
         }
     };
-
-    public static JsonSchema alwaysTrue() {
-        return ALWAYS_TRUE;
-    }
-
-    public static JsonSchema alwaysFalse() {
-        return ALWAYS_FALSE;
-    }
-
-    public static JsonSchema empty() {
-        return EMPTY;
-    }
 }

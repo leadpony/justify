@@ -14,27 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
-
-import javax.json.stream.JsonGenerator;
-
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-
 /**
- * Assertion on JSON instances.
+ * Provides various kinds of Evaluators.
  * 
  * @author leadpony
  */
-public interface Assertion {
-    
-    default boolean canApplyTo(InstanceType type) {
-        return true;
-    }
-    
-    Evaluator createEvaluator();
-    
-    Assertion negate();
-    
-    void toJson(JsonGenerator generator);
-}
+package org.leadpony.justify.internal.evaluator;

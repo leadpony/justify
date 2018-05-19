@@ -82,9 +82,9 @@ public class SchemaLoader {
     private JsonSchema literalSchema(Event event) {
         switch (event) {
         case VALUE_TRUE:
-            return JsonSchemas.alwaysTrue();
+            return JsonSchemas.ALWAYS_TRUE;
         case VALUE_FALSE:
-            return JsonSchemas.alwaysFalse();
+            return JsonSchemas.ALWAYS_FALSE;
         default:
             return null;
         }

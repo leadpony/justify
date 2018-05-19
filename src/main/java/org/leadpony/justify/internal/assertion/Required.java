@@ -24,9 +24,11 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
  * Assertion specified by "required" keyword.
@@ -47,8 +49,8 @@ public class Required extends AbstractAssertion {
     }
 
     @Override
-    public AssertionEvaluator createEvaluator() {
-        return new Evaluator(names);
+    public Evaluator createEvaluator() {
+        return new PropertyEvaluator(names);
     }
 
     @Override
@@ -63,23 +65,23 @@ public class Required extends AbstractAssertion {
         return new NotRequired(names);
     }
 
-    private static class Evaluator implements AssertionEvaluator {
+    private static class PropertyEvaluator implements ShallowEvaluator {
         
         protected final Set<String> remaining;
         
-        private Evaluator(Set<String> required) {
+        private PropertyEvaluator(Set<String> required) {
             this.remaining = new HashSet<>(required);
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
                 return test(consumer, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 return test(consumer, true);
             } else {
-                return Result.CONTINUED;
+                return Result.PENDING;
             }
         }
         
@@ -94,7 +96,7 @@ public class Required extends AbstractAssertion {
                 consumer.accept(p);
                 return Result.FALSE;
             } else {
-                return Result.CONTINUED;
+                return Result.PENDING;
             }
         }
     }
@@ -106,7 +108,7 @@ public class Required extends AbstractAssertion {
         }
 
         @Override
-        public AssertionEvaluator createEvaluator() {
+        public Evaluator createEvaluator() {
             return new NegatedEvaluator(names);
         }
 
@@ -116,7 +118,7 @@ public class Required extends AbstractAssertion {
         }
     }
     
-    private static class NegatedEvaluator extends Evaluator {
+    private static class NegatedEvaluator extends PropertyEvaluator {
         
         private final Set<String> names;
         
@@ -133,7 +135,7 @@ public class Required extends AbstractAssertion {
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 return test(consumer, true);
             } else {
-                return Result.CONTINUED;
+                return Result.PENDING;
             }
         }
 
@@ -149,7 +151,7 @@ public class Required extends AbstractAssertion {
             } else if (last) {
                 return Result.TRUE;
             } else {
-                return Result.CONTINUED;
+                return Result.PENDING;
             }
         }
     }

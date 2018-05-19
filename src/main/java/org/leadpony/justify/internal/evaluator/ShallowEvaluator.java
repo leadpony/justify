@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
+import java.util.function.Consumer;
+
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.Problem;
 
 /**
- * Evaluator of assertions.
- * 
  * @author leadpony
  */
-public interface AssertionEvaluator extends Evaluator {
+public interface ShallowEvaluator extends DefaultEvaluator {
+    
+    @Override
+    default Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        if (depth > 1) {
+            return Result.PENDING;
+        }
+        return evaluateShallow(event, parser, depth, consumer);
+    }
+    
+    Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
 }

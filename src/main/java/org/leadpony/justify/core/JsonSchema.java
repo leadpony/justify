@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.json.stream.JsonGenerator;
 
@@ -73,7 +74,7 @@ public interface JsonSchema {
      * @return the evaluator of this schema.
      * @throws NullPointerException if {@code type} is {@code null}.
      */
-    Evaluator createEvaluator(InstanceType type);
+    Optional<Evaluator> createEvaluator(InstanceType type);
 
     /**
      * Finds child schemas to be applied to the specified property in object.

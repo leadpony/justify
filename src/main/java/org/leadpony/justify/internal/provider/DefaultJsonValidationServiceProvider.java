@@ -48,17 +48,17 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
 
     @Override
     public JsonSchema emptySchema() {
-        return JsonSchemas.empty();
+        return JsonSchemas.EMPTY;
     }
     
     @Override
     public JsonSchema alwaysTrueSchema() {
-        return JsonSchemas.alwaysTrue();
+        return JsonSchemas.ALWAYS_TRUE;
     }
     
     @Override
     public JsonSchema alwaysFalseSchema() {
-        return JsonSchemas.alwaysFalse();
+        return JsonSchemas.ALWAYS_FALSE;
     }
 
     @Override

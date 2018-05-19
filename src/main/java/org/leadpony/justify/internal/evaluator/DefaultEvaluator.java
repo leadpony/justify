@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
+package org.leadpony.justify.internal.evaluator;
 
-import java.util.Collection;
-import java.util.function.BinaryOperator;
+import java.util.Objects;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Boolean logic schema described by "anyOf" keyword.
+ * Evaluator interface with default methods.
  * 
  * @author leadpony
  */
-public class AnyOf extends NaryBooleanLogicSchema {
-
-    public AnyOf(Collection<JsonSchema> subschemas) {
-        super(subschemas);
+@FunctionalInterface
+public interface DefaultEvaluator extends Evaluator {
+    
+    default Evaluator and(Evaluator other) {
+        Objects.requireNonNull(other, "other must not be null.");
+        return ConjunctionEvaluator.of(this, other);
+    }
+    
+    default Evaluator or(Evaluator other) {
+        Objects.requireNonNull(other, "other must not be null.");
+        return InclusiveDisjunctionEvaluator.of(this, other);
     }
 
-    @Override
-    public String name() {
-        return "anyOf";
-    }
-  
-    @Override
-    protected BinaryOperator<Evaluator> accumulator() {
-        return Evaluator::or;
+    default Evaluator xor(Evaluator other) {
+        Objects.requireNonNull(other, "other must not be null.");
+        return ExclusiveDisjunctionEvaluator.of(this, other);
     }
 }

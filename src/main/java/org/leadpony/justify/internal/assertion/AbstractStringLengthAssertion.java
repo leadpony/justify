@@ -47,7 +47,7 @@ abstract class AbstractStringLengthAssertion extends SimpleAssertion {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         String actual = parser.getString();
         int actualLength = actual.codePointCount(0, actual.length());
         if (test(actualLength, this.bound)) {

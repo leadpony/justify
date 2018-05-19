@@ -23,6 +23,8 @@ import javax.json.stream.JsonParser;
 /**
  * Evaluator that applies a JSON schema to a JSON instance.
  * 
+ * <p>This type is not intended for end users.</p>
+ * 
  * @author leadpony
  */
 public interface Evaluator {
@@ -35,8 +37,11 @@ public interface Evaluator {
         TRUE,
         /** Evaluated as false. */
         FALSE,
-        /** Evaluation is continued. */
-        CONTINUED,
+        /** Evaluation is not done yet. */
+        PENDING,
+        /** Evaluation is canceled. */
+        CANCELED
+        ;
     };
     
     /**
@@ -50,13 +55,9 @@ public interface Evaluator {
      */
     Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
 
-    /**
-     * The evaluator that always returns true.
-     */
-    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
+    Evaluator and(Evaluator other);
 
-    /**
-     * The evaluator that always returns false.
-     */
-    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->Result.FALSE;
+    Evaluator or(Evaluator other);
+
+    Evaluator xor(Evaluator other);
 }

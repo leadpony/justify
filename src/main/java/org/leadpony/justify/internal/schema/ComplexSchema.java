@@ -19,15 +19,24 @@ package org.leadpony.justify.internal.schema;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.assertion.Assertion;
+import org.leadpony.justify.internal.base.InstanceTypes;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluator;
 
 /**
- * Object-type JSON schema.
+ * JSON schema with any subschemas, including child schemas.
  * 
  * @author leadpony
  */
@@ -42,12 +51,6 @@ public class ComplexSchema extends SimpleSchema {
         this.properties = builder.properties();
         this.items = builder.items();
         this.subschemas = builder.subschemas();
-    }
-    
-    @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        Objects.requireNonNull(type, "type must not be null.");
-        return ComplexEvaluator.newValuator(type, this);
     }
     
     @Override
@@ -79,6 +82,30 @@ public class ComplexSchema extends SimpleSchema {
     }
 
     @Override
+    protected Optional<Evaluator> createEvaluatorForBranch(InstanceType type) {
+        return combineEvaluators(type).map(evaluator->{
+            if (type == InstanceType.ARRAY) {
+                return new ArrayVisitor(evaluator);
+            } else {
+                return new ObjectVisitor(evaluator);
+            }
+        });
+    }
+    
+    @Override
+    protected Optional<Evaluator> combineEvaluators(InstanceType type) {
+        Stream<Evaluator> asssertionEvaluators = assertions.stream()
+                .filter(a->a.canApplyTo(type))
+                .map(Assertion::createEvaluator);
+        Stream<Evaluator> subschemaEvaluators = subschemas.stream()
+                .map(s->s.createEvaluator(type))
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+        return Stream.concat(asssertionEvaluators, subschemaEvaluators)
+                .reduce(accumulator);
+    }
+    
+    @Override
     protected void appendMembers(JsonGenerator generator) {
         super.appendMembers(generator);
         if (!properties.isEmpty()) {
@@ -95,5 +122,118 @@ public class ComplexSchema extends SimpleSchema {
             generator.writeEnd();
         }
         subschemas.forEach(schema->schema.toJson(generator));
-    }    
+    }
+    
+    private abstract class Visitor implements DefaultEvaluator {
+        
+        private final DefaultEvaluator pendingEvaluator;
+        private Result pendingResult = Result.PENDING;
+        protected Evaluator evaluator;
+        
+        Visitor(Evaluator evaluator) {
+            this.pendingEvaluator = (event, parser, depth, consumer)->{
+                return this.pendingResult;
+            };
+            this.evaluator = accumulator.apply(evaluator, this.pendingEvaluator);
+        }
+
+        @Override
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+            boolean continued = canContinue(event, depth);
+            if (!continued) {
+                this.pendingResult = Result.CANCELED;
+            }
+            if (depth == 1) {
+                Evaluator child = findChild(event, parser);
+                if (child != null) {
+                    appendChild(child);
+                }
+            }
+            Result result = evaluator.evaluate(event, parser, depth, consumer);
+            if (continued || (result == Result.TRUE || result == Result.FALSE)) {
+                return result;
+            } else {
+                return Result.TRUE;
+            }
+        }
+        
+        protected abstract Evaluator findChild(Event event, JsonParser parser);
+
+        protected abstract boolean canContinue(Event event, int depth);
+        
+        private void appendChild(Evaluator child) {
+            DefaultEvaluator wrapper = (event, parser, depth, consumer)->{
+                if (depth > 0) {
+                    return child.evaluate(event, parser, depth - 1, consumer);
+                }
+                return Result.PENDING;
+            };
+            this.evaluator = accumulator.apply(this.evaluator, wrapper);
+        }
+    }
+    
+    private class ArrayVisitor extends Visitor {
+
+        private int itemIndex;
+
+        ArrayVisitor(Evaluator evaluator) {
+            super(evaluator);
+        }
+        
+        @Override
+        protected Evaluator findChild(Event event, JsonParser parser) {
+            switch (event) {
+            case END_ARRAY:
+            case END_OBJECT:
+                break;
+            default:
+                InstanceType type = InstanceTypes.fromEvent(event, parser); 
+                JsonSchema schema = findChildSchema(itemIndex++);
+                if (schema != null) {
+                    return schema.createEvaluator(type).orElse(null);
+                }
+                break;
+            }
+            return null;
+        }
+        
+        @Override
+        protected boolean canContinue(Event event, int depth) {
+            return depth > 0 || event != Event.END_ARRAY;
+        }
+    }
+    
+    private class ObjectVisitor extends Visitor {
+
+        private String propertyName;
+
+        ObjectVisitor(Evaluator evaluator) {
+            super(evaluator);
+        }
+
+        @Override
+        protected Evaluator findChild(Event event, JsonParser parser) {
+            switch (event) {
+            case KEY_NAME:
+                propertyName = parser.getString();
+                break;
+            case END_ARRAY:
+            case END_OBJECT:
+                break;
+            default:
+                InstanceType type = InstanceTypes.fromEvent(event, parser); 
+                JsonSchema schema = findChildSchema(propertyName);
+                if (schema != null) {
+                    return schema.createEvaluator(type).orElse(null);
+                }
+                break;
+            }
+            return null;
+        }
+
+        @Override
+        protected boolean canContinue(Event event, int depth) {
+            return depth > 0 || event != Event.END_OBJECT;
+        }
+    }
 }

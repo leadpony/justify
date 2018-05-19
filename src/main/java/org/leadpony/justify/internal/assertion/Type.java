@@ -43,12 +43,12 @@ public class Type extends SimpleAssertion {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
             return testType(type, consumer);
         } else {
-            return Result.CONTINUED;
+            return Result.TRUE;
         }
     }
   

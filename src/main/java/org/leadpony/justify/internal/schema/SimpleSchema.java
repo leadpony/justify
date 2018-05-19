@@ -18,12 +18,17 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BinaryOperator;
 
 import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.assertion.Assertion;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluator;
 
 /**
  * JSON Schema without any subschemas.
@@ -35,16 +40,23 @@ public class SimpleSchema extends AbstractJsonSchema {
     protected final String title;
     protected final String description;
     protected final List<Assertion> assertions;
+    protected final BinaryOperator<Evaluator> accumulator;
     
     SimpleSchema(DefaultSchemaBuilder builder) {
         this.title = builder.title();
         this.description = builder.description();
         this.assertions = builder.assertions();
+        this.accumulator = Evaluator::and;
     }
     
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        return new SimpleEvaluator(type, this);
+    public Optional<Evaluator> createEvaluator(InstanceType type) {
+        Objects.requireNonNull(type, "type must not be null.");
+        if (type.isContainer()) {
+            return createEvaluatorForBranch(type);
+        } else {
+            return createEvaluatorForLeaf(type);
+        }
     }
 
     @Override
@@ -59,6 +71,38 @@ public class SimpleSchema extends AbstractJsonSchema {
         return assertions;
     }
     
+    protected Optional<Evaluator> createEvaluatorForBranch(InstanceType type) {
+        return combineEvaluators(type).map(evaluator->{
+            DefaultEvaluator wrapper= (event, parser, depth, consumer)->{
+                Result result = evaluator.evaluate(event, parser, depth, consumer);
+                if (depth == 0 && (event == Event.END_ARRAY || event == Event.END_OBJECT)) {
+                    if (result == Result.PENDING) {
+                        result = Result.TRUE;
+                    }
+                }
+                return result;
+            };
+            return wrapper;
+        });
+    }
+    
+    protected Optional<Evaluator> createEvaluatorForLeaf(InstanceType type) {
+        return combineEvaluators(type).map(evaluator->{
+            DefaultEvaluator wrapper =  (event, parser, depth, consumer)->{
+                Result result = evaluator.evaluate(event, parser, depth, consumer);
+                return (result == Result.PENDING) ? Result.TRUE : result;
+            };
+            return wrapper;
+        });
+    }
+    
+    protected Optional<Evaluator> combineEvaluators(InstanceType type) {
+        return assertions.stream()
+               .filter(a->a.canApplyTo(type))
+               .map(Assertion::createEvaluator)
+               .reduce(accumulator);
+    }
+
     protected void appendMembers(JsonGenerator generator) {
         if (this.title != null) {
             generator.write("title", this.title);

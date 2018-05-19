@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.validator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
@@ -39,22 +41,24 @@ import org.leadpony.justify.internal.base.JsonParserDecorator;
 class ValidatingJsonParser extends JsonParserDecorator 
     implements ValidationResult, Consumer<Problem> {
     
+    private BiConsumer<Event, JsonParser> eventHandler;
     private final JsonSchema rootSchema;
+    private Optional<Evaluator> evaluator;
     private int depth;
-    private Evaluator evaluator;
 
     private final List<Problem> problems = new ArrayList<>();
     
     ValidatingJsonParser(JsonParser real, JsonSchema rootSchema) {
         super(real);
         this.rootSchema = rootSchema;
+        this.eventHandler = this::handleEventFirst;
     }
  
     @Override
     public Event next() {
         JsonParser parser = realParser();
         Event event = parser.next();
-        evaluateRoot(event, parser);
+        eventHandler.accept(event, parser);
         return event;
     }
   
@@ -74,21 +78,20 @@ class ValidatingJsonParser extends JsonParserDecorator
         return Collections.unmodifiableList(problems);
     }
 
-    private void evaluateRoot(Event event, JsonParser parser) {
-        if (evaluator == null) {
-            evaluator = createRootEvaluator(event, parser);
-        }
+    private void handleEventFirst(Event event, JsonParser parser) {
+        InstanceType type = InstanceTypes.fromEvent(event, parser);
+        this.evaluator = rootSchema.createEvaluator(type);
+        this.eventHandler = this::handleEvent;
+        handleEvent(event, parser);
+    }
+
+    private void handleEvent(Event event, JsonParser parser) {
         if (event == Event.END_ARRAY || event == Event.END_OBJECT) {
             --depth;
         }
-        evaluator.evaluate(event, parser, depth, this);
+        evaluator.ifPresent(e->e.evaluate(event, parser, depth, this));
         if (event == Event.START_ARRAY || event == Event.START_OBJECT) {
             ++depth;
         }
-    }
-    
-    private Evaluator createRootEvaluator(Event event, JsonParser parser) {
-        InstanceType type = InstanceTypes.fromEvent(event, parser);
-        return rootSchema.createEvaluator(type);
     }
 }

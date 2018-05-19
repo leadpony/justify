@@ -17,21 +17,14 @@
 package org.leadpony.justify.internal.schema;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Consumer;
-
-import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import java.util.function.BinaryOperator;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
 
 /**
+ * Boolean logic schema described by "allOf" keyword.
+ * 
  * @author leadpony
  */
 public class AllOf extends NaryBooleanLogicSchema {
@@ -41,41 +34,12 @@ public class AllOf extends NaryBooleanLogicSchema {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        return new ConjunctionEvaluator(type, subschemas());
+    public String name() {
+        return "allOf";
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        super.toJson(generator, "allOf");
-    }
-    
-    private static class ConjunctionEvaluator implements Evaluator {
-        
-        private final List<Evaluator> running;
-        private Result finalResult = Result.TRUE;
-        
-        private ConjunctionEvaluator(InstanceType type, List<JsonSchema> subschemas) {
-            this.running = new LinkedList<>();
-            for (JsonSchema schema : subschemas) {
-                this.running.add(schema.createEvaluator(type));
-            }
-        }
-
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            Iterator<Evaluator> it = running.iterator();
-            while (it.hasNext()) {
-                Evaluator evaluator = it.next();
-                Result result = evaluator.evaluate(event, parser, depth, consumer);
-                if (result != Result.CONTINUED) {
-                    it.remove();
-                    if (result == Result.FALSE) {
-                        this.finalResult = Result.FALSE;
-                    }
-                }
-            }
-            return running.isEmpty() ? this.finalResult : Result.CONTINUED;
-        }
+    protected BinaryOperator<Evaluator> accumulator() {
+        return Evaluator::and;
     }
 }

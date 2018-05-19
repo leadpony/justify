@@ -17,7 +17,16 @@
 package org.leadpony.justify.internal.schema;
 
 /**
+ * Boolean logic schema representing "allOf", "anyOf", "oneOf" and "not".
+ * 
  * @author leadpony
  */
 public abstract class BooleanLogicSchema extends AbstractJsonSchema {
+    
+    /**
+     * Returns the name of the boolean logic.
+     * 
+     * @return the name of the boolean logic.
+     */
+    public abstract String name();
 }

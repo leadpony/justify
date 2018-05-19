@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.internal.evaluator;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
  * @author leadpony
  */
-public abstract class SimpleAssertion extends AbstractAssertion implements ShallowEvaluator {
+abstract class LogicalEvaluator implements DefaultEvaluator {
 
-    @Override
-    public Evaluator createEvaluator() {
+    protected final List<Evaluator> evaluators;
+    
+    protected LogicalEvaluator(Evaluator first, Evaluator second) {
+        this.evaluators = new LinkedList<>();
+        append(first).append(second);
+    }
+    
+    protected LogicalEvaluator append(Evaluator evaluator) {
+        if (evaluator.getClass() == this.getClass()) {
+            LogicalEvaluator logical = (LogicalEvaluator)evaluator;
+            this.evaluators.addAll(logical.evaluators);
+        } else {
+            this.evaluators.add(evaluator);
+        }
         return this;
     }
 }

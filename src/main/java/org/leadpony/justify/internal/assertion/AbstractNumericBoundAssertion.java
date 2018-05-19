@@ -48,7 +48,7 @@ abstract class AbstractNumericBoundAssertion extends SimpleAssertion {
     }
    
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         BigDecimal actual = parser.getBigDecimal();
         if (test(actual, this.bound)) {
             return Result.TRUE;
