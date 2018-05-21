@@ -134,6 +134,9 @@ public class SchemaLoader {
         case "oneOf":
             appendOneOf(builder);
             break;
+        case "not":
+            appendNot(builder);
+            break;
         }
     }
     
@@ -252,8 +255,25 @@ public class SchemaLoader {
         builder.withOneOf(subschemaArray());
     }
 
+    private void appendNot(JsonSchemaBuilder builder) {
+        builder.withNot(subschema());
+    }
+
     private static InstanceType findType(String name) {
         return InstanceType.valueOf(name.toUpperCase());
+    }
+    
+    private JsonSchema subschema() {
+        Event event = parser.next();
+        switch (event) {
+        case START_OBJECT:
+            return objectSchema();
+        case VALUE_TRUE:
+        case VALUE_FALSE:
+            return literalSchema(event);
+        default:
+            return null;
+        }
     }
     
     private List<JsonSchema> subschemaArray() {

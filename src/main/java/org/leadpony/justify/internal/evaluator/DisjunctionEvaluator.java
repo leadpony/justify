@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 
@@ -31,12 +34,12 @@ import org.leadpony.justify.core.Problem;
  */
 abstract class DisjunctionEvaluator extends LogicalEvaluator implements Consumer<Problem> {
 
-    protected List<Evaluator> failed;
     protected Evaluator currentEvaluator;
     private Map<Evaluator, List<Problem>> problemMap;
+    protected int numberOfTrues;
     
-    protected DisjunctionEvaluator(Evaluator first, Evaluator second) {
-        super(first, second);
+    protected DisjunctionEvaluator(LogicalCombiner combiner) {
+        super(combiner);
     }
     
     @Override
@@ -44,8 +47,15 @@ abstract class DisjunctionEvaluator extends LogicalEvaluator implements Consumer
         addProblem(this.currentEvaluator, problem);
     }
     
-    protected Result deliverProblems(Consumer<Problem> consumer) {
-        if (problemMap == null || problemMap.isEmpty()) {
+    @Override
+    protected Result evaluate(Evaluator evaluator, Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        this.currentEvaluator = evaluator;
+        return evaluator.evaluate(event, parser, depth, this);
+    }
+    
+    @Override
+    protected Result getFinalResult(Consumer<Problem> consumer) {
+        if (numberOfTrues > 0 || problemMap == null || problemMap.isEmpty()) {
             return Result.TRUE;
         }
         List<Evaluator> failed = new ArrayList<>(problemMap.keySet());

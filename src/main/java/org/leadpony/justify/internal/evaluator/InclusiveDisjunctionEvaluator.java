@@ -16,57 +16,55 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import java.util.Optional;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
 class InclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     
-    private InclusiveDisjunctionEvaluator(Evaluator first, Evaluator second) {
-        super(first, second);
-    }
-    
-    static Evaluator of(Evaluator first, Evaluator second) {
-        if (first == Evaluators.ALWAYS_TRUE) {
-            return Evaluators.ALWAYS_TRUE;
-        } else if (second == Evaluators.ALWAYS_TRUE) {
-            return Evaluators.ALWAYS_TRUE;
-        } else {
-            return new InclusiveDisjunctionEvaluator(first, second);
-        }
+    private InclusiveDisjunctionEvaluator(Combiner combiner) {
+        super(combiner);
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        Iterator<Evaluator> it = evaluators.iterator();
-        while (it.hasNext()) {
-            Evaluator evaluator = it.next();
-            Result result = evaluator.evaluate(event, parser, depth, this);
-            if (result != Result.PENDING) {
-                it.remove();
-                if (result == Result.TRUE) {
-                    return Result.TRUE;
-                }
+    protected boolean accumulateResult(Result result) {
+        if (result == Result.TRUE) {
+            this.numberOfTrues++;
+        }
+        return (this.numberOfTrues == 0);
+    }
+    
+    static class Combiner extends LogicalCombiner {
+        
+        private boolean containsAlwaysTrue;
+        
+        @Override
+        public Combiner append(Evaluator evaluator) {
+            if (containsAlwaysTrue) {
+                return this;
+            } else if (evaluator == Evaluators.ALWAYS_TRUE) {
+                this.containsAlwaysTrue = true;
+                return this;
+            }
+            super.append(evaluator);
+            return this;
+        }
+        
+        @Override
+        public Optional<Evaluator> getCombined() {
+            if (this.containsAlwaysTrue) {
+                return Optional.of(Evaluators.ALWAYS_TRUE);
+            } else {
+                return super.getCombined();
             }
         }
-        return evaluators.isEmpty() ? deliverProblems(consumer) : Result.PENDING;
-    }
-    
-    @Override
-    public Evaluator or(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        if (other == Evaluators.ALWAYS_TRUE) {
-            return Evaluators.ALWAYS_TRUE;
+
+        @Override
+        public AppendableEvaluator getAppendable() {
+            return new InclusiveDisjunctionEvaluator(this);
         }
-        return append(other);
     }
 }

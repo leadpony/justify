@@ -17,10 +17,10 @@
 package org.leadpony.justify.internal.schema;
 
 import java.util.Collection;
-import java.util.function.BinaryOperator;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.evaluator.Combiner;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Boolean logic schema described by "anyOf" keyword.
@@ -39,7 +39,12 @@ public class AnyOf extends NaryBooleanLogicSchema {
     }
   
     @Override
-    protected BinaryOperator<Evaluator> accumulator() {
-        return Evaluator::or;
+    protected NaryBooleanLogicSchema createNegatedSchema() {
+        return new AllOf(JsonSchemas.negateAll(subschemas()));
+    }
+  
+    @Override
+    protected Combiner createCombiner() {
+        return Evaluators.newInclusiveDisjunctionCombiner();
     }
 }

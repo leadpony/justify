@@ -16,30 +16,19 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Objects;
-
-import org.leadpony.justify.core.Evaluator;
+import javax.json.stream.JsonParser.Event;
 
 /**
- * Evaluator interface with default methods.
- * 
+ * End condition of evaluator.
+ *  
  * @author leadpony
  */
 @FunctionalInterface
-public interface DefaultEvaluator extends Evaluator {
+public interface EndCondition {
     
-    default Evaluator and(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        return ConjunctionEvaluator.of(this, other);
-    }
+    static EndCondition DEFAULT = (event, depth, empty)->empty;
+ 
+    static EndCondition IMMEDIATE = (event, depth, empty)->true;
     
-    default Evaluator or(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        return InclusiveDisjunctionEvaluator.of(this, other);
-    }
-
-    default Evaluator xor(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        return ExclusiveDisjunctionEvaluator.of(this, other);
-    }
+    boolean test(Event event, int depth, boolean empty);
 }

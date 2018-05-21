@@ -16,12 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
-
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
@@ -31,44 +26,38 @@ import org.leadpony.justify.core.Problem;
  */
 class ConjunctionEvaluator extends LogicalEvaluator {
     
-    private Result finalResult = Result.TRUE;
+    private int numberOfFalses;
     
-    private ConjunctionEvaluator(Evaluator first, Evaluator second) {
-        super(first, second);
+    private ConjunctionEvaluator(Combiner combiner) {
+        super(combiner);
     }
 
-    static Evaluator of(Evaluator first, Evaluator second) {
-        if (first == Evaluators.ALWAYS_TRUE) {
-            return second;
-        } else if (second == Evaluators.ALWAYS_TRUE) {
-            return first;
-        } else {
-            return new ConjunctionEvaluator(first, second);
+    @Override
+    protected boolean accumulateResult(Result result) {
+        if (result == Result.FALSE) {
+            this.numberOfFalses++;
         }
+        return true;
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        Iterator<Evaluator> it = evaluators.iterator();
-        while (it.hasNext()) {
-            Evaluator evaluator = it.next();
-            Result result = evaluator.evaluate(event, parser, depth, consumer);
-            if (result != Result.PENDING) {
-                it.remove();
-                if (result == Result.FALSE) {
-                    this.finalResult = Result.FALSE;
-                }
+    protected Result getFinalResult(Consumer<Problem> consumer) {
+        return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
+    }
+    
+    static class Combiner extends LogicalCombiner {
+
+        @Override
+        public Combiner append(Evaluator evaluator) {
+            if (evaluator != Evaluators.ALWAYS_TRUE) {
+                super.append(evaluator);
             }
+            return this;
         }
-        return evaluators.isEmpty() ? this.finalResult : Result.PENDING;
-    }
-    
-    @Override
-    public Evaluator and(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        if (other != Evaluators.ALWAYS_TRUE) {
-            append(other);
+
+        @Override
+        public AppendableEvaluator getAppendable() {
+            return new ConjunctionEvaluator(this); 
         }
-        return this;
     }
 }

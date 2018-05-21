@@ -16,14 +16,8 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
-
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
@@ -32,55 +26,41 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  */
 class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     
-    private int numberOfTrueEvaluations;
-    
-    private ExclusiveDisjunctionEvaluator(Evaluator first, Evaluator second) {
-        super(first, second);
-    }
-    
-    static Evaluator of(Evaluator first, Evaluator second) {
-        return new ExclusiveDisjunctionEvaluator(first, second);
+    private ExclusiveDisjunctionEvaluator(Combiner combiner) {
+        super(combiner);
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        Iterator<Evaluator> it = evaluators.iterator();
-        while (it.hasNext()) {
-            Evaluator evaluator = it.next();
-            Result result = evaluator.evaluate(event, parser, depth, this);
-            if (result != Result.PENDING) {
-                it.remove();
-                if (result == Result.TRUE) {
-                    if (++numberOfTrueEvaluations > 1) {
-                        return tooManyTrueEvaluations(consumer);
-                    }
-                }
-            }
+    protected boolean accumulateResult(Result result) {
+        if (result == Result.TRUE) {
+            this.numberOfTrues++;
         }
-        return evaluators.isEmpty() ? deliverProblems(consumer) : Result.PENDING;
-    }
-    
-    @Override
-    public Evaluator xor(Evaluator other) {
-        Objects.requireNonNull(other, "other must not be null.");
-        return append(other);
+        return (this.numberOfTrues <= 1);
     }
 
     @Override
-    protected Result deliverProblems(Consumer<Problem> consumer) {
-        if (numberOfTrueEvaluations == 1) {
-            return Result.TRUE;
+    protected Result getFinalResult(Consumer<Problem> consumer) {
+        if (this.numberOfTrues > 1) {
+            return tooManyTrueEvaluations(consumer);
         } else {
-            return super.deliverProblems(consumer);
+            return super.getFinalResult(consumer);
         }
     }
     
     private Result tooManyTrueEvaluations(Consumer<Problem> consumer) {
         Problem p = ProblemBuilder.newBuilder()
                 .withMessage("instance.problem.one.of")
-                .withParameter("actual", numberOfTrueEvaluations)
+                .withParameter("actual", numberOfTrues)
                 .build();
         consumer.accept(p);
         return Result.FALSE;
+    }
+
+    static class Combiner extends LogicalCombiner {
+
+        @Override
+        public AppendableEvaluator getAppendable() {
+            return new ExclusiveDisjunctionEvaluator(this);
+        }
     }
 }

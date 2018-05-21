@@ -106,6 +106,8 @@ public interface JsonSchema {
         return Collections.emptyList();
     }
     
+    JsonSchema negate();
+    
     /**
      * Generates a JSON representation of this schema.
      * 

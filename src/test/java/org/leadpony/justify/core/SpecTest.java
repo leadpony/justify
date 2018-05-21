@@ -16,19 +16,23 @@
 
 package org.leadpony.justify.core;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
+ * Test suite provided by json-schema.org.
+ * 
  * @author leadpony
- *
  */
 @RunWith(Parameterized.class)
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
+            "/spec/tests/draft7/not.json",
+
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
             "/spec/tests/draft7/exclusiveMaximum.json",
@@ -48,6 +52,7 @@ public class SpecTest extends AbstractSpecTest {
     
     @Before
     public void setUp() {
+        //Assume.assumeTrue(testIndex == 8);
     }
 
     @Parameters(name = "{0}@{1}: {2}")

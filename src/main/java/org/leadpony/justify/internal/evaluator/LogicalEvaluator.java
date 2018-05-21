@@ -16,30 +16,64 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
-abstract class LogicalEvaluator implements DefaultEvaluator {
+abstract class LogicalEvaluator implements AppendableEvaluator {
 
-    protected final List<Evaluator> evaluators;
+    private final List<Evaluator> evaluators;
+    private final EndCondition endCondition;
     
-    protected LogicalEvaluator(Evaluator first, Evaluator second) {
-        this.evaluators = new LinkedList<>();
-        append(first).append(second);
+    protected LogicalEvaluator(LogicalCombiner combiner) {
+        this.evaluators = combiner.evaluators();
+        this.endCondition = combiner.endCondition();
     }
     
-    protected LogicalEvaluator append(Evaluator evaluator) {
-        if (evaluator.getClass() == this.getClass()) {
-            LogicalEvaluator logical = (LogicalEvaluator)evaluator;
-            this.evaluators.addAll(logical.evaluators);
-        } else {
-            this.evaluators.add(evaluator);
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        Iterator<Evaluator> it = evaluators.iterator();
+        while (it.hasNext()) {
+            Evaluator evaluator = it.next();
+            Result result = evaluate(evaluator, event, parser, depth, consumer);
+            if (result != Result.PENDING) {
+                it.remove();
+                if (!accumulateResult(result)) {
+                    return getFinalResult(consumer);
+                }
+            }
         }
-        return this;
+        return hasCompleted(event, depth) ?
+                getFinalResult(consumer) : Result.PENDING;
     }
+    
+    @Override
+    public void append(Evaluator other) {
+        this.evaluators.add(other);
+    }
+    
+    protected Result evaluate(Evaluator evaluator, Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        return evaluator.evaluate(event, parser, depth, consumer);
+    }
+    
+    protected boolean isEmpty() {
+        return evaluators.isEmpty();
+    }
+    
+    protected boolean hasCompleted(Event event, int depth) {
+        return endCondition.test(event, depth, isEmpty());
+    }
+    
+    protected abstract boolean accumulateResult(Result result);
+    
+    protected abstract Result getFinalResult(Consumer<Problem> consumer);
 }

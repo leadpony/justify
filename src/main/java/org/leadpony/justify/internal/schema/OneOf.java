@@ -17,10 +17,10 @@
 package org.leadpony.justify.internal.schema;
 
 import java.util.Collection;
-import java.util.function.BinaryOperator;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.evaluator.Combiner;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Boolean logic schema described by "oneOf" keyword.
@@ -39,7 +39,12 @@ public class OneOf extends NaryBooleanLogicSchema {
     }
 
     @Override
-    protected BinaryOperator<Evaluator> accumulator() {
-        return Evaluator::xor;
+    protected NaryBooleanLogicSchema createNegatedSchema() {
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    @Override
+    protected Combiner createCombiner() {
+        return Evaluators.newExclusiveDisjunctionCombiner();
     }
 }

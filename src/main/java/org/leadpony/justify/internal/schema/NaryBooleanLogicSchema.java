@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BinaryOperator;
 
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.evaluator.Combiner;
 
 /**
  * N-ary boolean logic schema.
@@ -43,11 +43,13 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
 
     @Override
     public Optional<Evaluator> createEvaluator(InstanceType type) {
-        return this.subschemas.stream()
+        Combiner combiner = createCombiner();
+        this.subschemas.stream()
                 .map(s->s.createEvaluator(type))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .reduce(accumulator());
+                .forEach(combiner::append);
+        return combiner.getCombined();
     }
 
     @Override
@@ -63,5 +65,5 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
         generator.writeEnd();
     }
     
-    protected abstract BinaryOperator<Evaluator> accumulator();
+    protected abstract Combiner createCombiner();
 }

@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.internal.evaluator;
+
+import java.util.Optional;
+
+import org.leadpony.justify.core.Evaluator;
 
 /**
- * Skeletal implementation of {@link Assertion}.
- * 
  * @author leadpony
  */
-abstract class AbstractAssertion implements Assertion {
-   
-    private AbstractAssertion negated;
+public interface Combiner {
     
-    @Override
-    public Assertion negate() {
-        if (this.negated == null) {
-            this.negated =  createNegatedAssertion();
-            this.negated.negated = this;
-        }
-        return this.negated;
-    }
+    Combiner append(Evaluator evaluator);
     
-    protected abstract AbstractAssertion createNegatedAssertion();
+    Combiner withEndCondition(EndCondition condition);
+
+    Optional<Evaluator> getCombined();
+    
+    AppendableEvaluator getAppendable();
 }

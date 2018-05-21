@@ -179,4 +179,13 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withOneOf(JsonSchema... subschemas);
 
     JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas);
+
+    /**
+     * Appends "not" boolean logic schema.
+     * 
+     * @param subschema the subschema of the schema to append, cannot be {@code null}.
+     * @return this builder.
+     * @throws NullPointerException one of parameters was {@code null}.
+     */
+    JsonSchemaBuilder withNot(JsonSchema subschema);
 }

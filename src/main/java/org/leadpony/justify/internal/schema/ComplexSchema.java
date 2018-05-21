@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +36,8 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.base.InstanceTypes;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluator;
+import org.leadpony.justify.internal.evaluator.AppendableEvaluator;
+import org.leadpony.justify.internal.evaluator.Combiner;
 
 /**
  * JSON schema with any subschemas, including child schemas.
@@ -42,15 +46,27 @@ import org.leadpony.justify.internal.evaluator.DefaultEvaluator;
  */
 public class ComplexSchema extends SimpleSchema {
     
-    private final Map<String, JsonSchema> properties;
-    private final List<JsonSchema> items;
-    private final List<JsonSchema> subschemas;
+    protected final Map<String, JsonSchema> properties;
+    protected final List<JsonSchema> items;
+    protected final List<JsonSchema> subschemas;
     
     ComplexSchema(DefaultSchemaBuilder builder) {
         super(builder);
         this.properties = builder.properties();
         this.items = builder.items();
         this.subschemas = builder.subschemas();
+    }
+
+    /**
+     * Copy constructor.
+     * 
+     * @param original the original schema.
+     */
+    protected ComplexSchema(ComplexSchema original) {
+        super(original);
+        this.properties = new HashMap<>(original.properties);
+        this.items = new ArrayList<>(original.items);
+        this.subschemas = new ArrayList<>(original.subschemas);
     }
     
     @Override
@@ -70,30 +86,34 @@ public class ComplexSchema extends SimpleSchema {
     
     @Override
     public List<JsonSchema> subschemas() {
-        return subschemas;
+        return Collections.unmodifiableList(subschemas);
     }
-
+    
     @Override
     public void toJson(JsonGenerator generator) {
         Objects.requireNonNull(generator, "generator must not be null.");
         generator.writeStartObject();
-        appendMembers(generator);
+        appendJsonMembers(generator);
         generator.writeEnd();
     }
 
     @Override
     protected Optional<Evaluator> createEvaluatorForBranch(InstanceType type) {
-        return combineEvaluators(type).map(evaluator->{
-            if (type == InstanceType.ARRAY) {
-                return new ArrayVisitor(evaluator);
-            } else {
-                return new ObjectVisitor(evaluator);
-            }
-        });
-    }
+        Combiner combiner = createCombiner();
+        combineEvaluators(type, combiner);
+        combiner.withEndCondition((event, depth, empty)->
+            (depth == 0 && (event == Event.END_ARRAY || event == Event.END_OBJECT))
+        );
+        AppendableEvaluator appendable = combiner.getAppendable();
+        return Optional.of( 
+                (type == InstanceType.ARRAY) ?
+                    new ArrayVisitor(appendable) :
+                    new ObjectVisitor(appendable)
+               );
+        }
     
     @Override
-    protected Optional<Evaluator> combineEvaluators(InstanceType type) {
+    protected void combineEvaluators(InstanceType type, Combiner combiner) {
         Stream<Evaluator> asssertionEvaluators = assertions.stream()
                 .filter(a->a.canApplyTo(type))
                 .map(Assertion::createEvaluator);
@@ -101,13 +121,27 @@ public class ComplexSchema extends SimpleSchema {
                 .map(s->s.createEvaluator(type))
                 .filter(Optional::isPresent)
                 .map(Optional::get);
-        return Stream.concat(asssertionEvaluators, subschemaEvaluators)
-                .reduce(accumulator);
+        Stream.concat(asssertionEvaluators, subschemaEvaluators)
+                .forEach(combiner::append);
+    }
+   
+    @Override
+    protected AbstractJsonSchema createNegatedSchema() {
+        return new ComplexSchema(this).negateSelf();
     }
     
     @Override
-    protected void appendMembers(JsonGenerator generator) {
-        super.appendMembers(generator);
+    protected ComplexSchema negateSelf() {
+        super.negateSelf();
+        this.properties.replaceAll((k, v)->v.negate());
+        this.items.replaceAll(JsonSchema::negate);
+        this.subschemas.replaceAll(JsonSchema::negate);
+        return this;
+    }
+    
+    @Override
+    protected void appendJsonMembers(JsonGenerator generator) {
+        super.appendJsonMembers(generator);
         if (!properties.isEmpty()) {
             generator.writeStartObject("properties");
             this.properties.forEach((name, schema)->{
@@ -123,52 +157,39 @@ public class ComplexSchema extends SimpleSchema {
         }
         subschemas.forEach(schema->schema.toJson(generator));
     }
-    
-    private abstract class Visitor implements DefaultEvaluator {
+ 
+    private abstract class Visitor implements Evaluator {
         
-        private final DefaultEvaluator pendingEvaluator;
-        private Result pendingResult = Result.PENDING;
-        protected Evaluator evaluator;
+        private AppendableEvaluator evaluator;
+        private Evaluator child;
         
-        Visitor(Evaluator evaluator) {
-            this.pendingEvaluator = (event, parser, depth, consumer)->{
-                return this.pendingResult;
-            };
-            this.evaluator = accumulator.apply(evaluator, this.pendingEvaluator);
+        Visitor(AppendableEvaluator evaluator) {
+            this.evaluator = evaluator;
         }
 
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            boolean continued = canContinue(event, depth);
-            if (!continued) {
-                this.pendingResult = Result.CANCELED;
-            }
             if (depth == 1) {
-                Evaluator child = findChild(event, parser);
-                if (child != null) {
-                    appendChild(child);
-                }
+                update(event, parser);
             }
-            Result result = evaluator.evaluate(event, parser, depth, consumer);
-            if (continued || (result == Result.TRUE || result == Result.FALSE)) {
-                return result;
-            } else {
-                return Result.TRUE;
-            }
+            return evaluator.evaluate(event, parser, depth, consumer);
         }
         
-        protected abstract Evaluator findChild(Event event, JsonParser parser);
+        protected abstract void update(Event event, JsonParser parser);
 
-        protected abstract boolean canContinue(Event event, int depth);
+        private Result evaluateChild(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+            return child.evaluate(event, parser, depth - 1, consumer);
+        }
+   
+        protected void appendChild(Optional<Evaluator> child) {
+            child.ifPresent(c->{
+                this.child = c;
+                this.evaluator.append(this::evaluateChild);
+            });
+        }
         
-        private void appendChild(Evaluator child) {
-            DefaultEvaluator wrapper = (event, parser, depth, consumer)->{
-                if (depth > 0) {
-                    return child.evaluate(event, parser, depth - 1, consumer);
-                }
-                return Result.PENDING;
-            };
-            this.evaluator = accumulator.apply(this.evaluator, wrapper);
+        protected void clearChild() {
+            this.child = null;
         }
     }
     
@@ -176,30 +197,25 @@ public class ComplexSchema extends SimpleSchema {
 
         private int itemIndex;
 
-        ArrayVisitor(Evaluator evaluator) {
+        ArrayVisitor(AppendableEvaluator evaluator) {
             super(evaluator);
         }
         
         @Override
-        protected Evaluator findChild(Event event, JsonParser parser) {
+        protected void update(Event event, JsonParser parser) {
             switch (event) {
             case END_ARRAY:
             case END_OBJECT:
                 break;
             default:
+                clearChild();
                 InstanceType type = InstanceTypes.fromEvent(event, parser); 
                 JsonSchema schema = findChildSchema(itemIndex++);
                 if (schema != null) {
-                    return schema.createEvaluator(type).orElse(null);
+                    appendChild(schema.createEvaluator(type));
                 }
                 break;
             }
-            return null;
-        }
-        
-        @Override
-        protected boolean canContinue(Event event, int depth) {
-            return depth > 0 || event != Event.END_ARRAY;
         }
     }
     
@@ -207,15 +223,16 @@ public class ComplexSchema extends SimpleSchema {
 
         private String propertyName;
 
-        ObjectVisitor(Evaluator evaluator) {
+        ObjectVisitor(AppendableEvaluator evaluator) {
             super(evaluator);
         }
 
         @Override
-        protected Evaluator findChild(Event event, JsonParser parser) {
+        protected void update(Event event, JsonParser parser) {
             switch (event) {
             case KEY_NAME:
                 propertyName = parser.getString();
+                clearChild();
                 break;
             case END_ARRAY:
             case END_OBJECT:
@@ -224,16 +241,10 @@ public class ComplexSchema extends SimpleSchema {
                 InstanceType type = InstanceTypes.fromEvent(event, parser); 
                 JsonSchema schema = findChildSchema(propertyName);
                 if (schema != null) {
-                    return schema.createEvaluator(type).orElse(null);
+                    appendChild(schema.createEvaluator(type));
                 }
                 break;
             }
-            return null;
-        }
-
-        @Override
-        protected boolean canContinue(Event event, int depth) {
-            return depth > 0 || event != Event.END_OBJECT;
         }
     }
 }

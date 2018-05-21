@@ -76,14 +76,14 @@ public abstract class AbstractSpecTest {
             return lastSchema;
         }
         StringReader reader = new StringReader(object.toString());
-        // caches for future use.
+        // Caches loaded schema for future use.
         lastObject = object;
         lastSchema = JsonSchema.load(reader);
         return lastSchema;
     }
     
     protected void printProblems(ValidationResult result) {
-        result.problems().forEach(System.err::println);
+        result.problems().forEach(System.out::println);
     }
     
     protected static Iterable<Object[]> parameters(String[] names) {

@@ -35,7 +35,7 @@ public interface Evaluators {
     /**
      * The evaluator which evaluates any instances as true ("valid").
      */
-    Evaluator ALWAYS_TRUE = new DefaultEvaluator() {
+    Evaluator ALWAYS_TRUE = new Evaluator() {
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             return Result.TRUE;
@@ -46,7 +46,7 @@ public interface Evaluators {
      * The evaluator which evaluates any instances as false ("invalid")
      * and reports a problem.
      */
-    Evaluator ALWAYS_FALSE = new DefaultEvaluator() {
+    Evaluator ALWAYS_FALSE = new Evaluator() {
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             Problem p = ProblemBuilder.newBuilder()
@@ -56,4 +56,16 @@ public interface Evaluators {
             return Result.FALSE;
         }
     };
+    
+    static Combiner newConjunctionCombiner() {
+        return new ConjunctionEvaluator.Combiner();
+    }
+
+    static Combiner newInclusiveDisjunctionCombiner() {
+        return new InclusiveDisjunctionEvaluator.Combiner();
+    }
+
+    static Combiner newExclusiveDisjunctionCombiner() {
+        return new ExclusiveDisjunctionEvaluator.Combiner();
+    }
 }

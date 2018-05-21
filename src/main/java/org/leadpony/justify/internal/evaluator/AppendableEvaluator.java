@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.assertion;
+package org.leadpony.justify.internal.evaluator;
+
+import org.leadpony.justify.core.Evaluator;
 
 /**
- * Skeletal implementation of {@link Assertion}.
- * 
  * @author leadpony
  */
-abstract class AbstractAssertion implements Assertion {
-   
-    private AbstractAssertion negated;
-    
-    @Override
-    public Assertion negate() {
-        if (this.negated == null) {
-            this.negated =  createNegatedAssertion();
-            this.negated.negated = this;
-        }
-        return this.negated;
-    }
-    
-    protected abstract AbstractAssertion createNegatedAssertion();
+public interface AppendableEvaluator extends Evaluator {
+
+    /**
+     * Appends an evaluator.
+     * 
+     * @param evaluator the evaluator to append to this evaluator.
+     */
+    void append(Evaluator evaluator);
 }

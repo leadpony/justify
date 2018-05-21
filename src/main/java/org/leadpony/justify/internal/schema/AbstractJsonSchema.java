@@ -31,6 +31,17 @@ import org.leadpony.justify.core.JsonSchema;
  */
 abstract class AbstractJsonSchema implements JsonSchema {
 
+    private AbstractJsonSchema negated;
+    
+    @Override
+    public JsonSchema negate() {
+        if (this.negated == null) {
+            this.negated = createNegatedSchema();
+            this.negated.negated = this;
+        }
+        return this.negated;
+    }
+    
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
@@ -40,4 +51,6 @@ abstract class AbstractJsonSchema implements JsonSchema {
         }
         return writer.toString();
     }
+    
+    protected abstract AbstractJsonSchema createNegatedSchema();
 }
