@@ -16,11 +16,9 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -28,54 +26,38 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified by "required" keyword.
- * 
  * @author leadpony
  */
-public class Required extends AbstractAssertion {
-    
-    protected final Set<String> names;
-    
-    public Required(Set<String> names) {
-        this.names = new HashSet<>(names);
-    }
+class NotRequired extends Required {
 
-    @Override
-    public boolean canApplyTo(InstanceType type) {
-        return type == InstanceType.OBJECT;
+    NotRequired(Set<String> names) {
+        super(names);
     }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         assert type == InstanceType.OBJECT;
-        return new PropertyEvaluator(names);
+        return new NegatedEvaluator(names);
     }
 
-    @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeStartArray("required");
-        names.forEach(generator::write);
-        generator.writeEnd();
-    }
-    
     @Override
     protected AbstractAssertion createNegatedAssertion() {
-        return new NotRequired(names);
+        return new Required(this.names);
     }
 
-    static class PropertyEvaluator implements ShallowEvaluator {
+    private static class NegatedEvaluator extends PropertyEvaluator {
         
-        protected final Set<String> remaining;
+        private final Set<String> names;
         
-        PropertyEvaluator(Set<String> required) {
-            this.remaining = new HashSet<>(required);
+        private NegatedEvaluator(Set<String> names) {
+            super(names);
+            this.names = names;
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
                 return test(consumer, false);
@@ -85,17 +67,18 @@ public class Required extends AbstractAssertion {
                 return Result.PENDING;
             }
         }
-        
+
+        @Override
         protected Result test(Consumer<Problem> consumer, boolean last) {
             if (remaining.isEmpty()) {
-                return Result.TRUE;
-            } else if (last) {
                 Problem p = ProblemBuilder.newBuilder()
-                        .withMessage("instance.problem.required")
-                        .withParameter("expected", remaining)
+                        .withMessage("instance.problem.not.required")
+                        .withParameter("expected", this.names)
                         .build();
                 consumer.accept(p);
                 return Result.FALSE;
+            } else if (last) {
+                return Result.TRUE;
             } else {
                 return Result.PENDING;
             }

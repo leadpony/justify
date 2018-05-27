@@ -16,36 +16,27 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Collection;
-
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
- * Boolean logic schema described by "oneOf" keyword.
- * 
  * @author leadpony
  */
-public class OneOf extends NaryBooleanLogicSchema {
+class NegatedComplexSchema extends ComplexSchema {
 
-    public OneOf(Collection<JsonSchema> subschemas) {
-        super(subschemas);
+    NegatedComplexSchema(ComplexSchema original) {
+        super(original);
+        this.assertions.replaceAll(Assertion::negate);
+        this.properties.replaceAll((k, v)->v.negate());
+        this.items.replaceAll(JsonSchema::negate);
+        this.subschemas.replaceAll(JsonSchema::negate);
     }
 
     @Override
-    public String name() {
-        return "oneOf";
-    }
-
-    @Override
-    protected NaryBooleanLogicSchema createNegatedSchema() {
-        throw new UnsupportedOperationException("Not supported");
-    }
-
-    @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newExclusiveDisjunctionEvaluator(type, false);
-    }
+    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
+        return Evaluators.newDisjunctionEvaluator(type, extensible);
+    } 
 }

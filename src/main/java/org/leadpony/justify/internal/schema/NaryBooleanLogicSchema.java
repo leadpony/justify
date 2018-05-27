@@ -19,14 +19,14 @@ package org.leadpony.justify.internal.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Combiner;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * N-ary boolean logic schema.
@@ -42,19 +42,12 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     }
 
     @Override
-    public Optional<Evaluator> createEvaluator(InstanceType type) {
-        Combiner combiner = createCombiner();
+    public Evaluator createEvaluator(InstanceType type) {
+        LogicalEvaluator logical = createLogicalEvaluator(type);
         this.subschemas.stream()
                 .map(s->s.createEvaluator(type))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(combiner::append);
-        return combiner.getCombined();
-    }
-
-    @Override
-    public List<JsonSchema> subschemas() {
-        return subschemas;
+                .forEach(logical::append);
+        return logical;
     }
 
     @Override
@@ -65,5 +58,9 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
         generator.writeEnd();
     }
     
-    protected abstract Combiner createCombiner();
+    protected List<JsonSchema> negateSubschemas() {
+        return subschemas.stream().map(JsonSchema::negate).collect(Collectors.toList());
+    }
+    
+    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type);
 }

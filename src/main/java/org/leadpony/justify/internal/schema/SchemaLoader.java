@@ -92,95 +92,147 @@ public class SchemaLoader {
     
     private void populateSchema(String keyName, JsonSchemaBuilder builder) {
         switch (keyName) {
-        case "title":
-            appendTitle(builder);
-            break;
-        case "description":
-            appendDescription(builder);
-            break;
-        case "type":
-            appendType(builder);
-            break;
-        case "required":
-            appendRequired(builder);
-            break;
-        case "properties":
-            appendProperties(builder);
-            break;
-        case "maximum":
-            appendMaximum(builder);
-            break;
-        case "exclusiveMaximum":
-            appendExclusiveMaximum(builder);
-            break;
-        case "minimum":
-            appendMinimum(builder);
-            break;
-        case "exclusiveMinimum":
-            appendExclusiveMinimum(builder);
-            break;
-        case "maxLength":
-            appendMaxLength(builder);
-            break;
-        case "minLength":
-            appendMinLength(builder);
-            break;
         case "allOf":
-            appendAllOf(builder);
+            addAllOf(builder);
             break;
         case "anyOf":
-            appendAnyOf(builder);
+            addAnyOf(builder);
             break;
-        case "oneOf":
-            appendOneOf(builder);
+        case "const":
+            addConst(builder);
+            break;
+        case "description":
+            addDescription(builder);
+            break;
+        case "else":
+            addElse(builder);
+            break;
+        case "exclusiveMaximum":
+            addExclusiveMaximum(builder);
+            break;
+        case "exclusiveMinimum":
+            addExclusiveMinimum(builder);
+            break;
+        case "if":
+            addIf(builder);
+            break;
+        case "maximum":
+            addMaximum(builder);
+            break;
+        case "maxLength":
+            addMaxLength(builder);
+            break;
+        case "minimum":
+            addMinimum(builder);
+            break;
+        case "minLength":
+            addMinLength(builder);
+            break;
+        case "multipleOf":
+            addMultipleOf(builder);
             break;
         case "not":
-            appendNot(builder);
+            addNot(builder);
+            break;
+        case "oneOf":
+            addOneOf(builder);
+            break;
+        case "properties":
+            addProperties(builder);
+            break;
+        case "required":
+            addRequired(builder);
+            break;
+        case "then":
+            addThen(builder);
+            break;
+        case "title":
+            addTitle(builder);
+            break;
+        case "type":
+            addType(builder);
             break;
         }
     }
     
-    private void appendTitle(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_STRING) {
-            builder.withTitle(parser.getString());
-        }
+    private void addAllOf(JsonSchemaBuilder builder) {
+        builder.withAllOf(subschemaArray());
+    }
+
+    private void addAnyOf(JsonSchemaBuilder builder) {
+        builder.withAnyOf(subschemaArray());
     }
     
-    private void appendDescription(JsonSchemaBuilder builder) {
+    private void addConst(JsonSchemaBuilder builder) {
+        parser.next();
+        builder.withConst(parser.getValue());
+    }
+
+    private void addDescription(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_STRING) {
             builder.withDescription(parser.getString());
         }
     }
     
-    private void appendType(JsonSchemaBuilder builder) {
-        Event event = parser.next();
-        if (event == Event.VALUE_STRING) {
-            builder.withType(findType(parser.getString()));
-        } else if (event == Event.START_ARRAY) {
-            Set<InstanceType> types = new HashSet<>();
-            while ((event = parser.next()) != Event.END_ARRAY) {
-                if (event == Event.VALUE_STRING) {
-                    types.add(findType(parser.getString()));
-                }
-            }
-            builder.withType(types);
+    private void addElse(JsonSchemaBuilder builder) {
+        builder.withElse(subschema());
+    }
+    
+    private void addExclusiveMaximum(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withExclusiveMaximum(parser.getBigDecimal());
+        }
+    }
+
+    private void addExclusiveMinimum(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withExclusiveMinimum(parser.getBigDecimal());
         }
     }
     
-    private void appendRequired(JsonSchemaBuilder builder) {
-        Event event = parser.next();
-        if (event == Event.START_ARRAY) {
-            Set<String> names = new HashSet<>();
-            while ((event = parser.next()) != Event.END_ARRAY) {
-                if (event == Event.VALUE_STRING) {
-                    names.add(parser.getString());
-                }
-            }
-            builder.withRequired(names);
+    private void addIf(JsonSchemaBuilder builder) {
+        builder.withIf(subschema());
+    }
+
+    private void addMaximum(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMaximum(parser.getBigDecimal());
         }
     }
-    
-    private void appendProperties(JsonSchemaBuilder builder) {
+
+    private void addMaxLength(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMaxLength(parser.getInt());
+        }
+    }
+
+    private void addMinimum(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMinimum(parser.getBigDecimal());
+        }
+    }
+
+    private void addMinLength(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMinLength(parser.getInt());
+        }
+    }
+
+    private void addMultipleOf(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMultipleOf(parser.getBigDecimal());
+        }
+    }
+
+    private void addNot(JsonSchemaBuilder builder) {
+        builder.withNot(subschema());
+    }
+
+    private void addOneOf(JsonSchemaBuilder builder) {
+        builder.withOneOf(subschemaArray());
+    }
+
+    private void addProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
             return;
@@ -207,58 +259,44 @@ public class SchemaLoader {
         }
     }
     
-    private void appendMaximum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withMaximum(parser.getBigDecimal());
-        }
-    }
-
-    private void appendExclusiveMaximum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withExclusiveMaximum(parser.getBigDecimal());
-        }
-    }
-
-    private void appendMinimum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withMinimum(parser.getBigDecimal());
-        }
-    }
-
-    private void appendExclusiveMinimum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withExclusiveMinimum(parser.getBigDecimal());
+    private void addRequired(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.START_ARRAY) {
+            Set<String> names = new HashSet<>();
+            while ((event = parser.next()) != Event.END_ARRAY) {
+                if (event == Event.VALUE_STRING) {
+                    names.add(parser.getString());
+                }
+            }
+            builder.withRequired(names);
         }
     }
     
-    private void appendMaxLength(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withMaxLength(parser.getInt());
+    private void addThen(JsonSchemaBuilder builder) {
+        builder.withThen(subschema());
+    }
+    
+    private void addTitle(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_STRING) {
+            builder.withTitle(parser.getString());
         }
     }
     
-    private void appendMinLength(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
-            builder.withMinLength(parser.getInt());
+    private void addType(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            builder.withType(findType(parser.getString()));
+        } else if (event == Event.START_ARRAY) {
+            Set<InstanceType> types = new HashSet<>();
+            while ((event = parser.next()) != Event.END_ARRAY) {
+                if (event == Event.VALUE_STRING) {
+                    types.add(findType(parser.getString()));
+                }
+            }
+            builder.withType(types);
         }
     }
-
-    private void appendAllOf(JsonSchemaBuilder builder) {
-        builder.withAllOf(subschemaArray());
-    }
-
-    private void appendAnyOf(JsonSchemaBuilder builder) {
-        builder.withAnyOf(subschemaArray());
-    }
-
-    private void appendOneOf(JsonSchemaBuilder builder) {
-        builder.withOneOf(subschemaArray());
-    }
-
-    private void appendNot(JsonSchemaBuilder builder) {
-        builder.withNot(subschema());
-    }
-
+    
     private static InstanceType findType(String name) {
         return InstanceType.valueOf(name.toUpperCase());
     }

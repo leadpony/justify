@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * 
  * @author leadpony
  */
-public class Type extends SimpleAssertion {
+public class Type extends ShallowAssertion {
     
     protected final Set<InstanceType> typeSet;
     
@@ -43,7 +43,7 @@ public class Type extends SimpleAssertion {
     }
 
     @Override
-    public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
             return testType(type, consumer);
@@ -89,35 +89,5 @@ public class Type extends SimpleAssertion {
     @Override
     protected AbstractAssertion createNegatedAssertion() {
         return new NotType(this.typeSet);
-    }
-    
-    /**
-     * Negated type.
-     */
-    private static class NotType extends Type {
-
-        private NotType(Set<InstanceType> types) {
-            super(types);
-        }
-        
-        @Override
-        protected Result testType(InstanceType type, Consumer<Problem> consumer) {
-            if (!contains(type)) {
-                return Result.TRUE;
-            } else {
-                Problem p = ProblemBuilder.newBuilder()
-                        .withMessage("instance.problem.not.type")
-                        .withParameter("actual", type)
-                        .withParameter("expected", typeSet)
-                        .build();
-                consumer.accept(p);
-                return Result.FALSE;
-            }
-        }
-
-        @Override
-        protected AbstractAssertion createNegatedAssertion() {
-            return new Type(this.typeSet);
-        }
     }
 }

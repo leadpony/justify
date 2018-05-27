@@ -16,17 +16,27 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
+import java.util.function.Consumer;
+
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
-public interface AppendableEvaluator extends Evaluator {
+class ExtensibleDisjunctionEvaluator extends LongDisjunctionEvaluator {
 
-    /**
-     * Appends an evaluator.
-     * 
-     * @param evaluator the evaluator to append to this evaluator.
-     */
-    void append(Evaluator evaluator);
+    ExtensibleDisjunctionEvaluator(Event lastEvent) {
+        super(lastEvent);
+    }
+
+    protected Result tryToMakeDecision(Event event, int depth, Consumer<Problem> consumer) {
+        if (depth == 0 && event == lastEvent) {
+            assert isEmpty();
+            return conclude(consumer);
+        } else {
+            return Result.PENDING;
+        }
+    }
 }

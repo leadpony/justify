@@ -79,7 +79,7 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
     
     @Override
     public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory();
+        return new DefaultSchemaBuilderFactory(this.jsonProvider);
     }
 
     @Override

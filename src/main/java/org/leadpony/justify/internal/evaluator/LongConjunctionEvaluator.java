@@ -18,26 +18,30 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.function.Consumer;
 
-import org.leadpony.justify.core.Evaluator;
+import javax.json.stream.JsonParser.Event;
+
 import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
-class ConjunctionEvaluator extends AbstractLogicalEvaluator {
+class LongConjunctionEvaluator extends ConjunctionEvaluator {
+   
+    protected final Event lastEvent;
     
-    private int numberOfFalses;
-    
-    @Override
-    protected boolean accumulateResult(Evaluator evaluator, Result result) {
-        if (result == Result.FALSE) {
-            this.numberOfFalses++;
-        }
-        return true;
+    LongConjunctionEvaluator(Event lastEvent) {
+        this.lastEvent = lastEvent;
     }
-    
+
     @Override
-    protected Result conclude(Consumer<Problem> consumer) {
-        return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
+    protected Result tryToMakeDecision(Event event, int depth, Consumer<Problem> consumer) {
+        if (isEmpty()) {
+            return conclude(consumer);
+        } else if (depth == 0 && event == lastEvent) {
+            assert false;
+            return conclude(consumer);
+        } else {
+            return Result.PENDING;
+        }
     }
 }

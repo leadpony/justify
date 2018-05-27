@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Optional;
-
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -42,7 +40,7 @@ public class Not extends BooleanLogicSchema {
     }
     
     @Override
-    public Optional<Evaluator> createEvaluator(InstanceType type) {
+    public Evaluator createEvaluator(InstanceType type) {
         return negatedSubschema.createEvaluator(type);
     }
 

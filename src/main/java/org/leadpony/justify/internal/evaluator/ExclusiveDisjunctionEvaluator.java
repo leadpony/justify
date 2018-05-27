@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.function.Consumer;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
@@ -26,24 +27,18 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  */
 class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     
-    private ExclusiveDisjunctionEvaluator(Combiner combiner) {
-        super(combiner);
-    }
-    
     @Override
-    protected boolean accumulateResult(Result result) {
-        if (result == Result.TRUE) {
-            this.numberOfTrues++;
-        }
+    protected boolean accumulateResult(Evaluator evaluator, Result result) {
+        super.accumulateResult(evaluator, result);
         return (this.numberOfTrues <= 1);
     }
 
     @Override
-    protected Result getFinalResult(Consumer<Problem> consumer) {
+    protected Result conclude(Consumer<Problem> consumer) {
         if (this.numberOfTrues > 1) {
             return tooManyTrueEvaluations(consumer);
         } else {
-            return super.getFinalResult(consumer);
+            return super.conclude(consumer);
         }
     }
     
@@ -54,13 +49,5 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
                 .build();
         consumer.accept(p);
         return Result.FALSE;
-    }
-
-    static class Combiner extends LogicalCombiner {
-
-        @Override
-        public AppendableEvaluator getAppendable() {
-            return new ExclusiveDisjunctionEvaluator(this);
-        }
     }
 }

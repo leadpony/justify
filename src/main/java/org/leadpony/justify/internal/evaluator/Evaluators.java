@@ -16,13 +16,12 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.function.Consumer;
-
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -30,42 +29,70 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * 
  * @author leadpony
  */
-public interface Evaluators {
+public final class Evaluators {
 
     /**
      * The evaluator which evaluates any instances as true ("valid").
      */
-    Evaluator ALWAYS_TRUE = new Evaluator() {
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            return Result.TRUE;
-        }
-    };
+    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
 
     /**
      * The evaluator which evaluates any instances as false ("invalid")
      * and reports a problem.
      */
-    Evaluator ALWAYS_FALSE = new Evaluator() {
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public static final Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
             Problem p = ProblemBuilder.newBuilder()
                     .withMessage("instance.problem.unknown")
                     .build();
             consumer.accept(p);
             return Result.FALSE;
-        }
-    };
+        };
     
-    static Combiner newConjunctionCombiner() {
-        return new ConjunctionEvaluator.Combiner();
+    /**
+     * The evaluator whose result should be always ignored.
+     */
+    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
+
+    public static LogicalEvaluator newConjunctionEvaluator(InstanceType type, boolean extensible) {
+        if (extensible) {
+            return new ExtensibleConjunctionEvaluator(lastEventOf(type));
+        } else if (type.isContainer()) {
+            return new LongConjunctionEvaluator(lastEventOf(type));
+        } else {
+            return new ConjunctionEvaluator();
+        }
+    }
+    
+    public static LogicalEvaluator newDisjunctionEvaluator(InstanceType type, boolean extensible) {
+        if (extensible) {
+            return new ExtensibleDisjunctionEvaluator(lastEventOf(type));
+        } else if (type.isContainer()) {
+            return new LongDisjunctionEvaluator(lastEventOf(type));
+        } else {
+            return new DisjunctionEvaluator();
+        }
     }
 
-    static Combiner newInclusiveDisjunctionCombiner() {
-        return new InclusiveDisjunctionEvaluator.Combiner();
+    public static LogicalEvaluator newExclusiveDisjunctionEvaluator(InstanceType type, boolean extensible) {
+        if (extensible) {
+            throw new UnsupportedOperationException("unsupported");
+        } else if (type.isContainer()) {
+            return new LongExclusiveDisjunctionEvaluator(lastEventOf(type));
+        } else {
+            return new ExclusiveDisjunctionEvaluator();
+        }
     }
 
-    static Combiner newExclusiveDisjunctionCombiner() {
-        return new ExclusiveDisjunctionEvaluator.Combiner();
+    private static Event lastEventOf(InstanceType type) {
+        switch (type) {
+        case ARRAY:
+            return Event.END_ARRAY;
+        case OBJECT:
+            return Event.END_OBJECT;
+        default:
+            return null;
+        }
     }
+    
+    private Evaluators() {}
 }

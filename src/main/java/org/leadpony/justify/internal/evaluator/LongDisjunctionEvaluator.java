@@ -16,19 +16,32 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.function.Consumer;
+
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Problem;
+
 /**
- * End condition of evaluator.
- *  
  * @author leadpony
  */
-@FunctionalInterface
-public interface EndCondition {
+class LongDisjunctionEvaluator extends DisjunctionEvaluator {
+
+    protected final Event lastEvent;
     
-    static EndCondition DEFAULT = (event, depth, empty)->empty;
- 
-    static EndCondition IMMEDIATE = (event, depth, empty)->true;
-    
-    boolean test(Event event, int depth, boolean empty);
+    LongDisjunctionEvaluator(Event lastEvent) {
+        this.lastEvent = lastEvent;
+    }
+
+    @Override
+    protected Result tryToMakeDecision(Event event, int depth, Consumer<Problem> consumer) {
+        if (isEmpty()) {
+            return conclude(consumer);
+        } else if (depth == 0 && event == lastEvent) {
+            assert false;
+            return conclude(consumer);
+        } else {
+            return Result.PENDING;
+        }
+    }
 }

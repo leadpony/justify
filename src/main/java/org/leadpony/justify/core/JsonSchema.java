@@ -17,9 +17,6 @@ package org.leadpony.justify.core;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import javax.json.stream.JsonGenerator;
 
@@ -74,38 +71,13 @@ public interface JsonSchema {
      * @return the evaluator of this schema.
      * @throws NullPointerException if {@code type} is {@code null}.
      */
-    Optional<Evaluator> createEvaluator(InstanceType type);
+    Evaluator createEvaluator(InstanceType type);
 
     /**
-     * Finds child schemas to be applied to the specified property in object.
+     * Returns the negation of this schema.
      * 
-     * @param propertyName the name of the property.
-     * @return the child schema if found , {@code null} otherwise.
-     * @throws NullPointerException if {@code propertyName} is {@code null}.
+     * @return the negation of this schema, never be {@code null}.
      */
-    default JsonSchema findChildSchema(String propertyName) {
-        return null;
-    }
-    
-    /**
-     * Finds child schemas to be applied to the specified item in array.
-     * 
-     * @param itemIndex the index of the item.
-     * @return the child schema if found , {@code null} otherwise.
-     */
-    default JsonSchema findChildSchema(int itemIndex) {
-        return null;
-    }
-    
-    /**
-     * Returns all subschemas contained directly by this schema.
-     * 
-     * @return direct subschemas of this schema, may be empty but never be {@code null}.
-     */
-    default List<JsonSchema> subschemas() {
-        return Collections.emptyList();
-    }
-    
     JsonSchema negate();
     
     /**

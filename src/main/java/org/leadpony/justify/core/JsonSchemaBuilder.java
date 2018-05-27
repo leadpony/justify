@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.json.JsonValue;
+
 /**
  * Builder of JSON schemas.
  * 
@@ -37,6 +39,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withTitle(String title);
     
     JsonSchemaBuilder withDescription(String description);
+    
+    JsonSchemaBuilder withConst(JsonValue value);
     
     JsonSchemaBuilder withType(InstanceType... types);
 
@@ -158,6 +162,16 @@ public interface JsonSchemaBuilder {
      */
     JsonSchemaBuilder withExclusiveMinimum(BigDecimal bound);
     
+    default JsonSchemaBuilder withMultipleOf(long divisor) {
+        return withMultipleOf(BigDecimal.valueOf(divisor));
+    }
+
+    default JsonSchemaBuilder withMultipleOf(double divisor) {
+        return withMultipleOf(BigDecimal.valueOf(divisor));
+    }
+
+    JsonSchemaBuilder withMultipleOf(BigDecimal divisor);
+    
     JsonSchemaBuilder withMaxLength(int bound);
 
     JsonSchemaBuilder withMinLength(int bound);
@@ -188,4 +202,10 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException one of parameters was {@code null}.
      */
     JsonSchemaBuilder withNot(JsonSchema subschema);
+    
+    JsonSchemaBuilder withIf(JsonSchema subschema);
+
+    JsonSchemaBuilder withThen(JsonSchema subschema);
+
+    JsonSchemaBuilder withElse(JsonSchema subschema);
 }

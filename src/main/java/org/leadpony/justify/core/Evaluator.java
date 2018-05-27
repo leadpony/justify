@@ -27,30 +27,31 @@ import javax.json.stream.JsonParser;
  * 
  * @author leadpony
  */
-@FunctionalInterface
 public interface Evaluator {
 
     /**
      * Result of evaluation.
      */
     enum Result {
+        /** Evaluation is not done yet. */
+        PENDING,
         /** Evaluated as true. */
         TRUE,
         /** Evaluated as false. */
         FALSE,
-        /** Evaluation is not done yet. */
-        PENDING
+        /** Result of evaluation should be ignored. */
+        IGNORED
         ;
     };
     
     /**
-     * Evaluates JSON schema.
+     * Evaluates JSON schema against JSON instance.
      * 
      * @param event the event triggered by JSON parser.
      * @param parser the JSON parser.
      * @param depth the depth where the event occurred.
      * @param consumer the consumer of the found problems.
-     * @return the result of the evaluation.
+     * @return the result of the evaluation, never be {@code null}.
      */
     Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
 }

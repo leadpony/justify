@@ -19,13 +19,13 @@ package org.leadpony.justify.internal.validator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ValidationResult;
@@ -39,11 +39,11 @@ import org.leadpony.justify.internal.base.JsonParserDecorator;
  * @author leadpony
  */
 class ValidatingJsonParser extends JsonParserDecorator 
-    implements ValidationResult, Consumer<Problem> {
+        implements ValidationResult, Consumer<Problem> {
     
     private BiConsumer<Event, JsonParser> eventHandler;
     private final JsonSchema rootSchema;
-    private Optional<Evaluator> evaluator;
+    private Evaluator evaluator;
     private int depth;
 
     private final List<Problem> problems = new ArrayList<>();
@@ -81,17 +81,29 @@ class ValidatingJsonParser extends JsonParserDecorator
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         this.evaluator = rootSchema.createEvaluator(type);
-        this.eventHandler = this::handleEvent;
         handleEvent(event, parser);
+        if (depth > 0) {
+            this.eventHandler = this::handleEvent;
+        } else {
+            this.eventHandler = this::handleNothing;
+        }
     }
 
     private void handleEvent(Event event, JsonParser parser) {
         if (event == Event.END_ARRAY || event == Event.END_OBJECT) {
-            --depth;
+            if (--depth == 0) {
+                this.eventHandler = this::handleNothing;
+            }
         }
-        evaluator.ifPresent(e->e.evaluate(event, parser, depth, this));
+        Result result = evaluator.evaluate(event, parser, depth, this);
         if (event == Event.START_ARRAY || event == Event.START_OBJECT) {
             ++depth;
         }
+        if (depth == 0) {
+            assert result != Result.PENDING : result;
+        }
+    }
+
+    private void handleNothing(Event event, JsonParser parser) {
     }
 }

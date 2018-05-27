@@ -28,16 +28,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
+
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.internal.assertion.Assertion;
+import org.leadpony.justify.internal.assertion.Const;
 import org.leadpony.justify.internal.assertion.ExclusiveMaximum;
 import org.leadpony.justify.internal.assertion.ExclusiveMinimum;
 import org.leadpony.justify.internal.assertion.MaxLength;
 import org.leadpony.justify.internal.assertion.Maximum;
 import org.leadpony.justify.internal.assertion.MinLength;
 import org.leadpony.justify.internal.assertion.Minimum;
+import org.leadpony.justify.internal.assertion.MultipleOf;
 import org.leadpony.justify.internal.assertion.Required;
 import org.leadpony.justify.internal.assertion.Type;
 
@@ -45,6 +50,8 @@ import org.leadpony.justify.internal.assertion.Type;
  * @author leadpony
  */
 public class DefaultSchemaBuilder implements JsonSchemaBuilder {
+    
+    private final JsonProvider jsonProvider;
     
     private boolean empty;
     private boolean hasSubschema;
@@ -57,7 +64,12 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private final List<JsonSchema> items = new ArrayList<>();
     private final List<JsonSchema> subschemas = new ArrayList<>();
     
-    public DefaultSchemaBuilder() {
+    private JsonSchema ifSchema;
+    private JsonSchema thenSchema;
+    private JsonSchema elseSchema;
+    
+    public DefaultSchemaBuilder(JsonProvider jsonProvider) {
+        this.jsonProvider = jsonProvider;
         this.empty = true;
     }
     
@@ -98,6 +110,7 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         if (isEmpty()) {
             return JsonSchemas.EMPTY;
         } else if (hasSubschema()) {
+            addConditionalSchemaIfExists();
             return new ComplexSchema(this);
         } else {
             return new SimpleSchema(this);
@@ -118,6 +131,13 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         return builderNonempty();
     }
 
+    @Override
+    public JsonSchemaBuilder withConst(JsonValue value) {
+        Objects.requireNonNull(value, "value must not be null.");
+        assertions.add(new Const(value, this.jsonProvider));
+        return builderNonempty();
+    }
+    
     @Override
     public JsonSchemaBuilder withType(InstanceType... types) {
         Objects.requireNonNull(types, "types must not be null.");
@@ -172,6 +192,13 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         return builderNonempty();
     }
 
+    @Override
+    public JsonSchemaBuilder withMultipleOf(BigDecimal divisor) {
+        Objects.requireNonNull(divisor, "divisor must not be null.");
+        assertions.add(new MultipleOf(divisor));
+        return builderNonempty();
+    }
+    
     @Override
     public JsonSchemaBuilder withMaxLength(int bound) {
         assertions.add(new MaxLength(bound));
@@ -253,6 +280,27 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         this.subschemas.add(new Not(subschema));
         return builderWithSubschema();
     }
+  
+    @Override
+    public JsonSchemaBuilder withIf(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.ifSchema = subschema;
+        return builderWithSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withThen(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.thenSchema = subschema;
+        return builderWithSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withElse(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.elseSchema = subschema;
+        return builderWithSubschema();
+    }
     
     /**
      * Marks this builder as non-empty.
@@ -276,5 +324,11 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     
     private void addItem(JsonSchema subschema) {
         items.add(subschema);
+    }
+    
+    private void addConditionalSchemaIfExists() {
+        if (ifSchema != null || thenSchema != null || elseSchema != null) {
+            this.subschemas.add(new IfThenElse(ifSchema, thenSchema, elseSchema));
+        }
     }
 }

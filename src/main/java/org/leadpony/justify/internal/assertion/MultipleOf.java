@@ -30,43 +30,48 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 /**
  * @author leadpony
  */
-abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
-
-    protected final BigDecimal bound;
-    private final String name;
-    private final String message;
+public class MultipleOf extends ShallowAssertion {
     
-    protected AbstractNumericBoundAssertion(BigDecimal bound, String name, String message) {
-        this.bound = bound;
-        this.name = name;
-        this.message = message;
+    protected final BigDecimal divisor;
+    
+    public MultipleOf(BigDecimal divisor) {
+        this.divisor = divisor;
     }
-    
+
     @Override
     public boolean canApplyTo(InstanceType type) {
         return type.isNumeric();
     }
-   
+    
     @Override
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        assert event == Event.VALUE_NUMBER;
         BigDecimal actual = parser.getBigDecimal();
-        if (test(actual, this.bound)) {
+        return test(actual, consumer);
+    }
+
+    @Override
+    public void toJson(JsonGenerator generator) {
+        generator.write("multipleOf", divisor);
+    }
+
+    @Override
+    protected AbstractAssertion createNegatedAssertion() {
+        throw new UnsupportedOperationException();
+    }
+    
+    protected Result test(BigDecimal actual, Consumer<Problem> consumer) {
+        BigDecimal remainder = actual.remainder(divisor);
+        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder()
-                    .withMessage(this.message)
+                    .withMessage("instance.problem.multiple.of")
                     .withParameter("actual", actual)
-                    .withParameter("bound", this.bound)
+                    .withParameter("divisor", divisor)
                     .build();
             consumer.accept(p);
             return Result.FALSE;
         }
     }
-
-    @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(this.name, this.bound);
-    }
-    
-    protected abstract boolean test(BigDecimal actual, BigDecimal bound);
 }

@@ -16,20 +16,27 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Optional;
+import java.util.function.Consumer;
 
-import org.leadpony.justify.core.Evaluator;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
  */
-public interface Combiner {
-    
-    Combiner append(Evaluator evaluator);
-    
-    Combiner withEndCondition(EndCondition condition);
+class ExtensibleConjunctionEvaluator extends LongConjunctionEvaluator {
 
-    Optional<Evaluator> getCombined();
-    
-    AppendableEvaluator getAppendable();
+    ExtensibleConjunctionEvaluator(Event lastEvent) {
+        super(lastEvent);
+    }
+
+    protected Result tryToMakeDecision(Event event, int depth, Consumer<Problem> consumer) {
+        if (depth == 0 && event == lastEvent) {
+            assert isEmpty();
+            return conclude(consumer);
+        } else {
+            return Result.PENDING;
+        }
+    }
 }

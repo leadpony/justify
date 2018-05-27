@@ -17,14 +17,10 @@
 package org.leadpony.justify.internal.schema;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -33,11 +29,8 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.base.InstanceTypes;
-import org.leadpony.justify.internal.evaluator.AppendableEvaluator;
-import org.leadpony.justify.internal.evaluator.Combiner;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * JSON schema with any subschemas, including child schemas.
@@ -70,23 +63,13 @@ public class ComplexSchema extends SimpleSchema {
     }
     
     @Override
-    public JsonSchema findChildSchema(String propertyName) {
-        Objects.requireNonNull(propertyName, "propertyName must not be null.");
-        return properties.get(propertyName);
-    }
-
-    @Override
-    public JsonSchema findChildSchema(int itemIndex) {
-        if (itemIndex < items.size()) {
-            return items.get(itemIndex);
+    public Evaluator createEvaluator(InstanceType type) {
+        Objects.requireNonNull(type, "type must not be null.");
+        if (type.isContainer()) {
+            return createEvaluatorForBranch(type);
         } else {
-            return null;
+            return super.createEvaluator(type);
         }
-    }
-    
-    @Override
-    public List<JsonSchema> subschemas() {
-        return Collections.unmodifiableList(subschemas);
     }
     
     @Override
@@ -98,45 +81,24 @@ public class ComplexSchema extends SimpleSchema {
     }
 
     @Override
-    protected Optional<Evaluator> createEvaluatorForBranch(InstanceType type) {
-        Combiner combiner = createCombiner();
-        combineEvaluators(type, combiner);
-        combiner.withEndCondition((event, depth, empty)->
-            (depth == 0 && (event == Event.END_ARRAY || event == Event.END_OBJECT))
-        );
-        AppendableEvaluator appendable = combiner.getAppendable();
-        return Optional.of( 
-                (type == InstanceType.ARRAY) ?
-                    new ArrayVisitor(appendable) :
-                    new ObjectVisitor(appendable)
-               );
-        }
-    
-    @Override
-    protected void combineEvaluators(InstanceType type, Combiner combiner) {
-        Stream<Evaluator> asssertionEvaluators = assertions.stream()
-                .filter(a->a.canApplyTo(type))
-                .map(Assertion::createEvaluator);
-        Stream<Evaluator> subschemaEvaluators = subschemas.stream()
-                .map(s->s.createEvaluator(type))
-                .filter(Optional::isPresent)
-                .map(Optional::get);
-        Stream.concat(asssertionEvaluators, subschemaEvaluators)
-                .forEach(combiner::append);
-    }
-   
-    @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new ComplexSchema(this).negateSelf();
+        return new NegatedComplexSchema(this);
+    }
+    
+    private Evaluator createEvaluatorForBranch(InstanceType type) {
+        LogicalEvaluator logical = createLogicalEvaluator(type, true);
+        appendEvaluatorsTo(logical, type);
+        return  (type == InstanceType.ARRAY) ?
+                new ArrayVisitor(logical) : new ObjectVisitor(logical);
     }
     
     @Override
-    protected ComplexSchema negateSelf() {
-        super.negateSelf();
-        this.properties.replaceAll((k, v)->v.negate());
-        this.items.replaceAll(JsonSchema::negate);
-        this.subschemas.replaceAll(JsonSchema::negate);
-        return this;
+    protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
+        super.appendEvaluatorsTo(evaluator, type);
+        subschemas.stream()
+            .map(s->s.createEvaluator(type))
+            .forEach(evaluator::append);
+        return evaluator;
     }
     
     @Override
@@ -158,46 +120,37 @@ public class ComplexSchema extends SimpleSchema {
         subschemas.forEach(schema->schema.toJson(generator));
     }
  
-    private abstract class Visitor implements Evaluator {
-        
-        private AppendableEvaluator evaluator;
-        private Evaluator child;
-        
-        Visitor(AppendableEvaluator evaluator) {
-            this.evaluator = evaluator;
-        }
+    /**
+     * Finds child schema to be applied to the specified property in object.
+     * 
+     * @param propertyName the name of the property.
+     * @return the child schema if found , {@code null} otherwise.
+     * @throws NullPointerException if {@code propertyName} is {@code null}.
+     */
+    private JsonSchema findChildSchema(String propertyName) {
+        Objects.requireNonNull(propertyName, "propertyName must not be null.");
+        return properties.get(propertyName);
+    }
 
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            if (depth == 1) {
-                update(event, parser);
-            }
-            return evaluator.evaluate(event, parser, depth, consumer);
-        }
-        
-        protected abstract void update(Event event, JsonParser parser);
-
-        private Result evaluateChild(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-            return child.evaluate(event, parser, depth - 1, consumer);
-        }
-   
-        protected void appendChild(Optional<Evaluator> child) {
-            child.ifPresent(c->{
-                this.child = c;
-                this.evaluator.append(this::evaluateChild);
-            });
-        }
-        
-        protected void clearChild() {
-            this.child = null;
+    /**
+     * Finds child schema to be applied to the specified item in array.
+     * 
+     * @param itemIndex the index of the item.
+     * @return the child schema if found , {@code null} otherwise.
+     */
+    private JsonSchema findChildSchema(int itemIndex) {
+        if (itemIndex < items.size()) {
+            return items.get(itemIndex);
+        } else {
+            return null;
         }
     }
     
-    private class ArrayVisitor extends Visitor {
+    private class ArrayVisitor extends ContainerVisitor {
 
         private int itemIndex;
 
-        ArrayVisitor(AppendableEvaluator evaluator) {
+        private ArrayVisitor(LogicalEvaluator evaluator) {
             super(evaluator);
         }
         
@@ -208,10 +161,9 @@ public class ComplexSchema extends SimpleSchema {
             case END_OBJECT:
                 break;
             default:
-                clearChild();
-                InstanceType type = InstanceTypes.fromEvent(event, parser); 
                 JsonSchema schema = findChildSchema(itemIndex++);
                 if (schema != null) {
+                    InstanceType type = InstanceTypes.fromEvent(event, parser); 
                     appendChild(schema.createEvaluator(type));
                 }
                 break;
@@ -219,11 +171,11 @@ public class ComplexSchema extends SimpleSchema {
         }
     }
     
-    private class ObjectVisitor extends Visitor {
+    private class ObjectVisitor extends ContainerVisitor {
 
         private String propertyName;
 
-        ObjectVisitor(AppendableEvaluator evaluator) {
+        private ObjectVisitor(LogicalEvaluator evaluator) {
             super(evaluator);
         }
 
@@ -232,15 +184,14 @@ public class ComplexSchema extends SimpleSchema {
             switch (event) {
             case KEY_NAME:
                 propertyName = parser.getString();
-                clearChild();
                 break;
             case END_ARRAY:
             case END_OBJECT:
                 break;
             default:
-                InstanceType type = InstanceTypes.fromEvent(event, parser); 
                 JsonSchema schema = findChildSchema(propertyName);
                 if (schema != null) {
+                    InstanceType type = InstanceTypes.fromEvent(event, parser); 
                     appendChild(schema.createEvaluator(type));
                 }
                 break;

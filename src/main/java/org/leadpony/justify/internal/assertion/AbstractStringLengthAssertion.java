@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 /**
  * @author leadpony
  */
-abstract class AbstractStringLengthAssertion extends SimpleAssertion {
+abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     
     protected final int bound;
     private final String name;
@@ -47,7 +47,7 @@ abstract class AbstractStringLengthAssertion extends SimpleAssertion {
     }
     
     @Override
-    public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         String actual = parser.getString();
         int actualLength = actual.codePointCount(0, actual.length());
         if (test(actualLength, this.bound)) {

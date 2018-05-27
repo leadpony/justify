@@ -19,18 +19,14 @@ package org.leadpony.justify.internal.schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.assertion.Assertion;
-import org.leadpony.justify.internal.evaluator.Combiner;
-import org.leadpony.justify.internal.evaluator.EndCondition;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * JSON Schema without any subschemas.
@@ -42,13 +38,11 @@ public class SimpleSchema extends AbstractJsonSchema {
     private final String title;
     private final String description;
     protected final List<Assertion> assertions;
-    private Supplier<Combiner> combiner;
     
     SimpleSchema(DefaultSchemaBuilder builder) {
         this.title = builder.title();
         this.description = builder.description();
         this.assertions = builder.assertions();
-        this.combiner = Evaluators::newConjunctionCombiner;
     }
     
     /**
@@ -60,17 +54,13 @@ public class SimpleSchema extends AbstractJsonSchema {
         this.title = original.title;
         this.description = original.description;
         this.assertions = new ArrayList<>(original.assertions);
-        this.combiner = Evaluators::newConjunctionCombiner;
     }
     
     @Override
-    public Optional<Evaluator> createEvaluator(InstanceType type) {
+    public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
-        if (type.isContainer()) {
-            return createEvaluatorForBranch(type);
-        } else {
-            return createEvaluatorForLeaf(type);
-        }
+        LogicalEvaluator evaluator = createLogicalEvaluator(type, false);
+        return appendEvaluatorsTo(evaluator, type);
     }
 
     @Override
@@ -81,51 +71,23 @@ public class SimpleSchema extends AbstractJsonSchema {
         generator.writeEnd();
     }
  
-    protected Optional<Evaluator> createEvaluatorForBranch(InstanceType type) {
-        Combiner combiner = createCombiner();
-        combineEvaluators(type, combiner);
-        combiner.withEndCondition((event, depth, empty)->
-            empty ||
-            (depth == 0 && (event == Event.END_ARRAY || event == Event.END_OBJECT))
-        );
-        return combiner.getCombined();
-    }
-    
-    protected Optional<Evaluator> createEvaluatorForLeaf(InstanceType type) {
-        Combiner combiner = createCombiner();
-        combineEvaluators(type, combiner);
-        combiner.withEndCondition(EndCondition.IMMEDIATE);
-        return combiner.getCombined();
-    }
-
-    protected Optional<Evaluator> combineEvaluators(InstanceType type) {
-        Combiner combiner = createCombiner();
-        combineEvaluators(type, combiner);
-        return combiner.getCombined();
-    }
-    
-    protected void combineEvaluators(InstanceType type, Combiner combiner) {
-        assertions.stream()
-               .filter(a->a.canApplyTo(type))
-               .map(Assertion::createEvaluator)
-               .forEach(combiner::append);
-    }
-    
-    protected Combiner createCombiner() {
-        return combiner.get();
-    }
-
     @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new SimpleSchema(this).negateSelf();
-    }
-    
-    protected SimpleSchema negateSelf() {
-        this.assertions.replaceAll(Assertion::negate);
-        this.combiner = Evaluators::newInclusiveDisjunctionCombiner;
-        return this;
+        return new NegatedSimpleSchema(this);
     }
 
+    protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
+        assertions.stream()
+            .filter(a->a.canApplyTo(type))
+            .map(a->a.createEvaluator(type))
+            .forEach(evaluator::append);
+        return evaluator;
+    }
+    
+    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
+        return Evaluators.newConjunctionEvaluator(type, extensible);
+    } 
+    
     protected void appendJsonMembers(JsonGenerator generator) {
         if (this.title != null) {
             generator.write("title", this.title);

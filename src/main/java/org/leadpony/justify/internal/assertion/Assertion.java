@@ -28,11 +28,25 @@ import org.leadpony.justify.core.InstanceType;
  */
 public interface Assertion {
     
+    /**
+     * Checks if this assertion can apply to the specified type of JSON instance.
+     * 
+     * @param type the type of the instance.
+     * @return {@code true} if this assertion can apply to the instance, {@code false} otherwise.
+     * @throws NullPointerException if {@code type} is {@code null}.
+     */
     default boolean canApplyTo(InstanceType type) {
         return true;
     }
     
-    Evaluator createEvaluator();
+    /**
+     * Creates a new evaluator for this assertion.
+     * 
+     * @param type the type of the instance.
+     * @return newly created evaluator, never be {@code null}.
+     * @throws NullPointerException if {@code type} is {@code null}.
+     */
+    Evaluator createEvaluator(InstanceType type);
     
     Assertion negate();
     

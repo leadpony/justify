@@ -27,20 +27,23 @@ import org.junit.runners.Parameterized.Parameters;
  * 
  * @author leadpony
  */
+@SuppressWarnings("unused")
 @RunWith(Parameterized.class)
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
-            "/spec/tests/draft7/not.json",
-
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
+            "/spec/tests/draft7/const.json",
             "/spec/tests/draft7/exclusiveMaximum.json",
             "/spec/tests/draft7/exclusiveMinimum.json",
+            "/spec/tests/draft7/if-then-else.json",
             "/spec/tests/draft7/maximum.json",
             "/spec/tests/draft7/maxLength.json",
             "/spec/tests/draft7/minimum.json",
             "/spec/tests/draft7/minLength.json",
+            "/spec/tests/draft7/multipleOf.json",
+            "/spec/tests/draft7/not.json",
             "/spec/tests/draft7/oneOf.json",
             "/spec/tests/draft7/required.json",
             "/spec/tests/draft7/type.json"
@@ -52,7 +55,6 @@ public class SpecTest extends AbstractSpecTest {
     
     @Before
     public void setUp() {
-        //Assume.assumeTrue(testIndex == 8);
     }
 
     @Parameters(name = "{0}@{1}: {2}")
