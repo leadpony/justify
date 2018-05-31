@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
@@ -38,8 +39,10 @@ import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.assertion.Const;
 import org.leadpony.justify.internal.assertion.ExclusiveMaximum;
 import org.leadpony.justify.internal.assertion.ExclusiveMinimum;
+import org.leadpony.justify.internal.assertion.MaxItems;
 import org.leadpony.justify.internal.assertion.MaxLength;
 import org.leadpony.justify.internal.assertion.Maximum;
+import org.leadpony.justify.internal.assertion.MinItems;
 import org.leadpony.justify.internal.assertion.MinLength;
 import org.leadpony.justify.internal.assertion.Minimum;
 import org.leadpony.justify.internal.assertion.MultipleOf;
@@ -60,8 +63,13 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private String description;
     private final List<Assertion> assertions = new ArrayList<>();
     
-    private final Map<String, JsonSchema> properties = new HashMap<>();
-    private final List<JsonSchema> items = new ArrayList<>();
+    private Map<String, JsonSchema> properties;
+    private Map<Pattern, JsonSchema> patternProperties;
+    private JsonSchema additionalProperties;
+    
+    private Object items;
+    private JsonSchema additionalItems;
+
     private final List<JsonSchema> subschemas = new ArrayList<>();
     
     private JsonSchema ifSchema;
@@ -85,14 +93,24 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         return Collections.unmodifiableList(assertions);
     }
     
-    Map<String, JsonSchema> properties() {
-        return Collections.unmodifiableMap(properties);
+    ItemSchemaFinder getItemSchemaFinder() {
+        if (items == null || items instanceof JsonSchema) {
+            JsonSchema item = (JsonSchema)this.items;
+            return ItemSchemaFinder.of(item);
+        } else {
+            @SuppressWarnings("unchecked")
+            List<JsonSchema> items = (List<JsonSchema>)this.items;
+            return ItemSchemaFinder.of(items, additionalItems);
+        }
     }
-
-    List<JsonSchema> items() {
-        return Collections.unmodifiableList(items);
+    
+    PropertySchemaFinder getPropertySchemaFinder() {
+        return new PropertySchemaFinder(
+                this.properties,
+                this.patternProperties,
+                this.additionalProperties);
     }
-
+    
     List<JsonSchema> subschemas() {
         return Collections.unmodifiableList(subschemas);
     }
@@ -215,26 +233,65 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        properties.put(name, subschema);
+        if (this.properties == null) {
+            this.properties = new HashMap<>();
+        }
+        this.properties.put(name, subschema);
         return builderWithSubschema();
     }
 
     @Override
+    public JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema) {
+        Objects.requireNonNull(pattern, "pattern must not be null.");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        Pattern compiled = Pattern.compile(pattern);
+        if (this.patternProperties == null) {
+            this.patternProperties = new HashMap<>();
+        }
+        this.patternProperties.put(compiled, subschema);
+        return builderWithSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.additionalProperties = subschema;
+        return builderWithSubschema();
+    }
+    
+    @Override
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        addItem(subschema);
+        this.items = subschema;
+        return builderWithSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        this.items = new ArrayList<JsonSchema>(subschemas);
+        return builderWithSubschema();
+    }
+  
+    @Override
+    public JsonSchemaBuilder withMaxItems(int bound) {
+        assertions.add(new MaxItems(bound));
         return builderNonempty();
     }
 
     @Override
-    public JsonSchemaBuilder withItems(JsonSchema... subschemas) {
-        Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        for (JsonSchema subschema : subschemas) {
-            addItem(subschema);
-        }
-        return builderWithSubschema();
+    public JsonSchemaBuilder withMinItems(int bound) {
+        assertions.add(new MinItems(bound));
+        return builderNonempty();
     }
-  
+    
+    @Override
+    public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.additionalItems = subschema;
+        return builderWithSubschema();
+    } 
+    
     @Override
     public JsonSchemaBuilder withAllOf(JsonSchema... subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
@@ -320,10 +377,6 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private JsonSchemaBuilder builderWithSubschema() {
         this.hasSubschema = true;
         return builderNonempty();
-    }
-    
-    private void addItem(JsonSchema subschema) {
-        items.add(subschema);
     }
     
     private void addConditionalSchemaIfExists() {

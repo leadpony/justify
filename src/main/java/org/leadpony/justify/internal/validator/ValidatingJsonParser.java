@@ -32,6 +32,7 @@ import org.leadpony.justify.core.ValidationResult;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * JSON parser with validation functionality.
@@ -64,6 +65,9 @@ class ValidatingJsonParser extends JsonParserDecorator
   
     @Override
     public void accept(Problem problem) {
+        if (problem == null) {
+            problem = createUnknownProblem();
+        }
         problem.setLocation(realParser().getLocation());
         problems.add(problem);
     }
@@ -105,5 +109,11 @@ class ValidatingJsonParser extends JsonParserDecorator
     }
 
     private void handleNothing(Event event, JsonParser parser) {
+    }
+    
+    private static Problem createUnknownProblem() {
+        return ProblemBuilder.newBuilder()
+                .withMessage("instance.problem.unknown")
+                .build();
     }
 }

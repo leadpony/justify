@@ -76,10 +76,11 @@ public abstract class AbstractSpecTest {
             return lastSchema;
         }
         StringReader reader = new StringReader(object.toString());
+        JsonSchema newSchema = JsonSchema.load(reader);
         // Caches loaded schema for future use.
         lastObject = object;
-        lastSchema = JsonSchema.load(reader);
-        return lastSchema;
+        lastSchema = newSchema;
+        return newSchema;
     }
     
     protected void printProblems(ValidationResult result) {

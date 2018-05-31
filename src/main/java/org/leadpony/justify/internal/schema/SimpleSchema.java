@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonGenerator;
 
@@ -49,11 +49,15 @@ public class SimpleSchema extends AbstractJsonSchema {
      * Copy constructor.
      * 
      * @param original the original schema.
+     * @param negating {@code true} if this schema is negation of the original.
      */
-    protected SimpleSchema(SimpleSchema original) {
+    protected SimpleSchema(SimpleSchema original, boolean negating) {
+        assert negating;
         this.title = original.title;
         this.description = original.description;
-        this.assertions = new ArrayList<>(original.assertions);
+        this.assertions = original.assertions.stream()
+                .map(Assertion::negate)
+                .collect(Collectors.toList());
     }
     
     @Override

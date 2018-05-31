@@ -32,15 +32,21 @@ import org.junit.runners.Parameterized.Parameters;
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
+            //"/spec/tests/draft7/properties.json",
+            
+            "/spec/tests/draft7/additionalItems.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
             "/spec/tests/draft7/const.json",
             "/spec/tests/draft7/exclusiveMaximum.json",
             "/spec/tests/draft7/exclusiveMinimum.json",
             "/spec/tests/draft7/if-then-else.json",
+            "/spec/tests/draft7/items.json",
             "/spec/tests/draft7/maximum.json",
+            "/spec/tests/draft7/maxItems.json",
             "/spec/tests/draft7/maxLength.json",
             "/spec/tests/draft7/minimum.json",
+            "/spec/tests/draft7/minItems.json",
             "/spec/tests/draft7/minLength.json",
             "/spec/tests/draft7/multipleOf.json",
             "/spec/tests/draft7/not.json",
@@ -55,6 +61,7 @@ public class SpecTest extends AbstractSpecTest {
     
     @Before
     public void setUp() {
+        //Assume.assumeTrue(testIndex == 8);
     }
 
     @Parameters(name = "{0}@{1}: {2}")

@@ -47,11 +47,30 @@ public interface Evaluator {
     /**
      * Evaluates JSON schema against JSON instance.
      * 
-     * @param event the event triggered by JSON parser.
-     * @param parser the JSON parser.
+     * @param event the event triggered by JSON parser, cannot be {@code null}.
+     * @param parser the JSON parser, cannot be {@code null}.
      * @param depth the depth where the event occurred.
-     * @param consumer the consumer of the found problems.
+     * @param consumer the consumer of the found problems, cannot be {@code null}.
      * @return the result of the evaluation, never be {@code null}.
      */
     Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
+
+    /**
+     * The evaluator which evaluates any JSON instances as true ("valid").
+     */
+    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
+
+    /**
+     * The evaluator which evaluates any JSON instances as false ("invalid")
+     * and reports a problem.
+     */
+    public static final Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
+            consumer.accept(null);
+            return Result.FALSE;
+        };
+    
+    /**
+     * The evaluator whose result should be always ignored.
+     */
+    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
 }

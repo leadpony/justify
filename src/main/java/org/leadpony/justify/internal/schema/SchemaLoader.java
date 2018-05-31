@@ -92,6 +92,12 @@ public class SchemaLoader {
     
     private void populateSchema(String keyName, JsonSchemaBuilder builder) {
         switch (keyName) {
+        case "additionalItems":
+            addAdditionalItems(builder);
+            break;
+        case "additionalProperties":
+            addAdditionalProperties(builder);
+            break;
         case "allOf":
             addAllOf(builder);
             break;
@@ -116,14 +122,23 @@ public class SchemaLoader {
         case "if":
             addIf(builder);
             break;
+        case "items":
+            addItems(builder);
+            break;
         case "maximum":
             addMaximum(builder);
+            break;
+        case "maxItems":
+            addMaxItems(builder);
             break;
         case "maxLength":
             addMaxLength(builder);
             break;
         case "minimum":
             addMinimum(builder);
+            break;
+        case "minItems":
+            addMinItems(builder);
             break;
         case "minLength":
             addMinLength(builder);
@@ -136,6 +151,9 @@ public class SchemaLoader {
             break;
         case "oneOf":
             addOneOf(builder);
+            break;
+        case "patternProperties":
+            addPatternProperties(builder);
             break;
         case "properties":
             addProperties(builder);
@@ -155,12 +173,24 @@ public class SchemaLoader {
         }
     }
     
+    private void addAdditionalItems(JsonSchemaBuilder builder) {
+        builder.withAdditionalItems(subschema());
+    }
+    
+    private void addAdditionalProperties(JsonSchemaBuilder builder) {
+        builder.withAdditionalProperties(subschema());
+    }
+
     private void addAllOf(JsonSchemaBuilder builder) {
-        builder.withAllOf(subschemaArray());
+        if (parser.next() == Event.START_ARRAY) {
+            builder.withAllOf(arrayOfSubschemas());
+        }
     }
 
     private void addAnyOf(JsonSchemaBuilder builder) {
-        builder.withAnyOf(subschemaArray());
+        if (parser.next() == Event.START_ARRAY) {
+            builder.withAnyOf(arrayOfSubschemas());
+        }
     }
     
     private void addConst(JsonSchemaBuilder builder) {
@@ -193,10 +223,25 @@ public class SchemaLoader {
     private void addIf(JsonSchemaBuilder builder) {
         builder.withIf(subschema());
     }
+    
+    private void addItems(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.START_ARRAY) {
+            builder.withItems(arrayOfSubschemas());
+        } else {
+            builder.withItem(subschema(event));
+        }
+    }
 
     private void addMaximum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMaximum(parser.getBigDecimal());
+        }
+    }
+    
+    private void addMaxItems(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMaxItems(parser.getInt());
         }
     }
 
@@ -209,6 +254,12 @@ public class SchemaLoader {
     private void addMinimum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMinimum(parser.getBigDecimal());
+        }
+    }
+
+    private void addMinItems(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMinItems(parser.getInt());
         }
     }
 
@@ -229,7 +280,24 @@ public class SchemaLoader {
     }
 
     private void addOneOf(JsonSchemaBuilder builder) {
-        builder.withOneOf(subschemaArray());
+        if (parser.next() == Event.START_ARRAY) {
+            builder.withOneOf(arrayOfSubschemas());
+        }
+    }
+
+    private void addPatternProperties(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event != Event.START_OBJECT) {
+            return;
+        }
+        while (parser.hasNext()) {
+            event = parser.next();
+            if (event == Event.KEY_NAME) {
+                builder.withPatternProperty(parser.getString(), subschema());
+            } else if (event == Event.END_OBJECT) {
+                break;
+            }
+        }
     }
 
     private void addProperties(JsonSchemaBuilder builder) {
@@ -240,19 +308,7 @@ public class SchemaLoader {
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
-                String keyName = parser.getString();
-                event = parser.next();
-                switch (event) {
-                case START_OBJECT:
-                    builder.withProperty(keyName, objectSchema());
-                    break;
-                case VALUE_TRUE:
-                case VALUE_FALSE:
-                    builder.withProperty(keyName, literalSchema(event));
-                    break;
-                default:
-                    break;
-                }
+                builder.withProperty(parser.getString(), subschema());
             } else if (event == Event.END_OBJECT) {
                 break;
             }
@@ -302,7 +358,10 @@ public class SchemaLoader {
     }
     
     private JsonSchema subschema() {
-        Event event = parser.next();
+        return subschema(parser.next());
+    }
+    
+    private JsonSchema subschema(Event event) {
         switch (event) {
         case START_OBJECT:
             return objectSchema();
@@ -314,23 +373,11 @@ public class SchemaLoader {
         }
     }
     
-    private List<JsonSchema> subschemaArray() {
+    private List<JsonSchema> arrayOfSubschemas() {
         List<JsonSchema> subschemas = new ArrayList<>();
-        Event event = parser.next();
-        if (event == Event.START_ARRAY) {
-            while ((event = parser.next()) != Event.END_ARRAY) {
-                switch (event) {
-                case START_OBJECT:
-                    subschemas.add(objectSchema());
-                    break;
-                case VALUE_TRUE:
-                case VALUE_FALSE:
-                    subschemas.add(literalSchema(event));
-                    break;
-                default:
-                    break;
-                }
-            }
+        Event event = null;
+        while ((event = parser.next()) != Event.END_ARRAY) {
+            subschemas.add(subschema(event));
         }
         return subschemas;
     }

@@ -17,8 +17,6 @@
 package org.leadpony.justify.internal.schema;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -28,11 +26,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 class NegatedComplexSchema extends ComplexSchema {
 
     NegatedComplexSchema(ComplexSchema original) {
-        super(original);
-        this.assertions.replaceAll(Assertion::negate);
-        this.properties.replaceAll((k, v)->v.negate());
-        this.items.replaceAll(JsonSchema::negate);
-        this.subschemas.replaceAll(JsonSchema::negate);
+        super(original, true);
     }
 
     @Override

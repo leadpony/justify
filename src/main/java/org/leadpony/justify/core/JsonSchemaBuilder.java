@@ -18,6 +18,7 @@ package org.leadpony.justify.core;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.json.JsonValue;
@@ -177,11 +178,21 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinLength(int bound);
 
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
+    
+    JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema);
+
+    JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema);
 
     JsonSchemaBuilder withItem(JsonSchema subschema);
 
-    JsonSchemaBuilder withItems(JsonSchema... subschemas);
+    JsonSchemaBuilder withItems(List<JsonSchema> subschemas);
     
+    JsonSchemaBuilder withMaxItems(int bound);
+
+    JsonSchemaBuilder withMinItems(int bound);
+    
+    JsonSchemaBuilder withAdditionalItems(JsonSchema subschema);
+
     JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
 
     JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas);

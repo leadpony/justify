@@ -46,13 +46,13 @@ abstract class ContainerVisitor implements Evaluator {
     }
     
     protected void appendChild(Evaluator child) {
-        assert(this.child == null);
+        assert this.child == null;
         this.child = child;
         this.logical.append(this::evaluateChild);
     }
     
     private Result evaluateChild(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        assert(depth > 0);
+        assert depth > 0;
         Result result = this.child.evaluate(event, parser, depth - 1, consumer);
         if (result == Result.TRUE || result == Result.FALSE) {
             this.child = null;

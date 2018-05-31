@@ -16,11 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -39,14 +37,14 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  */
 public class ComplexSchema extends SimpleSchema {
     
-    protected final Map<String, JsonSchema> properties;
-    protected final List<JsonSchema> items;
+    protected final PropertySchemaFinder propertySchemaFinder;
+    protected final ItemSchemaFinder itemSchemaFinder;
     protected final List<JsonSchema> subschemas;
     
     ComplexSchema(DefaultSchemaBuilder builder) {
         super(builder);
-        this.properties = builder.properties();
-        this.items = builder.items();
+        this.propertySchemaFinder = builder.getPropertySchemaFinder();
+        this.itemSchemaFinder = builder.getItemSchemaFinder();
         this.subschemas = builder.subschemas();
     }
 
@@ -54,12 +52,16 @@ public class ComplexSchema extends SimpleSchema {
      * Copy constructor.
      * 
      * @param original the original schema.
+     * @param negating {@code true} if this schema is negation of the original.
      */
-    protected ComplexSchema(ComplexSchema original) {
-        super(original);
-        this.properties = new HashMap<>(original.properties);
-        this.items = new ArrayList<>(original.items);
-        this.subschemas = new ArrayList<>(original.subschemas);
+    protected ComplexSchema(ComplexSchema original, boolean negating) {
+        super(original, negating);
+        assert negating;
+        this.propertySchemaFinder = original.propertySchemaFinder.negate();
+        this.itemSchemaFinder = original.itemSchemaFinder.negate();
+        this.subschemas = original.subschemas.stream()
+                .map(JsonSchema::negate)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -97,6 +99,7 @@ public class ComplexSchema extends SimpleSchema {
         super.appendEvaluatorsTo(evaluator, type);
         subschemas.stream()
             .map(s->s.createEvaluator(type))
+            .filter(Objects::nonNull)
             .forEach(evaluator::append);
         return evaluator;
     }
@@ -104,32 +107,20 @@ public class ComplexSchema extends SimpleSchema {
     @Override
     protected void appendJsonMembers(JsonGenerator generator) {
         super.appendJsonMembers(generator);
-        if (!properties.isEmpty()) {
-            generator.writeStartObject("properties");
-            this.properties.forEach((name, schema)->{
-                generator.writeKey(name);
-                schema.toJson(generator);
-            });
-            generator.writeEnd();
-        }
-        if (!items.isEmpty()) {
-            generator.writeStartArray("items");
-            items.forEach(schema->schema.toJson(generator));
-            generator.writeEnd();
-        }
+        propertySchemaFinder.toJson(generator);
+        itemSchemaFinder.toJson(generator);
         subschemas.forEach(schema->schema.toJson(generator));
     }
  
     /**
      * Finds child schema to be applied to the specified property in object.
      * 
-     * @param propertyName the name of the property.
+     * @param propertyName the name of the property, cannot be {@code null}.
      * @return the child schema if found , {@code null} otherwise.
-     * @throws NullPointerException if {@code propertyName} is {@code null}.
      */
     private JsonSchema findChildSchema(String propertyName) {
         Objects.requireNonNull(propertyName, "propertyName must not be null.");
-        return properties.get(propertyName);
+        return propertySchemaFinder.findSchema(propertyName);
     }
 
     /**
@@ -139,11 +130,7 @@ public class ComplexSchema extends SimpleSchema {
      * @return the child schema if found , {@code null} otherwise.
      */
     private JsonSchema findChildSchema(int itemIndex) {
-        if (itemIndex < items.size()) {
-            return items.get(itemIndex);
-        } else {
-            return null;
-        }
+        return itemSchemaFinder.findSchema(itemIndex);
     }
     
     private class ArrayVisitor extends ContainerVisitor {

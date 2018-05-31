@@ -22,7 +22,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * A set of schemas representing "if", "then", and "else" keywords.
@@ -44,7 +43,7 @@ public class IfThenElse extends AbstractJsonSchema {
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         if (ifSchema == null || (thenSchema == null && elseSchema == null)) {
-            return Evaluators.ALWAYS_IGNORED;
+            return null;
         }
         Evaluator ifEvaluator = ifSchema.createEvaluator(type);
         Evaluator thenEvaluator = createEvaluator(thenSchema, type);

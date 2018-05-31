@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.schema;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -30,8 +29,7 @@ public class NegatedSimpleSchema extends SimpleSchema {
      * @param builder
      */
     NegatedSimpleSchema(SimpleSchema original) {
-        super(original);
-        this.assertions.replaceAll(Assertion::negate);
+        super(original, true);
     }
 
     @Override

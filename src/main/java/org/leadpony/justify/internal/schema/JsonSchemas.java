@@ -23,7 +23,6 @@ import javax.json.stream.JsonGenerator;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Utility class operating on {@link JsonSchema} instances.
@@ -36,7 +35,7 @@ public interface JsonSchemas {
         
         @Override
         public Evaluator createEvaluator(InstanceType type) {
-            return Evaluators.ALWAYS_TRUE;
+            return Evaluator.ALWAYS_TRUE;
         }
         
         @Override
@@ -60,7 +59,7 @@ public interface JsonSchemas {
         
         @Override
         public Evaluator createEvaluator(InstanceType type) {
-            return Evaluators.ALWAYS_FALSE;
+            return Evaluator.ALWAYS_FALSE;
         }
 
         @Override
@@ -87,7 +86,7 @@ public interface JsonSchemas {
         
         @Override
         public Evaluator createEvaluator(InstanceType type) {
-            return Evaluators.ALWAYS_TRUE;
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override

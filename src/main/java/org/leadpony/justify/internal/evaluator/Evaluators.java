@@ -20,9 +20,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * Utility class operating on {@link Evaluator} instances.
@@ -30,28 +27,6 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * @author leadpony
  */
 public final class Evaluators {
-
-    /**
-     * The evaluator which evaluates any instances as true ("valid").
-     */
-    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
-
-    /**
-     * The evaluator which evaluates any instances as false ("invalid")
-     * and reports a problem.
-     */
-    public static final Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
-            Problem p = ProblemBuilder.newBuilder()
-                    .withMessage("instance.problem.unknown")
-                    .build();
-            consumer.accept(p);
-            return Result.FALSE;
-        };
-    
-    /**
-     * The evaluator whose result should be always ignored.
-     */
-    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
 
     public static LogicalEvaluator newConjunctionEvaluator(InstanceType type, boolean extensible) {
         if (extensible) {
