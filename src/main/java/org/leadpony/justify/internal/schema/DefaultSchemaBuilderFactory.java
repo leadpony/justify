@@ -21,6 +21,8 @@ import javax.json.spi.JsonProvider;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 
 /**
+ * Default implementation of {@link JsonSchemaBuilderFactory}.
+ * 
  * @author leadpony
  */
 public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {

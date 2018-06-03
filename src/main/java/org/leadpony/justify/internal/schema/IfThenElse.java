@@ -16,6 +16,10 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -31,18 +35,32 @@ import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 public class IfThenElse extends AbstractJsonSchema {
     
     private final JsonSchema ifSchema;
-    private final JsonSchema thenSchema;
-    private final JsonSchema elseSchema;
+    private final Optional<JsonSchema> thenSchema;
+    private final Optional<JsonSchema> elseSchema;
     
     public IfThenElse(JsonSchema ifSchema, JsonSchema thenSchema, JsonSchema elseSchema) {
         this.ifSchema = ifSchema;
-        this.thenSchema = thenSchema;
-        this.elseSchema = elseSchema;
+        this.thenSchema = Optional.ofNullable(thenSchema);
+        this.elseSchema = Optional.ofNullable(elseSchema);
     }
 
     @Override
+    public boolean hasSubschema() {
+        return true;
+    }
+    
+    @Override
+    public Iterable<JsonSchema> subschemas() {
+        List<JsonSchema> subschemas = new ArrayList<>();
+        subschemas.add(ifSchema);
+        thenSchema.ifPresent(subschemas::add);
+        elseSchema.ifPresent(subschemas::add);
+        return subschemas;
+    }
+    
+    @Override
     public Evaluator createEvaluator(InstanceType type) {
-        if (ifSchema == null || (thenSchema == null && elseSchema == null)) {
+        if (!thenSchema.isPresent() && !elseSchema.isPresent()) {
             return null;
         }
         Evaluator ifEvaluator = ifSchema.createEvaluator(type);
@@ -53,18 +71,16 @@ public class IfThenElse extends AbstractJsonSchema {
 
     @Override
     public void toJson(JsonGenerator generator) {
-        if (ifSchema != null) {
-            generator.writeKey("if");
-            ifSchema.toJson(generator);
-        }
-        if (thenSchema != null) {
+        generator.writeKey("if");
+        ifSchema.toJson(generator);
+        thenSchema.ifPresent(schema->{
             generator.writeKey("then");
-            thenSchema.toJson(generator);
-        }
-        if (elseSchema != null) {
+            schema.toJson(generator);
+        });
+        elseSchema.ifPresent(schema->{
             generator.writeKey("else");
-            elseSchema.toJson(generator);
-        }
+            schema.toJson(generator);
+        });
     }
 
     @Override
@@ -72,7 +88,8 @@ public class IfThenElse extends AbstractJsonSchema {
         throw new UnsupportedOperationException();
     }
     
-    private static Evaluator createEvaluator(JsonSchema schema, InstanceType type) {
-        return (schema != null) ? schema.createEvaluator(type) : null;
+    private static Evaluator createEvaluator(Optional<JsonSchema> schema, InstanceType type) {
+        return schema.isPresent() ?
+                schema.get().createEvaluator(type) : null;
     }
 }

@@ -24,14 +24,13 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import org.leadpony.justify.internal.schema.SchemaLoader;
 import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactory;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonValidatorFactory;
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.JsonSchemas;
+import org.leadpony.justify.internal.schema.io.DefaultSchemaReader;
 
 /**
  * Default implementation of {@link JsonValidationServiceProvider}.
@@ -43,42 +42,25 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
     private JsonProvider jsonProvider;
     private JsonParserFactory parserFactory;
     
+    private JsonSchema metaschema;
+    
+    private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
+    
     public DefaultJsonValidationServiceProvider() {
     }
 
     @Override
-    public JsonSchema emptySchema() {
-        return JsonSchemas.EMPTY;
+    public JsonSchemaReader createReader(InputStream in) {
+        return createSimpleReader(in).withExternalSchema(metaschema);
+    }
+  
+    @Override
+    public JsonSchemaReader createReader(Reader reader) {
+        return createSimpleReader(reader).withExternalSchema(metaschema);
     }
     
     @Override
-    public JsonSchema alwaysTrueSchema() {
-        return JsonSchemas.ALWAYS_TRUE;
-    }
-    
-    @Override
-    public JsonSchema alwaysFalseSchema() {
-        return JsonSchemas.ALWAYS_FALSE;
-    }
-
-    @Override
-    public JsonSchema loadSchema(InputStream in) {
-        Objects.requireNonNull(in, "in must not be null.");
-        try (JsonParser parser = this.parserFactory.createParser(in)) {
-            return loadSchema(parser);
-        }
-    }
-
-    @Override
-    public JsonSchema loadSchema(Reader reader) {
-        Objects.requireNonNull(reader, "reader must not be null.");
-        try (JsonParser parser = this.parserFactory.createParser(reader)) {
-            return loadSchema(parser);
-        }
-    }
-    
-    @Override
-    public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
+    public DefaultSchemaBuilderFactory createSchemaBuilderFactory() {
         return new DefaultSchemaBuilderFactory(this.jsonProvider);
     }
 
@@ -88,15 +70,31 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
     }
     
     @Override
-    protected JsonValidationServiceProvider withBaseProvider(JsonProvider jsonProvider) {
+    protected void initialize(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
         this.parserFactory = jsonProvider.createParserFactory(null);
-        return this;
+        this.metaschema = loadMetaschema(METASCHEMA_NAME);
     }
     
-    private JsonSchema loadSchema(JsonParser parser) {
-        JsonSchemaBuilderFactory factory = createSchemaBuilderFactory();
-        SchemaLoader loader = new SchemaLoader(parser, factory, this.jsonProvider);
-        return loader.load();
+    private JsonSchema loadMetaschema(String name) {
+        InputStream in = getClass().getResourceAsStream(name);
+        try (JsonSchemaReader reader = createSimpleReader(in)) {
+            return reader.read();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private JsonSchemaReader createSimpleReader(InputStream in) {
+        Objects.requireNonNull(in, "in must not be null.");
+        JsonParser parser = this.parserFactory.createParser(in);
+        return new DefaultSchemaReader(parser, this.createSchemaBuilderFactory());
+    }
+
+    private JsonSchemaReader createSimpleReader(Reader reader) {
+        Objects.requireNonNull(reader, "reader must not be null.");
+        JsonParser parser = this.parserFactory.createParser(reader);
+        return new DefaultSchemaReader(parser, this.createSchemaBuilderFactory());
     }
 }

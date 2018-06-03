@@ -16,12 +16,13 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.io.StringWriter;
 import java.util.Objects;
 
+import javax.json.Json;
+import javax.json.JsonException;
 import javax.json.stream.JsonGenerator;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
@@ -29,80 +30,18 @@ import org.leadpony.justify.core.JsonSchema;
  * 
  * @author leadpony
  */
-public interface JsonSchemas {
+public final class JsonSchemas {
     
-    JsonSchema ALWAYS_TRUE = new JsonSchema() {
-        
-        @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+    public static String toString(JsonSchema schema) {
+        Objects.requireNonNull(schema, "schema must not be null.");
+        StringWriter writer = new StringWriter();
+        try (JsonGenerator generator = Json.createGenerator(writer)) {
+            schema.toJson(generator);
+        } catch (JsonException e) {
         }
-        
-        @Override
-        public JsonSchema negate() {
-            return ALWAYS_FALSE;
-        }
-
-        @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.write(true);
-        }
-        
-        @Override
-        public String toString() {
-            return "true";
-        }
-    };
+        return writer.toString();
+    }
     
-    JsonSchema ALWAYS_FALSE = new JsonSchema() {
-        
-        @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_FALSE;
-        }
-
-        @Override
-        public JsonSchema negate() {
-            return ALWAYS_TRUE;
-        }
-
-        @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.write(false);
-        }
-
-        @Override
-        public String toString() {
-            return "false";
-        }
-    };
-    
-    /**
-     * Empty JSON Schema.
-     */
-    JsonSchema EMPTY = new JsonSchema() {
-        
-        @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
-        }
-
-        @Override
-        public JsonSchema negate() {
-            return ALWAYS_FALSE;
-        }
-
-        @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.writeStartObject().writeEnd();
-        }
-
-        @Override
-        public String toString() {
-            return "{}";
-        }
-    };
+    private JsonSchemas() {
+    }
 }

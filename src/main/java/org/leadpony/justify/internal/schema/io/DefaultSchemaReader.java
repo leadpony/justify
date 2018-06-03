@@ -14,41 +14,85 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
+package org.leadpony.justify.internal.schema.io;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.core.JsonSchemaReader;
+import org.leadpony.justify.internal.schema.DefaultSchemaBuilder;
+import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.internal.schema.SchemaVisitor;
 
 /**
+ * Default implementation of {@link JsonSchemaReader}.
+ * 
  * @author leadpony
  */
-public class SchemaLoader {
+public class DefaultSchemaReader implements JsonSchemaReader {
+    
+    private static final Logger log = Logger.getLogger(DefaultSchemaReader.class.getName());
     
     private final JsonParser parser;
-    private final JsonSchemaBuilderFactory factory;
-    @SuppressWarnings("unused")
-    private final JsonProvider provider;
+    private final DefaultSchemaBuilderFactory factory;
+
+    private boolean alreadyRead;
+    private boolean alreadyClosed;
     
-    public SchemaLoader(JsonParser parser, JsonSchemaBuilderFactory factory, JsonProvider provider) {
+    private final Map<URI, JsonSchema> externalSchemas = new HashMap<>();
+    
+    private final Map<URI, JsonSchema> idMap = new HashMap<>();
+    private final Map<SchemaReference, URI> references = new HashMap<>();
+    
+    public DefaultSchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory) {
         this.parser = parser;
         this.factory = factory;
-        this.provider = provider;
     }
     
-    public JsonSchema load() {
-        return rootSchema();
+    @Override
+    public JsonSchema read() {
+        if (alreadyRead || alreadyClosed) {
+            throw new IllegalStateException("alreay read");
+        }
+        JsonSchema rootSchema = rootSchema();
+        resolveRelativeURI(rootSchema);
+        resolveAllReferences();
+        this.alreadyRead = true;
+        return rootSchema;
     }
+    
+    @Override
+    public void close() {
+        if (this.alreadyClosed) {
+            this.parser.close();
+            this.alreadyClosed = true;
+        }
+    }
+    
+    @Override
+    public JsonSchemaReader withExternalSchema(JsonSchema schema) {
+        Objects.requireNonNull(schema, "schema must not be null.");
+        Map<URI, JsonSchema> idMap = schema.idMap();
+        if (idMap != null) {
+            externalSchemas.putAll(idMap);
+        }
+        return this;
+    }
+    
     
     private JsonSchema rootSchema() {
         Event event = parser.next();
@@ -57,41 +101,57 @@ public class SchemaLoader {
         case VALUE_FALSE:
             return literalSchema(event);
         case START_OBJECT:
-            return objectSchema();
+            return objectSchema(true);
         default:
             return null;
         }
     }
     
-    private JsonSchema objectSchema() {
-        JsonSchemaBuilder builder = this.factory.createBuilder();
-        while (parser.hasNext()) {
-            switch (parser.next()) {
-            case KEY_NAME:
-                populateSchema(parser.getString(), builder);
-                break;
-            case END_OBJECT:
-                return builder.build();
-            default:
-                break;
+    private JsonSchema objectSchema(boolean root) {
+        DefaultSchemaBuilder builder = this.factory.createBuilder();
+        Event event = null;
+        while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
+            if (event == Event.KEY_NAME) {
+                String name = parser.getString();
+                populateSchema(name, builder);
             }
         }
-        return null;
+        if (root) {
+            builder.withIdMap(idMap);
+        }
+        JsonSchema schema = builder.build();
+        if (schema.id() != null) {
+            idMap.put(schema.id(), schema);
+        }
+        if (schema instanceof SchemaReference) {
+            SchemaReference reference = (SchemaReference)schema;
+            references.put(reference, reference.ref());
+        }
+        return schema;
     }
     
     private JsonSchema literalSchema(Event event) {
         switch (event) {
         case VALUE_TRUE:
-            return JsonSchemas.ALWAYS_TRUE;
+            return JsonSchema.TRUE;
         case VALUE_FALSE:
-            return JsonSchemas.ALWAYS_FALSE;
+            return JsonSchema.FALSE;
         default:
             return null;
         }
     }
     
-    private void populateSchema(String keyName, JsonSchemaBuilder builder) {
+    private void populateSchema(String keyName, DefaultSchemaBuilder builder) {
         switch (keyName) {
+        case "$id":
+            addId(builder);
+            break;
+        case "$ref":
+            addRef(builder);
+            break;
+        case "$schema":
+            addSchema(builder);
+            break;
         case "additionalItems":
             addAdditionalItems(builder);
             break;
@@ -106,6 +166,9 @@ public class SchemaLoader {
             break;
         case "const":
             addConst(builder);
+            break;
+        case "definitions":
+            addDefinitions(builder);
             break;
         case "description":
             addDescription(builder);
@@ -170,9 +233,33 @@ public class SchemaLoader {
         case "type":
             addType(builder);
             break;
+        default:
+            skipCurrentValue(keyName);
+            break;
         }
     }
     
+    private void addId(DefaultSchemaBuilder builder) {
+        if (parser.next() != Event.VALUE_STRING) {
+            return;
+        }
+        builder.withId(URI.create(parser.getString()));
+    }
+
+    private void addRef(DefaultSchemaBuilder builder) {
+        if (parser.next() != Event.VALUE_STRING) {
+            return;
+        }
+        builder.withRef(URI.create(parser.getString()));
+    }
+    
+    private void addSchema(DefaultSchemaBuilder builder) {
+        if (parser.next() != Event.VALUE_STRING) {
+            return;
+        }
+        builder.withSchema(URI.create(parser.getString()));
+    }
+
     private void addAdditionalItems(JsonSchemaBuilder builder) {
         builder.withAdditionalItems(subschema());
     }
@@ -196,6 +283,18 @@ public class SchemaLoader {
     private void addConst(JsonSchemaBuilder builder) {
         parser.next();
         builder.withConst(parser.getValue());
+    }
+    
+    private void addDefinitions(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event != Event.START_OBJECT) {
+            return;
+        }
+        while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
+            if (event == Event.KEY_NAME) {
+                builder.withDefinition(parser.getString(), subschema());
+            }
+        }
     }
 
     private void addDescription(JsonSchemaBuilder builder) {
@@ -308,7 +407,8 @@ public class SchemaLoader {
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
-                builder.withProperty(parser.getString(), subschema());
+                String name = parser.getString(); 
+                builder.withProperty(name, subschema());
             } else if (event == Event.END_OBJECT) {
                 break;
             }
@@ -364,7 +464,7 @@ public class SchemaLoader {
     private JsonSchema subschema(Event event) {
         switch (event) {
         case START_OBJECT:
-            return objectSchema();
+            return objectSchema(false);
         case VALUE_TRUE:
         case VALUE_FALSE:
             return literalSchema(event);
@@ -380,5 +480,54 @@ public class SchemaLoader {
             subschemas.add(subschema(event));
         }
         return subschemas;
+    }
+    
+    private void skipCurrentValue(String propertyName) {
+        log.fine("Skipping unknown property: " + propertyName);
+        if (parser.hasNext()) {
+            switch (parser.next()) {
+            case START_ARRAY:
+                parser.skipArray();
+                break;
+            case START_OBJECT:
+                parser.skipObject();
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    
+    private void resolveAllReferences() {
+        for (Map.Entry<SchemaReference, URI> entry : this.references.entrySet()) {
+            SchemaReference ref = entry.getKey();
+            URI uri = entry.getValue();
+            if (externalSchemas.containsKey(uri)) {
+                ref.setReferencedSchema(externalSchemas.get(uri));
+            }
+        }
+    }
+    
+    private void resolveRelativeURI(JsonSchema rootSchema) {
+        ResolvingVisitor visitor = new ResolvingVisitor();
+        visitor.visit(rootSchema);
+    }
+    
+    private class ResolvingVisitor implements SchemaVisitor {
+        
+        @Override
+        public void visit(JsonSchema schema) {
+            if (schema.hasId()) {
+                log.info("id = " + schema.id().toString());
+            }
+            if (schema instanceof SchemaReference) {
+                visitReference((SchemaReference)schema);
+            } 
+            visitSubschemas(schema);
+        }
+        
+        private void visitReference(SchemaReference reference) {
+            log.info("ref = " + reference.ref().toString());
+        }
     }
 }

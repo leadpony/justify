@@ -16,7 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -24,25 +26,33 @@ import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
- * JSON Schema without any subschemas.
+ * JSON Schema without any subschemas including child schemas.
  * 
  * @author leadpony
  */
-public class SimpleSchema extends AbstractJsonSchema {
+class LeafSchema extends AbstractJsonSchema {
 
+    private final URI id;
+    private final URI schema;
     private final String title;
     private final String description;
-    protected final List<Assertion> assertions;
+    private final List<Assertion> assertions;
     
-    SimpleSchema(DefaultSchemaBuilder builder) {
-        this.title = builder.title();
-        this.description = builder.description();
-        this.assertions = builder.assertions();
+    private final Map<URI, JsonSchema> idMap;
+    
+    LeafSchema(DefaultSchemaBuilder builder) {
+        this.id = builder.getId();
+        this.schema = builder.getSchema();
+        this.title = builder.getTitle();
+        this.description = builder.getDescription();
+        this.assertions = builder.getAssertions();
+        this.idMap = builder.getIdMap();
     }
     
     /**
@@ -51,13 +61,31 @@ public class SimpleSchema extends AbstractJsonSchema {
      * @param original the original schema.
      * @param negating {@code true} if this schema is negation of the original.
      */
-    protected SimpleSchema(SimpleSchema original, boolean negating) {
+    protected LeafSchema(LeafSchema original, boolean negating) {
         assert negating;
+        this.id = null;
+        this.schema = null;
         this.title = original.title;
         this.description = original.description;
         this.assertions = original.assertions.stream()
                 .map(Assertion::negate)
                 .collect(Collectors.toList());
+        this.idMap = original.idMap;
+    }
+    
+    @Override
+    public URI id() {
+        return id;
+    }
+    
+    @Override
+    public URI schema() {
+        return schema;
+    }
+
+    @Override
+    public Map<URI, JsonSchema> idMap() {
+        return idMap;
     }
     
     @Override
@@ -93,6 +121,12 @@ public class SimpleSchema extends AbstractJsonSchema {
     } 
     
     protected void appendJsonMembers(JsonGenerator generator) {
+        if (this.id != null) {
+            generator.write("$id", this.id.toString());
+        }
+        if (this.schema != null) {
+            generator.write("$schema", this.schema.toString());
+        }
         if (this.title != null) {
             generator.write("title", this.title);
         }

@@ -75,16 +75,20 @@ public abstract class AbstractSpecTest {
         if (object == lastObject) {
             return lastSchema;
         }
-        StringReader reader = new StringReader(object.toString());
-        JsonSchema newSchema = JsonSchema.load(reader);
-        // Caches loaded schema for future use.
-        lastObject = object;
-        lastSchema = newSchema;
-        return newSchema;
+        StringReader stringReader = new StringReader(object.toString());
+        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(stringReader)) {
+            JsonSchema schema = schemaReader.read();
+            // Caches loaded schema for future use.
+            lastObject = object;
+            lastSchema = schema;
+            return schema;
+        }
     }
     
     protected void printProblems(ValidationResult result) {
-        result.problems().forEach(System.out::println);
+        result.problems().forEach(p->{
+            System.out.println("[" + name + "@" + testIndex + "]" + p.toString());
+        });
     }
     
     protected static Iterable<Object[]> parameters(String[] names) {

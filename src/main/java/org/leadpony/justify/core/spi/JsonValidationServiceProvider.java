@@ -25,6 +25,7 @@ import javax.json.spi.JsonProvider;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaException;
+import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonValidatorFactory;
 
 /**
@@ -60,16 +61,25 @@ public abstract class JsonValidationServiceProvider {
     protected JsonValidationServiceProvider() {
     }
     
-    public abstract JsonSchema emptySchema();
+    /**
+     * Creates a JSON schema reader from a byte stream. 
+     * The character encoding of the stream is determined as described in RFC 7159.
+     * 
+     * @param in the byte stream from which a JSON schema is to be read.
+     * @return newly created instance of JSON schema reader.
+     * @throws NullPointerException if {@code in} is {@code null}.
+     */
+    public abstract JsonSchemaReader createReader(InputStream in);
     
-    public abstract JsonSchema alwaysTrueSchema();
-    
-    public abstract JsonSchema alwaysFalseSchema();
+    /**
+     * Creates a JSON schema reader from a reader. 
+     * 
+     * @param reader the reader from which a JSON schema is to be read.
+     * @return newly created instance of JSON schema reader.
+     * @throws NullPointerException if {@code reader} is {@code null}.
+     */
+    public abstract JsonSchemaReader createReader(Reader reader);
 
-    public abstract JsonSchema loadSchema(InputStream in);
-
-    public abstract JsonSchema loadSchema(Reader reader);
-    
     public abstract JsonSchemaBuilderFactory createSchemaBuilderFactory();
     
     /**
@@ -82,12 +92,11 @@ public abstract class JsonValidationServiceProvider {
     public abstract JsonValidatorFactory createValidatorFactory(JsonSchema schema);
 
     /**
-     * Attaches a underlying JSON provider to this provider immediately after its instantiation.  
+     * Initializes this provider immediately after its instantiation.  
      * 
      * @param jsonProvider the JSON provider to attach.
-     * @return this provider.
      */
-    protected abstract JsonValidationServiceProvider withBaseProvider(JsonProvider jsonProvider);
+    protected abstract void initialize(JsonProvider jsonProvider);
     
     /**
      * Creates an instance of this provider class for each thread.
@@ -99,7 +108,9 @@ public abstract class JsonValidationServiceProvider {
         ServiceLoader<JsonValidationServiceProvider> loader = ServiceLoader.load(JsonValidationServiceProvider.class);
         Iterator<JsonValidationServiceProvider> it = loader.iterator();
         if (it.hasNext()) {
-            return it.next().withBaseProvider(jsonProvider);
+            JsonValidationServiceProvider found = it.next();
+            found.initialize(jsonProvider);
+            return found;
         } else {
             return null;
         }

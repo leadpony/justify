@@ -16,12 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.io.StringWriter;
-
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.stream.JsonGenerator;
-
 import org.leadpony.justify.core.JsonSchema;
 
 /**
@@ -44,12 +38,7 @@ abstract class AbstractJsonSchema implements JsonSchema {
     
     @Override
     public String toString() {
-        StringWriter writer = new StringWriter();
-        try (JsonGenerator generator = Json.createGenerator(writer)) {
-            toJson(generator);
-        } catch (JsonException e) {
-        }
-        return writer.toString();
+        return JsonSchemas.toString(this);
     }
     
     protected abstract AbstractJsonSchema createNegatedSchema();

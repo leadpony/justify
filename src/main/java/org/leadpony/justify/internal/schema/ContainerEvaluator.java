@@ -28,12 +28,11 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 /**
  * @author leadpony
  */
-abstract class ContainerVisitor implements Evaluator {
+abstract class ContainerEvaluator implements Evaluator {
 
     private final LogicalEvaluator logical;
-    private Evaluator child;
     
-    protected ContainerVisitor(LogicalEvaluator logical) {
+    protected ContainerEvaluator(LogicalEvaluator logical) {
         this.logical = logical;
     }
 
@@ -46,18 +45,10 @@ abstract class ContainerVisitor implements Evaluator {
     }
     
     protected void appendChild(Evaluator child) {
-        assert this.child == null;
-        this.child = child;
-        this.logical.append(this::evaluateChild);
-    }
-    
-    private Result evaluateChild(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
-        assert depth > 0;
-        Result result = this.child.evaluate(event, parser, depth - 1, consumer);
-        if (result == Result.TRUE || result == Result.FALSE) {
-            this.child = null;
-        }
-        return result;
+        this.logical.append((event, parser, depth, consumer)->{
+            assert depth > 0;
+            return child.evaluate(event, parser, depth - 1, consumer);
+        });
     }
     
     protected abstract void update(Event event, JsonParser parser);

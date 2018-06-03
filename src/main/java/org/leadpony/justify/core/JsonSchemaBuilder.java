@@ -17,6 +17,7 @@
 package org.leadpony.justify.core;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,9 @@ import java.util.Set;
 import javax.json.JsonValue;
 
 /**
- * Builder of JSON schemas.
+ * Builder of JSON schema.
+ * 
+ * <p>Each instance of this type is NOT safe for use by multiple concurrent threads.</p>
  * 
  * @author leadpony
  */
@@ -37,6 +40,10 @@ public interface JsonSchemaBuilder {
      */
     JsonSchema build();
     
+    JsonSchemaBuilder withId(URI id);
+    
+    JsonSchemaBuilder withSchema(URI schema);
+
     JsonSchemaBuilder withTitle(String title);
     
     JsonSchemaBuilder withDescription(String description);
@@ -208,7 +215,7 @@ public interface JsonSchemaBuilder {
     /**
      * Appends "not" boolean logic schema.
      * 
-     * @param subschema the subschema of the schema to append, cannot be {@code null}.
+     * @param subschema the subschema of the "not" schema, cannot be {@code null}.
      * @return this builder.
      * @throws NullPointerException one of parameters was {@code null}.
      */
@@ -219,4 +226,14 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withThen(JsonSchema subschema);
 
     JsonSchemaBuilder withElse(JsonSchema subschema);
+    
+    /**
+     * Appends a definition of schema.
+     * 
+     * @param name the name of the definition.
+     * @param schema the schema to define.
+     * @return this builder.
+     * @throws NullPointerException one of parameters was {@code null}.
+     */
+    JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
 }

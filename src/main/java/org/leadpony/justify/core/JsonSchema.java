@@ -15,12 +15,12 @@
  */
 package org.leadpony.justify.core;
 
-import java.io.InputStream;
-import java.io.Reader;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.json.stream.JsonGenerator;
-
-import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
 /**
  * JSON schema.
@@ -28,40 +28,44 @@ import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
  * @author leadpony
  */
 public interface JsonSchema {
-  
+ 
     /**
-     * Returns the empty JSON schema.
+     * Checks if this schema has an identifier assigned or not.
      * 
-     * @return the instance of empty JSON schema, never be {@code null}.
+     * @return {@code true} if this schema has an identifier, {@code false} otherwise.
      */
-    static JsonSchema empty() {
-        return JsonValidationServiceProvider.provider().emptySchema();
+    default boolean hasId() {
+        return id() != null;
     }
     
     /**
-     * Returns the JSON schema which approves any JSON instances.
+     * Returns the identifier of this schema, specified with "$id" keyword.
      * 
-     * @return the instance of the JSON schema, never be {@code null}.
+     * @return the identifier of this schema, or {@code null}.
      */
-    static JsonSchema alwaysTrue() {
-        return JsonValidationServiceProvider.provider().alwaysTrueSchema();
+    default URI id() {
+        return null;
     }
     
     /**
-     * Returns the JSON schema which rejects any JSON instances.
+     * Returns the schema URI of this schema, specified with "$schema" keyword.
      * 
-     * @return the instance of the JSON schema, never be {@code null}.
+     * @return the schema URI of this schema, or {@code null}.
      */
-    static JsonSchema alwaysFalse() {
-        return JsonValidationServiceProvider.provider().alwaysFalseSchema();
+    default URI schema() {
+        return null;
     }
-
-    static JsonSchema load(InputStream in) {
-        return JsonValidationServiceProvider.provider().loadSchema(in);
+    
+    default Map<URI, JsonSchema> idMap() {
+        return Collections.emptyMap();
     }
-
-    static JsonSchema load(Reader reader) {
-        return JsonValidationServiceProvider.provider().loadSchema(reader);
+    
+    default boolean hasSubschema() {
+        return false;
+    }
+    
+    default Iterable<JsonSchema> subschemas() {
+        return Collections.emptySet();
     }
 
     /**
@@ -95,4 +99,85 @@ public interface JsonSchema {
      */
     @Override
     String toString();
+
+    /**
+     * Empty JSON Schema.
+     */
+    JsonSchema EMPTY = new JsonSchema() {
+        
+        @Override
+        public Evaluator createEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+
+        @Override
+        public JsonSchema negate() {
+            return FALSE;
+        }
+
+        @Override
+        public void toJson(JsonGenerator generator) {
+            Objects.requireNonNull(generator, "generator must not be null.");
+            generator.writeStartObject().writeEnd();
+        }
+
+        @Override
+        public String toString() {
+            return "{}";
+        }
+    };
+
+    /**
+     * The JSON schema which evaluates any instances as valid.
+     */
+    JsonSchema TRUE = new JsonSchema() {
+        
+        @Override
+        public Evaluator createEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        
+        @Override
+        public JsonSchema negate() {
+            return FALSE;
+        }
+
+        @Override
+        public void toJson(JsonGenerator generator) {
+            Objects.requireNonNull(generator, "generator must not be null.");
+            generator.write(true);
+        }
+        
+        @Override
+        public String toString() {
+            return "true";
+        }
+    };
+    
+    /**
+     * The JSON schema which evaluates any instances as invalid.
+     */
+    JsonSchema FALSE = new JsonSchema() {
+        
+        @Override
+        public Evaluator createEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_FALSE;
+        }
+
+        @Override
+        public JsonSchema negate() {
+            return TRUE;
+        }
+
+        @Override
+        public void toJson(JsonGenerator generator) {
+            Objects.requireNonNull(generator, "generator must not be null.");
+            generator.write(false);
+        }
+
+        @Override
+        public String toString() {
+            return "false";
+        }
+    };
 }

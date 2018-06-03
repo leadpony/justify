@@ -58,13 +58,13 @@ public interface Evaluator {
     /**
      * The evaluator which evaluates any JSON instances as true ("valid").
      */
-    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
+    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
 
     /**
      * The evaluator which evaluates any JSON instances as false ("invalid")
      * and reports a problem.
      */
-    public static final Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
+    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
             consumer.accept(null);
             return Result.FALSE;
         };
@@ -72,5 +72,5 @@ public interface Evaluator {
     /**
      * The evaluator whose result should be always ignored.
      */
-    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
+    Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
 }

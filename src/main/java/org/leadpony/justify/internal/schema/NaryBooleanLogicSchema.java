@@ -40,6 +40,11 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     protected NaryBooleanLogicSchema(Collection<JsonSchema> subschemas) {
         this.subschemas = new ArrayList<>(subschemas);
     }
+    
+    @Override
+    public Iterable<JsonSchema> subschemas() {
+        return subschemas;
+    }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {

@@ -22,6 +22,14 @@ package org.leadpony.justify.internal.schema;
  * @author leadpony
  */
 public abstract class BooleanLogicSchema extends AbstractJsonSchema {
+   
+    /**
+     * Note that boolean logic schema never be empty.
+     */
+    @Override
+    public boolean hasSubschema() {
+        return true;
+    }
     
     /**
      * Returns the name of the boolean logic.

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Collections;
+import java.net.URI;
 
 import javax.json.stream.JsonGenerator;
 
@@ -27,44 +27,48 @@ import org.leadpony.justify.core.JsonSchema;
 /**
  * @author leadpony
  */
-public class Not extends BooleanLogicSchema {
+public class SchemaReference implements JsonSchema {
     
-    private final JsonSchema subschema;
-    private final JsonSchema negatedSubschema;
+    private final URI ref;
+    private JsonSchema referencedSchema;
     
-    public Not(JsonSchema subschema) {
-        this(subschema, subschema.negate());
+    SchemaReference(URI ref) {
+        this.ref = ref;
+    }
+    
+    public URI ref() {
+        return ref;
+    }
+    
+    public void setReferencedSchema(JsonSchema schema) {
+        this.referencedSchema = schema;
     }
 
-    public Not(JsonSchema subschema, JsonSchema negatedSubschema) {
-        this.subschema = subschema;
-        this.negatedSubschema = negatedSubschema;
-    }
-    
-    @Override
-    public Iterable<JsonSchema> subschemas() {
-        return Collections.singleton(subschema);
-    }
-    
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return negatedSubschema.createEvaluator(type);
+        if (referencedSchema == null) {
+            return null;
+        }
+        return referencedSchema.createEvaluator(type);
+    }
+
+    @Override
+    public JsonSchema negate() {
+        if (referencedSchema == null) {
+            return null;
+        }
+        return referencedSchema.negate();
     }
 
     @Override
     public void toJson(JsonGenerator generator) {
-        generator.writeKey(name());
-        this.subschema.toJson(generator);
+        generator.writeStartObject();
+        generator.write("$ref", ref.toString());
+        generator.writeEnd();
     }
 
     @Override
-    public String name() {
-        return "not";
-    }
-
-    @Override
-    protected AbstractJsonSchema createNegatedSchema() {
-        // Swaps affirmation and negation.
-        return new Not(negatedSubschema, subschema);
+    public String toString() {
+        return JsonSchemas.toString(this);
     }
 }

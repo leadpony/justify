@@ -16,21 +16,20 @@
 
 package org.leadpony.justify.internal.schema;
 
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.core.JsonSchema;
 
 /**
  * @author leadpony
  */
-class NegatedComplexSchema extends InternalSchema {
+public interface SchemaVisitor {
 
-    NegatedComplexSchema(InternalSchema original) {
-        super(original, true);
+    default void visit(JsonSchema schema) {
+        visitSubschemas(schema);
     }
-
-    @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
-        return Evaluators.newDisjunctionEvaluator(type, extensible);
-    } 
+    
+    default void visitSubschemas(JsonSchema schema) {
+        for (JsonSchema subschema : schema.subschemas()) {
+            visit(subschema);
+        }
+    }
 }

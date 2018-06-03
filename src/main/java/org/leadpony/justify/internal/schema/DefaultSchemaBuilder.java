@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.schema;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,8 +58,11 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private final JsonProvider jsonProvider;
     
     private boolean empty;
-    private boolean hasSubschema;
+    private boolean havingSubschema;
 
+    private URI id;
+    private URI schema;
+    
     private String title;
     private String description;
     private final List<Assertion> assertions = new ArrayList<>();
@@ -76,20 +80,33 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
     
+    private Map<String, JsonSchema> definitions;
+    
+    private URI ref;
+    private Map<URI, JsonSchema> idMap;
+    
     public DefaultSchemaBuilder(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
         this.empty = true;
     }
     
-    String title() {
+    URI getId() {
+        return id;
+    }
+    
+    URI getSchema() {
+        return schema;
+    }
+    
+    String getTitle() {
         return title;
     }
 
-    String description() {
+    String getDescription() {
         return description;
     }
 
-    List<Assertion> assertions() {
+    List<Assertion> getAssertions() {
         return Collections.unmodifiableList(assertions);
     }
     
@@ -111,30 +128,47 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
                 this.additionalProperties);
     }
     
-    List<JsonSchema> subschemas() {
+    List<JsonSchema> getSubschemas() {
         return Collections.unmodifiableList(subschemas);
     }
+    
+    Map<String, JsonSchema> getDefinitions() {
+        return (definitions != null) ? 
+                definitions : Collections.emptyMap();
+    }
+    
+    Map<URI, JsonSchema> getIdMap() {
+        return idMap;
+    }
 
-    boolean isEmpty() {
-        return empty;
-    }
-    
-    boolean hasSubschema() {
-        return hasSubschema;
-    }
-    
     @Override
     public JsonSchema build() {
-        if (isEmpty()) {
-            return JsonSchemas.EMPTY;
-        } else if (hasSubschema()) {
+        if (empty) {
+            return JsonSchema.EMPTY;
+        } else if (this.ref != null) {
+            return new SchemaReference(ref);
+        } else if (havingSubschema) {
             addConditionalSchemaIfExists();
-            return new ComplexSchema(this);
+            return new InternalSchema(this);
         } else {
-            return new SimpleSchema(this);
+            return new LeafSchema(this);
         }
     }
 
+    @Override
+    public JsonSchemaBuilder withId(URI id) {
+        Objects.requireNonNull(id, "id must not be null.");
+        this.id = id;
+        return builderNonempty();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withSchema(URI schema) {
+        Objects.requireNonNull(schema, "schema must not be null.");
+        this.schema = schema;
+        return builderNonempty();
+    }
+    
     @Override
     public JsonSchemaBuilder withTitle(String title) {
         Objects.requireNonNull(title, "title must not be null.");
@@ -358,7 +392,28 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         this.elseSchema = subschema;
         return builderWithSubschema();
     }
+   
+    @Override
+    public JsonSchemaBuilder withDefinition(String name, JsonSchema schema) {
+        Objects.requireNonNull(name, "name must not be null.");
+        Objects.requireNonNull(schema, "schema must not be null.");
+        if (this.definitions == null) {
+            this.definitions = new HashMap<>();
+        }
+        this.definitions.put(name, schema);
+        return builderWithSubschema();
+    }
     
+    public JsonSchemaBuilder withRef(URI ref) {
+        this.ref = ref;
+        return builderNonempty();
+    }
+    
+    public JsonSchemaBuilder withIdMap(Map<URI, JsonSchema> idMap) {
+        this.idMap = idMap;
+        return builderNonempty();
+    }
+  
     /**
      * Marks this builder as non-empty.
      * 
@@ -375,12 +430,12 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
      * @return this builder.
      */
     private JsonSchemaBuilder builderWithSubschema() {
-        this.hasSubschema = true;
+        this.havingSubschema = true;
         return builderNonempty();
     }
     
     private void addConditionalSchemaIfExists() {
-        if (ifSchema != null || thenSchema != null || elseSchema != null) {
+        if (ifSchema != null) {
             this.subschemas.add(new IfThenElse(ifSchema, thenSchema, elseSchema));
         }
     }

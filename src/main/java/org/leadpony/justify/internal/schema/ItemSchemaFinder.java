@@ -16,17 +16,21 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.base.CompositeIterator;
 
 /**
  * @author leadpony
  */
-abstract class ItemSchemaFinder {
+abstract class ItemSchemaFinder implements Iterable<JsonSchema> {
     
     static ItemSchemaFinder of(JsonSchema schema) {
         return new CommonItemSchemaFinder(schema);
@@ -44,51 +48,68 @@ abstract class ItemSchemaFinder {
     
     private static class CommonItemSchemaFinder extends ItemSchemaFinder {
         
-        private final JsonSchema schema;
+        private final Optional<JsonSchema> schema;
 
         private CommonItemSchemaFinder(JsonSchema schema) {
+            this(Optional.ofNullable(schema));
+        }
+        
+        private CommonItemSchemaFinder(Optional<JsonSchema> schema) {
             this.schema = schema;
         }
 
         @Override
+        public Iterator<JsonSchema> iterator() {
+            return schema
+                    .map(s->Collections.singleton(s).iterator())
+                    .orElse(Collections.emptyIterator());
+        }
+
+        @Override
         JsonSchema findSchema(int index) {
-            return (schema != null) ? schema : JsonSchemas.ALWAYS_TRUE;
+            return schema.orElse(JsonSchema.TRUE);
         }
         
         @Override
         ItemSchemaFinder negate() {
-            return new CommonItemSchemaFinder(
-                    (schema != null) ? schema.negate() : null);
+            return new CommonItemSchemaFinder(schema.map(JsonSchema::negate));
         }
 
         @Override
         void toJson(JsonGenerator generator) {
-            if (schema != null) {
+            schema.ifPresent(schema->{
                 generator.writeKey("items");
                 schema.toJson(generator);
-            }
+            });
         }
     }
 
     private static class SeparateItemSchemaFinder extends ItemSchemaFinder {
         
         private final List<JsonSchema> schemas;
-        private final JsonSchema additional;
+        private final Optional<JsonSchema> additional;
 
         private SeparateItemSchemaFinder(List<JsonSchema> schemas, JsonSchema additional) {
+            this(schemas, Optional.ofNullable(additional));
+        }
+        
+        private SeparateItemSchemaFinder(List<JsonSchema> schemas, Optional<JsonSchema> additional) {
             assert schemas != null;
             this.schemas = schemas;
             this.additional = additional;
         }
 
         @Override
+        public Iterator<JsonSchema> iterator() {
+            return new CompositeIterator<JsonSchema>().add(schemas).add(additional);
+        }
+
+        @Override
         JsonSchema findSchema(int index) {
             if (index < schemas.size()) {
                 return schemas.get(index);
-            } else if (additional != null) {
-                return additional;
             } else {
-                return JsonSchemas.ALWAYS_TRUE;
+                return additional.orElse(JsonSchema.TRUE);
             }
         }
         
@@ -96,8 +117,8 @@ abstract class ItemSchemaFinder {
         ItemSchemaFinder negate() {
             return new SeparateItemSchemaFinder(
                     schemas.stream().map(JsonSchema::negate).collect(Collectors.toList()),
-                    (additional != null) ? additional.negate() : null
-                            );
+                    additional.map(JsonSchema::negate)
+                    );
         }
 
         @Override
@@ -106,10 +127,10 @@ abstract class ItemSchemaFinder {
             generator.writeStartArray();
             schemas.forEach(s->s.toJson(generator));
             generator.writeEnd();
-            if (additional != null) {
+            additional.ifPresent(schema->{
                 generator.writeKey("additionalItems");
-                additional.toJson(generator);
-            }
+                schema.toJson(generator);
+            });
         }
     }
 }

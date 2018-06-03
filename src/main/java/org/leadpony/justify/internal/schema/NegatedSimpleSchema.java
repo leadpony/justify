@@ -23,12 +23,12 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 /**
  * @author leadpony
  */
-public class NegatedSimpleSchema extends SimpleSchema {
+public class NegatedSimpleSchema extends LeafSchema {
 
     /**
      * @param builder
      */
-    NegatedSimpleSchema(SimpleSchema original) {
+    NegatedSimpleSchema(LeafSchema original) {
         super(original, true);
     }
 

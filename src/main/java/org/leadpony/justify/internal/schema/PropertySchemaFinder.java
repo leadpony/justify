@@ -16,50 +16,60 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.base.CompositeIterator;
 
 /**
  * @author leadpony
  */
-class PropertySchemaFinder {
+class PropertySchemaFinder implements Iterable<JsonSchema> {
     
     private final Map<String, JsonSchema> properties;
     private final Map<Pattern, JsonSchema> patternProperties;
-    private final JsonSchema additional;
+    private final Optional<JsonSchema> additional;
     
     PropertySchemaFinder(
             Map<String, JsonSchema> properties,
             Map<Pattern, JsonSchema> patternProperties,
             JsonSchema additional) {
-        this.properties = properties;
-        this.patternProperties = patternProperties;
-        this.additional = additional;
+        this.properties = (properties != null) ? 
+                properties : Collections.emptyMap();
+        this.patternProperties = (patternProperties != null) ? 
+                patternProperties : Collections.emptyMap();
+        this.additional = Optional.ofNullable(additional);
     }
     
-    JsonSchema findSchema(String propertyName) {
-        if (properties == null) {
-            return JsonSchemas.ALWAYS_TRUE;
-        } else if (properties.containsKey(propertyName)) {
-            return properties.get(propertyName);
-        } else if (this.patternProperties != null) {
-            for (Pattern pattern : this.patternProperties.keySet()) {
-                Matcher m = pattern.matcher(propertyName);
-                if (m.lookingAt()) {
-                    return this.patternProperties.get(pattern);
-                }
+    @Override
+    public Iterator<JsonSchema> iterator() {
+        return new CompositeIterator<JsonSchema>()
+            .add(properties.values())
+            .add(patternProperties.values())
+            .add(additional);
+    }
+    
+    void findSchema(String propertyName, List<JsonSchema> found) {
+        if (properties.containsKey(propertyName)) {
+            found.add(properties.get(propertyName));
+        }
+        for (Pattern pattern : this.patternProperties.keySet()) {
+            Matcher m = pattern.matcher(propertyName);
+            if (m.lookingAt()) {
+                found.add(this.patternProperties.get(pattern));
             }
         }
-        if (additional != null) {
-            return additional;
-        } else {
-            return JsonSchemas.ALWAYS_TRUE;
+        if (found.isEmpty()) {
+            found.add(additional.orElse(JsonSchema.TRUE));
         }
     }
     
@@ -67,12 +77,12 @@ class PropertySchemaFinder {
         return new PropertySchemaFinder(
                 negateMap(this.properties),
                 negateMap(this.patternProperties),
-                (this.additional != null) ? this.additional.negate() : null
+                this.additional.map(JsonSchema::negate).orElse(null)
                 );
     }
     
     void toJson(JsonGenerator generator) {
-        if (properties != null) {
+        if (!properties.isEmpty()) {
             generator.writeKey("properties");
             generator.writeStartObject();
             properties.forEach((name, schema)->{
@@ -81,7 +91,7 @@ class PropertySchemaFinder {
             });
             generator.writeEnd();
         }
-        if (patternProperties != null) {
+        if (!patternProperties.isEmpty()) {
             generator.writeKey("patternProperties");
             generator.writeStartObject();
             patternProperties.forEach((pattern, schema)->{
@@ -90,14 +100,14 @@ class PropertySchemaFinder {
             });
             generator.writeEnd();
         }
-        if (additional != null) {
+        additional.ifPresent(schema->{
             generator.writeKey("additionalProperties");
-            additional.toJson(generator);
-        }
+            schema.toJson(generator);
+        });
     }
     
     private static <K> Map<K, JsonSchema> negateMap(Map<K, JsonSchema> original) {
-        if (original == null) {
+        if (original.isEmpty()) {
             return original;
         }
         Map<K, JsonSchema> negated = new HashMap<K, JsonSchema>(original);

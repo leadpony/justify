@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
-
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-
 /**
+ * Provides JSON schema reader.
+ * 
  * @author leadpony
  */
-class NegatedComplexSchema extends InternalSchema {
-
-    NegatedComplexSchema(InternalSchema original) {
-        super(original, true);
-    }
-
-    @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
-        return Evaluators.newDisjunctionEvaluator(type, extensible);
-    } 
-}
+package org.leadpony.justify.internal.schema.io;

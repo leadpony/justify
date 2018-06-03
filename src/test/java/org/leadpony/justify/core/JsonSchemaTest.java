@@ -28,21 +28,21 @@ public class JsonSchemaTest {
 
     @Test
     public void empty_shouldReturnEmptySchema() {
-        JsonSchema schema = JsonSchema.empty();
+        JsonSchema schema = JsonSchema.EMPTY;
         
         assertThat(schema).hasToString("{}");
     }
 
     @Test
     public void valueOf_shouldReturnTrueBooleanSchema() {
-        JsonSchema schema = JsonSchema.alwaysTrue();
+        JsonSchema schema = JsonSchema.TRUE;
         
         assertThat(schema).hasToString("true");
     }
 
     @Test
     public void valueOf_shouldReturnFalseBooleanSchema() {
-        JsonSchema schema = JsonSchema.alwaysFalse();
+        JsonSchema schema = JsonSchema.FALSE;
         
         assertThat(schema).hasToString("false");
     }
