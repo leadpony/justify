@@ -30,7 +30,7 @@ import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion specified by "type" keyword.
+ * Assertion specified with "type" keyword.
  * 
  * @author leadpony
  */
@@ -46,7 +46,7 @@ public class Type extends ShallowAssertion {
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
-            return testType(type, consumer);
+            return testType(type, parser, consumer);
         } else {
             return Result.TRUE;
         }
@@ -72,11 +72,11 @@ public class Type extends ShallowAssertion {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
     
-    protected Result testType(InstanceType type, Consumer<Problem> consumer) {
+    protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> consumer) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder()
+            Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage("instance.problem.type")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)

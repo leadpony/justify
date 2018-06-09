@@ -18,22 +18,45 @@ package org.leadpony.justify.internal.base;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.StringReader;
 import java.util.EnumSet;
 import java.util.Locale;
 
+import javax.json.Json;
+import javax.json.stream.JsonParser;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 
 /**
+ * Test cases for {@link ProblemBuilder}.
+ * 
  * @author leadpony
- *
  */
 public class ProblemBuilderTest {
+
+    private JsonParser parser;
+    
+    @Before
+    public void setUp() {
+        StringReader reader = new StringReader("{}");
+        this.parser = Json.createParser(reader);
+    }
+    
+    @After
+    public void tearDown() {
+        if (parser != null) {
+            parser.close();
+            parser = null;
+        }
+    }
     
     @Test
     public void build_shouldBuildProblem() {
-        ProblemBuilder builder = ProblemBuilder.newBuilder();
+        ProblemBuilder builder = ProblemBuilder.newBuilder(this.parser);
         Problem problem = builder
                 .withMessage("instance.problem.type")
                 .withParameter("actual", InstanceType.STRING)

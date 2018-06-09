@@ -50,6 +50,10 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withConst(JsonValue value);
     
+    JsonSchemaBuilder withEnum(JsonValue... values);
+    
+    JsonSchemaBuilder withEnum(Set<JsonValue> values);
+
     JsonSchemaBuilder withType(InstanceType... types);
 
     JsonSchemaBuilder withType(Set<InstanceType> types);

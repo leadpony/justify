@@ -32,12 +32,14 @@ import org.junit.runners.Parameterized.Parameters;
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
-            //"/spec/tests/draft7/definitions.json",
+            //"/spec/tests/draft7/ref.json",
 
             "/spec/tests/draft7/additionalItems.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
             "/spec/tests/draft7/const.json",
+            "/spec/tests/draft7/definitions.json",
+            "/spec/tests/draft7/enum.json",
             "/spec/tests/draft7/exclusiveMaximum.json",
             "/spec/tests/draft7/exclusiveMinimum.json",
             "/spec/tests/draft7/if-then-else.json",
@@ -62,7 +64,7 @@ public class SpecTest extends AbstractSpecTest {
     
     @Before
     public void setUp() {
-        //Assume.assumeTrue(testIndex == 8);
+        //Assume.assumeTrue(testIndex == 1);
     }
 
     @Parameters(name = "{0}@{1}: {2}")

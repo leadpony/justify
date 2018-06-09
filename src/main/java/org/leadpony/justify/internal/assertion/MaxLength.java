@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.assertion;
 
 /**
+ * Assertion specified with "maxLength" keyword.
+ * 
  * @author leadpony
  */
 public class MaxLength extends AbstractStringLengthAssertion {

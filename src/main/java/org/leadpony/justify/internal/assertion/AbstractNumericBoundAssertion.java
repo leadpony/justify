@@ -53,7 +53,7 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
         if (test(actual, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder()
+            Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage(this.message)
                     .withParameter("actual", actual)
                     .withParameter("bound", this.bound)

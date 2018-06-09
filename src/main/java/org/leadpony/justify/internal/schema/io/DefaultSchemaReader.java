@@ -18,25 +18,24 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
+import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilder;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaReference;
-import org.leadpony.justify.internal.schema.SchemaVisitor;
 
 /**
  * Default implementation of {@link JsonSchemaReader}.
@@ -48,17 +47,15 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     private static final Logger log = Logger.getLogger(DefaultSchemaReader.class.getName());
     
     private final JsonParser parser;
-    private final DefaultSchemaBuilderFactory factory;
+    private final JsonSchemaBuilderFactory factory;
 
     private boolean alreadyRead;
     private boolean alreadyClosed;
     
-    private final Map<URI, JsonSchema> externalSchemas = new HashMap<>();
+    private URI initialURI;
+    private final SchemaResolver resolver = new SchemaResolver();
     
-    private final Map<URI, JsonSchema> idMap = new HashMap<>();
-    private final Map<SchemaReference, URI> references = new HashMap<>();
-    
-    public DefaultSchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory) {
+    public DefaultSchemaReader(JsonParser parser, JsonSchemaBuilderFactory factory) {
         this.parser = parser;
         this.factory = factory;
     }
@@ -66,33 +63,29 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     @Override
     public JsonSchema read() {
         if (alreadyRead || alreadyClosed) {
-            throw new IllegalStateException("alreay read");
+            throw new IllegalStateException("already read");
         }
         JsonSchema rootSchema = rootSchema();
-        resolveRelativeURI(rootSchema);
-        resolveAllReferences();
+        resolver.resolveAll(initialURI).linkAll();
         this.alreadyRead = true;
         return rootSchema;
     }
     
     @Override
     public void close() {
-        if (this.alreadyClosed) {
+        if (!this.alreadyClosed) {
             this.parser.close();
             this.alreadyClosed = true;
         }
     }
     
     @Override
-    public JsonSchemaReader withExternalSchema(JsonSchema schema) {
+    public JsonSchemaReader withExternalSchema(URI id, JsonSchema schema) {
+        Objects.requireNonNull(id, "id must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
-        Map<URI, JsonSchema> idMap = schema.idMap();
-        if (idMap != null) {
-            externalSchemas.putAll(idMap);
-        }
+        resolver.addExternalSchema(id, schema);
         return this;
     }
-    
     
     private JsonSchema rootSchema() {
         Event event = parser.next();
@@ -108,24 +101,22 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     }
     
     private JsonSchema objectSchema(boolean root) {
-        DefaultSchemaBuilder builder = this.factory.createBuilder();
+        SchemaResolver.Entry entry = resolver.lastEntry();
+        JsonSchemaBuilder builder = this.factory.createBuilder();
         Event event = null;
         while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
             if (event == Event.KEY_NAME) {
                 String name = parser.getString();
-                populateSchema(name, builder);
+                if ("$ref".equals(name)) {
+                    return schemaReference();
+                } else {
+                    populateSchema(name, builder);
+                }
             }
         }
-        if (root) {
-            builder.withIdMap(idMap);
-        }
         JsonSchema schema = builder.build();
-        if (schema.id() != null) {
-            idMap.put(schema.id(), schema);
-        }
-        if (schema instanceof SchemaReference) {
-            SchemaReference reference = (SchemaReference)schema;
-            references.put(reference, reference.ref());
+        if (schema.hasId()) {
+            resolver.addIdentifiedSchema(schema, entry);
         }
         return schema;
     }
@@ -141,13 +132,22 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private void populateSchema(String keyName, DefaultSchemaBuilder builder) {
+    private SchemaReference schemaReference() {
+        if (parser.next() != Event.VALUE_STRING) {
+            return null;
+        }
+        URI uri = URI.create(parser.getString());
+        SchemaReference reference = new SchemaReference(uri);
+        resolver.addReference(reference, parser.getLocation());
+        while (parser.hasNext() && parser.next() != Event.END_OBJECT)
+            ;
+        return reference;
+    }
+    
+    private void populateSchema(String keyName, JsonSchemaBuilder builder) {
         switch (keyName) {
         case "$id":
             addId(builder);
-            break;
-        case "$ref":
-            addRef(builder);
             break;
         case "$schema":
             addSchema(builder);
@@ -175,6 +175,9 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             break;
         case "else":
             addElse(builder);
+            break;
+        case "enum":
+            addEnum(builder);
             break;
         case "exclusiveMaximum":
             addExclusiveMaximum(builder);
@@ -239,21 +242,14 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private void addId(DefaultSchemaBuilder builder) {
+    private void addId(JsonSchemaBuilder builder) {
         if (parser.next() != Event.VALUE_STRING) {
             return;
         }
         builder.withId(URI.create(parser.getString()));
     }
 
-    private void addRef(DefaultSchemaBuilder builder) {
-        if (parser.next() != Event.VALUE_STRING) {
-            return;
-        }
-        builder.withRef(URI.create(parser.getString()));
-    }
-    
-    private void addSchema(DefaultSchemaBuilder builder) {
+    private void addSchema(JsonSchemaBuilder builder) {
         if (parser.next() != Event.VALUE_STRING) {
             return;
         }
@@ -305,6 +301,17 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     
     private void addElse(JsonSchemaBuilder builder) {
         builder.withElse(subschema());
+    }
+    
+    private void addEnum(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.START_ARRAY) {
+            Set<JsonValue> values = new LinkedHashSet<>();
+            while ((event = parser.next()) != Event.END_ARRAY) {
+                values.add(parser.getValue());
+            }
+            builder.withEnum(values);
+        }
     }
     
     private void addExclusiveMaximum(JsonSchemaBuilder builder) {
@@ -443,7 +450,7 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         if (event == Event.VALUE_STRING) {
             builder.withType(findType(parser.getString()));
         } else if (event == Event.START_ARRAY) {
-            Set<InstanceType> types = new HashSet<>();
+            Set<InstanceType> types = EnumSet.noneOf(InstanceType.class);
             while ((event = parser.next()) != Event.END_ARRAY) {
                 if (event == Event.VALUE_STRING) {
                     types.add(findType(parser.getString()));
@@ -495,39 +502,6 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             default:
                 break;
             }
-        }
-    }
-    
-    private void resolveAllReferences() {
-        for (Map.Entry<SchemaReference, URI> entry : this.references.entrySet()) {
-            SchemaReference ref = entry.getKey();
-            URI uri = entry.getValue();
-            if (externalSchemas.containsKey(uri)) {
-                ref.setReferencedSchema(externalSchemas.get(uri));
-            }
-        }
-    }
-    
-    private void resolveRelativeURI(JsonSchema rootSchema) {
-        ResolvingVisitor visitor = new ResolvingVisitor();
-        visitor.visit(rootSchema);
-    }
-    
-    private class ResolvingVisitor implements SchemaVisitor {
-        
-        @Override
-        public void visit(JsonSchema schema) {
-            if (schema.hasId()) {
-                log.info("id = " + schema.id().toString());
-            }
-            if (schema instanceof SchemaReference) {
-                visitReference((SchemaReference)schema);
-            } 
-            visitSubschemas(schema);
-        }
-        
-        private void visitReference(SchemaReference reference) {
-            log.info("ref = " + reference.ref().toString());
         }
     }
 }

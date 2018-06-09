@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified by "required" keyword.
+ * Assertion specified with "required" keyword.
  * 
  * @author leadpony
  */
@@ -78,19 +78,19 @@ public class Required extends AbstractAssertion {
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
-                return test(consumer, false);
+                return test(parser, consumer, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(consumer, true);
+                return test(parser, consumer, true);
             } else {
                 return Result.PENDING;
             }
         }
         
-        protected Result test(Consumer<Problem> consumer, boolean last) {
+        protected Result test(JsonParser parser, Consumer<Problem> consumer, boolean last) {
             if (remaining.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
-                Problem p = ProblemBuilder.newBuilder()
+                Problem p = ProblemBuilder.newBuilder(parser)
                         .withMessage("instance.problem.required")
                         .withParameter("expected", remaining)
                         .build();

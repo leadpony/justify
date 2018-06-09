@@ -16,20 +16,12 @@
 
 package org.leadpony.justify.internal.schema;
 
-import org.leadpony.justify.core.JsonSchema;
+import java.net.URI;
 
 /**
  * @author leadpony
  */
-public interface SchemaVisitor {
+public interface Resolvable {
 
-    default void visit(JsonSchema schema) {
-        visitSubschemas(schema);
-    }
-    
-    default void visitSubschemas(JsonSchema schema) {
-        for (JsonSchema subschema : schema.subschemas()) {
-            visit(subschema);
-        }
-    }
+    URI resolve(URI baseURI);
 }

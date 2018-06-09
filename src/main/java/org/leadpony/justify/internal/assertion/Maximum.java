@@ -18,6 +18,11 @@ package org.leadpony.justify.internal.assertion;
 
 import java.math.BigDecimal;
 
+/**
+ * Assertion specified with "maximum" keyword.
+ * 
+ * @author leadpony
+ */
 public class Maximum extends AbstractNumericBoundAssertion {
 
     public Maximum(BigDecimal bound) {

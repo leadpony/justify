@@ -29,6 +29,8 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
+ * Assertion specified with "minItems" keyword.
+ * 
  * @author leadpony
  */
 public class MinItems extends AbstractAssertion {
@@ -70,17 +72,17 @@ public class MinItems extends AbstractAssertion {
                 ++count;
                 return Result.PENDING;
             } else if (depth == 0 && event == Event.END_ARRAY) {
-                return testSize(count, consumer);
+                return testSize(count, parser, consumer);
             } else {
                 return Result.PENDING;
             }
         }
         
-        private Result testSize(int size, Consumer<Problem> consumer) {
+        private Result testSize(int size, JsonParser parser, Consumer<Problem> consumer) {
             if (size >= bound) {
                 return Result.TRUE;
             } else {
-                Problem p = ProblemBuilder.newBuilder()
+                Problem p = ProblemBuilder.newBuilder(parser)
                         .withMessage("instance.problem.min.items")
                         .withParameter("actual", size)
                         .withParameter("bound", bound)

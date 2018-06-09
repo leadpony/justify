@@ -28,6 +28,8 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Assertion specified with "multipleOf" keyword.
+ * 
  * @author leadpony
  */
 public class MultipleOf extends ShallowAssertion {
@@ -47,7 +49,7 @@ public class MultipleOf extends ShallowAssertion {
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         assert event == Event.VALUE_NUMBER;
         BigDecimal actual = parser.getBigDecimal();
-        return test(actual, consumer);
+        return test(actual, parser, consumer);
     }
 
     @Override
@@ -60,12 +62,12 @@ public class MultipleOf extends ShallowAssertion {
         throw new UnsupportedOperationException();
     }
     
-    protected Result test(BigDecimal actual, Consumer<Problem> consumer) {
+    protected Result test(BigDecimal actual, JsonParser parser, Consumer<Problem> consumer) {
         BigDecimal remainder = actual.remainder(divisor);
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder()
+            Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage("instance.problem.multiple.of")
                     .withParameter("actual", actual)
                     .withParameter("divisor", divisor)

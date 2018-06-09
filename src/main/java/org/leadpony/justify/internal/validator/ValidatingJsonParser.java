@@ -68,7 +68,6 @@ class ValidatingJsonParser extends JsonParserDecorator
         if (problem == null) {
             problem = createUnknownProblem();
         }
-        problem.setLocation(realParser().getLocation());
         problems.add(problem);
     }
     
@@ -111,8 +110,8 @@ class ValidatingJsonParser extends JsonParserDecorator
     private void handleNothing(Event event, JsonParser parser) {
     }
     
-    private static Problem createUnknownProblem() {
-        return ProblemBuilder.newBuilder()
+    private Problem createUnknownProblem() {
+        return ProblemBuilder.newBuilder(realParser())
                 .withMessage("instance.problem.unknown")
                 .build();
     }

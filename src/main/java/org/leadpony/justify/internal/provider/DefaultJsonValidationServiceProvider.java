@@ -51,12 +51,12 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
 
     @Override
     public JsonSchemaReader createReader(InputStream in) {
-        return createSimpleReader(in).withExternalSchema(metaschema);
+        return createSimpleReader(in).withExternalSchema(metaschema.id(), metaschema);
     }
   
     @Override
     public JsonSchemaReader createReader(Reader reader) {
-        return createSimpleReader(reader).withExternalSchema(metaschema);
+        return createSimpleReader(reader).withExternalSchema(metaschema.id(), metaschema);
     }
     
     @Override

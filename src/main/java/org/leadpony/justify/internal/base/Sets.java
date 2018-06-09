@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.base;
 
-import java.util.function.Consumer;
-
-import javax.json.stream.JsonParser;
-
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
+ * Utility methods operating on {@link Set}.
+ * 
  * @author leadpony
  */
-class ConjunctionEvaluator extends AbstractLogicalEvaluator {
+public final class Sets {
     
-    private int numberOfFalses;
-    
-    @Override
-    protected boolean accumulateResult(Evaluator evaluator, Result result) {
-        if (result == Result.FALSE) {
-            this.numberOfFalses++;
+    public static <T> Set<T> asSet(@SuppressWarnings("unchecked") T... a) {
+        Set<T> set = new LinkedHashSet<>();
+        for (T e : a) {
+            set.add(e);
         }
-        return true;
+        return set;
     }
     
-    @Override
-    protected Result conclude(JsonParser parser, Consumer<Problem> consumer) {
-        return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
+    private Sets() {
     }
 }

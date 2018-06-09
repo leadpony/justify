@@ -25,15 +25,18 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
+ * Schema reference containing  "$ref" keyword.
+ * 
  * @author leadpony
  */
-public class SchemaReference implements JsonSchema {
+public class SchemaReference implements JsonSchema, Resolvable {
     
-    private final URI ref;
+    private URI ref;
+    private final URI originalRef;
     private JsonSchema referencedSchema;
     
-    SchemaReference(URI ref) {
-        this.ref = ref;
+    public SchemaReference(URI ref) {
+        this.ref = this.originalRef = ref;
     }
     
     public URI ref() {
@@ -44,6 +47,13 @@ public class SchemaReference implements JsonSchema {
         this.referencedSchema = schema;
     }
 
+    @Override
+    public URI resolve(URI baseURI) {
+        assert this.originalRef != null;
+        this.ref = baseURI.resolve(this.originalRef);
+        return ref();
+    }
+    
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         if (referencedSchema == null) {

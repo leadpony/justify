@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.assertion;
 
 /**
+ * 
  * @author leadpony
  */
 public class ExclusiveMaxLength extends AbstractStringLengthAssertion {

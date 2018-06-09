@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.function.Consumer;
 
+import javax.json.stream.JsonParser;
+
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
@@ -34,16 +36,16 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     }
 
     @Override
-    protected Result conclude(Consumer<Problem> consumer) {
+    protected Result conclude(JsonParser parser, Consumer<Problem> consumer) {
         if (this.numberOfTrues > 1) {
-            return tooManyTrueEvaluations(consumer);
+            return tooManyTrueEvaluations(parser, consumer);
         } else {
-            return super.conclude(consumer);
+            return super.conclude(parser, consumer);
         }
     }
     
-    private Result tooManyTrueEvaluations(Consumer<Problem> consumer) {
-        Problem p = ProblemBuilder.newBuilder()
+    private Result tooManyTrueEvaluations(JsonParser parser, Consumer<Problem> consumer) {
+        Problem p = ProblemBuilder.newBuilder(parser)
                 .withMessage("instance.problem.one.of")
                 .withParameter("actual", numberOfTrues)
                 .build();

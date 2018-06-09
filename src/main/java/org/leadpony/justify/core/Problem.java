@@ -16,14 +16,13 @@
 
 package org.leadpony.justify.core;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.json.stream.JsonLocation;
 
 /**
- * Problem detected by validation.
+ * Problem detected in the validation process.
  * 
  * @author leadpony
  */
@@ -61,16 +60,11 @@ public interface Problem {
     JsonLocation getLocation();
     
     /**
-     * Assigns the location to this problem.
+     * Returns all parameters of this problem as a map.
      * 
-     * @param location the location to assign.
-     * @throws NullPointerException if given parameter was {@code null}.
+     * @return the map containing all parameters this problem has.
      */
-    void setLocation(JsonLocation location);
-    
-    default Map<String, ?> parametersAsMap() {
-        return Collections.emptyMap();
-    }
+    Map<String, ?> parametersAsMap();
 
     @Override
     String toString();

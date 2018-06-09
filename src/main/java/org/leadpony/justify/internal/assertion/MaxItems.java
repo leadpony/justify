@@ -29,6 +29,8 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
+ * Assertion specified with "maxItems" keyword.
+ * 
  * @author leadpony
  */
 public class MaxItems extends AbstractAssertion {
@@ -67,7 +69,7 @@ public class MaxItems extends AbstractAssertion {
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
             if (depth == 1) {
-                return testSize(++count, consumer);
+                return testSize(++count, parser, consumer);
             } else if (depth == 0 && event == Event.END_ARRAY) {
                 return Result.TRUE;
             } else {
@@ -75,11 +77,11 @@ public class MaxItems extends AbstractAssertion {
             }
         }
 
-        private Result testSize(int size, Consumer<Problem> consumer) {
+        private Result testSize(int size, JsonParser parser, Consumer<Problem> consumer) {
             if (size <= bound) {
                 return Result.PENDING;
             } else {
-                Problem p = ProblemBuilder.newBuilder()
+                Problem p = ProblemBuilder.newBuilder(parser)
                         .withMessage("instance.problem.max.items")
                         .withParameter("actual", size)
                         .withParameter("bound", bound)

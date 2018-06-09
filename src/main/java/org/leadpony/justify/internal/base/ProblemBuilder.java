@@ -23,23 +23,37 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.json.stream.JsonLocation;
+import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Problem;
 
 /**
+ * This class builds problems detected in validation process.
+ * 
  * @author leadpony
  */
 public class ProblemBuilder {
 
+    private final JsonLocation location;
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     
     private static final MessageFormatter messageFormatter = new MessageFormatter();
     
-    public static ProblemBuilder newBuilder() {
-        return new ProblemBuilder();
+    /**
+     * Creates new instance of this builder.
+     * 
+     * @param parser the JSON parser.
+     * @return newly created instance of this type.
+     */
+    public static ProblemBuilder newBuilder(JsonParser parser) {
+        return new ProblemBuilder(parser);
     }
     
+    private ProblemBuilder(JsonParser parser) {
+        this.location = parser.getLocation();
+    }
+
     public ProblemBuilder withMessage(String messageKey) {
         this.messageKey = messageKey;
         return this;
@@ -50,19 +64,30 @@ public class ProblemBuilder {
         return this;
     }
     
+    /**
+     * Builds a problem.
+     * 
+     * @return built problem.
+     */
     public Problem build() {
         return new ValidationProblem(this);
     }
 
+    /**
+     * Problem detected in validation process.
+     * 
+     * @author leadpony
+     */
     private static class ValidationProblem implements Problem {
 
         private final String messageKey;
         private final Map<String, Object> parameters;
-        private JsonLocation location;
+        private final JsonLocation location;
     
         private ValidationProblem(ProblemBuilder builder) {
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
+            this.location = builder.location;
         }
         
         @Override
@@ -80,12 +105,6 @@ public class ProblemBuilder {
         @Override
         public JsonLocation getLocation() {
             return location;
-        }
-        
-        @Override
-        public void setLocation(JsonLocation location) {
-            Objects.requireNonNull(location, "location must not be null.");
-            this.location = location;
         }
         
         @Override

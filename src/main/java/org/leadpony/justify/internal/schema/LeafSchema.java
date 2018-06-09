@@ -18,10 +18,10 @@ package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.json.JsonException;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -36,23 +36,21 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * 
  * @author leadpony
  */
-class LeafSchema extends AbstractJsonSchema {
+class LeafSchema extends AbstractJsonSchema implements Resolvable {
 
-    private final URI id;
+    private URI id;
+    private final URI originalId;
     private final URI schema;
     private final String title;
     private final String description;
     private final List<Assertion> assertions;
     
-    private final Map<URI, JsonSchema> idMap;
-    
     LeafSchema(DefaultSchemaBuilder builder) {
-        this.id = builder.getId();
+        this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
         this.title = builder.getTitle();
         this.description = builder.getDescription();
         this.assertions = builder.getAssertions();
-        this.idMap = builder.getIdMap();
     }
     
     /**
@@ -63,14 +61,14 @@ class LeafSchema extends AbstractJsonSchema {
      */
     protected LeafSchema(LeafSchema original, boolean negating) {
         assert negating;
-        this.id = null;
-        this.schema = null;
+        this.id = original.id;
+        this.originalId = original.originalId;
+        this.schema = original.schema;
         this.title = original.title;
         this.description = original.description;
         this.assertions = original.assertions.stream()
                 .map(Assertion::negate)
                 .collect(Collectors.toList());
-        this.idMap = original.idMap;
     }
     
     @Override
@@ -82,12 +80,18 @@ class LeafSchema extends AbstractJsonSchema {
     public URI schema() {
         return schema;
     }
-
-    @Override
-    public Map<URI, JsonSchema> idMap() {
-        return idMap;
-    }
     
+    @Override
+    public JsonSchema find(String jsonPointer) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        if (jsonPointer.isEmpty()) {
+            return this;
+        } else if (!jsonPointer.startsWith("/")) {
+            throw new JsonException("A non-empty JSON Pointer must begin with a '/'");
+        }
+        return null;
+    }
+
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
@@ -101,6 +105,13 @@ class LeafSchema extends AbstractJsonSchema {
         generator.writeStartObject();
         appendJsonMembers(generator);
         generator.writeEnd();
+    }
+    
+    @Override
+    public URI resolve(URI baseURI) {
+        assert this.originalId != null;
+        this.id = baseURI.resolve(this.originalId);
+        return id();
     }
  
     @Override
@@ -121,8 +132,8 @@ class LeafSchema extends AbstractJsonSchema {
     } 
     
     protected void appendJsonMembers(JsonGenerator generator) {
-        if (this.id != null) {
-            generator.write("$id", this.id.toString());
+        if (this.originalId != null) {
+            generator.write("$id", this.originalId.toString());
         }
         if (this.schema != null) {
             generator.write("$schema", this.schema.toString());

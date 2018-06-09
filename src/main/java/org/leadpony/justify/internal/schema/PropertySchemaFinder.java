@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,12 +27,11 @@ import java.util.regex.Pattern;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.base.CompositeIterator;
 
 /**
  * @author leadpony
  */
-class PropertySchemaFinder implements Iterable<JsonSchema> {
+class PropertySchemaFinder {
     
     private final Map<String, JsonSchema> properties;
     private final Map<Pattern, JsonSchema> patternProperties;
@@ -48,14 +46,6 @@ class PropertySchemaFinder implements Iterable<JsonSchema> {
         this.patternProperties = (patternProperties != null) ? 
                 patternProperties : Collections.emptyMap();
         this.additional = Optional.ofNullable(additional);
-    }
-    
-    @Override
-    public Iterator<JsonSchema> iterator() {
-        return new CompositeIterator<JsonSchema>()
-            .add(properties.values())
-            .add(patternProperties.values())
-            .add(additional);
     }
     
     void findSchema(String propertyName, List<JsonSchema> found) {

@@ -17,7 +17,6 @@ package org.leadpony.justify.core;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.json.stream.JsonGenerator;
@@ -56,10 +55,6 @@ public interface JsonSchema {
         return null;
     }
     
-    default Map<URI, JsonSchema> idMap() {
-        return Collections.emptyMap();
-    }
-    
     default boolean hasSubschema() {
         return false;
     }
@@ -67,7 +62,20 @@ public interface JsonSchema {
     default Iterable<JsonSchema> subschemas() {
         return Collections.emptySet();
     }
-
+    
+    /**
+     * Finds the subschema at the location specified by JSON pointer.
+     * 
+     * @param jsonPointer the valid escaped JSON Pointer string.
+     *                    It must be an empty string or a sequence of '/' prefixed tokens.
+     * @return the subschema found or {@code null} if the subschema does not exist.
+     * @throws NullPointerException if {@code jsonPointer} is {@code null}.
+     * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
+     */
+    default JsonSchema find(String jsonPointer) {
+        return null;
+    }
+    
     /**
      * Creates an evaluator of this schema.
      * 

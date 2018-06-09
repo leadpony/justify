@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,12 +23,11 @@ import java.util.stream.Collectors;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.base.CompositeIterator;
 
 /**
  * @author leadpony
  */
-abstract class ItemSchemaFinder implements Iterable<JsonSchema> {
+abstract class ItemSchemaFinder {
     
     static ItemSchemaFinder of(JsonSchema schema) {
         return new CommonItemSchemaFinder(schema);
@@ -56,13 +53,6 @@ abstract class ItemSchemaFinder implements Iterable<JsonSchema> {
         
         private CommonItemSchemaFinder(Optional<JsonSchema> schema) {
             this.schema = schema;
-        }
-
-        @Override
-        public Iterator<JsonSchema> iterator() {
-            return schema
-                    .map(s->Collections.singleton(s).iterator())
-                    .orElse(Collections.emptyIterator());
         }
 
         @Override
@@ -97,11 +87,6 @@ abstract class ItemSchemaFinder implements Iterable<JsonSchema> {
             assert schemas != null;
             this.schemas = schemas;
             this.additional = additional;
-        }
-
-        @Override
-        public Iterator<JsonSchema> iterator() {
-            return new CompositeIterator<JsonSchema>().add(schemas).add(additional);
         }
 
         @Override

@@ -29,7 +29,6 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.base.CompositeIterator;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -44,6 +43,7 @@ class InternalSchema extends LeafSchema {
     private final ItemSchemaFinder itemSchemaFinder;
     private final List<JsonSchema> subschemas;
     private final Map<String, JsonSchema> definitions;
+    private final SubschemaMap subschemaMap;
     
     InternalSchema(DefaultSchemaBuilder builder) {
         super(builder);
@@ -51,6 +51,7 @@ class InternalSchema extends LeafSchema {
         this.itemSchemaFinder = builder.getItemSchemaFinder();
         this.subschemas = builder.getSubschemas();
         this.definitions = builder.getDefinitions();
+        this.subschemaMap = builder.getSubschemaMap();
     }
 
     /**
@@ -68,6 +69,7 @@ class InternalSchema extends LeafSchema {
                 .map(JsonSchema::negate)
                 .collect(Collectors.toList());
         this.definitions = original.definitions;
+        this.subschemaMap = original.subschemaMap;
     }
 
     @Override
@@ -77,13 +79,16 @@ class InternalSchema extends LeafSchema {
     
     @Override
     public Iterable<JsonSchema> subschemas() {
-        return ()->{
-            return new CompositeIterator<JsonSchema>()
-                    .add(propertySchemaFinder)
-                    .add(subschemas.stream().map(JsonSchema::subschemas))
-                    .add(definitions.values())
-                    ;
-        };
+        return this.subschemaMap.values();
+    }
+    
+    @Override
+    public JsonSchema find(String jsonPointer) {
+        JsonSchema found = super.find(jsonPointer);
+        if (found == null) {
+            found = subschemaMap.lookUp(jsonPointer);
+        }
+        return found;
     }
     
     @Override

@@ -19,6 +19,7 @@ package org.leadpony.justify.core;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
@@ -85,5 +86,5 @@ public interface JsonSchemaReader extends Closeable {
     @Override
     void close();
     
-    JsonSchemaReader withExternalSchema(JsonSchema schema);
+    JsonSchemaReader withExternalSchema(URI id, JsonSchema schema);
 }

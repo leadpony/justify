@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.assertion;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.json.JsonValue;
@@ -24,26 +25,29 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.core.Problem;
 
 /**
- * Assertion specified with "const" keyword.
+ * Assertion specified with "enum" keyword.
  * 
  * @author leadpony
  */
-public class Const extends AbstractEqualityAssertion {
-
-    private final JsonValue expected;
+public class EnumAssertion extends AbstractEqualityAssertion {
     
-    public Const(JsonValue expected, JsonProvider jsonProvider) {
+    private final Set<JsonValue> expected;
+
+    public EnumAssertion(Set<JsonValue> expected, JsonProvider jsonProvider) {
         super(jsonProvider);
         this.expected = expected;
     }
-    
+
     @Override
     public void toJson(JsonGenerator generator) {
-        generator.write("const", this.expected);
+        generator.writeKey("enum");
+        generator.writeStartArray();
+        expected.forEach(generator::write);
+        generator.writeEnd();
     }
 
     @Override
@@ -53,16 +57,17 @@ public class Const extends AbstractEqualityAssertion {
 
     @Override
     protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> consumer) {
-        if (actual.equals(expected)) {
-            return Result.TRUE;
-        } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.const")
-                    .withParameter("actual", actual)
-                    .withParameter("expected", expected)
-                    .build();
-            consumer.accept(p);
-            return Result.FALSE;
+        for (JsonValue expected : this.expected) {
+            if (actual.equals(expected)) {
+                return Result.TRUE;
+            }
         }
+        Problem p = ProblemBuilder.newBuilder(parser)
+                .withMessage("instance.problem.enum")
+                .withParameter("actual", actual)
+                .withParameter("expected", this.expected)
+                .build();
+        consumer.accept(p);
+        return Result.FALSE;
     }
 }

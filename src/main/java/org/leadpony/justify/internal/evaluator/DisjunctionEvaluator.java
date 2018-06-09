@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.json.stream.JsonParser;
+
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 
@@ -51,7 +53,7 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(Consumer<Problem> consumer) {
+    protected Result conclude(JsonParser parser, Consumer<Problem> consumer) {
         if (numberOfTrues > 0 || failed == null || failed.isEmpty()) {
             return Result.TRUE;
         }

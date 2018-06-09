@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.assertion;
 
 /**
+ * Assertion specified with "minLength" keyword.
+ * 
  * @author leadpony
  */
 public class MinLength extends AbstractStringLengthAssertion {

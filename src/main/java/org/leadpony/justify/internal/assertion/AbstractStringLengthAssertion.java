@@ -53,7 +53,7 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
         if (test(actualLength, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder()
+            Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage(this.message)
                     .withParameter("actual", actual.length())
                     .withParameter("bound", this.bound)

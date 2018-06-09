@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.assertion;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import javax.json.stream.JsonParser;
+
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
@@ -33,11 +35,11 @@ class NotType extends Type {
     }
     
     @Override
-    protected Result testType(InstanceType type, Consumer<Problem> consumer) {
+    protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> consumer) {
         if (!contains(type)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder()
+            Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage("instance.problem.not.type")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)

@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.function.Consumer;
 
+import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Problem;
@@ -31,10 +32,11 @@ class ExtensibleDisjunctionEvaluator extends LongDisjunctionEvaluator {
         super(lastEvent);
     }
 
-    protected Result tryToMakeDecision(Event event, int depth, Consumer<Problem> consumer) {
+    @Override
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
         if (depth == 0 && event == lastEvent) {
             assert isEmpty();
-            return conclude(consumer);
+            return conclude(parser, consumer);
         } else {
             return Result.PENDING;
         }
