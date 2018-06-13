@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
+import java.util.Objects;
 
 import javax.json.stream.JsonGenerator;
 
@@ -35,8 +36,11 @@ public class SchemaReference implements JsonSchema, Resolvable {
     private final URI originalRef;
     private JsonSchema referencedSchema;
     
-    public SchemaReference(URI ref) {
+    private final NavigableSchemaMap subschemaMap;
+    
+    public SchemaReference(URI ref, NavigableSchemaMap subschemaMap) {
         this.ref = this.originalRef = ref;
+        this.subschemaMap = subschemaMap;
     }
     
     public URI ref() {
@@ -48,10 +52,23 @@ public class SchemaReference implements JsonSchema, Resolvable {
     }
 
     @Override
-    public URI resolve(URI baseURI) {
-        assert this.originalRef != null;
-        this.ref = baseURI.resolve(this.originalRef);
-        return ref();
+    public boolean hasSubschema() {
+        return !this.subschemaMap.isEmpty();
+    }
+    
+    @Override
+    public Iterable<JsonSchema> subschemas() {
+        return this.subschemaMap.values();
+    }
+    
+    @Override
+    public JsonSchema getSchema(String jsonPointer) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        if (jsonPointer.isEmpty()) {
+            return this;
+        } else {
+            return subschemaMap.getSchema(jsonPointer);
+        }
     }
     
     @Override
@@ -75,6 +92,13 @@ public class SchemaReference implements JsonSchema, Resolvable {
         generator.writeStartObject();
         generator.write("$ref", ref.toString());
         generator.writeEnd();
+    }
+
+    @Override
+    public URI resolve(URI baseURI) {
+        assert this.originalRef != null;
+        this.ref = baseURI.resolve(this.originalRef);
+        return ref();
     }
 
     @Override

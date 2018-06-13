@@ -16,25 +16,14 @@
 
 package org.leadpony.justify.internal.schema;
 
-import javax.json.spi.JsonProvider;
+import java.net.URI;
 
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.core.JsonSchemaBuilder;
 
 /**
- * Default implementation of {@link JsonSchemaBuilderFactory}.
- * 
  * @author leadpony
  */
-public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
+public interface SchemaReferenceBuilder extends JsonSchemaBuilder {
     
-    private final JsonProvider jsonProvider;
-    
-    public DefaultSchemaBuilderFactory(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
-    }
-
-    @Override
-    public DefaultSchemaBuilder createBuilder() {
-        return new DefaultSchemaBuilder(jsonProvider);
-    }
+    JsonSchemaBuilder withRef(URI ref);
 }

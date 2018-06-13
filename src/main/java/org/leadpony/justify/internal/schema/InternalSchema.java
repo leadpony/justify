@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -42,15 +41,13 @@ class InternalSchema extends LeafSchema {
     private final PropertySchemaFinder propertySchemaFinder;
     private final ItemSchemaFinder itemSchemaFinder;
     private final List<JsonSchema> subschemas;
-    private final Map<String, JsonSchema> definitions;
-    private final SubschemaMap subschemaMap;
+    private NavigableSchemaMap subschemaMap;
     
     InternalSchema(DefaultSchemaBuilder builder) {
         super(builder);
         this.propertySchemaFinder = builder.getPropertySchemaFinder();
         this.itemSchemaFinder = builder.getItemSchemaFinder();
         this.subschemas = builder.getSubschemas();
-        this.definitions = builder.getDefinitions();
         this.subschemaMap = builder.getSubschemaMap();
     }
 
@@ -68,13 +65,12 @@ class InternalSchema extends LeafSchema {
         this.subschemas = original.subschemas.stream()
                 .map(JsonSchema::negate)
                 .collect(Collectors.toList());
-        this.definitions = original.definitions;
         this.subschemaMap = original.subschemaMap;
     }
 
     @Override
     public boolean hasSubschema() {
-        return true;
+        return !this.subschemaMap.isEmpty();
     }
     
     @Override
@@ -83,12 +79,13 @@ class InternalSchema extends LeafSchema {
     }
     
     @Override
-    public JsonSchema find(String jsonPointer) {
-        JsonSchema found = super.find(jsonPointer);
-        if (found == null) {
-            found = subschemaMap.lookUp(jsonPointer);
+    public JsonSchema getSchema(String jsonPointer) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        if (jsonPointer.isEmpty()) {
+            return this;
+        } else {
+            return subschemaMap.getSchema(jsonPointer);
         }
-        return found;
     }
     
     @Override
@@ -145,15 +142,6 @@ class InternalSchema extends LeafSchema {
         propertySchemaFinder.toJson(generator);
         itemSchemaFinder.toJson(generator);
         subschemas.forEach(schema->schema.toJson(generator));
-        if (!definitions.isEmpty()) {
-            generator.writeKey("definitions");
-            generator.writeStartObject();
-            definitions.forEach((name, schema)->{
-                generator.writeKey(name);
-                schema.toJson(generator);
-            });
-            generator.writeEnd();
-        }
     }
  
     /**

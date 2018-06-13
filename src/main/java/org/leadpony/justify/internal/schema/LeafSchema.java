@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.json.JsonException;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -82,14 +81,9 @@ class LeafSchema extends AbstractJsonSchema implements Resolvable {
     }
     
     @Override
-    public JsonSchema find(String jsonPointer) {
+    public JsonSchema getSchema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        if (jsonPointer.isEmpty()) {
-            return this;
-        } else if (!jsonPointer.startsWith("/")) {
-            throw new JsonException("A non-empty JSON Pointer must begin with a '/'");
-        }
-        return null;
+        return jsonPointer.isEmpty() ? this : null;
     }
 
     @Override

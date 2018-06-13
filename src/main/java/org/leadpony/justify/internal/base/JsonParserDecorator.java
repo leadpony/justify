@@ -29,6 +29,7 @@ import javax.json.stream.JsonParser;
 public class JsonParserDecorator implements JsonParser {
     
     private final JsonParser real;
+    private Event currentEvent;
     
     public JsonParserDecorator(JsonParser real) {
         this.real = real;
@@ -80,6 +81,40 @@ public class JsonParserDecorator implements JsonParser {
 
     @Override
     public Event next() {
-        return real.next();
+        return currentEvent = real.next();
+    }
+
+    @Override
+    public void skipArray() {
+        if (currentEvent == Event.START_ARRAY) {
+            int depth = 1;
+            while (hasNext()) {
+                Event event = next();
+                if (event == Event.END_ARRAY) {
+                    if (--depth == 0) {
+                        break;
+                    }
+                } else if (event == Event.START_ARRAY) {
+                    ++depth;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void skipObject() {
+        if (currentEvent == Event.START_OBJECT) {
+            int depth = 1;
+            while (hasNext()) {
+                Event event = next();
+                if (event == Event.END_OBJECT) {
+                    if (--depth == 0) {
+                        break;
+                    }
+                } else if (event == Event.START_OBJECT) {
+                    ++depth;
+                }
+            }
+        }
     }
 }

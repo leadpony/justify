@@ -240,4 +240,6 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException one of parameters was {@code null}.
      */
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
+    
+    JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema);
 }

@@ -27,15 +27,18 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.json.JsonValue;
+import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
+import org.leadpony.justify.internal.base.SimpleJsonPointer;
+import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
 
 /**
  * Default implementation of {@link JsonSchemaReader}.
@@ -44,18 +47,20 @@ import org.leadpony.justify.internal.schema.SchemaReference;
  */
 public class DefaultSchemaReader implements JsonSchemaReader {
     
+    @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(DefaultSchemaReader.class.getName());
+    private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
     
     private final JsonParser parser;
-    private final JsonSchemaBuilderFactory factory;
+    private final BasicSchemaBuilderFactory factory;
 
     private boolean alreadyRead;
     private boolean alreadyClosed;
     
-    private URI initialURI;
+    private URI initialBaseURI = DEFAULT_INITIAL_BASE_URI;
     private final SchemaResolver resolver = new SchemaResolver();
     
-    public DefaultSchemaReader(JsonParser parser, JsonSchemaBuilderFactory factory) {
+    public DefaultSchemaReader(JsonParser parser, BasicSchemaBuilderFactory factory) {
         this.parser = parser;
         this.factory = factory;
     }
@@ -66,7 +71,7 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             throw new IllegalStateException("already read");
         }
         JsonSchema rootSchema = rootSchema();
-        resolver.resolveAll(initialURI).linkAll();
+        resolver.resolveAll(initialBaseURI).linkAll();
         this.alreadyRead = true;
         return rootSchema;
     }
@@ -102,21 +107,27 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     
     private JsonSchema objectSchema(boolean root) {
         SchemaResolver.Entry entry = resolver.lastEntry();
-        JsonSchemaBuilder builder = this.factory.createBuilder();
+        SchemaReferenceBuilder builder = this.factory.createBuilder();
+        JsonLocation refLocation = null;
         Event event = null;
         while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
             if (event == Event.KEY_NAME) {
-                String name = parser.getString();
-                if ("$ref".equals(name)) {
-                    return schemaReference();
+                String keyName = parser.getString();
+                if (keyName.equals("$ref")) {
+                    addRef(builder);
+                    refLocation = parser.getLocation();
                 } else {
-                    populateSchema(name, builder);
+                    populateSchema(keyName, builder);
                 }
             }
         }
         JsonSchema schema = builder.build();
-        if (schema.hasId()) {
+        if (schema.hasId() || root) {
             resolver.addIdentifiedSchema(schema, entry);
+        }
+        if (schema instanceof SchemaReference) {
+            SchemaReference reference = (SchemaReference)schema;
+            resolver.addReference(reference, refLocation);
         }
         return schema;
     }
@@ -130,18 +141,6 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         default:
             return null;
         }
-    }
-    
-    private SchemaReference schemaReference() {
-        if (parser.next() != Event.VALUE_STRING) {
-            return null;
-        }
-        URI uri = URI.create(parser.getString());
-        SchemaReference reference = new SchemaReference(uri);
-        resolver.addReference(reference, parser.getLocation());
-        while (parser.hasNext() && parser.next() != Event.END_OBJECT)
-            ;
-        return reference;
     }
     
     private void populateSchema(String keyName, JsonSchemaBuilder builder) {
@@ -237,8 +236,15 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             addType(builder);
             break;
         default:
-            skipCurrentValue(keyName);
+            addUnknown(keyName, builder);
             break;
+        }
+    }
+    
+    private void addRef(SchemaReferenceBuilder builder) {
+        if (parser.next() == Event.VALUE_STRING) {
+            URI uri = URI.create(parser.getString());
+            builder.withRef(uri);
         }
     }
     
@@ -460,6 +466,12 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         }
     }
     
+    private void addUnknown(String name, JsonSchemaBuilder builder) {
+        if (parser.hasNext()) {
+            processUnknown(parser.next(), SimpleJsonPointer.of(name), builder);
+        }
+    }
+    
     private static InstanceType findType(String name) {
         return InstanceType.valueOf(name.toUpperCase());
     }
@@ -489,19 +501,26 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         return subschemas;
     }
     
-    private void skipCurrentValue(String propertyName) {
-        log.fine("Skipping unknown property: " + propertyName);
-        if (parser.hasNext()) {
-            switch (parser.next()) {
-            case START_ARRAY:
-                parser.skipArray();
-                break;
-            case START_OBJECT:
-                parser.skipObject();
-                break;
-            default:
-                break;
+    private void processUnknown(Event event, SimpleJsonPointer where, JsonSchemaBuilder builder) {
+        switch (event) {
+        case START_OBJECT:
+            builder.withSubschema(where.toString(), objectSchema(false));
+            break;
+        case START_ARRAY:
+            for (int i = 0; parser.hasNext(); i++) {
+                if ((event = parser.next()) == Event.END_ARRAY) {
+                    break;
+                }
+                processUnknown(event, where.concat(i), builder);
             }
+            break;
+        case KEY_NAME:
+            if (parser.hasNext()) {
+                processUnknown(parser.next(), where.concat(parser.getString()), builder);
+            }
+            break;
+        default:
+            break;
         }
     }
 }

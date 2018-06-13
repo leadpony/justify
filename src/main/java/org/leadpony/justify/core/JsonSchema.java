@@ -72,7 +72,7 @@ public interface JsonSchema {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}.
      * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
      */
-    default JsonSchema find(String jsonPointer) {
+    default JsonSchema getSchema(String jsonPointer) {
         return null;
     }
     

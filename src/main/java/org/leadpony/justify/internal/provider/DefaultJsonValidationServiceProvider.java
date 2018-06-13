@@ -29,7 +29,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonValidatorFactory;
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.DefaultSchemaReader;
 
 /**
@@ -60,8 +60,8 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
     }
     
     @Override
-    public DefaultSchemaBuilderFactory createSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(this.jsonProvider);
+    public BasicSchemaBuilderFactory createSchemaBuilderFactory() {
+        return new BasicSchemaBuilderFactory(this.jsonProvider);
     }
 
     @Override

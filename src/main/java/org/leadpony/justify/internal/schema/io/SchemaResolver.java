@@ -73,9 +73,6 @@ class SchemaResolver {
     
     SchemaResolver resolveAll(URI baseURI) {
         if (this.head.next != null) {
-            if (baseURI == null) {
-                baseURI = URI.create("");
-            }
             resolveAll(baseURI, this.head.next);
             this.head.next = null;
         }
@@ -90,7 +87,7 @@ class SchemaResolver {
                 reference.setReferencedSchema(schema);
             } else {
                 // TODO:
-                log.severe(ref.toString());
+                log.severe("$ref target was not found: " + ref.toString());
             }
         }
     }
@@ -114,12 +111,12 @@ class SchemaResolver {
     private JsonSchema findReferencedSchema(URI ref) {
         String fragment = ref.getFragment();
         if (fragment != null && (fragment.isEmpty() || fragment.startsWith("/"))) {
-            String[] parts = ref.toString().split("#");
+            String[] parts = ref.toString().split("#", -1);
             JsonSchema schema = identified.get(parts[0]);
             if (schema == null || parts.length < 2) {
                 return schema;
             } else {
-                return schema.find(parts[1]);
+                return schema.getSchema(fragment);
             }
         } else {
             return identified.get(ref.toString());
@@ -164,7 +161,9 @@ class SchemaResolver {
         
         @Override
         URI resolveURI(URI baseURI) {
-            baseURI = super.resolveURI(baseURI);
+            if (schema.hasId()) {
+                baseURI = super.resolveURI(baseURI);
+            }
             addFullyIdentifiedSchema(baseURI, schema);
             resolveAll(baseURI, this.descendant);
             return baseURI;

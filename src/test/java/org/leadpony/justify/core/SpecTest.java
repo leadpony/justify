@@ -32,8 +32,6 @@ import org.junit.runners.Parameterized.Parameters;
 public class SpecTest extends AbstractSpecTest {
 
     private static final String[] NAMES = {
-            //"/spec/tests/draft7/ref.json",
-
             "/spec/tests/draft7/additionalItems.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
@@ -54,6 +52,7 @@ public class SpecTest extends AbstractSpecTest {
             "/spec/tests/draft7/not.json",
             "/spec/tests/draft7/oneOf.json",
             "/spec/tests/draft7/properties.json",
+            "/spec/tests/draft7/ref.json",
             "/spec/tests/draft7/required.json",
             "/spec/tests/draft7/type.json"
         };
@@ -64,7 +63,7 @@ public class SpecTest extends AbstractSpecTest {
     
     @Before
     public void setUp() {
-        //Assume.assumeTrue(testIndex == 1);
+        //Assume.assumeTrue(testIndex == 23);
     }
 
     @Parameters(name = "{0}@{1}: {2}")

@@ -50,11 +50,12 @@ import org.leadpony.justify.internal.assertion.MultipleOf;
 import org.leadpony.justify.internal.assertion.Required;
 import org.leadpony.justify.internal.assertion.Type;
 import org.leadpony.justify.internal.base.Sets;
+import org.leadpony.justify.internal.base.SimpleJsonPointer;
 
 /**
  * @author leadpony
  */
-public class DefaultSchemaBuilder implements JsonSchemaBuilder {
+class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
     private final JsonProvider jsonProvider;
     
@@ -80,9 +81,9 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
     
-    private Map<String, JsonSchema> definitions;
+    private final NavigableSchemaMap subschemaMap = new NavigableSchemaMap();
     
-    private final SubschemaMap subschemaMap = new SubschemaMap();
+    private URI ref;
     
     public DefaultSchemaBuilder(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
@@ -131,12 +132,7 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         return Collections.unmodifiableList(subschemas);
     }
     
-    Map<String, JsonSchema> getDefinitions() {
-        return (definitions != null) ? 
-                definitions : Collections.emptyMap();
-    }
-    
-    SubschemaMap getSubschemaMap() {
+    NavigableSchemaMap getSubschemaMap() {
         return subschemaMap;
     }
     
@@ -144,6 +140,8 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchema build() {
         if (empty) {
             return JsonSchema.EMPTY;
+        } else if (ref != null) {
+            return new SchemaReference(ref, this.subschemaMap);
         } else if (subschemaMap.isEmpty()) {
             return new LeafSchema(this);
         } else {
@@ -281,7 +279,8 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
             this.properties = new HashMap<>();
         }
         this.properties.put(name, subschema);
-        return builderWithSubschema("properties/" + name, subschema);
+        registerSubschema(SimpleJsonPointer.concat("properties", name), subschema);
+        return builderWithSubschema();
     }
 
     @Override
@@ -293,31 +292,32 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
             this.patternProperties = new HashMap<>();
         }
         this.patternProperties.put(compiled, subschema);
-        return builderWithSubschema("patternProperties/" + pattern, subschema);
+        registerSubschema(SimpleJsonPointer.concat("additionalProperties", pattern), subschema);
+        return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.additionalProperties = subschema;
-        return builderWithSubschema("additionalProperties", subschema);
+        registerSubschema("/additionalProperties", subschema);
+        return builderWithSubschema();
     }
     
     @Override
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.items = subschema;
-        return builderWithSubschema("items", subschema);
+        registerSubschema("/items", subschema);
+        return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         this.items = new ArrayList<JsonSchema>(subschemas);
-        for (int i = 0; i < subschemas.size(); ++i) {
-            builderWithSubschema("items/" + i, subschemas.get(i));
-        }
-        return this;
+        registerSubschemas("items", subschemas);
+        return builderWithSubschema();
     }
   
     @Override
@@ -336,7 +336,8 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.additionalItems = subschema;
-        return builderWithSubschema("additionalItems", subschema);
+        registerSubschema("/additionalItems", subschema);
+        return builderWithSubschema();
     } 
     
     @Override
@@ -350,7 +351,8 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         JsonSchema schema = new AllOf(subschemas);
         this.subschemas.add(schema);
-        return builderWithSubschema("allOf", schema);
+        registerSubschemas("allOf", subschemas);
+        return builderWithSubschema();
     }
 
     @Override
@@ -364,7 +366,8 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         JsonSchema schema = new AnyOf(subschemas);
         this.subschemas.add(schema);
-        return builderWithSubschema("anyOf", schema);
+        registerSubschemas("anyOf", subschemas);
+        return builderWithSubschema();
     }
 
     @Override
@@ -378,48 +381,86 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         JsonSchema schema = new OneOf(subschemas);
         this.subschemas.add(schema);
-        return builderWithSubschema("oneOf", schema);
+        registerSubschemas("oneOf", subschemas);
+        return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.subschemas.add(new Not(subschema));
-        return builderWithSubschema("not", subschema);
+        registerSubschema("/not", subschema);
+        return builderWithSubschema();
     }
   
     @Override
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.ifSchema = subschema;
-        return builderWithSubschema("if", subschema);
+        registerSubschema("/if", subschema);
+        return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.thenSchema = subschema;
-        return builderWithSubschema("then", subschema);
+        registerSubschema("/then", subschema);
+        return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         this.elseSchema = subschema;
-        return builderWithSubschema("else", subschema);
+        registerSubschema("/else", subschema);
+        return builderWithSubschema();
     }
    
     @Override
     public JsonSchemaBuilder withDefinition(String name, JsonSchema schema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
-        if (this.definitions == null) {
-            this.definitions = new HashMap<>();
+        registerSubschema(SimpleJsonPointer.concat("definitions", name), schema);
+        return builderWithSubschema();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        if (jsonPointer.isEmpty()) {
+            throw new IllegalArgumentException("jsonPointer must not be empty.");
         }
-        this.definitions.put(name, schema);
-        return builderWithSubschema("definitions/" + name, schema);
+        registerSubschema(jsonPointer, subschema);
+        return builderWithSubschema();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withRef(URI ref) {
+        Objects.requireNonNull(ref, "ref must not be null.");
+        this.ref = ref;
+        return builderNonempty();
     }
   
+    private void registerSubschema(String jsonPointer, JsonSchema subschema) {
+        this.subschemaMap.put(jsonPointer, subschema);
+    }
+    
+    private void registerSubschemas(String jsonPointer, Iterable<JsonSchema> subschemas) {
+        SimpleJsonPointer basePointer = SimpleJsonPointer.of(jsonPointer);
+        int i = 0;
+        for (JsonSchema subschema : subschemas) {
+            registerSubschema(basePointer.concat(i++).toString(), subschema);
+        }
+    }
+
+    private void addConditionalSchemaIfExists() {
+        if (ifSchema != null) {
+            this.subschemas.add(new IfThenElse(ifSchema, thenSchema, elseSchema));
+        }
+    }
+
     /**
      * Marks this builder as non-empty.
      * 
@@ -435,14 +476,7 @@ public class DefaultSchemaBuilder implements JsonSchemaBuilder {
      * 
      * @return this builder.
      */
-    private JsonSchemaBuilder builderWithSubschema(String key, JsonSchema schema) {
-        this.subschemaMap.put(key, schema);
+    private JsonSchemaBuilder builderWithSubschema() {
         return builderNonempty();
-    }
-    
-    private void addConditionalSchemaIfExists() {
-        if (ifSchema != null) {
-            this.subschemas.add(new IfThenElse(ifSchema, thenSchema, elseSchema));
-        }
     }
 }
