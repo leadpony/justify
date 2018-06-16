@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import javax.json.stream.JsonGenerator;
@@ -44,20 +42,6 @@ public class IfThenElse extends AbstractJsonSchema {
         this.elseSchema = Optional.ofNullable(elseSchema);
     }
 
-    @Override
-    public boolean hasActiveSubschema() {
-        return true;
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getActiveSubschemas() {
-        List<JsonSchema> subschemas = new ArrayList<>();
-        subschemas.add(ifSchema);
-        thenSchema.ifPresent(subschemas::add);
-        elseSchema.ifPresent(subschemas::add);
-        return subschemas;
-    }
-    
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         if (!thenSchema.isPresent() && !elseSchema.isPresent()) {

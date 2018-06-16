@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Collections;
-
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -39,11 +37,6 @@ public class Not extends BooleanLogicSchema {
     public Not(JsonSchema subschema, JsonSchema negatedSubschema) {
         this.subschema = subschema;
         this.negatedSubschema = negatedSubschema;
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getActiveSubschemas() {
-        return Collections.singleton(subschema);
     }
     
     @Override

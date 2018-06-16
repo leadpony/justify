@@ -19,12 +19,10 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -53,13 +51,13 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(JsonParser parser, Consumer<Problem> consumer) {
+    protected Result conclude(JsonParser parser, ProblemReporter reporter) {
         if (numberOfTrues > 0 || failed == null || failed.isEmpty()) {
             return Result.TRUE;
         }
         Collections.sort(failed);
         StoringEvaluator first = failed.get(0);
-        first.problems().forEach(consumer);
+        first.problems().forEach(problem->reporter.reportProblem(problem, parser));
         return Result.FALSE;
     }
 }

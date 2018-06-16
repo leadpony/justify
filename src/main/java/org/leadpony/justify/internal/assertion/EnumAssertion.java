@@ -17,13 +17,13 @@
 package org.leadpony.justify.internal.assertion;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.Evaluator.ProblemReporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.core.Problem;
@@ -56,7 +56,7 @@ public class EnumAssertion extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> consumer) {
+    protected Result testValue(JsonValue actual, JsonParser parser, ProblemReporter reporter) {
         for (JsonValue expected : this.expected) {
             if (actual.equals(expected)) {
                 return Result.TRUE;
@@ -67,7 +67,7 @@ public class EnumAssertion extends AbstractEqualityAssertion {
                 .withParameter("actual", actual)
                 .withParameter("expected", this.expected)
                 .build();
-        consumer.accept(p);
+        reporter.reportProblem(p, parser);
         return Result.FALSE;
     }
 }

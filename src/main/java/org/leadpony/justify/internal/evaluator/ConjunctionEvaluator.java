@@ -16,12 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -39,7 +36,7 @@ class ConjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(JsonParser parser, Consumer<Problem> consumer) {
+    protected Result conclude(JsonParser parser, ProblemReporter reporter) {
         return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
     }
 }

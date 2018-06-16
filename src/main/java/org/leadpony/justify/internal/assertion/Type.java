@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.assertion;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -43,10 +42,10 @@ public class Type extends ShallowAssertion {
     }
 
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
-            return testType(type, parser, consumer);
+            return testType(type, parser, reporter);
         } else {
             return Result.TRUE;
         }
@@ -72,7 +71,7 @@ public class Type extends ShallowAssertion {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
     
-    protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> consumer) {
+    protected Result testType(InstanceType type, JsonParser parser, ProblemReporter reporter) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
@@ -81,7 +80,7 @@ public class Type extends ShallowAssertion {
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
-            consumer.accept(p);
+            reporter.reportProblem(p, parser);
             return Result.FALSE;
         }
     }

@@ -35,6 +35,7 @@ public class SpecTest extends AbstractSpecTest {
             "/spec/tests/draft7/additionalItems.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
+            "/spec/tests/draft7/boolean_schema.json",
             "/spec/tests/draft7/const.json",
             "/spec/tests/draft7/definitions.json",
             "/spec/tests/draft7/enum.json",

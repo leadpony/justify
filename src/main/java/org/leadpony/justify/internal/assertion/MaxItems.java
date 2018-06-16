@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -67,9 +65,9 @@ public class MaxItems extends AbstractAssertion {
         private int count;
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
             if (depth == 1) {
-                return testSize(++count, parser, consumer);
+                return testSize(++count, parser, reporter);
             } else if (depth == 0 && event == Event.END_ARRAY) {
                 return Result.TRUE;
             } else {
@@ -77,7 +75,7 @@ public class MaxItems extends AbstractAssertion {
             }
         }
 
-        private Result testSize(int size, JsonParser parser, Consumer<Problem> consumer) {
+        private Result testSize(int size, JsonParser parser, ProblemReporter reporter) {
             if (size <= bound) {
                 return Result.PENDING;
             } else {
@@ -86,7 +84,7 @@ public class MaxItems extends AbstractAssertion {
                         .withParameter("actual", size)
                         .withParameter("bound", bound)
                         .build();
-                consumer.accept(p);
+                reporter.reportProblem(p, parser);
                 return Result.FALSE;
             }
         }

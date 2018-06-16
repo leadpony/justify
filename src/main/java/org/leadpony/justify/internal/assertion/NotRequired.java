@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.assertion;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -57,25 +56,25 @@ class NotRequired extends Required {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
-                return test(parser, consumer, false);
+                return test(parser, reporter, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, consumer, true);
+                return test(parser, reporter, true);
             } else {
                 return Result.PENDING;
             }
         }
 
         @Override
-        protected Result test(JsonParser parser, Consumer<Problem> consumer, boolean last) {
+        protected Result test(JsonParser parser, ProblemReporter reporter, boolean last) {
             if (remaining.isEmpty()) {
                 Problem p = ProblemBuilder.newBuilder(parser)
                         .withMessage("instance.problem.not.required")
                         .withParameter("expected", this.names)
                         .build();
-                consumer.accept(p);
+                reporter.reportProblem(p, parser);
                 return Result.FALSE;
             } else if (last) {
                 return Result.TRUE;

@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.core;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 
 /**
@@ -45,32 +43,47 @@ public interface Evaluator {
     };
     
     /**
+     * Reporter of problem found during the evaluation.
+     */
+    interface ProblemReporter {
+        
+        /**
+         * Reports a problem found during the evaluation.
+         * 
+         * @param problem the problem to be reported, can be {@code null}.
+         * @param parser the JSON parser, cannot be {@code null}.
+         * @throws NullPointerException if {@code parser} is {@code null}.
+         */
+        void reportProblem(Problem problem, JsonParser parser);
+    }
+    
+    /**
      * Evaluates JSON schema against JSON instance.
      * 
      * @param event the event triggered by JSON parser, cannot be {@code null}.
      * @param parser the JSON parser, cannot be {@code null}.
      * @param depth the depth where the event occurred.
-     * @param consumer the consumer of the found problems, cannot be {@code null}.
+     * @param reporter the reporter of the found problems, cannot be {@code null}.
      * @return the result of the evaluation, never be {@code null}.
      */
-    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
+    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, ProblemReporter reporter);
 
     /**
      * The evaluator which evaluates any JSON instances as true ("valid").
      */
-    Evaluator ALWAYS_TRUE = (event, parser, depth, consumer)->Result.TRUE;
+    Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
 
     /**
      * The evaluator which evaluates any JSON instances as false ("invalid")
      * and reports a problem.
      */
-    Evaluator ALWAYS_FALSE = (event, parser, depth, consumer)->{
-            consumer.accept(null);
+    Evaluator ALWAYS_FALSE = (event, parser, depth, reporter)->{
+            reporter.reportProblem(null, parser);
             return Result.FALSE;
         };
     
     /**
      * The evaluator whose result should be always ignored.
      */
-    Evaluator ALWAYS_IGNORED = (event, parser, depth, consumer)->Result.IGNORED;
+    Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
 }

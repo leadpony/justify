@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 
@@ -32,7 +31,7 @@ import org.leadpony.justify.core.ValidationResult;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.BasicProblemReporter;
 
 /**
  * JSON parser with validation functionality.
@@ -40,7 +39,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * @author leadpony
  */
 class ValidatingJsonParser extends JsonParserDecorator 
-        implements ValidationResult, Consumer<Problem> {
+        implements ValidationResult, BasicProblemReporter {
     
     private BiConsumer<Event, JsonParser> eventHandler;
     private final JsonSchema rootSchema;
@@ -64,11 +63,9 @@ class ValidatingJsonParser extends JsonParserDecorator
     }
   
     @Override
-    public void accept(Problem problem) {
-        if (problem == null) {
-            problem = createUnknownProblem();
-        }
-        problems.add(problem);
+    public void reportProblem(Problem problem) {
+        assert problem != null;
+        this.problems.add(problem);
     }
     
     @Override
@@ -108,11 +105,5 @@ class ValidatingJsonParser extends JsonParserDecorator
     }
 
     private void handleNothing(Event event, JsonParser parser) {
-    }
-    
-    private Problem createUnknownProblem() {
-        return ProblemBuilder.newBuilder(realParser())
-                .withMessage("instance.problem.unknown")
-                .build();
     }
 }

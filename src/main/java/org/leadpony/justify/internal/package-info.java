@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides the implementation of API.
+ * Provides the implementation of the API.
  *  
  * @author leadpony
  */

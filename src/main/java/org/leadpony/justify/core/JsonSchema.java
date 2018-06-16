@@ -56,7 +56,7 @@ public interface JsonSchema {
     }
     
     /**
-     * Finds the subschema at the location specified by JSON pointer.
+     * Finds the subschema at the location specified with a JSON pointer.
      * 
      * @param jsonPointer the valid escaped JSON Pointer string.
      *                    It must be an empty string or a sequence of '/' prefixed tokens.
@@ -68,15 +68,12 @@ public interface JsonSchema {
         return null;
     }
     
+    /**
+     * Returns the all subschemas contained in this schema.
+     * 
+     * @return the object to iterate subschemas.
+     */
     default Iterable<JsonSchema> getSubschemas() {
-        return Collections.emptySet();
-    }
-    
-    default boolean hasActiveSubschema() {
-        return false;
-    }
-    
-    default Iterable<JsonSchema> getActiveSubschemas() {
         return Collections.emptySet();
     }
     

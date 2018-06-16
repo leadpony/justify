@@ -19,13 +19,11 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -39,19 +37,19 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         Iterator<Evaluator> it = evaluators.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
-            Result result = evaluator.evaluate(event, parser, depth, consumer);
+            Result result = evaluator.evaluate(event, parser, depth, reporter);
             if (result != Result.PENDING) {
                 it.remove();
                 if (!accumulateResult(evaluator, result)) {
-                    return conclude(parser, consumer);
+                    return conclude(parser, reporter);
                 }
             }
         }
-        return tryToMakeDecision(event, parser, depth, consumer);
+        return tryToMakeDecision(event, parser, depth, reporter);
     }
    
     @Override
@@ -63,12 +61,12 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
         return evaluators.isEmpty();
     }
 
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         assert isEmpty();
-        return conclude(parser, consumer);
+        return conclude(parser, reporter);
     }
     
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
-    protected abstract Result conclude(JsonParser parser, Consumer<Problem> consumer);
+    protected abstract Result conclude(JsonParser parser, ProblemReporter reporter);
 }

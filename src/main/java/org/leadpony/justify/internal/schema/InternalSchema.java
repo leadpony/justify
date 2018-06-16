@@ -84,16 +84,6 @@ class InternalSchema extends LeafSchema {
     }
 
     @Override
-    public boolean hasActiveSubschema() {
-        return !this.activeSubschemas.isEmpty();
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getActiveSubschemas() {
-        return this.activeSubschemas;
-    }
-    
-    @Override
     public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
         switch (type) {

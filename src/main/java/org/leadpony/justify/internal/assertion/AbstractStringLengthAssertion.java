@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -47,7 +45,7 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     }
     
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         String actual = parser.getString();
         int actualLength = actual.codePointCount(0, actual.length());
         if (test(actualLength, this.bound)) {
@@ -58,7 +56,7 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
                     .withParameter("actual", actual.length())
                     .withParameter("bound", this.bound)
                     .build();
-            consumer.accept(p);
+            reporter.reportProblem(p, parser);
             return Result.FALSE;
         }
     }

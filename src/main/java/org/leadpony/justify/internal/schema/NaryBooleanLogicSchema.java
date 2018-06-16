@@ -42,11 +42,6 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     }
     
     @Override
-    public Iterable<JsonSchema> getActiveSubschemas() {
-        return subschemas;
-    }
-
-    @Override
     public Evaluator createEvaluator(InstanceType type) {
         LogicalEvaluator logical = createLogicalEvaluator(type);
         this.subschemas.stream()

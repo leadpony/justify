@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.assertion;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -75,18 +74,18 @@ public class Required extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
-                return test(parser, consumer, false);
+                return test(parser, reporter, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, consumer, true);
+                return test(parser, reporter, true);
             } else {
                 return Result.PENDING;
             }
         }
         
-        protected Result test(JsonParser parser, Consumer<Problem> consumer, boolean last) {
+        protected Result test(JsonParser parser, ProblemReporter reporter, boolean last) {
             if (remaining.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
@@ -94,7 +93,7 @@ public class Required extends AbstractAssertion {
                         .withMessage("instance.problem.required")
                         .withParameter("expected", remaining)
                         .build();
-                consumer.accept(p);
+                reporter.reportProblem(p, parser);
                 return Result.FALSE;
             } else {
                 return Result.PENDING;

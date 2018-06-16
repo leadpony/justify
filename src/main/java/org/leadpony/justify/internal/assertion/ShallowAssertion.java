@@ -16,16 +16,15 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
 
 /**
+ * Assertion only inspecting events occurred at current depth.
+ * 
  * @author leadpony
  */
 public abstract class ShallowAssertion extends AbstractAssertion implements Evaluator {
@@ -36,13 +35,13 @@ public abstract class ShallowAssertion extends AbstractAssertion implements Eval
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         if (depth <= 1) {
-            return evaluateShallow(event, parser, depth, consumer);
+            return evaluateShallow(event, parser, depth, reporter);
         } else {
             return Result.PENDING;
         }
     }
     
-    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer);
+    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter);
 }

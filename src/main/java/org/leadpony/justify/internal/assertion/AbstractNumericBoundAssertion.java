@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.assertion;
 
 import java.math.BigDecimal;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
@@ -48,7 +47,7 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
     }
    
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         BigDecimal actual = parser.getBigDecimal();
         if (test(actual, this.bound)) {
             return Result.TRUE;
@@ -58,7 +57,7 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
                     .withParameter("actual", actual)
                     .withParameter("bound", this.bound)
                     .build();
-            consumer.accept(p);
+            reporter.reportProblem(p, parser);
             return Result.FALSE;
         }
     }

@@ -18,18 +18,18 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.BasicProblemReporter;
 
 /**
  * @author leadpony
  */
-class StoringEvaluator implements Evaluator, Consumer<Problem>, Comparable<StoringEvaluator> {
+class StoringEvaluator implements Evaluator, BasicProblemReporter, Comparable<StoringEvaluator> {
 
     private final Evaluator evaluator;
     private List<Problem> problems;
@@ -39,16 +39,17 @@ class StoringEvaluator implements Evaluator, Consumer<Problem>, Comparable<Stori
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         return evaluator.evaluate(event, parser, depth, this);
     }
     
     @Override
-    public void accept(Problem problem) {
-        if (problems == null) {
-            problems = new ArrayList<>();
+    public void reportProblem(Problem problem) {
+        assert problem != null;
+        if (this.problems == null) {
+            this.problems = new ArrayList<>();
         }
-        problems.add(problem);
+        this.problems.add(problem);
     }
 
     @Override
@@ -61,6 +62,6 @@ class StoringEvaluator implements Evaluator, Consumer<Problem>, Comparable<Stori
     }
     
     int countProblems() {
-        return (problems == null) ? 0 : problems.size();
+        return (this.problems == null) ? 0 : this.problems.size();
     }
 }

@@ -56,16 +56,6 @@ public class SchemaReference implements JsonSchema, Resolvable {
     }
 
     @Override
-    public boolean hasActiveSubschema() {
-        return !this.subschemaMap.isEmpty();
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getActiveSubschemas() {
-        return this.subschemaMap.values();
-    }
-    
-    @Override
     public JsonSchema findSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         if (jsonPointer.isEmpty()) {

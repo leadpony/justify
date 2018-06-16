@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.json.JsonObject;
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
 import org.junit.Test;
@@ -41,7 +41,7 @@ public abstract class AbstractSpecTest {
     protected final String description;
     protected final Fixture fixture;
 
-    private static JsonObject lastObject;
+    private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
     protected AbstractSpecTest(String name, int testIndex, String description, Fixture fixture) {
@@ -72,14 +72,14 @@ public abstract class AbstractSpecTest {
         return factory.createParser(instanceReader);
     }
     
-    private JsonSchema loadSchema(JsonObject object) {
-        if (object == lastObject) {
+    private JsonSchema loadSchema(JsonValue value) {
+        if (value == lastValue) {
             return lastSchema;
         }
-        StringReader reader = new StringReader(object.toString());
+        StringReader reader = new StringReader(value.toString());
         JsonSchema schema = readSchema(reader);
         // Caches loaded schema for future use.
-        lastObject = object;
+        lastValue = value;
         lastSchema = schema;
         return schema;
     }

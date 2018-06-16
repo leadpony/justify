@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
@@ -33,13 +32,13 @@ import javax.json.JsonValue;
  */
 public class Fixture {
 
-    private final JsonObject schema;
+    private final JsonValue schema;
     private final String schemaDescription;
     private final JsonValue instance;
     private final String instanceDescription;
     private final boolean result;
     
-    private Fixture(JsonObject schema, String schemaDescription, JsonValue instance, String instanceDescription, boolean result) {
+    private Fixture(JsonValue schema, String schemaDescription, JsonValue instance, String instanceDescription, boolean result) {
         this.schema = schema;
         this.schemaDescription = schemaDescription;
         this.instance = instance;
@@ -47,7 +46,7 @@ public class Fixture {
         this.result = result;
     }
     
-    public JsonObject schema() {
+    public JsonValue schema() {
         return schema;
     }
     
@@ -76,7 +75,7 @@ public class Fixture {
                         .map(JsonValue::asJsonObject)
                         .map(test->{
                             return new Fixture(
-                                    schema.getJsonObject("schema"), 
+                                    schema.getValue("/schema"), 
                                     schema.getString("description"),
                                     test.get("data"), 
                                     test.getString("description"),

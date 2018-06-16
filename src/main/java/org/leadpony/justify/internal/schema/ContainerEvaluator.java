@@ -16,13 +16,10 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -37,17 +34,17 @@ abstract class ContainerEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> consumer) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
         if (depth == 1) {
             update(event, parser);
         }
-        return logical.evaluate(event, parser, depth, consumer);
+        return logical.evaluate(event, parser, depth, reporter);
     }
     
     protected void appendChild(Evaluator child) {
-        this.logical.append((event, parser, depth, consumer)->{
+        this.logical.append((event, parser, depth, reporter)->{
             assert depth > 0;
-            return child.evaluate(event, parser, depth - 1, consumer);
+            return child.evaluate(event, parser, depth - 1, reporter);
         });
     }
     
