@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.provider;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.util.Objects;
 
 import javax.json.spi.JsonProvider;
@@ -27,6 +28,7 @@ import javax.json.stream.JsonParserFactory;
 import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactory;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaReader;
+import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.JsonValidatorFactory;
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
@@ -37,7 +39,8 @@ import org.leadpony.justify.internal.schema.io.DefaultSchemaReader;
  * 
  * @author leadpony
  */
-public class DefaultJsonValidationServiceProvider extends JsonValidationServiceProvider {
+public class DefaultJsonValidationServiceProvider 
+        extends JsonValidationServiceProvider implements JsonSchemaResolver {
     
     private JsonProvider jsonProvider;
     private JsonParserFactory parserFactory;
@@ -51,12 +54,16 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
 
     @Override
     public JsonSchemaReader createReader(InputStream in) {
-        return createSimpleReader(in).withExternalSchema(metaschema.id(), metaschema);
+        Objects.requireNonNull(in, "in must not be null.");
+        JsonParser parser = this.parserFactory.createParser(in);
+        return createSchemaReaderWithResolver(parser);
     }
   
     @Override
     public JsonSchemaReader createReader(Reader reader) {
-        return createSimpleReader(reader).withExternalSchema(metaschema.id(), metaschema);
+        Objects.requireNonNull(reader, "reader must not be null.");
+        JsonParser parser = this.parserFactory.createParser(reader);
+        return createSchemaReaderWithResolver(parser);
     }
     
     @Override
@@ -76,9 +83,19 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
     }
     
+    @Override
+    public JsonSchema resolveSchema(URI id) {
+        if (id.equals(metaschema.id())) {
+            return metaschema;
+        } else {
+            return null;
+        }
+    }
+    
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
-        try (JsonSchemaReader reader = createSimpleReader(in)) {
+        JsonParser parser = this.parserFactory.createParser(in);
+        try (JsonSchemaReader reader = createSchemaReader(parser)) {
             return reader.read();
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,15 +103,12 @@ public class DefaultJsonValidationServiceProvider extends JsonValidationServiceP
         }
     }
     
-    private JsonSchemaReader createSimpleReader(InputStream in) {
-        Objects.requireNonNull(in, "in must not be null.");
-        JsonParser parser = this.parserFactory.createParser(in);
+    private JsonSchemaReader createSchemaReader(JsonParser parser) {
         return new DefaultSchemaReader(parser, this.createSchemaBuilderFactory());
     }
-
-    private JsonSchemaReader createSimpleReader(Reader reader) {
-        Objects.requireNonNull(reader, "reader must not be null.");
-        JsonParser parser = this.parserFactory.createParser(reader);
-        return new DefaultSchemaReader(parser, this.createSchemaBuilderFactory());
+    
+    private JsonSchemaReader createSchemaReaderWithResolver(JsonParser parser) {
+        return createSchemaReader(parser)
+                .withSchemaResolver(this);
     }
 }

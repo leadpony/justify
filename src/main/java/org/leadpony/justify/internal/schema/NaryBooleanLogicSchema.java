@@ -42,7 +42,7 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     }
     
     @Override
-    public Iterable<JsonSchema> subschemas() {
+    public Iterable<JsonSchema> getActiveSubschemas() {
         return subschemas;
     }
 

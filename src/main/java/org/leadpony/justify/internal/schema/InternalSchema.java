@@ -40,14 +40,14 @@ class InternalSchema extends LeafSchema {
     
     private final PropertySchemaFinder propertySchemaFinder;
     private final ItemSchemaFinder itemSchemaFinder;
-    private final List<JsonSchema> subschemas;
+    private final List<JsonSchema> activeSubschemas;
     private NavigableSchemaMap subschemaMap;
     
     InternalSchema(DefaultSchemaBuilder builder) {
         super(builder);
         this.propertySchemaFinder = builder.getPropertySchemaFinder();
         this.itemSchemaFinder = builder.getItemSchemaFinder();
-        this.subschemas = builder.getSubschemas();
+        this.activeSubschemas = builder.getSubschemas();
         this.subschemaMap = builder.getSubschemaMap();
     }
 
@@ -62,30 +62,35 @@ class InternalSchema extends LeafSchema {
         assert negating;
         this.propertySchemaFinder = original.propertySchemaFinder.negate();
         this.itemSchemaFinder = original.itemSchemaFinder.negate();
-        this.subschemas = original.subschemas.stream()
+        this.activeSubschemas = original.activeSubschemas.stream()
                 .map(JsonSchema::negate)
                 .collect(Collectors.toList());
         this.subschemaMap = original.subschemaMap;
     }
 
     @Override
-    public boolean hasSubschema() {
-        return !this.subschemaMap.isEmpty();
-    }
-    
-    @Override
-    public Iterable<JsonSchema> subschemas() {
-        return this.subschemaMap.values();
-    }
-    
-    @Override
-    public JsonSchema getSchema(String jsonPointer) {
+    public JsonSchema findSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         if (jsonPointer.isEmpty()) {
             return this;
         } else {
             return subschemaMap.getSchema(jsonPointer);
         }
+    }
+    
+    @Override
+    public Iterable<JsonSchema> getSubschemas() {
+        return this.subschemaMap.values();
+    }
+
+    @Override
+    public boolean hasActiveSubschema() {
+        return !this.activeSubschemas.isEmpty();
+    }
+    
+    @Override
+    public Iterable<JsonSchema> getActiveSubschemas() {
+        return this.activeSubschemas;
     }
     
     @Override
@@ -129,7 +134,7 @@ class InternalSchema extends LeafSchema {
     @Override
     protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
         super.appendEvaluatorsTo(evaluator, type);
-        subschemas.stream()
+        activeSubschemas.stream()
             .map(s->s.createEvaluator(type))
             .filter(Objects::nonNull)
             .forEach(evaluator::append);
@@ -141,7 +146,7 @@ class InternalSchema extends LeafSchema {
         super.appendJsonMembers(generator);
         propertySchemaFinder.toJson(generator);
         itemSchemaFinder.toJson(generator);
-        subschemas.forEach(schema->schema.toJson(generator));
+        activeSubschemas.forEach(schema->schema.toJson(generator));
     }
  
     /**

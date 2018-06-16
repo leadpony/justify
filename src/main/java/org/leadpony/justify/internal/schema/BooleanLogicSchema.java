@@ -27,7 +27,7 @@ public abstract class BooleanLogicSchema extends AbstractJsonSchema {
      * Note that boolean logic schema never be empty.
      */
     @Override
-    public boolean hasSubschema() {
+    public boolean hasActiveSubschema() {
         return true;
     }
     

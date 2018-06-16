@@ -18,6 +18,7 @@ package org.leadpony.justify.core;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,14 +76,22 @@ public abstract class AbstractSpecTest {
         if (object == lastObject) {
             return lastSchema;
         }
-        StringReader stringReader = new StringReader(object.toString());
-        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(stringReader)) {
-            JsonSchema schema = schemaReader.read();
-            // Caches loaded schema for future use.
-            lastObject = object;
-            lastSchema = schema;
-            return schema;
+        StringReader reader = new StringReader(object.toString());
+        JsonSchema schema = readSchema(reader);
+        // Caches loaded schema for future use.
+        lastObject = object;
+        lastSchema = schema;
+        return schema;
+    }
+    
+    private JsonSchema readSchema(Reader reader) {
+        try (JsonSchemaReader schemaReader = createSchemaReader(reader)) {
+            return schemaReader.read();
         }
+    }
+    
+    protected JsonSchemaReader createSchemaReader(Reader reader) {
+        return JsonSchemaReader.from(reader);
     }
     
     protected void printProblems(ValidationResult result) {

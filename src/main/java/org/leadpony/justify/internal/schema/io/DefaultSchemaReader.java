@@ -19,9 +19,12 @@ package org.leadpony.justify.internal.schema.io;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -35,8 +38,11 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.core.JsonSchemaReader;
+import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
+import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.LeafSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
 
@@ -47,7 +53,6 @@ import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
  */
 public class DefaultSchemaReader implements JsonSchemaReader {
     
-    @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(DefaultSchemaReader.class.getName());
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
     
@@ -58,7 +63,11 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     private boolean alreadyClosed;
     
     private URI initialBaseURI = DEFAULT_INITIAL_BASE_URI;
-    private final SchemaResolver resolver = new SchemaResolver();
+    
+    private final Map<URI, JsonSchema> identified = new HashMap<>();
+    private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
+
+    private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
     
     public DefaultSchemaReader(JsonParser parser, BasicSchemaBuilderFactory factory) {
         this.parser = parser;
@@ -71,7 +80,8 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             throw new IllegalStateException("already read");
         }
         JsonSchema rootSchema = rootSchema();
-        resolver.resolveAll(initialBaseURI).linkAll();
+        makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
+        resolveAll();
         this.alreadyRead = true;
         return rootSchema;
     }
@@ -85,10 +95,9 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     }
     
     @Override
-    public JsonSchemaReader withExternalSchema(URI id, JsonSchema schema) {
-        Objects.requireNonNull(id, "id must not be null.");
-        Objects.requireNonNull(schema, "schema must not be null.");
-        resolver.addExternalSchema(id, schema);
+    public JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver) {
+        Objects.requireNonNull(resolver, "resolver must not be null.");
+        resolvers.add(resolver);
         return this;
     }
     
@@ -106,7 +115,6 @@ public class DefaultSchemaReader implements JsonSchemaReader {
     }
     
     private JsonSchema objectSchema(boolean root) {
-        SchemaResolver.Entry entry = resolver.lastEntry();
         SchemaReferenceBuilder builder = this.factory.createBuilder();
         JsonLocation refLocation = null;
         Event event = null;
@@ -122,12 +130,9 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             }
         }
         JsonSchema schema = builder.build();
-        if (schema.hasId() || root) {
-            resolver.addIdentifiedSchema(schema, entry);
-        }
         if (schema instanceof SchemaReference) {
             SchemaReference reference = (SchemaReference)schema;
-            resolver.addReference(reference, refLocation);
+            references.put(reference, refLocation);
         }
         return schema;
     }
@@ -522,5 +527,72 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         default:
             break;
         }
+    }
+    
+    private void makeIdentifiersAbsoluteFromRoot(JsonSchema root, URI baseURI) {
+        if (!root.hasId()) {
+            addIdentifiedSchema(baseURI, root);
+        }
+        makeIdentifiersAbsolute(root, baseURI);
+    }
+    
+    private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
+        if (schema.hasId()) {
+            baseURI = baseURI.resolve(schema.id());
+            ((LeafSchema)schema).setAbsoluteId(baseURI);
+            addIdentifiedSchema(baseURI, schema);
+        }
+        if (schema instanceof SchemaReference) {
+            SchemaReference ref = (SchemaReference)schema;
+            ref.setRef(baseURI.resolve(ref.getRef()));
+        }
+        for (JsonSchema subschema : schema.getSubschemas()) {
+            makeIdentifiersAbsolute(subschema, baseURI);
+        }
+    }
+    
+    private void addIdentifiedSchema(URI id, JsonSchema schema) {
+        this.identified.put(URIs.withFragment(id), schema);
+    }
+    
+    private void resolveAll() {
+        for (SchemaReference reference : this.references.keySet()) {
+            URI ref = reference.getRef();
+            JsonSchema schema = dereferenceSchema(ref);
+            if (schema != null) {
+                reference.setReferencedSchema(schema);
+            } else {
+                // TODO:
+                log.severe("$ref target was not found: " + ref.toString());
+            }
+        }
+    }
+
+    private JsonSchema dereferenceSchema(URI ref) {
+        ref = URIs.withFragment(ref);
+        String fragment = ref.getFragment();
+        if (fragment.startsWith("/")) {
+            JsonSchema schema = resolveSchema(URIs.withEmptyFragment(ref));
+            if (schema != null) {
+                return schema.findSubschema(fragment);
+            }
+            return null;
+        } else {
+            return resolveSchema(ref);
+        }
+    }
+    
+    private JsonSchema resolveSchema(URI id) {
+        JsonSchema schema = this.identified.get(id);
+        if (schema != null) {
+            return schema;
+        }
+        for (JsonSchemaResolver resolver : this.resolvers) {
+            schema = resolver.resolveSchema(id);
+            if (schema != null) {
+                return schema;
+            }
+        }
+        return null;
     }
 }

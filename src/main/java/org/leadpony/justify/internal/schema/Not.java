@@ -42,7 +42,7 @@ public class Not extends BooleanLogicSchema {
     }
     
     @Override
-    public Iterable<JsonSchema> subschemas() {
+    public Iterable<JsonSchema> getActiveSubschemas() {
         return Collections.singleton(subschema);
     }
     

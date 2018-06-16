@@ -16,28 +16,21 @@
 
 package org.leadpony.justify.core;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URI;
 
 /**
+ * The type which resolves external JSON schema.
+ * 
  * @author leadpony
  */
-class Resources {
+public interface JsonSchemaResolver {
 
-    public static InputStream newInputStream(String name) {
-        return Resources.class.getResourceAsStream(name);
-    }
-
-    public static Reader newReader(String name) {
-        InputStream in = newInputStream(name);
-        return new InputStreamReader(in, StandardCharsets.UTF_8);
-    }
-    
-    public static Path pathToResource(String name) {
-        return Paths.get("target/test-classes", name.substring(1));
-    }
+    /**
+     * Returns the JSON schema identified with given {@code id}.
+     * 
+     * @param id the identifier of the schema to return.
+     * @return the schema if found, or {@code null} if not found.
+     * @throws NullPointerException if {@code id} is {@code null}.
+     */
+    JsonSchema resolveSchema(URI id);
 }

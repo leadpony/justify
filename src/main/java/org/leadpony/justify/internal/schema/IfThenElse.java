@@ -45,12 +45,12 @@ public class IfThenElse extends AbstractJsonSchema {
     }
 
     @Override
-    public boolean hasSubschema() {
+    public boolean hasActiveSubschema() {
         return true;
     }
     
     @Override
-    public Iterable<JsonSchema> subschemas() {
+    public Iterable<JsonSchema> getActiveSubschemas() {
         List<JsonSchema> subschemas = new ArrayList<>();
         subschemas.add(ifSchema);
         thenSchema.ifPresent(subschemas::add);

@@ -34,7 +34,7 @@ public interface JsonSchema {
      * @return {@code true} if this schema has an identifier, {@code false} otherwise.
      */
     default boolean hasId() {
-        return id() != null;
+        return false;
     }
     
     /**
@@ -51,16 +51,8 @@ public interface JsonSchema {
      * 
      * @return the schema URI of this schema, or {@code null}.
      */
-    default URI schema() {
+    default URI schemaURI() {
         return null;
-    }
-    
-    default boolean hasSubschema() {
-        return false;
-    }
-    
-    default Iterable<JsonSchema> subschemas() {
-        return Collections.emptySet();
     }
     
     /**
@@ -72,8 +64,20 @@ public interface JsonSchema {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}.
      * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
      */
-    default JsonSchema getSchema(String jsonPointer) {
+    default JsonSchema findSubschema(String jsonPointer) {
         return null;
+    }
+    
+    default Iterable<JsonSchema> getSubschemas() {
+        return Collections.emptySet();
+    }
+    
+    default boolean hasActiveSubschema() {
+        return false;
+    }
+    
+    default Iterable<JsonSchema> getActiveSubschemas() {
+        return Collections.emptySet();
     }
     
     /**

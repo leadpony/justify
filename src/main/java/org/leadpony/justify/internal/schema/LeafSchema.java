@@ -35,7 +35,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * 
  * @author leadpony
  */
-class LeafSchema extends AbstractJsonSchema implements Resolvable {
+public class LeafSchema extends AbstractJsonSchema implements Resolvable {
 
     private URI id;
     private final URI originalId;
@@ -71,17 +71,22 @@ class LeafSchema extends AbstractJsonSchema implements Resolvable {
     }
     
     @Override
+    public boolean hasId() {
+        return id != null;
+    }
+    
+    @Override
     public URI id() {
         return id;
     }
     
     @Override
-    public URI schema() {
+    public URI schemaURI() {
         return schema;
     }
     
     @Override
-    public JsonSchema getSchema(String jsonPointer) {
+    public JsonSchema findSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         return jsonPointer.isEmpty() ? this : null;
     }
@@ -106,6 +111,10 @@ class LeafSchema extends AbstractJsonSchema implements Resolvable {
         assert this.originalId != null;
         this.id = baseURI.resolve(this.originalId);
         return id();
+    }
+    
+    public void setAbsoluteId(URI id) {
+        this.id = id;
     }
  
     @Override

@@ -43,8 +43,12 @@ public class SchemaReference implements JsonSchema, Resolvable {
         this.subschemaMap = subschemaMap;
     }
     
-    public URI ref() {
+    public URI getRef() {
         return ref;
+    }
+    
+    public void setRef(URI ref) {
+        this.ref = ref;
     }
     
     public void setReferencedSchema(JsonSchema schema) {
@@ -52,17 +56,17 @@ public class SchemaReference implements JsonSchema, Resolvable {
     }
 
     @Override
-    public boolean hasSubschema() {
+    public boolean hasActiveSubschema() {
         return !this.subschemaMap.isEmpty();
     }
     
     @Override
-    public Iterable<JsonSchema> subschemas() {
+    public Iterable<JsonSchema> getActiveSubschemas() {
         return this.subschemaMap.values();
     }
     
     @Override
-    public JsonSchema getSchema(String jsonPointer) {
+    public JsonSchema findSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         if (jsonPointer.isEmpty()) {
             return this;
@@ -98,7 +102,7 @@ public class SchemaReference implements JsonSchema, Resolvable {
     public URI resolve(URI baseURI) {
         assert this.originalRef != null;
         this.ref = baseURI.resolve(this.originalRef);
-        return ref();
+        return getRef();
     }
 
     @Override

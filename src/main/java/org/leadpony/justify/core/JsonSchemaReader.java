@@ -19,7 +19,6 @@ package org.leadpony.justify.core;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
 
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
 
@@ -86,5 +85,12 @@ public interface JsonSchemaReader extends Closeable {
     @Override
     void close();
     
-    JsonSchemaReader withExternalSchema(URI id, JsonSchema schema);
+    /**
+     * Assigns a resolver of external JSON schemas to this reader.
+     * 
+     * @param resolver the resolver of external JSON schemas.
+     * @return this reader.
+     * @throws NullPointerException if {@code resolver} is {@code null}.
+     */
+    JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver);
 }

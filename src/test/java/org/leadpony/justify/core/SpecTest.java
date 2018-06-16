@@ -31,7 +31,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SpecTest extends AbstractSpecTest {
 
-    private static final String[] NAMES = {
+    private static final String[] TESTS = {
             "/spec/tests/draft7/additionalItems.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
@@ -68,6 +68,6 @@ public class SpecTest extends AbstractSpecTest {
 
     @Parameters(name = "{0}@{1}: {2}")
     public static Iterable<Object[]> parameters() {
-        return parameters(NAMES);
+        return parameters(TESTS);
     }
 }

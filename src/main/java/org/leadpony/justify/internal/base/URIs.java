@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.core;
+package org.leadpony.justify.internal.base;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URI;
 
 /**
+ * Utility methods operating on instances of {@link URI}.
+ * 
  * @author leadpony
  */
-class Resources {
-
-    public static InputStream newInputStream(String name) {
-        return Resources.class.getResourceAsStream(name);
-    }
-
-    public static Reader newReader(String name) {
-        InputStream in = newInputStream(name);
-        return new InputStreamReader(in, StandardCharsets.UTF_8);
+public final class URIs {
+    
+    public static URI withFragment(URI uri) {
+        if (uri.getFragment() == null) {
+            return uri.resolve("#");
+        } else {
+            return uri;
+        }
     }
     
-    public static Path pathToResource(String name) {
-        return Paths.get("target/test-classes", name.substring(1));
+    public static URI withEmptyFragment(URI uri) {
+        return uri.resolve("#");
+    }
+
+    private URIs() {
     }
 }
