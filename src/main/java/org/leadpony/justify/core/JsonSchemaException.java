@@ -17,15 +17,28 @@
 package org.leadpony.justify.core;
 
 /**
+ * Root class for all JSON schema exceptions.
+ * 
  * @author leadpony
  */
 @SuppressWarnings("serial")
 public class JsonSchemaException extends RuntimeException {
     
+    /**
+     * Constructs a new runtime exception with the specified detail message.
+     * 
+     * @param message The detail message. 
+     */
     public JsonSchemaException(String message) {
         super(message);
     }
 
+    /**
+     * Constructs a new runtime exception with the specified detail message and cause.
+     * 
+     * @param message The detail message. 
+     * @param cause The cause of this exception, can be {@code null}. 
+     */
     public JsonSchemaException(String message, Throwable cause) {
         super(message, cause);
     }

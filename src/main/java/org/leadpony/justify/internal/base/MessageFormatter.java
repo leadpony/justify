@@ -26,6 +26,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * This type formats messages defined by resource bundle.
+ * <p>
+ * Any instance of this class is safe for use by multiple concurrent threads.
+ * </p>
+ * 
  * @author leadpony
  */
 public class MessageFormatter {
@@ -34,6 +39,15 @@ public class MessageFormatter {
             Pattern.compile("\\$\\{(\\p{Alpha}\\w*(\\.\\p{Alpha}\\w*)*)\\}"); 
     
     private static final String BUNDLE_BASE_NAME = "org.leadpony.justify.internal.message";
+
+    private static final MessageFormatter singleton = new MessageFormatter();
+
+    public static MessageFormatter get() {
+        return singleton;
+    }
+    
+    private MessageFormatter() {
+    }
     
     public String format(String key, Map<String, ?> parameters, Locale locale) {
         try {

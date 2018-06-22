@@ -40,7 +40,7 @@ public interface JsonSchemaReader extends Closeable {
      * @throws NullPointerException if {@code in} is {@code null}.
      */
     static JsonSchemaReader from(InputStream in) {
-        return JsonValidationServiceProvider.provider().createReader(in);
+        return JsonValidationServiceProvider.provider().createSchemaReader(in);
     }
     
     /**
@@ -51,15 +51,32 @@ public interface JsonSchemaReader extends Closeable {
      * @throws NullPointerException if {@code reader} is {@code null}.
      */
     static JsonSchemaReader from(Reader reader) {
-        return JsonValidationServiceProvider.provider().createReader(reader);
+        return JsonValidationServiceProvider.provider().createSchemaReader(reader);
     }
-    
+
+    /**
+     * Reads a JSON schema reader from a byte stream. 
+     * The character encoding of the stream is determined as described in RFC 7159.
+     * 
+     * @param in the byte stream from which a JSON schema is to be read.
+     * @return the JSON schema.
+     * @throws JsonException if an I/O error occurs while reading.
+     * @throws JsonValidatingException if the reader found problems during validation of the schema.
+     */
     static JsonSchema readFrom(InputStream in) {
         try (JsonSchemaReader schemaReader = JsonSchemaReader.from(in)) {
             return schemaReader.read();
         }
     }
 
+    /**
+     * Reads a JSON schema reader from a reader. 
+     * 
+     * @param reader the reader from which a JSON schema is to be read.
+     * @return the JSON schema.
+     * @throws JsonException if an I/O error occurs while reading.
+     * @throws JsonValidatingException if the reader found problems during validation of the schema.
+     */
     static JsonSchema readFrom(Reader reader) {
         try (JsonSchemaReader schemaReader = JsonSchemaReader.from(reader)) {
             return schemaReader.read();
@@ -72,6 +89,7 @@ public interface JsonSchemaReader extends Closeable {
      * 
      * @return the JSON schema.
      * @throws JsonException if an I/O error occurs while reading.
+     * @throws JsonValidatingException if the reader found problems during validation of the schema.
      * @throws IllegalStateException if read or close method is already called.
      */
     JsonSchema read();

@@ -21,13 +21,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ValidationResult;
+import org.leadpony.justify.core.JsonValidator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
@@ -38,8 +39,8 @@ import org.leadpony.justify.internal.base.BasicProblemReporter;
  * 
  * @author leadpony
  */
-class ValidatingJsonParser extends JsonParserDecorator 
-        implements ValidationResult, BasicProblemReporter {
+public class ValidatingJsonParser extends JsonParserDecorator 
+        implements JsonValidator, BasicProblemReporter {
     
     private BiConsumer<Event, JsonParser> eventHandler;
     private final JsonSchema rootSchema;
@@ -48,17 +49,16 @@ class ValidatingJsonParser extends JsonParserDecorator
 
     private final List<Problem> problems = new ArrayList<>();
     
-    ValidatingJsonParser(JsonParser real, JsonSchema rootSchema) {
-        super(real);
+    ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
+        super(real, jsonProvider);
         this.rootSchema = rootSchema;
         this.eventHandler = this::handleEventFirst;
     }
  
     @Override
     public Event next() {
-        JsonParser parser = realParser();
-        Event event = parser.next();
-        eventHandler.accept(event, parser);
+        Event event = super.next();
+        eventHandler.accept(event, realParser());
         return event;
     }
   
@@ -69,30 +69,32 @@ class ValidatingJsonParser extends JsonParserDecorator
     }
     
     @Override
-    public boolean wasValid() {
-        return problems.isEmpty();
+    public boolean hasProblem() {
+        return problems.size() > 0;
     }
 
     @Override
-    public Iterable<Problem> problems() {
+    public List<Problem> getProblems() {
         return Collections.unmodifiableList(problems);
     }
 
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         this.evaluator = rootSchema.createEvaluator(type);
-        handleEvent(event, parser);
+        if (this.evaluator != null) {
+            handleEvent(event, parser);
+        }
         if (depth > 0) {
             this.eventHandler = this::handleEvent;
         } else {
-            this.eventHandler = this::handleNothing;
+            this.eventHandler = this::handleNone;
         }
     }
 
     private void handleEvent(Event event, JsonParser parser) {
         if (event == Event.END_ARRAY || event == Event.END_OBJECT) {
             if (--depth == 0) {
-                this.eventHandler = this::handleNothing;
+                this.eventHandler = this::handleNone;
             }
         }
         Result result = evaluator.evaluate(event, parser, depth, this);
@@ -104,6 +106,6 @@ class ValidatingJsonParser extends JsonParserDecorator
         }
     }
 
-    private void handleNothing(Event event, JsonParser parser) {
+    private void handleNone(Event event, JsonParser parser) {
     }
 }

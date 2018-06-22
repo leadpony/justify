@@ -25,17 +25,18 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 /**
+ * Event-driven builder of JSON instance.
+ * 
  * @author leadpony
- *
  */
-public class InstanceBuilder {
+public class JsonInstanceBuilder {
     
     private final JsonProvider provider;
     private final RootVisitor rootVisitor = new RootVisitor();
     private JsonBuilderFactory builderFactory;
     private Visitor currentVisitor = rootVisitor;
     
-    public InstanceBuilder(JsonProvider provider) {
+    public JsonInstanceBuilder(JsonProvider provider) {
         this.provider = provider;
     }
     

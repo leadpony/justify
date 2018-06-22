@@ -38,6 +38,10 @@ public class Fixture {
     private final String instanceDescription;
     private final boolean result;
     
+    private Fixture(JsonValue schema, String schemaDescription) {
+        this(schema, schemaDescription, JsonValue.NULL, null, false);
+    }
+
     private Fixture(JsonValue schema, String schemaDescription, JsonValue instance, String instanceDescription, boolean result) {
         this.schema = schema;
         this.schemaDescription = schemaDescription;
@@ -45,7 +49,15 @@ public class Fixture {
         this.instanceDescription = instanceDescription;
         this.result = result;
     }
-    
+
+    public String description() {
+        if (instanceDescription != null) {
+            return instanceDescription;
+        } else {
+            return schemaDescription;
+        }
+    }
+
     public JsonValue schema() {
         return schema;
     }
@@ -65,15 +77,21 @@ public class Fixture {
     public boolean result() {
         return result;
     }
-
+    
     public static List<Fixture> load(String name) {
         JsonArray schemas = readArray(name);
         return schemas.stream()
             .map(JsonValue::asJsonObject)
-            .flatMap(schema->{
-                return schema.getJsonArray("tests").stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(test->{
+            .flatMap(schema->
+                schema.getJsonArray("tests").stream()
+                    .map(JsonValue::asJsonObject)
+                    .map(test->{
+                        if (test.isEmpty()) {
+                            return new Fixture(
+                                    schema.getValue("/schema"), 
+                                    schema.getString("description")
+                                    );
+                        } else {
                             return new Fixture(
                                     schema.getValue("/schema"), 
                                     schema.getString("description"),
@@ -81,8 +99,9 @@ public class Fixture {
                                     test.getString("description"),
                                     test.getBoolean("valid")
                                     );
-                        });
-            })
+                        }
+                    })
+            )
             .collect(Collectors.toList());
     }
     

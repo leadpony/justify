@@ -16,25 +16,29 @@
 
 package org.leadpony.justify.core;
 
+import java.util.List;
+
 /**
- * Result obtained by process of JSON validation.
+ * JSON validator interface.
  * 
  * @author leadpony
  */
-public interface ValidationResult {
+public interface JsonValidator {
+    
+    String THROW_EXCEPTION = "org.leadpony.justify.core.JsonValidator.throwException";
 
     /**
-     * Checks if the validation was completed without any problem.
+     * Checks if the validation was completed with any problem.
      * 
-     * @return {@code true} if the validation was done without problem, 
+     * @return {@code true} if the validation was done with problem, 
      *         {@code false} otherwise.
      */
-    boolean wasValid();
+    boolean hasProblem();
     
     /**
      * Returns all problems found in the process of validation.
      * 
-     * @return the object to iterate problems, never be {@code null}.
+     * @return the list of the problems, which can not be modified.
      */
-    Iterable<Problem> problems();
+    List<Problem> getProblems();
 }

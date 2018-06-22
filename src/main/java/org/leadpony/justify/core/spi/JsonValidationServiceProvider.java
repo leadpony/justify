@@ -45,7 +45,7 @@ public abstract class JsonValidationServiceProvider {
      * Returns an instance of this provider class.
      * 
      * @return the instance of this provider class.
-     * @throws JsonSchemaException if no provider was found.
+     * @throws JsonSchemaException if there is no provider found.
      */
     public static JsonValidationServiceProvider provider() {
         JsonValidationServiceProvider provider = threadLocalProvider.get();
@@ -69,7 +69,7 @@ public abstract class JsonValidationServiceProvider {
      * @return newly created instance of JSON schema reader.
      * @throws NullPointerException if {@code in} is {@code null}.
      */
-    public abstract JsonSchemaReader createReader(InputStream in);
+    public abstract JsonSchemaReader createSchemaReader(InputStream in);
     
     /**
      * Creates a JSON schema reader from a reader. 
@@ -78,7 +78,7 @@ public abstract class JsonValidationServiceProvider {
      * @return newly created instance of JSON schema reader.
      * @throws NullPointerException if {@code reader} is {@code null}.
      */
-    public abstract JsonSchemaReader createReader(Reader reader);
+    public abstract JsonSchemaReader createSchemaReader(Reader reader);
 
     public abstract JsonSchemaBuilderFactory createSchemaBuilderFactory();
     

@@ -81,7 +81,8 @@ public interface JsonSchema {
      * Creates an evaluator of this schema.
      * 
      * @param type the type of the instance to which this schema will be applied.
-     * @return the evaluator of this schema.
+     * @return the evaluator of this schema, 
+     *         or {@code null} if there are no evaluator for the type.
      * @throws NullPointerException if {@code type} is {@code null}.
      */
     Evaluator createEvaluator(InstanceType type);

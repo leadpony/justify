@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +40,9 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
+import org.leadpony.justify.core.JsonValidatingException;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
@@ -47,13 +51,13 @@ import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
 
 /**
- * Default implementation of {@link JsonSchemaReader}.
+ * Basic implementation of {@link JsonSchemaReader}.
  * 
  * @author leadpony
  */
-public class DefaultSchemaReader implements JsonSchemaReader {
+public class BasicSchemaReader implements JsonSchemaReader {
     
-    private static final Logger log = Logger.getLogger(DefaultSchemaReader.class.getName());
+    private static final Logger log = Logger.getLogger(BasicSchemaReader.class.getName());
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
     
     private final JsonParser parser;
@@ -69,7 +73,15 @@ public class DefaultSchemaReader implements JsonSchemaReader {
 
     private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
     
-    public DefaultSchemaReader(JsonParser parser, BasicSchemaBuilderFactory factory) {
+    private final List<Problem> problems = new ArrayList<>();
+    
+    /**
+     * Constructs this schema reader.
+     * 
+     * @param parser the parser of JSON document.
+     * @param factory the factory for producing schema builders.
+     */
+    public BasicSchemaReader(JsonParser parser, BasicSchemaBuilderFactory factory) {
         this.parser = parser;
         this.factory = factory;
     }
@@ -80,10 +92,13 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             throw new IllegalStateException("already read");
         }
         JsonSchema rootSchema = rootSchema();
-        makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
-        resolveAll();
+        postprocess(rootSchema);
         this.alreadyRead = true;
-        return rootSchema;
+        if (this.problems.isEmpty()) {
+            return rootSchema;
+        } else {
+            throw new JsonValidatingException(this.problems);
+        }
     }
     
     @Override
@@ -101,6 +116,21 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         return this;
     }
     
+    protected void postprocess(JsonSchema rootSchema) {
+        if (rootSchema != null) {
+            makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
+            resolveAllReferences();
+        }
+    }
+    
+    protected void addProblem(Problem problem) {
+        this.problems.add(problem);
+    }
+    
+    protected void addProblems(Collection<Problem> problems) {
+        this.problems.addAll(problems);
+    }
+
     private JsonSchema rootSchema() {
         Event event = parser.next();
         switch (event) {
@@ -555,7 +585,7 @@ public class DefaultSchemaReader implements JsonSchemaReader {
         this.identified.put(URIs.withFragment(id), schema);
     }
     
-    private void resolveAll() {
+    private void resolveAllReferences() {
         for (SchemaReference reference : this.references.keySet()) {
             URI ref = reference.getRef();
             JsonSchema schema = dereferenceSchema(ref);
@@ -564,6 +594,12 @@ public class DefaultSchemaReader implements JsonSchemaReader {
             } else {
                 // TODO:
                 log.severe("$ref target was not found: " + ref.toString());
+                JsonLocation location = this.references.get(reference);
+                Problem p = ProblemBuilder.newBuilder(location)
+                        .withMessage("schema.problem.dereference")
+                        .withParameter("ref", ref)
+                        .build();
+                addProblem(p);
             }
         }
     }

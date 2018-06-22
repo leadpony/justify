@@ -16,20 +16,13 @@
 
 package org.leadpony.justify.internal.validator;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Map;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonValidatorFactory;
-import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
 
 /**
@@ -48,9 +41,9 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     }
 
     @Override
-    public JsonParserFactory createParserFactory(Map<String, ?> config) {
-        JsonParserFactory real = jsonProvider.createParserFactory(config);
-        return new ValidatingJsonParserFactory(real);
+    public ValidatingJsonParserFactory createParserFactory(Map<String, ?> config) {
+        JsonParserFactory realFactory = jsonProvider.createParserFactory(config);
+        return new ValidatingJsonParserFactory(rootSchema, realFactory, this.jsonProvider);
     }
     
     @Override
@@ -58,51 +51,10 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
         return new ValidatingJsonProvider(jsonProvider);
     }
     
-    private class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
-        
-        ValidatingJsonParserFactory(JsonParserFactory real) {
-            super(real);
-        }
-
-        @Override
-        public JsonParser createParser(Reader reader) {
-            JsonParser parser = super.createParser(reader);
-            return wrapParser(parser);
-        }
-
-        @Override
-        public JsonParser createParser(InputStream in) {
-            JsonParser parser = super.createParser(in);
-            return wrapParser(parser);
-        }
-
-        @Override
-        public JsonParser createParser(JsonObject obj) {
-            JsonParser parser = super.createParser(obj);
-            return wrapParser(parser);
-        }
-
-        @Override
-        public JsonParser createParser(JsonArray array) {
-            JsonParser parser = super.createParser(array);
-            return wrapParser(parser);
-        }
-
-        @Override
-        public JsonParser createParser(InputStream in, Charset charset) {
-            JsonParser parser = super.createParser(in, charset);
-            return wrapParser(parser);
-        }
-
-        private JsonParser wrapParser(JsonParser parser) {
-            return new ValidatingJsonParser(parser, rootSchema);
-        }
-    }
-    
     private class ValidatingJsonProvider extends JsonProviderDecorator {
 
-        ValidatingJsonProvider(JsonProvider real) {
-            super(real);
+        ValidatingJsonProvider(JsonProvider realProvier) {
+            super(realProvier);
         }
  
         @Override

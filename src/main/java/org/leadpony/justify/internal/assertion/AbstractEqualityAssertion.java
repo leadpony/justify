@@ -24,7 +24,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.ProblemReporter;
 import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.internal.base.InstanceBuilder;
+import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.core.InstanceType;
 
 /**
@@ -47,10 +47,10 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
 
     private class InstanceEvaluator implements Evaluator {
         
-        private final InstanceBuilder builder;
+        private final JsonInstanceBuilder builder;
         
         private InstanceEvaluator(JsonProvider jsonProvider) {
-            this.builder = new InstanceBuilder(jsonProvider);
+            this.builder = new JsonInstanceBuilder(jsonProvider);
         }
 
         @Override

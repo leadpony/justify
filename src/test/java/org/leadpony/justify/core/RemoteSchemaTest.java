@@ -36,7 +36,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @author leadpony
  */
 @RunWith(Parameterized.class)
-public class RemoteSchemaTest extends AbstractSpecTest {
+public class RemoteSchemaTest extends AbstractValidationTest {
     
     private static final Logger log = Logger.getLogger(RemoteSchemaTest.class.getName());
 
@@ -46,13 +46,9 @@ public class RemoteSchemaTest extends AbstractSpecTest {
     
     private static Server server;
   
-    public RemoteSchemaTest(String name, int testIndex, String description, Fixture fixture) {
-        super(name, testIndex, description, fixture);
-    }
-
     @Parameters(name = "{0}@{1}: {2}")
     public static Iterable<Object[]> parameters() {
-        return parameters(TESTS);
+        return fixtures(TESTS);
     }
     
     @BeforeClass
@@ -76,6 +72,10 @@ public class RemoteSchemaTest extends AbstractSpecTest {
         server.stop();
     }
     
+    public RemoteSchemaTest(String name, int testIndex, String description, Fixture fixture) {
+        super(name, testIndex, description, fixture);
+    }
+
     @Override
     protected JsonSchemaReader createSchemaReader(Reader reader) {
         return super.createSchemaReader(reader)

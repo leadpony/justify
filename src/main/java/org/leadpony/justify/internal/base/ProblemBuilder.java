@@ -38,20 +38,30 @@ public class ProblemBuilder {
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     
-    private static final MessageFormatter messageFormatter = new MessageFormatter();
+    private static final MessageFormatter messageFormatter = MessageFormatter.get();
     
     /**
      * Creates new instance of this builder.
      * 
-     * @param parser the JSON parser.
+     * @param location the location where problem occurred, cannot be {@code null}.
+     * @return newly created instance of this type.
+     */
+    public static ProblemBuilder newBuilder(JsonLocation location) {
+        return new ProblemBuilder(location);
+    }
+
+    /**
+     * Creates new instance of this builder.
+     * 
+     * @param parser the JSON parser, cannot be {@code null}.
      * @return newly created instance of this type.
      */
     public static ProblemBuilder newBuilder(JsonParser parser) {
-        return new ProblemBuilder(parser);
+        return newBuilder(parser.getLocation());
     }
-    
-    private ProblemBuilder(JsonParser parser) {
-        this.location = parser.getLocation();
+
+    private ProblemBuilder(JsonLocation location) {
+        this.location = location;
     }
 
     public ProblemBuilder withMessage(String messageKey) {

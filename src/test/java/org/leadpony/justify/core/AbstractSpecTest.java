@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.core;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
@@ -29,17 +27,15 @@ import java.util.NoSuchElementException;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.junit.Test;
-
 /**
  * @author leadpony
  */
-public abstract class AbstractSpecTest {
-
-    protected final String name;
-    protected final int testIndex;
-    protected final String description;
-    protected final Fixture fixture;
+abstract class AbstractSpecTest {
+    
+    private final String name;
+    private final int testIndex;
+    private final String description;
+    private final Fixture fixture;
 
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
@@ -51,57 +47,62 @@ public abstract class AbstractSpecTest {
         this.fixture = fixture;
     }
     
-    @Test
-    public void testValidationResult() {
-        JsonParser parser = createValidator();
-        while (parser.hasNext()) {
-            parser.next();
-        }
-        parser.close();
-        ValidationResult result = (ValidationResult)parser;
-        assertThat(result.wasValid()).isEqualTo(fixture.result());
-        if (!result.wasValid()) {
-            printProblems(result);
-        }
+    public String getName() {
+        return name;
     }
     
-    protected JsonParser createValidator() {
-        JsonSchema schema = loadSchema(fixture.schema());
+    public int getTestIndex() {
+        return testIndex;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public Fixture getFixture() {
+        return fixture;
+    }
+    
+    protected static Iterable<Object[]> fixtures(String[] names) {
+        return ()->new ParameterSetIterator(names);
+    }
+    
+    protected JsonParser createValidatingParser() {
+        JsonSchema schema = getSchema();
         JsonValidatorFactory factory = JsonValidatorFactory.newFactory(schema);
-        StringReader instanceReader = new StringReader(fixture.instance().toString());
-        return factory.createParser(instanceReader);
+        StringReader reader = new StringReader(fixture.instance().toString());
+        return factory.createParser(reader);
     }
     
-    private JsonSchema loadSchema(JsonValue value) {
+    private JsonSchema getSchema() {
+        JsonValue value = fixture.schema();
         if (value == lastValue) {
             return lastSchema;
+        } else {
+            JsonSchema schema = readSchema(value);
+            lastValue = value;
+            lastSchema = schema;
+            return schema;
         }
-        StringReader reader = new StringReader(value.toString());
-        JsonSchema schema = readSchema(reader);
-        // Caches loaded schema for future use.
-        lastValue = value;
-        lastSchema = schema;
-        return schema;
     }
     
-    private JsonSchema readSchema(Reader reader) {
+    private JsonSchema readSchema(JsonValue value) {
+        StringReader reader = new StringReader(value.toString());
         try (JsonSchemaReader schemaReader = createSchemaReader(reader)) {
             return schemaReader.read();
+        } catch (JsonValidatingException e) {
+            throw e;
         }
     }
-    
+  
     protected JsonSchemaReader createSchemaReader(Reader reader) {
         return JsonSchemaReader.from(reader);
     }
-    
-    protected void printProblems(ValidationResult result) {
-        result.problems().forEach(p->{
-            System.out.println("[" + name + "@" + testIndex + "]" + p.toString());
+
+    protected void printProblems(Iterable<Problem> problems) {
+        problems.forEach(p->{
+            System.out.println("[" + getName() + "@" + getTestIndex() + "]" + p.toString());
         });
-    }
-    
-    protected static Iterable<Object[]> parameters(String[] names) {
-        return ()->new ParameterSetIterator(names);
     }
     
     private static class ParameterSetIterator implements Iterator<Object[]> {
@@ -136,7 +137,7 @@ public abstract class AbstractSpecTest {
             return new Object[] {
                     shortNameOf(this.name),
                     this.testIndex++,
-                    fixture.instanceDescription(),
+                    fixture.description(),
                     fixture
             };
         }

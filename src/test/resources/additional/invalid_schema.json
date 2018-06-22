@@ -1,0 +1,29 @@
+[
+    {
+        "description": "string schema",
+        "schema": "foo",
+        "tests": [{}]
+    },
+    {
+        "description": "null schema",
+        "schema": null,
+        "tests": [{}]
+    },
+    {
+        "description": "numeric schema",
+        "schema": "42",
+        "tests": [{}]
+    },
+    {
+        "description": "array schema",
+        "schema": [],
+        "tests": [{}]
+    },
+    {
+        "description": "invalid type",
+        "schema": {
+            "type": 1
+        },
+        "tests": [{}]
+    }
+]

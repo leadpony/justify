@@ -34,7 +34,7 @@ public class MessageFormatterTest {
 
     @Test
     public void format_shouldFormatMessage() {
-        MessageFormatter sut = new MessageFormatter();
+        MessageFormatter sut = MessageFormatter.get();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("actual", InstanceType.STRING);
         parameters.put("expected", EnumSet.of(InstanceType.INTEGER));

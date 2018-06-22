@@ -29,7 +29,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @SuppressWarnings("unused")
 @RunWith(Parameterized.class)
-public class SpecTest extends AbstractSpecTest {
+public class SpecTest extends AbstractValidationTest {
 
     private static final String[] TESTS = {
             "/spec/tests/draft7/additionalItems.json",
@@ -58,17 +58,17 @@ public class SpecTest extends AbstractSpecTest {
             "/spec/tests/draft7/type.json"
         };
     
+    @Parameters(name = "{0}@{1}: {2}")
+    public static Iterable<Object[]> parameters() {
+        return fixtures(TESTS);
+    }
+
     public SpecTest(String name, int testIndex, String description, Fixture fixture) {
         super(name, testIndex, description, fixture);
     }
-    
+
     @Before
     public void setUp() {
         //Assume.assumeTrue(testIndex == 23);
-    }
-
-    @Parameters(name = "{0}@{1}: {2}")
-    public static Iterable<Object[]> parameters() {
-        return parameters(TESTS);
     }
 }
