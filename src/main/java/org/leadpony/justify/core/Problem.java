@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.json.stream.JsonLocation;
 
 /**
- * Problem detected in the validation process.
+ * Problem found in the process of validation.
  * 
  * @author leadpony
  */
@@ -31,31 +31,47 @@ public interface Problem {
     /**
      * Return the message describing this problem.
      * 
-     * @return the message of this problem.
+     * @return the message describing this problem, never be {@code null}.
      */
     default String getMessage() {
         return getMessage(Locale.getDefault());
     }
     
     /**
-     * Return the message describing this problem.
+     * Return the message describing this problem,
+     * which will be localized for the specified locale.
      * 
-     * @param locale the locale of the message.
-     * @return the message of this problem.
-     * @throws NullPointerException if given parameter was {@code null}.
+     * @param locale the locale for which the message will be localized.
+     * @return the message describing this problem, never be {@code null}.
+     * @throws NullPointerException if the specified {@code locale} was {@code null}.
      */
     String getMessage(Locale locale);
 
+    /**
+     * Return the message describing this problem,
+     * which includes the location where this problem was found in the input source.
+     * 
+     * @return the message of this problem.
+     */
     default String getContextualMessage() {
         return getContextualMessage(Locale.getDefault());
     }
     
+    /**
+     * Return the message describing this problem,
+     * which includes the location where this problem was found in the input source.
+     * The message will be localized for the specified locale.
+     * 
+     * @param locale the locale for which the message will be localized.
+     * @return the message of this problem.
+     * @throws NullPointerException if the specified {@code locale} was {@code null}.
+     */
     String getContextualMessage(Locale locale);
     
     /**
-     * Returns the location where this problem was detected.
+     * Returns the location where this problem was found in the input source.
      * 
-     * @return the location of this problem, can be {@code null} if location is unknown.
+     * @return the location of this problem, can be {@code null} if the location is unknown.
      */
     JsonLocation getLocation();
     
@@ -66,6 +82,11 @@ public interface Problem {
      */
     Map<String, ?> parametersAsMap();
 
+    /**
+     * Returns the same string as {@link #getContextualMessage()} for the default locale.
+     * 
+     * @return the message describing this problem including the location, never be {@code null}.
+     */
     @Override
     String toString();
 }

@@ -19,9 +19,7 @@ package org.leadpony.justify.internal.base;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.Test;
 import org.leadpony.justify.core.InstanceType;
@@ -30,15 +28,15 @@ import org.leadpony.justify.core.InstanceType;
  * @author leadpony
  *
  */
-public class MessageFormatterTest {
+public class MessageTest {
 
     @Test
     public void format_shouldFormatMessage() {
-        MessageFormatter sut = MessageFormatter.get();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("actual", InstanceType.STRING);
-        parameters.put("expected", EnumSet.of(InstanceType.INTEGER));
-        String message = sut.format("instance.problem.type", parameters, Locale.ENGLISH);
+        Message sut = Message.get("instance.problem.type", Locale.ENGLISH);
+        sut.withParameter("actual", InstanceType.STRING)
+           .withParameter("expected", EnumSet.of(InstanceType.INTEGER));
+        
+        String message = sut.toString();
         
         String expectedMessage = "string type is not allowed. It must be any of [integer].";
         assertThat(message).isEqualTo(expectedMessage);

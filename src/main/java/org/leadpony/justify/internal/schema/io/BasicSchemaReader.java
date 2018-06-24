@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
@@ -40,7 +38,6 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
-import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
@@ -57,7 +54,6 @@ import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
  */
 public class BasicSchemaReader implements JsonSchemaReader {
     
-    private static final Logger log = Logger.getLogger(BasicSchemaReader.class.getName());
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
     
     private final JsonParser parser;
@@ -72,8 +68,6 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
 
     private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
-    
-    private final List<Problem> problems = new ArrayList<>();
     
     /**
      * Constructs this schema reader.
@@ -94,11 +88,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         JsonSchema rootSchema = rootSchema();
         postprocess(rootSchema);
         this.alreadyRead = true;
-        if (this.problems.isEmpty()) {
-            return rootSchema;
-        } else {
-            throw new JsonValidatingException(this.problems);
-        }
+        return rootSchema;
     }
     
     @Override
@@ -124,13 +114,8 @@ public class BasicSchemaReader implements JsonSchemaReader {
     }
     
     protected void addProblem(Problem problem) {
-        this.problems.add(problem);
     }
     
-    protected void addProblems(Collection<Problem> problems) {
-        this.problems.addAll(problems);
-    }
-
     private JsonSchema rootSchema() {
         Event event = parser.next();
         switch (event) {
@@ -592,8 +577,6 @@ public class BasicSchemaReader implements JsonSchemaReader {
             if (schema != null) {
                 reference.setReferencedSchema(schema);
             } else {
-                // TODO:
-                log.severe("$ref target was not found: " + ref.toString());
                 JsonLocation location = this.references.get(reference);
                 Problem p = ProblemBuilder.newBuilder(location)
                         .withMessage("schema.problem.dereference")

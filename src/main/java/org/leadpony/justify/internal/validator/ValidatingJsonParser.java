@@ -16,10 +16,8 @@
 
 package org.leadpony.justify.internal.validator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
@@ -28,7 +26,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonValidator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
@@ -40,21 +37,25 @@ import org.leadpony.justify.internal.base.BasicProblemReporter;
  * @author leadpony
  */
 public class ValidatingJsonParser extends JsonParserDecorator 
-        implements JsonValidator, BasicProblemReporter {
+        implements BasicProblemReporter {
     
-    private BiConsumer<Event, JsonParser> eventHandler;
     private final JsonSchema rootSchema;
+    private Consumer<Problem> problemHandler;
+    private BiConsumer<Event, JsonParser> eventHandler;
     private Evaluator evaluator;
     private int depth;
 
-    private final List<Problem> problems = new ArrayList<>();
-    
     ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
         super(real, jsonProvider);
         this.rootSchema = rootSchema;
         this.eventHandler = this::handleEventFirst;
     }
- 
+    
+    public ValidatingJsonParser withHandler(Consumer<Problem> problemHandler) {
+        this.problemHandler = problemHandler;
+        return this;
+    }
+    
     @Override
     public Event next() {
         Event event = super.next();
@@ -65,19 +66,9 @@ public class ValidatingJsonParser extends JsonParserDecorator
     @Override
     public void reportProblem(Problem problem) {
         assert problem != null;
-        this.problems.add(problem);
+        this.problemHandler.accept(problem);
     }
     
-    @Override
-    public boolean hasProblem() {
-        return problems.size() > 0;
-    }
-
-    @Override
-    public List<Problem> getProblems() {
-        return Collections.unmodifiableList(problems);
-    }
-
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         this.evaluator = rootSchema.createEvaluator(type);

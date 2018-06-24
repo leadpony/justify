@@ -22,19 +22,36 @@ package org.leadpony.justify.core;
  * @author leadpony
  */
 public enum InstanceType {
+    /** JSON null. */
     NULL,
+    /** JSON true of false. */
     BOOLEAN,
     OBJECT,
+    /** JSON array. */
     ARRAY,
+    /** JSON number with or without fractional part. */
     NUMBER,
+    /** JSON object. */
     STRING,
+    /** JSON number without fractional part. */
     INTEGER
     ;
     
+    /**
+     * Checks if this type is numeric or not.
+     * 
+     * @return {@code true} if this type is numeric, {@code false} otherwise.
+     */
     public boolean isNumeric() {
         return this == NUMBER || this == INTEGER;
     }
     
+    /**
+     * Checks if this type can contain other types or not.
+     * A container is either JSON array or JSON object.
+     * 
+     * @return {@code true} if this type is container, {@code false} otherwise.
+     */
     public boolean isContainer() {
         return this == OBJECT || this == ARRAY;
     }

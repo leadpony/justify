@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.base;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -26,40 +27,76 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * This type formats messages defined by resource bundle.
- * <p>
- * Any instance of this class is safe for use by multiple concurrent threads.
- * </p>
- * 
  * @author leadpony
  */
-public class MessageFormatter {
-    
-    private static final Pattern PLACEHOLDER_PATTERN = 
-            Pattern.compile("\\$\\{(\\p{Alpha}\\w*(\\.\\p{Alpha}\\w*)*)\\}"); 
+public class Message {
     
     private static final String BUNDLE_BASE_NAME = "org.leadpony.justify.internal.message";
+    private static final Pattern PLACEHOLDER_PATTERN = 
+            Pattern.compile("\\$\\{(\\p{Alpha}\\w*(\\.\\p{Alpha}\\w*)*)\\}"); 
 
-    private static final MessageFormatter singleton = new MessageFormatter();
+    private final String pattern;
+    private final ResourceBundle bundle;
+    private Map<String, Object> parameters;
+    
+    public static Message get(String key) {
+        return get(key, Locale.getDefault());
+    }
 
-    public static MessageFormatter get() {
-        return singleton;
-    }
-    
-    private MessageFormatter() {
-    }
-    
-    public String format(String key, Map<String, ?> parameters, Locale locale) {
+    public static Message get(String key, Locale locale) {
+        ResourceBundle bundle = getBundle(locale);
         try {
-            ResourceBundle bundle = getBundle(locale);
-            String pattern = bundle.getString(key);
-            return replace(pattern, parameters, bundle);
+            return new Message(bundle.getString(key), bundle);
         } catch (MissingResourceException e) {
-            return e.getMessage();
+            return new Message(key, bundle);
         }
     }
     
-    private String replace(String pattern, Map<String, ?> parameters, ResourceBundle bundle) {
+    public static String getAsString(String key) {
+        return getAsString(key, Locale.getDefault());
+    }
+
+    public static String getAsString(String key, Locale locale) {
+        ResourceBundle bundle = getBundle(locale);
+        try {
+            return bundle.getString(key);
+        } catch (MissingResourceException e) {
+            return key;
+        }
+    }
+    
+    private Message(String pattern, ResourceBundle bundle) {
+        this.pattern = pattern;
+        this.bundle = bundle;
+    }
+    
+    public Message withParameter(String name, Object value) {
+        if (this.parameters == null) {
+            this.parameters = new HashMap<>();
+        }
+        this.parameters.put(name, value);
+        return this;
+    }
+
+    public Message withParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+        return this;
+    }
+    
+    @Override
+    public String toString() {
+        if (parameters == null || parameters.isEmpty()) {
+            return pattern;
+        } else {
+            return replace(pattern, parameters); 
+        }
+    }
+
+    private static ResourceBundle getBundle(Locale locale) {
+        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);    
+    }
+    
+    private String replace(String pattern, Map<String, ?> parameters) {
         Matcher m = PLACEHOLDER_PATTERN.matcher(pattern);
         StringBuilder sb = new StringBuilder();
         int start = 0;
@@ -68,7 +105,7 @@ public class MessageFormatter {
             String name = m.group(1);
             Object replacement = parameters.get(name);
             if (replacement != null) {
-                sb.append(toString(replacement, bundle));
+                sb.append(mapToString(replacement));
             }
             start = m.end();
         }
@@ -78,9 +115,9 @@ public class MessageFormatter {
         return sb.toString();
     }
     
-    private static String toString(Object obj, ResourceBundle bundle) {
+    private String mapToString(Object obj) {
         if (obj instanceof Collection) {
-            return toString((Collection<?>)obj, bundle);
+            return mapToString((Collection<?>)obj);
         } else if (obj instanceof Enum) {
             String className = obj.getClass().getSimpleName();
             String key = className + "." + ((Enum<?>)obj).name();
@@ -90,17 +127,13 @@ public class MessageFormatter {
         }
     }
     
-    private static String toString(Collection<?> collection, ResourceBundle bundle) {
+    private String mapToString(Collection<?> collection) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(collection.stream()
-                  .map(e->toString(e, bundle))
+                  .map(e->mapToString(e))
                   .collect(Collectors.joining(", ")));
         sb.append("]");
         return sb.toString();
-    }
-    
-    private static ResourceBundle getBundle(Locale locale) {
-        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);    
     }
 }

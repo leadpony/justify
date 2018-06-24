@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.provider;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Objects;
 
 import javax.json.spi.JsonProvider;
@@ -27,7 +26,6 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactory;
 import org.leadpony.justify.internal.validator.ValidatingJsonParser;
-import org.leadpony.justify.internal.validator.ValidatingJsonParserFactory;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
@@ -49,7 +47,7 @@ public class DefaultJsonValidationServiceProvider
     private JsonProvider jsonProvider;
     
     private JsonSchema metaschema;
-    private ValidatingJsonParserFactory parserFactory;
+    private JsonValidatorFactory schemaParserFactory;
     
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
     
@@ -59,14 +57,16 @@ public class DefaultJsonValidationServiceProvider
     @Override
     public JsonSchemaReader createSchemaReader(InputStream in) {
         Objects.requireNonNull(in, "in must not be null.");
-        ValidatingJsonParser parser = this.parserFactory.createParser(in);
+        ValidatingJsonParser parser = (ValidatingJsonParser)this.schemaParserFactory.createParser(
+                in, metaschema, problem->{});
         return createValidatingSchemaReader(parser);
     }
   
     @Override
     public JsonSchemaReader createSchemaReader(Reader reader) {
         Objects.requireNonNull(reader, "reader must not be null.");
-        ValidatingJsonParser parser = this.parserFactory.createParser(reader);
+        ValidatingJsonParser parser = (ValidatingJsonParser)this.schemaParserFactory.createParser(
+                reader, metaschema, problem->{});
         return createValidatingSchemaReader(parser);
     }
     
@@ -76,9 +76,8 @@ public class DefaultJsonValidationServiceProvider
     }
 
     @Override
-    public JsonValidatorFactory createValidatorFactory(JsonSchema schema) {
-        Objects.requireNonNull(schema, "schema must not be null.");
-        return createDefaultJsonValidatorFactory(schema);
+    public JsonValidatorFactory createValidatorFactory() {
+        return createDefaultJsonValidatorFactory();
     }
     
     @Override
@@ -86,8 +85,7 @@ public class DefaultJsonValidationServiceProvider
         Objects.requireNonNull(jsonProvider, "jsonProvider must not be null.");
         this.jsonProvider = jsonProvider;
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
-        this.parserFactory = createDefaultJsonValidatorFactory(this.metaschema)
-                .createParserFactory(Collections.emptyMap());
+        this.schemaParserFactory = createDefaultJsonValidatorFactory();
     }
     
     @Override
@@ -114,11 +112,11 @@ public class DefaultJsonValidationServiceProvider
     @SuppressWarnings("resource")
     private JsonSchemaReader createValidatingSchemaReader(ValidatingJsonParser parser) {
         return new ValidatingSchemaReader(parser, createBasicSchemaBuilderFactory())
-                    .withSchemaResolver(this);
+                .withSchemaResolver(this);
     }
     
-    private DefaultJsonValidatorFactory createDefaultJsonValidatorFactory(JsonSchema schema) {
-        return new DefaultJsonValidatorFactory(schema, this.jsonProvider);
+    private DefaultJsonValidatorFactory createDefaultJsonValidatorFactory() {
+        return new DefaultJsonValidatorFactory(this.jsonProvider);
     }
 
     private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {

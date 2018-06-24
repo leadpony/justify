@@ -22,7 +22,6 @@ import java.util.ServiceLoader;
 
 import javax.json.spi.JsonProvider;
 
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaException;
 import org.leadpony.justify.core.JsonSchemaReader;
@@ -85,11 +84,9 @@ public abstract class JsonValidationServiceProvider {
     /**
      * Creates a new instance of JSON validator factory.
      * 
-     * @param schema the JSON schema to apply when validating JSON instances.
      * @return the newly created instance of JSON validator factory.
-     * @throws NullPointerException if the specified parameter was {@code null}.
      */
-    public abstract JsonValidatorFactory createValidatorFactory(JsonSchema schema);
+    public abstract JsonValidatorFactory createValidatorFactory();
 
     /**
      * Initializes this provider immediately after its instantiation.  

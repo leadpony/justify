@@ -38,8 +38,6 @@ public class ProblemBuilder {
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     
-    private static final MessageFormatter messageFormatter = MessageFormatter.get();
-    
     /**
      * Creates new instance of this builder.
      * 
@@ -103,7 +101,7 @@ public class ProblemBuilder {
         @Override
         public String getMessage(Locale locale) {
             Objects.requireNonNull(locale, "locale must not be null.");
-            return messageFormatter.format(messageKey, parametersAsMap(), locale);
+            return Message.get(messageKey, locale).withParameters(parameters).toString();
         }
         
         @Override
@@ -128,20 +126,20 @@ public class ProblemBuilder {
         }
         
         private String formatContextualMessage(String message, Locale locale) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("message", message);
-            params.put("location", formatLocation(getLocation(), locale));
-            return messageFormatter.format("format", params, locale);
+            return Message.get("format", locale)
+                    .withParameter("message", message)
+                    .withParameter("location", formatLocation(getLocation(), locale))
+                    .toString();
         }
         
         private String formatLocation(JsonLocation location, Locale locale) {
             if (location == null) {
-                return messageFormatter.format("location.unknown", Collections.emptyMap(), locale);
+                return Message.getAsString("location.unknown", locale);
             } else {
-                Map<String, Object> params = new HashMap<>();
-                params.put("row", location.getLineNumber());
-                params.put("col", location.getColumnNumber());
-                return messageFormatter.format("location", params, locale);
+                return Message.get("location", locale)
+                        .withParameter("row", location.getLineNumber())
+                        .withParameter("col", location.getColumnNumber())
+                        .toString();
             }
         }
     }

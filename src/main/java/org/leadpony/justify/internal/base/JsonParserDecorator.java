@@ -57,7 +57,7 @@ public class JsonParserDecorator implements JsonParser {
     public JsonParser realParser() {
         return real;
     }
-
+    
     @Override
     public void close() {
         real.close();
@@ -198,7 +198,7 @@ public class JsonParserDecorator implements JsonParser {
         }
         return StreamSupport.stream(new JsonValueSpliterator(), false);
     }
-
+    
     private JsonArray buildArray() {
         JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
         while (hasNext()) {
@@ -208,8 +208,7 @@ public class JsonParserDecorator implements JsonParser {
             }
             builder.add(getValue());
         }
-        // TODO
-        throw new JsonParsingException("", getLocation());
+        throw parsingException("EOF", "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
     }
 
     private JsonObject buildObject() {
@@ -223,12 +222,21 @@ public class JsonParserDecorator implements JsonParser {
             next();
             builder.add(name, getValue());
         }
-        // TODO
-        throw new JsonParsingException("", getLocation());
+        throw parsingException("EOF", "[STRING, CURLYCLOSE]");
+    }
+    
+    private JsonParsingException parsingException(String actualToken, String expectedTokens) {
+        JsonLocation location = SimpleJsonLocation.before(getLocation());
+        String message = Message.get("parser.invalid.token")
+                .withParameter("actual", actualToken)
+                .withParameter("expected", expectedTokens)
+                .withParameter("location", location)
+                .toString();
+        return new JsonParsingException(message, location);
     }
     
     private JsonException internalError() {
-        return new JsonException("Internal Error");
+        return new JsonException(Message.getAsString("internal.error"));
     }
     
     private static abstract class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
@@ -270,11 +278,12 @@ public class JsonParserDecorator implements JsonParser {
             if (event == Event.END_OBJECT) {
                 return false;
             } else if (event != Event.KEY_NAME) {
+                // TODO:
                 throw internalError(); 
             } else {
                 String key = getString();
                 if (!hasNext()) {
-                    throw internalError(); 
+                    throw parsingException("EOF", "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
                 }
                 next();
                 JsonValue value = getValue();

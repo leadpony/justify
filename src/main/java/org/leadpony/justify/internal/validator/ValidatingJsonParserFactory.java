@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.validator;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -27,16 +29,26 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
 
+/**
+ * Factory for creating JSON parsers which validate JSON document while parsing.
+ * 
+ * @author leadpony
+ */
 public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     
     private final JsonSchema schema;
+    private final Function<JsonParser, Consumer<Problem>> handlerSupplier;
     private final JsonProvider jsonProvider;
     
-    ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, JsonProvider jsonProvider) {
+    ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, 
+            Function<JsonParser, Consumer<Problem>> handlerSupplier, 
+            JsonProvider jsonProvider) {
         super(realFactory);
         this.schema = schema;
+        this.handlerSupplier = handlerSupplier;
         this.jsonProvider = jsonProvider;
     }
 
@@ -71,6 +83,7 @@ public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     }
 
     private ValidatingJsonParser wrapParser(JsonParser parser) {
-        return new ValidatingJsonParser(parser, this.schema, this.jsonProvider);
+        ValidatingJsonParser wrapper = new ValidatingJsonParser(parser, this.schema, this.jsonProvider);
+        return wrapper.withHandler(this.handlerSupplier.apply(wrapper));
     }
 }

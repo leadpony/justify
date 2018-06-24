@@ -48,6 +48,10 @@ public class JsonProviderDecorator extends JsonProvider {
         this.real = real;
     }
     
+    public JsonProvider realProvider() {
+        return real;
+    }
+    
     @Override
     public JsonArrayBuilder createArrayBuilder() {
         return real.createArrayBuilder();

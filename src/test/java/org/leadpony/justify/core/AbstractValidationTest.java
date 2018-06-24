@@ -18,6 +18,9 @@ package org.leadpony.justify.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.json.stream.JsonParser;
 
 import org.junit.Test;
@@ -33,15 +36,15 @@ public abstract class AbstractValidationTest extends AbstractSpecTest {
     
     @Test
     public void testValidationResult() {
-        JsonParser parser = createValidatingParser();
+        List<Problem> problems = new ArrayList<>();
+        JsonParser parser = createValidatingParser(problems::add);
         while (parser.hasNext()) {
             parser.next();
         }
         parser.close();
-        JsonValidator validator = (JsonValidator)parser;
-        assertThat(!validator.hasProblem()).isEqualTo(getFixture().result());
-        if (validator.hasProblem()) {
-            printProblems(validator.getProblems());
+        assertThat(problems.isEmpty()).isEqualTo(getFixture().result());
+        if (!problems.isEmpty()) {
+            printProblems(problems);
         }
     }
 }

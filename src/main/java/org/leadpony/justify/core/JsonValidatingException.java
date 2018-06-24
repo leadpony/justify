@@ -24,7 +24,7 @@ import javax.json.JsonException;
 
 /**
  * <code>JsonValidatingException</code> indicates that some exception happened 
- * during JSON validation.
+ * while validating JSON document.
  * 
  * @author leadpony
  */
@@ -36,7 +36,7 @@ public class JsonValidatingException extends JsonException {
     /**
      * Constructs a new runtime exception.
      * 
-     * @param problems the problems found during JSON validating.
+     * @param problems the problems found while validating JSON document.
      */
     public JsonValidatingException(List<Problem> problems) {
         super(null);
@@ -44,9 +44,9 @@ public class JsonValidatingException extends JsonException {
     }
     
     /**
-     * Returns all problems found in validation process.
+     * Returns all problems found in the validation process.
      * 
-     * @return the list of problems, which can not be modified.
+     * @return the list of problems, which cannot be modified.
      */
     public List<Problem> problems() {
         return problems;
@@ -54,9 +54,10 @@ public class JsonValidatingException extends JsonException {
     
     /**
      * Returns the detail message string of this exception.
-     * 
-     * <p>The message is composed of multiple lines 
-     * and each line corresponds to one problem detected.</p>
+     * <p>
+     * The message is composed of multiple lines 
+     * and each line corresponds to a problem found in the validation process.
+     * </p>
      * 
      * @return the detail message string of this exception instance.
      */

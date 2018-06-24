@@ -16,17 +16,23 @@
 
 package org.leadpony.justify.internal.schema.io;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonValidator;
+import org.leadpony.justify.core.JsonValidatingException;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.validator.ValidatingJsonParser;
 
 /**
+ * JSON schema reader which validates schema document while reading.
+ * 
  * @author leadpony
  */
 public class ValidatingSchemaReader extends BasicSchemaReader {
     
-    private final JsonValidator validator;
+    private List<Problem> problems;
 
     /**
      * Constructs this schema reader.
@@ -36,14 +42,24 @@ public class ValidatingSchemaReader extends BasicSchemaReader {
      */
     public ValidatingSchemaReader(ValidatingJsonParser parser, BasicSchemaBuilderFactory factory) {
         super(parser, factory);
-        this.validator = parser;
+        parser.withHandler(this::addProblem);
     }
 
     @Override
-    protected void postprocess(JsonSchema rootSchema) {
-        if (validator.hasProblem()) {
-            addProblems(validator.getProblems());
+    public JsonSchema read() {
+        JsonSchema rootSchema = super.read();
+        if (problems == null || problems.isEmpty()) {
+            return rootSchema;
+        } else {
+            throw new JsonValidatingException(this.problems);
         }
-        super.postprocess(rootSchema);
+    }
+
+    @Override
+    protected void addProblem(Problem problem) {
+        if (this.problems == null) {
+            this.problems = new ArrayList<>();
+        }
+        this.problems.add(problem);
     }
 }

@@ -38,6 +38,10 @@ public class JsonParserFactoryDecorator implements JsonParserFactory {
     public JsonParserFactoryDecorator(JsonParserFactory real) {
         this.real = real;
     }
+    
+    public JsonParserFactory realFactory() {
+        return real;
+    }
 
     @Override
     public JsonParser createParser(Reader reader) {

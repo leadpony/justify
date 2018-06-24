@@ -19,7 +19,7 @@ package org.leadpony.justify.core;
 import javax.json.stream.JsonParser;
 
 /**
- * Evaluator that applies a JSON schema to a JSON instance.
+ * Evaluator which applies a JSON schema to a JSON instance.
  * 
  * <p>This type is not intended to be used directly by end users.</p>
  * 
@@ -28,14 +28,14 @@ import javax.json.stream.JsonParser;
 public interface Evaluator {
 
     /**
-     * Result of evaluation.
+     * Result of evaluation done by {@link Evaluator}.
      */
     enum Result {
         /** Evaluation is not done yet. */
         PENDING,
-        /** Evaluated as true. */
+        /** Evaluated as true, which means valid. */
         TRUE,
-        /** Evaluated as false. */
+        /** Evaluated as false, which means invalid. */
         FALSE,
         /** Result of evaluation should be ignored. */
         IGNORED
@@ -43,16 +43,16 @@ public interface Evaluator {
     };
     
     /**
-     * Reporter of problem found during the evaluation.
+     * Reporter of problems found during the evaluation.
      */
     interface ProblemReporter {
         
         /**
          * Reports a problem found during the evaluation.
          * 
-         * @param problem the problem to be reported, can be {@code null}.
+         * @param problem the problem to be reported, may be {@code null}.
          * @param parser the JSON parser, cannot be {@code null}.
-         * @throws NullPointerException if {@code parser} is {@code null}.
+         * @throws NullPointerException if the specified {@code parser} is {@code null}.
          */
         void reportProblem(Problem problem, JsonParser parser);
     }

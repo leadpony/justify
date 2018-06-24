@@ -26,7 +26,8 @@ import java.util.Set;
  */
 public final class Sets {
     
-    public static <T> Set<T> asSet(@SuppressWarnings("unchecked") T... a) {
+    @SafeVarargs
+    public static <T> Set<T> asSet(T... a) {
         Set<T> set = new LinkedHashSet<>();
         for (T e : a) {
             set.add(e);

@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Objects;
 
+import javax.json.JsonException;
 import javax.json.stream.JsonGenerator;
 
 /**
