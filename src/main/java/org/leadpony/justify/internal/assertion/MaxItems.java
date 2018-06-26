@@ -65,7 +65,7 @@ public class MaxItems extends AbstractAssertion {
         private int count;
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (depth == 1) {
                 return testSize(++count, parser, reporter);
             } else if (depth == 0 && event == Event.END_ARRAY) {
@@ -75,7 +75,7 @@ public class MaxItems extends AbstractAssertion {
             }
         }
 
-        private Result testSize(int size, JsonParser parser, ProblemReporter reporter) {
+        private Result testSize(int size, JsonParser parser, Reporter reporter) {
             if (size <= bound) {
                 return Result.PENDING;
             } else {
@@ -84,7 +84,7 @@ public class MaxItems extends AbstractAssertion {
                         .withParameter("actual", size)
                         .withParameter("bound", bound)
                         .build();
-                reporter.reportProblem(p, parser);
+                reporter.reportProblem(p);
                 return Result.FALSE;
             }
         }

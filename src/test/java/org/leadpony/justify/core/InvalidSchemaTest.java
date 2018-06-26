@@ -52,6 +52,6 @@ public class InvalidSchemaTest extends AbstractSpecTest {
         Throwable thrown = catchThrowable(()->reader.read());
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
         JsonValidatingException e = (JsonValidatingException)thrown;
-        printProblems(e.problems());
+        printProblems(e.getProblems());
     }
 }

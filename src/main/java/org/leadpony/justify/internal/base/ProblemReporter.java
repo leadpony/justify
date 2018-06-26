@@ -20,41 +20,27 @@ import java.util.Objects;
 
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Evaluator.ProblemReporter;
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 
 /**
- * {@link ProblemReporter} with default implementation.
+ * {@link Reporter} with default implementation.
  *  
  * @author leadpony
  */
-public interface BasicProblemReporter extends ProblemReporter {
+public interface ProblemReporter extends Evaluator.Reporter {
+    
+    /**
+     * Silent reporter which ignores the problem.
+     */
+    ProblemReporter SILENT = problem->{};
 
     @Override
-    default void reportProblem(Problem problem, JsonParser parser) {
+    default void reportUnknownProblem(JsonParser parser) {
         Objects.requireNonNull(parser, "parser must not be null.");
-        if (problem == null) {
-            problem = buildUnknownProblem(parser);
-        }
-        reportProblem(problem);
-    }
-    
-    /**
-     * Reports a problem found during the evaluation.
-     * 
-     * @param problem the problem to be reported, cannot be {@code null}.
-     */
-    void reportProblem(Problem problem);
-    
-    /**
-     * Builds a problem when omitted.
-     * 
-     * @param parser the JSON parser, cannot be {@code null}.
-     * @return the built problem.
-     */
-    default Problem buildUnknownProblem(JsonParser parser) {
-        return ProblemBuilder.newBuilder(parser)
+        Problem problem = ProblemBuilder.newBuilder(parser)
                 .withMessage("instance.problem.unknown")
                 .build();
+        reportProblem(problem);
     }
 }

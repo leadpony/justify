@@ -106,6 +106,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
         return this;
     }
     
+    protected JsonParser getParser() {
+        return parser;
+    }
+    
     protected void postprocess(JsonSchema rootSchema) {
         if (rootSchema != null) {
             makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);

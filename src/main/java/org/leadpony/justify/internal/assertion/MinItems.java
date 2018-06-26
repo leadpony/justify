@@ -65,7 +65,7 @@ public class MinItems extends AbstractAssertion {
         private int count;
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (depth == 1) {
                 ++count;
                 return Result.PENDING;
@@ -76,7 +76,7 @@ public class MinItems extends AbstractAssertion {
             }
         }
         
-        private Result testSize(int size, JsonParser parser, ProblemReporter reporter) {
+        private Result testSize(int size, JsonParser parser, Reporter reporter) {
             if (size >= bound) {
                 return Result.TRUE;
             } else {
@@ -85,7 +85,7 @@ public class MinItems extends AbstractAssertion {
                         .withParameter("actual", size)
                         .withParameter("bound", bound)
                         .build();
-                reporter.reportProblem(p, parser);
+                reporter.reportProblem(p);
                 return Result.FALSE;
             }
         }

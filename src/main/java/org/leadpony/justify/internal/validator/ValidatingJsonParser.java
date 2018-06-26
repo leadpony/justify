@@ -16,8 +16,10 @@
 
 package org.leadpony.justify.internal.validator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
@@ -26,24 +28,28 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
-import org.leadpony.justify.internal.base.BasicProblemReporter;
+import org.leadpony.justify.internal.base.ProblemReporter;
 
 /**
  * JSON parser with validation functionality.
  * 
  * @author leadpony
  */
-public class ValidatingJsonParser extends JsonParserDecorator 
-        implements BasicProblemReporter {
+public class ValidatingJsonParser extends JsonParserDecorator implements ProblemReporter {
     
     private final JsonSchema rootSchema;
-    private Consumer<Problem> problemHandler;
+    private ProblemHandler problemHandler;
     private BiConsumer<Event, JsonParser> eventHandler;
     private Evaluator evaluator;
     private int depth;
+
+    private Event eventNotDelivered;
+    private List<Problem> currentProblems = new ArrayList<>();
 
     ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
         super(real, jsonProvider);
@@ -51,22 +57,32 @@ public class ValidatingJsonParser extends JsonParserDecorator
         this.eventHandler = this::handleEventFirst;
     }
     
-    public ValidatingJsonParser withHandler(Consumer<Problem> problemHandler) {
+    public ValidatingJsonParser withHandler(ProblemHandler problemHandler) {
         this.problemHandler = problemHandler;
         return this;
     }
     
     @Override
     public Event next() {
+        if (eventNotDelivered != null) {
+            Event event = eventNotDelivered;
+            eventNotDelivered = null;
+            return event;
+        }
+
         Event event = super.next();
         eventHandler.accept(event, realParser());
+
+        if (!currentProblems.isEmpty()) {
+            dispatchProblems(event);
+        }
         return event;
     }
   
     @Override
     public void reportProblem(Problem problem) {
-        assert problem != null;
-        this.problemHandler.accept(problem);
+        Objects.requireNonNull(problem, "problem must not be null.");
+        this.currentProblems.add(problem);
     }
     
     private void handleEventFirst(Event event, JsonParser parser) {
@@ -98,5 +114,17 @@ public class ValidatingJsonParser extends JsonParserDecorator
     }
 
     private void handleNone(Event event, JsonParser parser) {
+    }
+    
+    private void dispatchProblems(Event event) {
+        eventNotDelivered = event;
+        List<Problem> problems = new ArrayList<>(this.currentProblems);
+        this.currentProblems.clear();
+        if (this.problemHandler != null) {
+            this.problemHandler.handleProblems(problems);
+        } else {
+            throw new JsonValidatingException(problems, realParser().getLocation());
+        }
+        eventNotDelivered = null;
     }
 }

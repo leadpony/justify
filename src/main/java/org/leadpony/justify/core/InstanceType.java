@@ -26,6 +26,7 @@ public enum InstanceType {
     NULL,
     /** JSON true of false. */
     BOOLEAN,
+    /** JSON object. */
     OBJECT,
     /** JSON array. */
     ARRAY,

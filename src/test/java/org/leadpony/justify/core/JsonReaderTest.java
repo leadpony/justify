@@ -52,7 +52,7 @@ public class JsonReaderTest {
         reader.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonReader sut = newReader(instance, schema, problems::add);
+        JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonStructure actual = sut.read();
         sut.close();
         
@@ -70,7 +70,7 @@ public class JsonReaderTest {
         reader.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonReader sut = newReader(instance, schema, problems::add);
+        JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonStructure actual = sut.read();
         sut.close();
         
@@ -88,7 +88,7 @@ public class JsonReaderTest {
         reader.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonReader sut = newReader(instance, schema, problems::add);
+        JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonArray actual = sut.readArray();
         sut.close();
         
@@ -106,7 +106,7 @@ public class JsonReaderTest {
         reader.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonReader sut = newReader(instance, schema, problems::add);
+        JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonObject actual = sut.readObject();
         sut.close();
         
@@ -131,12 +131,18 @@ public class JsonReaderTest {
         public static Iterable<Object[]> parameters() {
             return Arrays.asList(new Object[][] {
                 { "{\"type\":\"boolean\"}", "true", true },
+                { "{\"type\":\"string\"}", "true", false },
                 { "{\"type\":\"boolean\"}", "false", true },
+                { "{\"type\":\"string\"}", "false", false },
                 { "{\"type\":\"null\"}", "null", true },
+                { "{\"type\":\"string\"}", "null", false },
                 { "{\"type\":\"string\"}", "\"foo\"", true },
+                { "{\"type\":\"integer\"}", "\"foo\"", false },
                 { "{\"type\":\"integer\"}", "42", true },
                 { "{\"type\":\"integer\"}", "9223372036854775807", true },
+                { "{\"type\":\"string\"}", "42", false },
                 { "{\"type\":\"number\"}", "3.14", true },
+                { "{\"type\":\"string\"}", "3.14", false },
                 { INTEGER_ARRAY_SCHEMA, "[1,2,3]", true },
                 { INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false },
                 { PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true },
@@ -151,12 +157,39 @@ public class JsonReaderTest {
             reader.close();
 
             List<Problem> problems = new ArrayList<>();
-            JsonReader sut = newReader(instance, schema, problems::add);
+            JsonReader sut = newReader(instance, schema, problems::addAll);
             JsonValue actual = sut.readValue();
             sut.close();
             
             assertThat(actual).isEqualTo(expected);
             assertThat(problems.isEmpty()).isEqualTo(valid);
+            if (!problems.isEmpty()) {
+                problems.forEach(System.out::println);
+            }
+        }
+
+        @Test
+        public void readValue_throwsExceptionIfInvalid() {
+            JsonReader reader = newReader(instance);
+            JsonValue expected = reader.readValue();
+            reader.close();
+
+            List<Problem> problems = new ArrayList<>();
+            JsonReader sut = newReader(instance, schema, null);
+            JsonValue actual = null;
+            try {
+                actual = sut.readValue();
+            } catch (JsonValidatingException e) {
+                problems.addAll(e.getProblems());
+            }
+            sut.close();
+            
+            if (actual != null) {
+                assertThat(actual).isEqualTo(expected);
+                assertThat(problems).isEmpty();
+            } else {
+                assertThat(problems).isNotEmpty();
+            }
             if (!problems.isEmpty()) {
                 problems.forEach(System.out::println);
             }

@@ -17,7 +17,6 @@
 package org.leadpony.justify.core;
 
 import java.io.StringReader;
-import java.util.function.Consumer;
 
 import javax.json.Json;
 import javax.json.JsonReader;
@@ -48,7 +47,7 @@ interface JsonSchemas {
         return Json.createParser(new StringReader(instance));
     }
     
-    static JsonParser newParser(String instance, String schema, Consumer<Problem> handler) {
+    static JsonParser newParser(String instance, String schema, ProblemHandler handler) {
         JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
         JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
         return factory.createParser(new StringReader(instance), s, handler);
@@ -58,7 +57,7 @@ interface JsonSchemas {
         return Json.createReader(new StringReader(instance));
     }
     
-    static JsonReader newReader(String instance, String schema, Consumer<Problem> handler) {
+    static JsonReader newReader(String instance, String schema, ProblemHandler handler) {
         JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
         JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
         return factory.createReader(new StringReader(instance), s, handler);

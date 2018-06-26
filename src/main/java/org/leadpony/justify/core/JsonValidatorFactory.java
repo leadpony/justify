@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.json.JsonException;
@@ -64,12 +63,12 @@ public interface JsonValidatorFactory {
      * @param config the map of provider-specific properties to configure the JSON parsers. 
      *        The map may be empty or {@code null}.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerSupplier the function which supplies problem handlers.
+     * @param handlerSupplier the function which supplies problem handlers, can be {@code null}.
      * @throws NullPointerException if specified parameter was {@code null}.
      * @return newly created instance of {@link JsonParserFactory}.
      */
     JsonParserFactory createParserFactory(Map<String,?> config, JsonSchema schema, 
-            Function<JsonParser, Consumer<Problem>> handlerSupplier);
+            Function<JsonParser, ProblemHandler> handlerSupplier);
     
     /**
      * Creates a JSON parser from the specified byte stream,
@@ -79,11 +78,13 @@ public interface JsonValidatorFactory {
      * @param in the byte stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonParser}. 
      * @throws NullPointerException if specified parameter was {@code null}.
      * @throws JsonException if encoding cannot be determined or I/O error occurred. 
      */
-    JsonParser createParser(InputStream in, JsonSchema schema, Consumer<Problem> handler);
+    JsonParser createParser(InputStream in, JsonSchema schema, ProblemHandler handler);
     
     /**
      * Creates a JSON parser from the specified byte stream, 
@@ -94,11 +95,13 @@ public interface JsonValidatorFactory {
      * @param charset the character set.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonParser}. 
      * @throws NullPointerException if specified parameter was {@code null}.
      * @throws JsonException if encoding cannot be determined or I/O error occurred. 
      */
-    JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, Consumer<Problem> handler);
+    JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler);
 
     /**
      * Creates a JSON parser from the specified character stream,
@@ -107,10 +110,12 @@ public interface JsonValidatorFactory {
      * @param reader I/O reader from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonParser}. 
      * @throws NullPointerException if specified parameter was {@code null}.
      */
-    JsonParser createParser(Reader reader, JsonSchema schema, Consumer<Problem> handler);
+    JsonParser createParser(Reader reader, JsonSchema schema, ProblemHandler handler);
     
     /**
      * Creates a reader factory for creating {@link JsonReader} instances. 
@@ -124,12 +129,12 @@ public interface JsonValidatorFactory {
      * @param config the map of provider specific properties to configure the JSON readers. 
                      The map may be empty or {@code null}.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerSupplier the function which supplies problem handlers.
+     * @param handlerSupplier the function which supplies problem handlers, can be {@code null}.
      * @throws NullPointerException if specified parameter was {@code null}.
      * @return newly created instance of {@link JsonReaderFactory}.
      */
     JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
-            Function<JsonParser, Consumer<Problem>> handlerSupplier);
+            Function<JsonParser, ProblemHandler> handlerSupplier);
     
     /**
      * Creates a JSON reader from a byte stream, 
@@ -139,10 +144,12 @@ public interface JsonValidatorFactory {
      * @param in a byte stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonReader}.
      * @throws NullPointerException if specified parameter was {@code null}.
      */
-    JsonReader createReader(InputStream in, JsonSchema schema, Consumer<Problem> handler);
+    JsonReader createReader(InputStream in, JsonSchema schema, ProblemHandler handler);
     
     /**
      * Creates a JSON reader from a byte stream, 
@@ -153,10 +160,12 @@ public interface JsonValidatorFactory {
      * @param charset the character set.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonReader}.
      * @throws NullPointerException if specified parameter was {@code null}.
      */
-    JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, Consumer<Problem> handler);
+    JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler);
 
     /**
      * Creates a JSON reader from a character stream,
@@ -165,19 +174,21 @@ public interface JsonValidatorFactory {
      * @param reader a reader from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
      * @param handler the object handling problems found in the validation.
+     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
+     *                when finding problems in the validation.
      * @return newly created instance of {@link JsonReader}.
      * @throws NullPointerException if specified parameter was {@code null}.
      */
-    JsonReader createReader(Reader reader, JsonSchema schema, Consumer<Problem> handler);
+    JsonReader createReader(Reader reader, JsonSchema schema, ProblemHandler handler);
 
     /**
      * Creates a JSON provider for validating JSON documents while parsing and reading.
      * 
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerSupplier the function which supplies problem handlers.
+     * @param handlerSupplier the function which supplies problem handlers, can be {@code null}.
      * @throws NullPointerException if specified parameter was {@code null}.
      * @return newly created instance of {@link JsonProvider}.
      */
     JsonProvider createJsonProvider(JsonSchema schema,
-            Function<JsonParser, Consumer<Problem>> handlerSupplier);
+            Function<JsonParser, ProblemHandler> handlerSupplier);
 }

@@ -74,7 +74,7 @@ public class Required extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
                 return test(parser, reporter, false);
@@ -85,7 +85,7 @@ public class Required extends AbstractAssertion {
             }
         }
         
-        protected Result test(JsonParser parser, ProblemReporter reporter, boolean last) {
+        protected Result test(JsonParser parser, Reporter reporter, boolean last) {
             if (remaining.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
@@ -93,7 +93,7 @@ public class Required extends AbstractAssertion {
                         .withMessage("instance.problem.required")
                         .withParameter("expected", remaining)
                         .build();
-                reporter.reportProblem(p, parser);
+                reporter.reportProblem(p);
                 return Result.FALSE;
             } else {
                 return Result.PENDING;

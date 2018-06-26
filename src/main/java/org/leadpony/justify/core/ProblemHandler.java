@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.core;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
-
-import org.leadpony.justify.core.Evaluator;
+import java.util.Collection;
 
 /**
+ * Handler of problems found in the validation.
+ * <p>
+ * The instances of this type can be assigned to JSON parsers or readers
+ * through methods provided by {@link JsonValidatorFactory}.  
+ * </p>
+ * 
  * @author leadpony
  */
-public interface ShallowEvaluator extends Evaluator {
-    
-    @Override
-    default Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth > 1) {
-            return Result.PENDING;
-        }
-        return evaluateShallow(event, parser, depth, reporter);
-    }
-    
-    Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter);
+@FunctionalInterface
+public interface ProblemHandler {
+
+    /**
+     * Handles reported problems.
+     * 
+     * @param problems the collection of problems found in the current parsing event, 
+     *                 never be {@code null}.
+     */
+    void handleProblems(Collection<Problem> problems);
 }

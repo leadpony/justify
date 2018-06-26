@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.json.JsonException;
+import javax.json.stream.JsonLocation;
+import javax.json.stream.JsonParsingException;
 
 /**
  * <code>JsonValidatingException</code> indicates that some exception happened 
@@ -29,7 +30,7 @@ import javax.json.JsonException;
  * @author leadpony
  */
 @SuppressWarnings("serial")
-public class JsonValidatingException extends JsonException {
+public class JsonValidatingException extends JsonParsingException {
     
     private final List<Problem> problems;
     
@@ -37,18 +38,19 @@ public class JsonValidatingException extends JsonException {
      * Constructs a new runtime exception.
      * 
      * @param problems the problems found while validating JSON document.
+     * @param location the location of the incorrect JSON.
      */
-    public JsonValidatingException(List<Problem> problems) {
-        super(null);
+    public JsonValidatingException(List<Problem> problems, JsonLocation location) {
+        super(null, location);
         this.problems = Collections.unmodifiableList(problems);
     }
     
     /**
      * Returns all problems found in the validation process.
      * 
-     * @return the list of problems, which cannot be modified.
+     * @return unmodifiable list of problems, which never be {@code null}.
      */
-    public List<Problem> problems() {
+    public List<Problem> getProblems() {
         return problems;
     }
     
@@ -63,7 +65,7 @@ public class JsonValidatingException extends JsonException {
      */
     @Override
     public String getMessage() {
-        return problems().stream()
+        return getProblems().stream()
                 .map(Problem::getContextualMessage)
                 .collect(Collectors.joining("\n"));
     }

@@ -37,7 +37,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         Iterator<Evaluator> it = evaluators.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
@@ -61,12 +61,12 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
         return evaluators.isEmpty();
     }
 
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
         assert isEmpty();
         return conclude(parser, reporter);
     }
     
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
-    protected abstract Result conclude(JsonParser parser, ProblemReporter reporter);
+    protected abstract Result conclude(JsonParser parser, Reporter reporter);
 }

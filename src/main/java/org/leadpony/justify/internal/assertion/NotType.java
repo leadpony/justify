@@ -34,14 +34,14 @@ class NotType extends Type {
     }
     
     @Override
-    protected Result testType(InstanceType type, JsonParser parser, ProblemReporter reporter) {
+    protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
         if (contains(type)) {
             Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage("instance.problem.not.type")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

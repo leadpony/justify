@@ -20,6 +20,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.internal.base.ProblemReporter;
 
 /**
  * @author leadpony
@@ -34,8 +35,6 @@ public class ConditionalEvaluator implements Evaluator {
     private Result thenResult;
     private Result elseResult;
 
-    private static final ProblemReporter SILENT_REPORTER = (problem, parser)->{};
-    
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         this.ifEvaluator = ifEvaluator;
         this.thenEvaluator = (thenEvaluator != null) ? 
@@ -48,8 +47,8 @@ public class ConditionalEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
-        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, SILENT_REPORTER);
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, ProblemReporter.SILENT);
         if (ifResult == Result.TRUE) {
             thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, reporter);
             if (thenResult != Result.PENDING) {
@@ -67,7 +66,7 @@ public class ConditionalEvaluator implements Evaluator {
         return null;
     }
     
-    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, JsonParser parser, int depth, Reporter reporter) {
         if (result == Result.PENDING) {
             return evaluator.evaluate(event, parser, depth, reporter);
         } else {
@@ -75,9 +74,9 @@ public class ConditionalEvaluator implements Evaluator {
         }
     }
     
-    private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, ProblemReporter reporter) {
+    private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, Reporter reporter) {
         if (result == Result.FALSE) {
-            ((StoringEvaluator)evaluator).problems().forEach(problem->reporter.reportProblem(problem, parser));
+            ((StoringEvaluator)evaluator).problems().forEach(problem->reporter.reportProblem(problem));
         }
         return result;
     }

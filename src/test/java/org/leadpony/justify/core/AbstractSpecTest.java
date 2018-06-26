@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
@@ -68,7 +67,7 @@ abstract class AbstractSpecTest {
         return ()->new ParameterSetIterator(names);
     }
     
-    protected JsonParser createValidatingParser(Consumer<Problem> handler) {
+    protected JsonParser createValidatingParser(ProblemHandler handler) {
         JsonSchema schema = getSchema();
         JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
         StringReader reader = new StringReader(fixture.instance().toString());

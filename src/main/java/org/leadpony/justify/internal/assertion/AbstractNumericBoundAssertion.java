@@ -47,7 +47,7 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
     }
    
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         BigDecimal actual = parser.getBigDecimal();
         if (test(actual, this.bound)) {
             return Result.TRUE;
@@ -57,7 +57,7 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
                     .withParameter("actual", actual)
                     .withParameter("bound", this.bound)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         }
     }

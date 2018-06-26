@@ -45,7 +45,7 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     }
     
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         String actual = parser.getString();
         int actualLength = actual.codePointCount(0, actual.length());
         if (test(actualLength, this.bound)) {
@@ -56,7 +56,7 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
                     .withParameter("actual", actual.length())
                     .withParameter("bound", this.bound)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         }
     }

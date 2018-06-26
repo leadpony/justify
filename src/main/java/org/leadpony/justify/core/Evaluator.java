@@ -45,16 +45,23 @@ public interface Evaluator {
     /**
      * Reporter of problems found during the evaluation.
      */
-    interface ProblemReporter {
+    interface Reporter {
         
         /**
          * Reports a problem found during the evaluation.
          * 
-         * @param problem the problem to be reported, may be {@code null}.
-         * @param parser the JSON parser, cannot be {@code null}.
-         * @throws NullPointerException if the specified {@code parser} is {@code null}.
+         * @param problem the problem to be reported, cannot be {@code null}.
+         * @throws NullPointerException if the specified {@code problem} was {@code null}.
          */
-        void reportProblem(Problem problem, JsonParser parser);
+        void reportProblem(Problem problem);
+        
+        /**
+         * Reports an unknown problem found at the current parsing position.
+         * 
+         * @param parser the JSON parser which found the problem, cannot be {@code null}.
+         * @throws NullPointerException if the specified {@code parser} was {@code null}.
+         */
+        void reportUnknownProblem(JsonParser parser);
     }
     
     /**
@@ -66,7 +73,7 @@ public interface Evaluator {
      * @param reporter the reporter of the found problems, cannot be {@code null}.
      * @return the result of the evaluation, never be {@code null}.
      */
-    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, ProblemReporter reporter);
+    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Reporter reporter);
 
     /**
      * The evaluator which evaluates any JSON instances as true ("valid").
@@ -78,7 +85,7 @@ public interface Evaluator {
      * and reports a problem.
      */
     Evaluator ALWAYS_FALSE = (event, parser, depth, reporter)->{
-            reporter.reportProblem(null, parser);
+            reporter.reportUnknownProblem(parser);
             return Result.FALSE;
         };
     

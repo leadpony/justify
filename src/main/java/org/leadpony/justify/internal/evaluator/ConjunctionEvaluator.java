@@ -36,7 +36,7 @@ class ConjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(JsonParser parser, ProblemReporter reporter) {
+    protected Result conclude(JsonParser parser, Reporter reporter) {
         return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
     }
 }

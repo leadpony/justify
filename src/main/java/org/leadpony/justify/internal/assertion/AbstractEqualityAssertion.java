@@ -22,7 +22,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Evaluator.ProblemReporter;
+import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.core.InstanceType;
@@ -43,7 +43,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
         return new InstanceEvaluator(jsonProvider);
     }
     
-    protected abstract Result testValue(JsonValue actual, JsonParser parser, ProblemReporter reporter);
+    protected abstract Result testValue(JsonValue actual, JsonParser parser, Reporter reporter);
 
     private class InstanceEvaluator implements Evaluator {
         
@@ -54,7 +54,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (builder.append(event, parser)) {
                 return Result.PENDING;
             }

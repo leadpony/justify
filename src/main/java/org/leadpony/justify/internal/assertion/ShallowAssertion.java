@@ -35,7 +35,7 @@ public abstract class ShallowAssertion extends AbstractAssertion implements Eval
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         if (depth <= 1) {
             return evaluateShallow(event, parser, depth, reporter);
         } else {
@@ -43,5 +43,5 @@ public abstract class ShallowAssertion extends AbstractAssertion implements Eval
         }
     }
     
-    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter);
+    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter);
 }

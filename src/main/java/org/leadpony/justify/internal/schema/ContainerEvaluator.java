@@ -34,7 +34,7 @@ abstract class ContainerEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         if (depth == 1) {
             update(event, parser);
         }

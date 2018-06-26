@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.validator;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.json.JsonArray;
@@ -29,7 +28,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
 
 /**
@@ -40,11 +39,11 @@ import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
 public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     
     private final JsonSchema schema;
-    private final Function<JsonParser, Consumer<Problem>> handlerSupplier;
+    private final Function<JsonParser, ProblemHandler> handlerSupplier;
     private final JsonProvider jsonProvider;
     
     ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, 
-            Function<JsonParser, Consumer<Problem>> handlerSupplier, 
+            Function<JsonParser, ProblemHandler> handlerSupplier, 
             JsonProvider jsonProvider) {
         super(realFactory);
         this.schema = schema;

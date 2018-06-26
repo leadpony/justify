@@ -26,6 +26,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -41,8 +42,13 @@ public class JsonbTest {
     private static JsonValidatorFactory validatorFactory;
     
     @BeforeClass
-    public static void setUpOnces() {
+    public static void setUpOnce() {
         validatorFactory = JsonValidatorFactory.newFactory();
+    }
+    
+    @AfterClass
+    public static void tearDownOnce() {
+        validatorFactory = null;
     }
 
     @Test
@@ -52,7 +58,7 @@ public class JsonbTest {
 
         JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = validatorFactory.createJsonProvider(s, parser->problems::add); 
+        JsonProvider provider = validatorFactory.createJsonProvider(s, parser->problems::addAll); 
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
         
@@ -68,7 +74,7 @@ public class JsonbTest {
 
         JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = validatorFactory.createJsonProvider(s, parser->problems::add); 
+        JsonProvider provider = validatorFactory.createJsonProvider(s, parser->problems::addAll); 
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 

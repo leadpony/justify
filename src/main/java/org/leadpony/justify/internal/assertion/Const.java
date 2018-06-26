@@ -21,7 +21,7 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Evaluator.ProblemReporter;
+import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
@@ -51,7 +51,7 @@ public class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, ProblemReporter reporter) {
+    protected Result testValue(JsonValue actual, JsonParser parser, Reporter reporter) {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
@@ -60,7 +60,7 @@ public class Const extends AbstractEqualityAssertion {
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         }
     }

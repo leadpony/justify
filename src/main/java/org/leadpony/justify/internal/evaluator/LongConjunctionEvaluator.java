@@ -31,7 +31,7 @@ class LongConjunctionEvaluator extends ConjunctionEvaluator {
     }
 
     @Override
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
         if (isEmpty()) {
             return conclude(parser, reporter);
         } else if (depth == 0 && event == lastEvent) {

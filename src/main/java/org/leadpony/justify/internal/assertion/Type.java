@@ -42,7 +42,7 @@ public class Type extends ShallowAssertion {
     }
 
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);
         if (type != null) {
             return testType(type, parser, reporter);
@@ -71,7 +71,7 @@ public class Type extends ShallowAssertion {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
     
-    protected Result testType(InstanceType type, JsonParser parser, ProblemReporter reporter) {
+    protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
@@ -80,7 +80,7 @@ public class Type extends ShallowAssertion {
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         }
     }

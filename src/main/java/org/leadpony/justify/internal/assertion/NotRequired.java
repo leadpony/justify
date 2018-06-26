@@ -56,7 +56,7 @@ class NotRequired extends Required {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (event == Event.KEY_NAME) {
                 remaining.remove(parser.getString());
                 return test(parser, reporter, false);
@@ -68,13 +68,13 @@ class NotRequired extends Required {
         }
 
         @Override
-        protected Result test(JsonParser parser, ProblemReporter reporter, boolean last) {
+        protected Result test(JsonParser parser, Reporter reporter, boolean last) {
             if (remaining.isEmpty()) {
                 Problem p = ProblemBuilder.newBuilder(parser)
                         .withMessage("instance.problem.not.required")
                         .withParameter("expected", this.names)
                         .build();
-                reporter.reportProblem(p, parser);
+                reporter.reportProblem(p);
                 return Result.FALSE;
             } else if (last) {
                 return Result.TRUE;

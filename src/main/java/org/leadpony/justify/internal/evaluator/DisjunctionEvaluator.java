@@ -51,13 +51,13 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(JsonParser parser, ProblemReporter reporter) {
+    protected Result conclude(JsonParser parser, Reporter reporter) {
         if (numberOfTrues > 0 || failed == null || failed.isEmpty()) {
             return Result.TRUE;
         }
         Collections.sort(failed);
         StoringEvaluator first = failed.get(0);
-        first.problems().forEach(problem->reporter.reportProblem(problem, parser));
+        first.problems().forEach(problem->reporter.reportProblem(problem));
         return Result.FALSE;
     }
 }

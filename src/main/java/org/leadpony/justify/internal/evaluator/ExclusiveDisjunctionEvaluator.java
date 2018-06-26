@@ -34,7 +34,7 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     }
 
     @Override
-    protected Result conclude(JsonParser parser, ProblemReporter reporter) {
+    protected Result conclude(JsonParser parser, Reporter reporter) {
         if (this.numberOfTrues > 1) {
             return reportTooManyTrueEvaluations(parser, reporter);
         } else {
@@ -42,12 +42,12 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
         }
     }
     
-    private Result reportTooManyTrueEvaluations(JsonParser parser, ProblemReporter reporter) {
+    private Result reportTooManyTrueEvaluations(JsonParser parser, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
                 .withMessage("instance.problem.one.of")
                 .withParameter("actual", numberOfTrues)
                 .build();
-        reporter.reportProblem(p, parser);
+        reporter.reportProblem(p);
         return Result.FALSE;
     }
 }

@@ -45,7 +45,7 @@ public class MultipleOf extends ShallowAssertion {
     }
     
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemReporter reporter) {
+    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         assert event == Event.VALUE_NUMBER;
         BigDecimal actual = parser.getBigDecimal();
         return test(actual, parser, reporter);
@@ -61,7 +61,7 @@ public class MultipleOf extends ShallowAssertion {
         throw new UnsupportedOperationException();
     }
     
-    protected Result test(BigDecimal actual, JsonParser parser, ProblemReporter reporter) {
+    protected Result test(BigDecimal actual, JsonParser parser, Reporter reporter) {
         BigDecimal remainder = actual.remainder(divisor);
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
@@ -71,7 +71,7 @@ public class MultipleOf extends ShallowAssertion {
                     .withParameter("actual", actual)
                     .withParameter("divisor", divisor)
                     .build();
-            reporter.reportProblem(p, parser);
+            reporter.reportProblem(p);
             return Result.FALSE;
         }
     }

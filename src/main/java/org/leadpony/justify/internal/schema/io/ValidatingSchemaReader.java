@@ -32,7 +32,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonParser;
  */
 public class ValidatingSchemaReader extends BasicSchemaReader {
     
-    private List<Problem> problems;
+    private List<Problem> problems = new ArrayList<>();
 
     /**
      * Constructs this schema reader.
@@ -42,24 +42,21 @@ public class ValidatingSchemaReader extends BasicSchemaReader {
      */
     public ValidatingSchemaReader(ValidatingJsonParser parser, BasicSchemaBuilderFactory factory) {
         super(parser, factory);
-        parser.withHandler(this::addProblem);
+        parser.withHandler(problems::addAll);
     }
 
     @Override
     public JsonSchema read() {
         JsonSchema rootSchema = super.read();
-        if (problems == null || problems.isEmpty()) {
+        if (problems.isEmpty()) {
             return rootSchema;
         } else {
-            throw new JsonValidatingException(this.problems);
+            throw new JsonValidatingException(this.problems, getParser().getLocation());
         }
     }
 
     @Override
     protected void addProblem(Problem problem) {
-        if (this.problems == null) {
-            this.problems = new ArrayList<>();
-        }
         this.problems.add(problem);
     }
 }
