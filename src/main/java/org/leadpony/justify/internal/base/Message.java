@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * Message in resource bundle for this library.
+ * 
  * @author leadpony
  */
 public class Message {
@@ -71,10 +73,12 @@ public class Message {
     }
     
     public Message withParameter(String name, Object value) {
-        if (this.parameters == null) {
-            this.parameters = new HashMap<>();
-        }
-        this.parameters.put(name, value);
+        addParameter(name, value);
+        return this;
+    }
+
+    public Message withParameter(String name, Message message) {
+        addParameter(name, message);
         return this;
     }
 
@@ -96,6 +100,13 @@ public class Message {
         return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);    
     }
     
+    private void addParameter(String name, Object value) {
+        if (this.parameters == null) {
+            this.parameters = new HashMap<>();
+        }
+        this.parameters.put(name, value);
+    }
+    
     private String replace(String pattern, Map<String, ?> parameters) {
         Matcher m = PLACEHOLDER_PATTERN.matcher(pattern);
         StringBuilder sb = new StringBuilder();
@@ -115,25 +126,36 @@ public class Message {
         return sb.toString();
     }
     
-    private String mapToString(Object obj) {
-        if (obj instanceof Collection) {
-            return mapToString((Collection<?>)obj);
-        } else if (obj instanceof Enum) {
-            String className = obj.getClass().getSimpleName();
-            String key = className + "." + ((Enum<?>)obj).name();
-            return bundle.getString(key);
+    private String mapToString(Object value) {
+        if (value instanceof Collection) {
+            return mapToString((Collection<?>)value);
+        } else if (value instanceof Enum) {
+            Enum<?> enumType = ((Enum<?>)value);
+            String className = enumType.getClass().getSimpleName();
+            String key = className + "." + enumType.name();
+            if (bundle.containsKey(key)) {
+                return bundle.getString(key);
+            } else {
+                return enumType.name();
+            }
+        } else if (value instanceof String) {
+            return mapToString((String)value);
         } else {
-            return obj.toString();
+            return value.toString();
         }
     }
     
-    private String mapToString(Collection<?> collection) {
+    private String mapToString(Collection<?> value) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        sb.append(collection.stream()
+        sb.append(value.stream()
                   .map(e->mapToString(e))
                   .collect(Collectors.joining(", ")));
         sb.append("]");
         return sb.toString();
+    }
+    
+    private static String mapToString(String value) {
+        return "\"" + value + "\"";
     }
 }

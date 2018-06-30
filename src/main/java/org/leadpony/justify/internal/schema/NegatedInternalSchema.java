@@ -21,11 +21,13 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
+ * Negation of {@link InternalSchema}.
+ * 
  * @author leadpony
  */
-class NegatedComplexSchema extends InternalSchema {
+class NegatedInternalSchema extends InternalSchema {
 
-    NegatedComplexSchema(InternalSchema original) {
+    NegatedInternalSchema(InternalSchema original) {
         super(original, true);
     }
 

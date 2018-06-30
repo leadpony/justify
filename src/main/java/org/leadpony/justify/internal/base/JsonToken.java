@@ -16,27 +16,20 @@
 
 package org.leadpony.justify.internal.base;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.Locale;
-
-import org.junit.Test;
-import org.leadpony.justify.core.InstanceType;
-
 /**
+ * Token category.
+ * 
  * @author leadpony
  */
-public class MessageTest {
-
-    @Test
-    public void toString_returnsFormattedMessage() {
-        Message sut = Message.get("instance.problem.type", Locale.ENGLISH);
-        sut.withParameter("actual", InstanceType.STRING)
-           .withParameter("expected", InstanceType.INTEGER);
-        
-        String message = sut.toString();
-        
-        String expectedMessage = "Type of value must be integer, but was string.";
-        assertThat(message).isEqualTo(expectedMessage);
-    }
+enum JsonToken {
+    CURLYOPEN,
+    CURLYCLOSE,
+    SQUREOPEN,
+    SQURECLOSE,
+    STRING,
+    NUMBER,
+    TRUE,
+    FALSE,
+    NULL,
+    EOF
 }

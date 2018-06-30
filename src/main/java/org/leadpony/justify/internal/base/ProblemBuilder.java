@@ -101,13 +101,14 @@ public class ProblemBuilder {
         @Override
         public String getMessage(Locale locale) {
             Objects.requireNonNull(locale, "locale must not be null.");
-            return Message.get(messageKey, locale).withParameters(parameters).toString();
+            return buildMessage(locale).toString();
         }
         
         @Override
         public String getContextualMessage(Locale locale) {
             Objects.requireNonNull(locale, "locale must not be null.");
-            return formatContextualMessage(getMessage(locale), locale);
+            Message message = buildMessage(locale);
+            return buildContextualMessage(message, locale).toString();
         }
     
         @Override
@@ -125,21 +126,23 @@ public class ProblemBuilder {
             return getContextualMessage(Locale.getDefault());
         }
         
-        private String formatContextualMessage(String message, Locale locale) {
-            return Message.get("format", locale)
-                    .withParameter("message", message)
-                    .withParameter("location", formatLocation(getLocation(), locale))
-                    .toString();
+        private Message buildMessage(Locale locale) {
+            return Message.get(messageKey, locale).withParameters(parameters);
         }
         
-        private String formatLocation(JsonLocation location, Locale locale) {
+        private Message buildContextualMessage(Message message, Locale locale) {
+            return Message.get("format", locale)
+                    .withParameter("message", message)
+                    .withParameter("location", buildLocation(getLocation(), locale));
+        }
+        
+        private Message buildLocation(JsonLocation location, Locale locale) {
             if (location == null) {
-                return Message.getAsString("location.unknown", locale);
+                return Message.get("location.unknown", locale);
             } else {
                 return Message.get("location", locale)
                         .withParameter("row", location.getLineNumber())
-                        .withParameter("col", location.getColumnNumber())
-                        .toString();
+                        .withParameter("col", location.getColumnNumber());
             }
         }
     }

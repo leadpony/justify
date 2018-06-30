@@ -119,7 +119,7 @@ public class LeafSchema extends AbstractJsonSchema implements Resolvable {
  
     @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new NegatedSimpleSchema(this);
+        return new NegatedLeafSchema(this);
     }
 
     protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {

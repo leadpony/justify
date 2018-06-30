@@ -139,4 +139,15 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>johnzon</id>
+            <properties>
+                <jsonp.impl.groupId>org.apache.johnzon</jsonp.impl.groupId>
+                <jsonp.impl.artifactId>johnzon-core</jsonp.impl.artifactId>
+                <jsonp.impl.version>1.1.7</jsonp.impl.version>
+            </properties>
+        </profile>
+    </profiles>
+    
 </project>

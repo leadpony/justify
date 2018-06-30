@@ -23,20 +23,22 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
+ * Evaluator which walks a container (array or object).
+ * 
  * @author leadpony
  */
-abstract class ContainerEvaluator implements Evaluator {
+abstract class ContainerWalker implements Evaluator {
 
     private final LogicalEvaluator logical;
     
-    protected ContainerEvaluator(LogicalEvaluator logical) {
+    protected ContainerWalker(LogicalEvaluator logical) {
         this.logical = logical;
     }
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         if (depth == 1) {
-            update(event, parser);
+            update(event, parser, reporter);
         }
         return logical.evaluate(event, parser, depth, reporter);
     }
@@ -48,5 +50,5 @@ abstract class ContainerEvaluator implements Evaluator {
         });
     }
     
-    protected abstract void update(Event event, JsonParser parser);
+    protected abstract void update(Event event, JsonParser parser, Reporter reporter);
 }

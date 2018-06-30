@@ -16,19 +16,15 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.base.InstanceTypes;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -106,19 +102,19 @@ class InternalSchema extends LeafSchema {
 
     @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new NegatedComplexSchema(this);
+        return new NegatedInternalSchema(this);
     }
     
     private Evaluator createEvaluatorForArray() {
         LogicalEvaluator logical = createLogicalEvaluator(InstanceType.ARRAY, true);
         appendEvaluatorsTo(logical, InstanceType.ARRAY);
-        return new ArrayEvaluator(logical);
+        return new ArrayWalker(logical, this.itemSchemaFinder);
     }
     
     private Evaluator createEvaluatorForObject() {
         LogicalEvaluator logical = createLogicalEvaluator(InstanceType.OBJECT, true);
         appendEvaluatorsTo(logical, InstanceType.OBJECT);
-        return new ObjectEvaluator(logical);
+        return new ObjectWalker(logical, this.propertySchemaFinder);
     }
 
     @Override
@@ -137,79 +133,5 @@ class InternalSchema extends LeafSchema {
         propertySchemaFinder.toJson(generator);
         itemSchemaFinder.toJson(generator);
         activeSubschemas.forEach(schema->schema.toJson(generator));
-    }
- 
-    /**
-     * Finds child schema to be applied to the specified item in array.
-     * 
-     * @param itemIndex the index of the item.
-     * @return the child schema if found , {@code null} otherwise.
-     */
-    private JsonSchema findChildSchema(int itemIndex) {
-        return itemSchemaFinder.findSchema(itemIndex);
-    }
-    
-    private class ArrayEvaluator extends ContainerEvaluator {
-
-        private int itemIndex;
-
-        private ArrayEvaluator(LogicalEvaluator evaluator) {
-            super(evaluator);
-        }
-        
-        @Override
-        protected void update(Event event, JsonParser parser) {
-            switch (event) {
-            case END_ARRAY:
-            case END_OBJECT:
-                break;
-            default:
-                JsonSchema schema = findChildSchema(itemIndex++);
-                if (schema != null) {
-                    InstanceType type = InstanceTypes.fromEvent(event, parser); 
-                    appendChild(schema.createEvaluator(type));
-                }
-                break;
-            }
-        }
-    }
-    
-    private class ObjectEvaluator extends ContainerEvaluator {
-
-        private final List<JsonSchema> foundSchemas = new ArrayList<>();
-
-        private ObjectEvaluator(LogicalEvaluator evaluator) {
-            super(evaluator);
-        }
-
-        @Override
-        protected void update(Event event, JsonParser parser) {
-            switch (event) {
-            case KEY_NAME:
-                findChildSchema(parser.getString());
-                break;
-            case END_ARRAY:
-            case END_OBJECT:
-                break;
-            default:
-                if (!foundSchemas.isEmpty()) {
-                    appendEvaluators(event, parser);
-                }
-                break;
-            }
-        }
-        
-        private void findChildSchema(String propertyName) {
-            propertySchemaFinder.findSchema(propertyName, this.foundSchemas);
-        }
-        
-        private void appendEvaluators(Event event, JsonParser parser) {
-            InstanceType type = InstanceTypes.fromEvent(event, parser); 
-            this.foundSchemas.stream()
-                .map(s->s.createEvaluator(type))
-                .filter(Objects::nonNull)
-                .forEach(this::appendChild);
-            this.foundSchemas.clear();
-        }
     }
 }

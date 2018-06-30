@@ -21,14 +21,13 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
+ * Negation of {@link LeafSchema}.
+ * 
  * @author leadpony
  */
-public class NegatedSimpleSchema extends LeafSchema {
+class NegatedLeafSchema extends LeafSchema {
 
-    /**
-     * @param builder
-     */
-    NegatedSimpleSchema(LeafSchema original) {
+    NegatedLeafSchema(LeafSchema original) {
         super(original, true);
     }
 

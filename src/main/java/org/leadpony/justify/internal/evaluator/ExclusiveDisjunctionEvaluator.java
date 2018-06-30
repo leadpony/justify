@@ -45,7 +45,6 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     private Result reportTooManyTrueEvaluations(JsonParser parser, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
                 .withMessage("instance.problem.one.of")
-                .withParameter("actual", numberOfTrues)
                 .build();
         reporter.reportProblem(p);
         return Result.FALSE;

@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.base;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.StringReader;
-import java.util.EnumSet;
 import java.util.Locale;
 
 import javax.json.Json;
@@ -60,10 +59,10 @@ public class ProblemBuilderTest {
         Problem problem = builder
                 .withMessage("instance.problem.type")
                 .withParameter("actual", InstanceType.STRING)
-                .withParameter("expected", EnumSet.of(InstanceType.INTEGER))
+                .withParameter("expected", InstanceType.INTEGER)
                 .build();
         
-        String expectedMessage = "string type is not allowed. It must be any of [integer].";
+        String expectedMessage = "Type of value must be integer, but was string.";
         assertThat(problem.getMessage(Locale.ENGLISH)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)

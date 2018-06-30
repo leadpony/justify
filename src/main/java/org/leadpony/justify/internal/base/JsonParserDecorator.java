@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.base;
 
 import java.math.BigDecimal;
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Spliterator;
@@ -199,6 +200,15 @@ public class JsonParserDecorator implements JsonParser {
         return StreamSupport.stream(new JsonValueSpliterator(), false);
     }
     
+    /**
+     * Returns the location of the last char.
+     * 
+     * @return the location of the last char.
+     */
+    public JsonLocation getLastCharLocation() {
+        return SimpleJsonLocation.before(getLocation());
+    }
+    
     private JsonArray buildArray() {
         JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
         while (hasNext()) {
@@ -208,7 +218,15 @@ public class JsonParserDecorator implements JsonParser {
             }
             builder.add(getValue());
         }
-        throw parsingException("EOF", "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL, SQUARECLOSE]");
+        throw newParsingException(
+                Event.START_OBJECT,
+                Event.START_ARRAY,
+                Event.VALUE_STRING,
+                Event.VALUE_NUMBER,
+                Event.VALUE_TRUE,
+                Event.VALUE_FALSE,
+                Event.VALUE_NULL,
+                Event.END_ARRAY);
     }
 
     private JsonObject buildObject() {
@@ -222,20 +240,17 @@ public class JsonParserDecorator implements JsonParser {
             next();
             builder.add(name, getValue());
         }
-        throw parsingException("EOF", "[STRING, CURLYCLOSE]");
+        throw newParsingException(Event.KEY_NAME, Event.END_OBJECT);
     }
     
-    private JsonParsingException parsingException(String actualToken, String expectedTokens) {
-        JsonLocation location = SimpleJsonLocation.before(getLocation());
-        String message = Message.get("parser.invalid.token")
-                .withParameter("actual", actualToken)
-                .withParameter("expected", expectedTokens)
-                .withParameter("location", location)
+    private JsonParsingException newParsingException(Event... expectedEvents) {
+        String message = Message.get("parser.unexpected.eoi")
+                .withParameter("expected", Arrays.asList(expectedEvents))
                 .toString();
-        return new JsonParsingException(message, location);
+        return new JsonParsingException(message, getLastCharLocation());
     }
     
-    private JsonException internalError() {
+    private JsonException newInternalError() {
         return new JsonException(Message.getAsString("internal.error"));
     }
     
@@ -279,11 +294,18 @@ public class JsonParserDecorator implements JsonParser {
                 return false;
             } else if (event != Event.KEY_NAME) {
                 // TODO:
-                throw internalError(); 
+                throw newInternalError(); 
             } else {
                 String key = getString();
                 if (!hasNext()) {
-                    throw parsingException("EOF", "[CURLYOPEN, SQUAREOPEN, STRING, NUMBER, TRUE, FALSE, NULL]");
+                    throw newParsingException(
+                            Event.START_OBJECT,
+                            Event.START_ARRAY,
+                            Event.VALUE_STRING,
+                            Event.VALUE_NUMBER,
+                            Event.VALUE_TRUE,
+                            Event.VALUE_FALSE,
+                            Event.VALUE_NULL);
                 }
                 next();
                 JsonValue value = getValue();

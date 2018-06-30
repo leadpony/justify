@@ -24,10 +24,13 @@ import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
+ * Test fixture.
+ * 
  * @author leadpony
  */
 public class Fixture {
@@ -85,22 +88,7 @@ public class Fixture {
             .flatMap(schema->
                 schema.getJsonArray("tests").stream()
                     .map(JsonValue::asJsonObject)
-                    .map(test->{
-                        if (test.isEmpty()) {
-                            return new Fixture(
-                                    schema.getValue("/schema"), 
-                                    schema.getString("description")
-                                    );
-                        } else {
-                            return new Fixture(
-                                    schema.getValue("/schema"), 
-                                    schema.getString("description"),
-                                    test.get("data"), 
-                                    test.getString("description"),
-                                    test.getBoolean("valid")
-                                    );
-                        }
-                    })
+                    .map(test->buildFixture(schema, test))
             )
             .collect(Collectors.toList());
     }
@@ -112,6 +100,23 @@ public class Fixture {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+    
+    private static Fixture buildFixture(JsonObject schema, JsonObject test) {
+        if (test.isEmpty()) {
+            return new Fixture(
+                    schema.getValue("/schema"), 
+                    schema.getString("description")
+                    );
+        } else {
+            return new Fixture(
+                    schema.getValue("/schema"), 
+                    schema.getString("description"),
+                    test.get("data"), 
+                    test.getString("description"),
+                    test.getBoolean("valid")
+                    );
         }
     }
 }

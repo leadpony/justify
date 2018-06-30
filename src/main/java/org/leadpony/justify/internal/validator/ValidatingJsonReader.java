@@ -60,14 +60,14 @@ public class ValidatingJsonReader implements JsonReader {
                     String message = Message.get("reader.read.error")
                             .withParameter("event", event)
                             .toString();
-                    throw parsingException(message);
+                    throw newParsingException(message);
                 }
             } catch (IllegalStateException e) {
-                throw parsingException(e);
+                throw newParsingException(e);
             }
             
         }
-        throw unexpectedEndOfInput();
+        throw newUnexpectedEndOfInputException();
     }
 
     @Override
@@ -81,10 +81,10 @@ public class ValidatingJsonReader implements JsonReader {
             try {
                 return parser.getObject();
             } catch (IllegalStateException e) {
-                throw parsingException(e);
+                throw newParsingException(e);
             }
         }
-        throw unexpectedEndOfInput();
+        throw newUnexpectedEndOfInputException();
     }
 
     @Override
@@ -98,10 +98,10 @@ public class ValidatingJsonReader implements JsonReader {
             try {
                 return parser.getArray();
             } catch (IllegalStateException e) {
-                throw parsingException(e);
+                throw newParsingException(e);
             }
         }
-        throw unexpectedEndOfInput();
+        throw newUnexpectedEndOfInputException();
     }
 
     @Override
@@ -115,10 +115,10 @@ public class ValidatingJsonReader implements JsonReader {
             try {
                 return parser.getValue();
             } catch (IllegalStateException e) {
-                throw parsingException(e);
+                throw newParsingException(e);
             }
         }
-        throw unexpectedEndOfInput();
+        throw newUnexpectedEndOfInputException();
     }
     
     @Override
@@ -129,17 +129,17 @@ public class ValidatingJsonReader implements JsonReader {
         }
     }
 
-    private static JsonException unexpectedEndOfInput() {
-        String message = Message.getAsString("parser.unexpected.eoi");
+    private static JsonException newUnexpectedEndOfInputException() {
+        String message = Message.getAsString("reader.unexpected.eoi");
         return new JsonException(message);
     }
     
-    private JsonParsingException parsingException(String message) {
+    private JsonParsingException newParsingException(String message) {
         JsonLocation location = SimpleJsonLocation.before(parser.getLocation());
         return new JsonParsingException(message, location);
     }
 
-    private JsonParsingException parsingException(Exception cause) {
+    private JsonParsingException newParsingException(Exception cause) {
         JsonLocation location = SimpleJsonLocation.before(parser.getLocation());
         return new JsonParsingException(cause.getMessage(), cause, location);
     }

@@ -33,6 +33,7 @@ public class SpecTest extends AbstractValidationTest {
 
     private static final String[] TESTS = {
             "/spec/tests/draft7/additionalItems.json",
+            "/spec/tests/draft7/additionalProperties.json",
             "/spec/tests/draft7/allOf.json",
             "/spec/tests/draft7/anyOf.json",
             "/spec/tests/draft7/boolean_schema.json",

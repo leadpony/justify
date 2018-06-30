@@ -37,9 +37,11 @@ class NotType extends Type {
     protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
         if (contains(type)) {
             Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.not.type")
+                    .withMessage(typeSet.size() > 1 ?
+                            "instance.problem.not.type.plural" :
+                            "instance.problem.not.type")
                     .withParameter("actual", type)
-                    .withParameter("expected", typeSet)
+                    .withParameter("expected", getExpectedTypes())
                     .build();
             reporter.reportProblem(p);
             return Result.FALSE;

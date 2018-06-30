@@ -25,6 +25,8 @@ import javax.json.stream.JsonGenerator;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
+ * Finder of schemas for JSON array items.
+ * 
  * @author leadpony
  */
 abstract class ItemSchemaFinder {
@@ -37,6 +39,8 @@ abstract class ItemSchemaFinder {
         return new SeparateItemSchemaFinder(schemas, additional);
     }
 
+    abstract int numberOfSchemas();
+    
     abstract JsonSchema findSchema(int index);
     
     abstract ItemSchemaFinder negate();
@@ -53,6 +57,11 @@ abstract class ItemSchemaFinder {
         
         private CommonItemSchemaFinder(Optional<JsonSchema> schema) {
             this.schema = schema;
+        }
+
+        @Override
+        int numberOfSchemas() {
+            return 1;
         }
 
         @Override
@@ -90,11 +99,17 @@ abstract class ItemSchemaFinder {
         }
 
         @Override
+        int numberOfSchemas() {
+            return schemas.size();
+        }
+
+        @Override
         JsonSchema findSchema(int index) {
             if (index < schemas.size()) {
                 return schemas.get(index);
             } else {
-                return additional.orElse(JsonSchema.TRUE);
+                JsonSchema schema = additional.orElse(JsonSchema.TRUE);
+                return (schema == JsonSchema.FALSE) ? null : schema;
             }
         }
         

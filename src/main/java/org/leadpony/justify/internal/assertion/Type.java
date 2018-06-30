@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.stream.JsonGenerator;
@@ -38,7 +38,7 @@ public class Type extends ShallowAssertion {
     protected final Set<InstanceType> typeSet;
     
     public Type(Set<InstanceType> types) {
-        this.typeSet = new HashSet<>(types);
+        this.typeSet = new LinkedHashSet<>(types);
     }
 
     @Override
@@ -71,14 +71,20 @@ public class Type extends ShallowAssertion {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
     
+    protected Object getExpectedTypes() {
+        return typeSet.size() > 1 ? typeSet : typeSet.iterator().next();
+    }
+
     protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.type")
+                    .withMessage(typeSet.size() > 1 ?
+                            "instance.problem.type.plural" :
+                            "instance.problem.type")
                     .withParameter("actual", type)
-                    .withParameter("expected", typeSet)
+                    .withParameter("expected", getExpectedTypes())
                     .build();
             reporter.reportProblem(p);
             return Result.FALSE;

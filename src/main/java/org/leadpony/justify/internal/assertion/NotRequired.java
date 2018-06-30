@@ -70,9 +70,13 @@ class NotRequired extends Required {
         @Override
         protected Result test(JsonParser parser, Reporter reporter, boolean last) {
             if (remaining.isEmpty()) {
+                boolean plural = names.size() > 1;
                 Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage("instance.problem.not.required")
-                        .withParameter("expected", this.names)
+                        .withMessage(plural ?
+                                "instance.problem.not.required.plural" :
+                                "instance.problem.not.required")
+                        .withParameter("expected", 
+                                plural ? this.names : this.names.iterator().next())
                         .build();
                 reporter.reportProblem(p);
                 return Result.FALSE;

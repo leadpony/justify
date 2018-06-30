@@ -29,6 +29,8 @@ import javax.json.stream.JsonGenerator;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
+ * Finder of schemas for JSON object properties.
+ * 
  * @author leadpony
  */
 class PropertySchemaFinder {
@@ -48,7 +50,14 @@ class PropertySchemaFinder {
         this.additional = Optional.ofNullable(additional);
     }
     
-    void findSchema(String propertyName, List<JsonSchema> found) {
+    /**
+     * Finds schema for the property of specified name.
+     * 
+     * @param propertyName the name of the property.
+     * @param found the found schemas. 
+     * @return {@code true} if some schemas were found, {@code false} otherwise.
+     */
+    boolean findSchema(String propertyName, List<JsonSchema> found) {
         if (properties.containsKey(propertyName)) {
             found.add(properties.get(propertyName));
         }
@@ -59,8 +68,14 @@ class PropertySchemaFinder {
             }
         }
         if (found.isEmpty()) {
-            found.add(additional.orElse(JsonSchema.TRUE));
+            JsonSchema schema = additional.orElse(JsonSchema.TRUE);
+            if (schema == JsonSchema.FALSE) {
+                return false;
+            } else {
+                found.add(schema);
+            }
         }
+        return true;
     }
     
     PropertySchemaFinder negate() {
