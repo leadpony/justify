@@ -189,6 +189,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaxLength(int bound);
 
     JsonSchemaBuilder withMinLength(int bound);
+
+    JsonSchemaBuilder withPattern(String pattern);
     
     /* Validation Keywords for Arrays */
    
@@ -205,6 +207,10 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withUniqueItems(boolean unique);
     
     /* Validation Keywords for Objects */
+    
+    JsonSchemaBuilder withMaxProperties(int bound);
+
+    JsonSchemaBuilder withMinProperties(int bound);
     
     JsonSchemaBuilder withRequired(String... names);
 

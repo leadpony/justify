@@ -198,6 +198,18 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         assertions.add(Assertions.type(types));
         return builderNonempty();
     }
+    
+    @Override
+    public JsonSchemaBuilder withMaxProperties(int bound) {
+        assertions.add(Assertions.maxProperties(bound));
+        return builderNonempty();
+    }
+
+    @Override
+    public JsonSchemaBuilder withMinProperties(int bound) {
+        assertions.add(Assertions.minProperties(bound));
+        return builderNonempty();
+    }
 
     @Override
     public JsonSchemaBuilder withRequired(String... names) {
@@ -256,6 +268,14 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withMinLength(int bound) {
         assertions.add(Assertions.minLength(bound));
+        return builderNonempty();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withPattern(String pattern) {
+        Objects.requireNonNull(pattern, "pattern must not be null.");
+        Pattern compiled = Pattern.compile(pattern);
+        assertions.add(Assertions.pattern(compiled));
         return builderNonempty();
     }
     

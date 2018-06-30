@@ -126,6 +126,7 @@ public class LeafSchema extends AbstractJsonSchema implements Resolvable {
         assertions.stream()
             .filter(a->a.canApplyTo(type))
             .map(a->a.createEvaluator(type))
+            .filter(Objects::nonNull)
             .forEach(evaluator::append);
         return evaluator;
     }

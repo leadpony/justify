@@ -74,6 +74,10 @@ public final class Assertions {
     public static Assertion minLength(int bound) {
         return new MinLength(bound);
     }
+    
+    public static Assertion pattern(java.util.regex.Pattern pattern) {
+        return new Pattern(pattern);
+    }
 
     /* Validation Keywords for Arrays */
     
@@ -90,6 +94,14 @@ public final class Assertions {
     }
     
     /* Validation Keywords for Objects */
+
+    public static Assertion maxProperties(int bound) {
+        return new MaxProperties(bound);
+    }
+
+    public static Assertion minProperties(int bound) {
+        return new MinProperties(bound);
+    }
 
     public static Assertion required(Set<String> names) {
         return new Required(names);

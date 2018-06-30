@@ -20,78 +20,71 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified with "maxItems" keyword.
+ * Assertion specified with "minProperties" keyword.
  * 
  * @author leadpony
  */
-class MaxItems extends AbstractAssertion {
-
+class MinProperties extends AbstractAssertion {
+    
     private final int bound;
     
-    public MaxItems(int bound) {
+    MinProperties(int bound) {
         this.bound = bound;
     }
 
     @Override
     public String name() {
-        return "maxItems";
+        return "minProperties";
     }
-    
+
     @Override
     public boolean canApplyTo(InstanceType type) {
-        return type == InstanceType.ARRAY;
+        return type == InstanceType.OBJECT;
     }
     
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        assert type == InstanceType.ARRAY;
-        return new ItemCountEvaluator();
+        return new Evaluator();
     }
 
     @Override
     public void toJson(JsonGenerator generator) {
-        generator.write("maxItems", bound);
+        generator.write(name(), bound);
     }
-    
+
     @Override
     protected AbstractAssertion createNegatedAssertion() {
-        return new MinItems(bound + 1);
+        return new MaxProperties(bound - 1);
     }
 
-    private class ItemCountEvaluator implements ShallowEvaluator { 
+    private class Evaluator implements ShallowEvaluator {
 
         private int currentCount;
-
+        
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-            if (depth == 1) {
-                return testSize(++currentCount, parser, reporter);
-            } else if (depth == 0 && event == Event.END_ARRAY) {
-                return Result.TRUE;
-            } else {
-                return Result.PENDING;
+            if (depth == 1 && event == Event.KEY_NAME) {
+                ++currentCount;
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                if (currentCount < bound) {
+                    Problem p = ProblemBuilder.newBuilder(parser)
+                            .withMessage("instance.problem.min.properties")
+                            .withParameter("actual", currentCount)
+                            .withParameter("bound", bound)
+                            .build();
+                    reporter.reportProblem(p);
+                    return Result.FALSE;
+                } else {
+                    return Result.TRUE;
+                }
             }
-        }
-
-        private Result testSize(int size, JsonParser parser, Reporter reporter) {
-            if (size <= bound) {
-                return Result.PENDING;
-            } else {
-                Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage("instance.problem.max.items")
-                        .withParameter("actual", size)
-                        .withParameter("bound", bound)
-                        .build();
-                reporter.reportProblem(p);
-                return Result.FALSE;
-            }
+            return Result.PENDING;
         }
     }
 }

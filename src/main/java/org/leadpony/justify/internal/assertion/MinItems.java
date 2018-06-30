@@ -52,7 +52,7 @@ class MinItems extends AbstractAssertion {
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         assert type == InstanceType.ARRAY;
-        return new ArraySizeEvaluator();
+        return new ItemCountEvaluator();
     }
     
     @Override
@@ -65,17 +65,17 @@ class MinItems extends AbstractAssertion {
         return new MaxItems(bound - 1);
     }
     
-    private class ArraySizeEvaluator implements ShallowEvaluator { 
+    private class ItemCountEvaluator implements ShallowEvaluator { 
     
-        private int count;
+        private int currentCount;
 
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (depth == 1) {
-                ++count;
+                ++currentCount;
                 return Result.PENDING;
             } else if (depth == 0 && event == Event.END_ARRAY) {
-                return testSize(count, parser, reporter);
+                return testSize(currentCount, parser, reporter);
             } else {
                 return Result.PENDING;
             }

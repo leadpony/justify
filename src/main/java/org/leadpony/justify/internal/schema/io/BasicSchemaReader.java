@@ -223,6 +223,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "maxLength":
             addMaxLength(builder);
             break;
+        case "maxProperties":
+            addMaxProperties(builder);
+            break;
         case "minimum":
             addMinimum(builder);
             break;
@@ -232,6 +235,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "minLength":
             addMinLength(builder);
             break;
+        case "minProperties":
+            addMinProperties(builder);
+            break;
         case "multipleOf":
             addMultipleOf(builder);
             break;
@@ -240,6 +246,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
             break;
         case "oneOf":
             addOneOf(builder);
+            break;
+        case "pattern":
+            addPattern(builder);
             break;
         case "patternProperties":
             addPatternProperties(builder);
@@ -390,6 +399,12 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
 
+    private void addMaxProperties(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMaxProperties(parser.getInt());
+        }
+    }
+
     private void addMinimum(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMinimum(parser.getBigDecimal());
@@ -405,6 +420,12 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMinLength(JsonSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_NUMBER) {
             builder.withMinLength(parser.getInt());
+        }
+    }
+
+    private void addMinProperties(JsonSchemaBuilder builder) {
+        if (parser.next() == Event.VALUE_NUMBER) {
+            builder.withMinProperties(parser.getInt());
         }
     }
 
@@ -424,6 +445,13 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
 
+    private void addPattern(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            builder.withPattern(parser.getString());
+        }
+    }
+    
     private void addPatternProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {

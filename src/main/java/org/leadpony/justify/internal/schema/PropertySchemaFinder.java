@@ -63,7 +63,7 @@ class PropertySchemaFinder {
         }
         for (Pattern pattern : this.patternProperties.keySet()) {
             Matcher m = pattern.matcher(propertyName);
-            if (m.lookingAt()) {
+            if (m.find()) {
                 found.add(this.patternProperties.get(pattern));
             }
         }
