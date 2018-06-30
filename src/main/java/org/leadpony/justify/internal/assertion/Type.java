@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * 
  * @author leadpony
  */
-public class Type extends ShallowAssertion {
+class Type extends ShallowAssertion {
     
     protected final Set<InstanceType> typeSet;
     
@@ -41,6 +41,11 @@ public class Type extends ShallowAssertion {
         this.typeSet = new LinkedHashSet<>(types);
     }
 
+    @Override
+    public String name() {
+        return "type";
+    }
+    
     @Override
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         InstanceType type = InstanceTypes.fromEvent(event, parser);

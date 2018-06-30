@@ -36,19 +36,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.internal.assertion.Assertion;
-import org.leadpony.justify.internal.assertion.Const;
-import org.leadpony.justify.internal.assertion.EnumAssertion;
-import org.leadpony.justify.internal.assertion.ExclusiveMaximum;
-import org.leadpony.justify.internal.assertion.ExclusiveMinimum;
-import org.leadpony.justify.internal.assertion.MaxItems;
-import org.leadpony.justify.internal.assertion.MaxLength;
-import org.leadpony.justify.internal.assertion.Maximum;
-import org.leadpony.justify.internal.assertion.MinItems;
-import org.leadpony.justify.internal.assertion.MinLength;
-import org.leadpony.justify.internal.assertion.Minimum;
-import org.leadpony.justify.internal.assertion.MultipleOf;
-import org.leadpony.justify.internal.assertion.Required;
-import org.leadpony.justify.internal.assertion.Type;
+import org.leadpony.justify.internal.assertion.Assertions;
 import org.leadpony.justify.internal.base.Sets;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
 
@@ -181,7 +169,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withConst(JsonValue value) {
         Objects.requireNonNull(value, "value must not be null.");
-        assertions.add(new Const(value, this.jsonProvider));
+        assertions.add(Assertions.const_(value, this.jsonProvider));
         return builderNonempty();
     }
     
@@ -194,7 +182,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withEnum(Set<JsonValue> values) {
         Objects.requireNonNull(values, "values must not be null.");
-        assertions.add(new EnumAssertion(values, this.jsonProvider));
+        assertions.add(Assertions.enum_(values, this.jsonProvider));
         return builderNonempty();
     }
     
@@ -207,7 +195,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withType(Set<InstanceType> types) {
         Objects.requireNonNull(types, "types must not be null.");
-        assertions.add(new Type(types));
+        assertions.add(Assertions.type(types));
         return builderNonempty();
     }
 
@@ -220,57 +208,101 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withRequired(Set<String> names) {
         Objects.requireNonNull(names, "names must not be null.");
-        assertions.add(new Required(names));
+        assertions.add(Assertions.required(names));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal bound) {
         Objects.requireNonNull(bound, "bound must not be null.");
-        assertions.add(new Maximum(bound));
+        assertions.add(Assertions.maximum(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMaximum(BigDecimal bound) {
         Objects.requireNonNull(bound, "bound must not be null.");
-        assertions.add(new ExclusiveMaximum(bound));
+        assertions.add(Assertions.exclusiveMaximum(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMinimum(BigDecimal bound) {
         Objects.requireNonNull(bound, "bound must not be null.");
-        assertions.add(new Minimum(bound));
+        assertions.add(Assertions.minimum(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMinimum(BigDecimal bound) {
         Objects.requireNonNull(bound, "bound must not be null.");
-        assertions.add(new ExclusiveMinimum(bound));
+        assertions.add(Assertions.exclusiveMinimum(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMultipleOf(BigDecimal divisor) {
         Objects.requireNonNull(divisor, "divisor must not be null.");
-        assertions.add(new MultipleOf(divisor));
+        assertions.add(Assertions.multipleOf(divisor));
         return builderNonempty();
     }
     
     @Override
     public JsonSchemaBuilder withMaxLength(int bound) {
-        assertions.add(new MaxLength(bound));
+        assertions.add(Assertions.maxLength(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMinLength(int bound) {
-        assertions.add(new MinLength(bound));
+        assertions.add(Assertions.minLength(bound));
         return builderNonempty();
     }
     
+    /* Validation Keywords for Arrays */
+    
+    @Override
+    public JsonSchemaBuilder withItem(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.items = subschema;
+        registerSubschema("/items", subschema);
+        return builderWithSubschema();
+    }
+
+    @Override
+    public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
+        Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        this.items = new ArrayList<JsonSchema>(subschemas);
+        registerSubschemas("items", subschemas);
+        return builderWithSubschema();
+    }
+  
+    @Override
+    public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        this.additionalItems = subschema;
+        registerSubschema("/additionalItems", subschema);
+        return builderWithSubschema();
+    } 
+
+    @Override
+    public JsonSchemaBuilder withMaxItems(int bound) {
+        assertions.add(Assertions.maxItems(bound));
+        return builderNonempty();
+    }
+
+    @Override
+    public JsonSchemaBuilder withMinItems(int bound) {
+        assertions.add(Assertions.minItems(bound));
+        return builderNonempty();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withUniqueItems(boolean unique) {
+        assertions.add(Assertions.uniqueItems(unique, jsonProvider));
+        return builderNonempty();
+    }
+
     @Override
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
         Objects.requireNonNull(name, "name must not be null.");
@@ -303,42 +335,6 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         registerSubschema("/additionalProperties", subschema);
         return builderWithSubschema();
     }
-    
-    @Override
-    public JsonSchemaBuilder withItem(JsonSchema subschema) {
-        Objects.requireNonNull(subschema, "subschema must not be null.");
-        this.items = subschema;
-        registerSubschema("/items", subschema);
-        return builderWithSubschema();
-    }
-
-    @Override
-    public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
-        Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        this.items = new ArrayList<JsonSchema>(subschemas);
-        registerSubschemas("items", subschemas);
-        return builderWithSubschema();
-    }
-  
-    @Override
-    public JsonSchemaBuilder withMaxItems(int bound) {
-        assertions.add(new MaxItems(bound));
-        return builderNonempty();
-    }
-
-    @Override
-    public JsonSchemaBuilder withMinItems(int bound) {
-        assertions.add(new MinItems(bound));
-        return builderNonempty();
-    }
-    
-    @Override
-    public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
-        Objects.requireNonNull(subschema, "subschema must not be null.");
-        this.additionalItems = subschema;
-        registerSubschema("/additionalItems", subschema);
-        return builderWithSubschema();
-    } 
     
     @Override
     public JsonSchemaBuilder withAllOf(JsonSchema... subschemas) {

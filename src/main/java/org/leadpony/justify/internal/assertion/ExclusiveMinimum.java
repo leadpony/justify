@@ -23,10 +23,15 @@ import java.math.BigDecimal;
  * 
  * @author leadpony
  */
-public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
+class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMinimum(BigDecimal bound) {
         super(bound, "exclusiveMinimum", "instance.problem.exclusive.minimum");
+    }
+
+    @Override
+    public String name() {
+        return "exclusiveMinimum";
     }
 
     @Override

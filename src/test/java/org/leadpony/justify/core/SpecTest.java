@@ -56,7 +56,8 @@ public class SpecTest extends AbstractValidationTest {
             "/spec/tests/draft7/properties.json",
             "/spec/tests/draft7/ref.json",
             "/spec/tests/draft7/required.json",
-            "/spec/tests/draft7/type.json"
+            "/spec/tests/draft7/type.json",
+            "/spec/tests/draft7/uniqueItems.json"
         };
     
     @Parameters(name = "{0}@{1}: {2}")
@@ -70,6 +71,6 @@ public class SpecTest extends AbstractValidationTest {
 
     @Before
     public void setUp() {
-        //Assume.assumeTrue(testIndex == 23);
+        //Assume.assumeTrue(getTestIndex() == 3);
     }
 }

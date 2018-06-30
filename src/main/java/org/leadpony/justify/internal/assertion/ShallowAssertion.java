@@ -27,7 +27,7 @@ import org.leadpony.justify.core.InstanceType;
  * 
  * @author leadpony
  */
-public abstract class ShallowAssertion extends AbstractAssertion implements Evaluator {
+abstract class ShallowAssertion extends AbstractAssertion implements Evaluator {
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {

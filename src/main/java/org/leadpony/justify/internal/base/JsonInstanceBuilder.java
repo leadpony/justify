@@ -56,6 +56,24 @@ public class JsonInstanceBuilder {
         return this.builderFactory;
     }
     
+    private static JsonValue getLiteral(Event event, JsonParser parser) {
+        switch (event) {
+        case VALUE_TRUE:
+            return JsonValue.TRUE;
+        case VALUE_FALSE:
+            return JsonValue.FALSE;
+        case VALUE_NULL:
+            return JsonValue.NULL;
+        case VALUE_STRING:
+            return parser.getValue();
+        case VALUE_NUMBER:
+            return new BigDecimalJsonNumber(parser.getBigDecimal());
+        default:
+            assert false;
+            return null;
+        }
+    }
+    
     private static interface Visitor {
         
         Visitor visit(Event event, JsonParser parser);
@@ -74,12 +92,12 @@ public class JsonInstanceBuilder {
                 return new ArrayVisitor(this);
             case START_OBJECT:
                 return new ObjectVisitor(this);
-            case VALUE_TRUE:    
-            case VALUE_FALSE:    
-            case VALUE_NULL:    
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+            case VALUE_NULL:
             case VALUE_NUMBER:
             case VALUE_STRING:
-                append(parser.getValue());
+                append(getLiteral(event, parser));
                 break;
             default:
                 assert false;
@@ -120,7 +138,7 @@ public class JsonInstanceBuilder {
             case VALUE_NULL:    
             case VALUE_NUMBER:
             case VALUE_STRING:
-                builder.add(parser.getValue());
+                append(getLiteral(event, parser));
                 break;
             case END_ARRAY:
                 parent.append(builder.build());
@@ -163,7 +181,7 @@ public class JsonInstanceBuilder {
             case VALUE_NULL:    
             case VALUE_NUMBER:
             case VALUE_STRING:
-                builder.add(this.propertyName, parser.getValue());
+                builder.add(this.propertyName, getLiteral(event, parser));
                 this.propertyName = null;
                 break;
             case END_OBJECT:

@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  * 
  * @author leadpony
  */
-public class Maximum extends AbstractNumericBoundAssertion {
+class Maximum extends AbstractNumericBoundAssertion {
 
     public Maximum(BigDecimal bound) {
         super(bound, "maximum", "instance.problem.maximum");

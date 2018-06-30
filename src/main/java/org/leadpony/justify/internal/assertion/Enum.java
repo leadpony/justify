@@ -33,15 +33,20 @@ import org.leadpony.justify.core.Problem;
  * 
  * @author leadpony
  */
-public class EnumAssertion extends AbstractEqualityAssertion {
+class Enum extends AbstractEqualityAssertion {
     
     private final Set<JsonValue> expected;
 
-    public EnumAssertion(Set<JsonValue> expected, JsonProvider jsonProvider) {
+    public Enum(Set<JsonValue> expected, JsonProvider jsonProvider) {
         super(jsonProvider);
         this.expected = expected;
     }
 
+    @Override
+    public String name() {
+        return "enum";
+    }
+    
     @Override
     public void toJson(JsonGenerator generator) {
         generator.writeKey("enum");

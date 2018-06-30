@@ -48,20 +48,30 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withDescription(String description);
     
-    JsonSchemaBuilder withConst(JsonValue value);
+    /* Validation Keywords for Any Instance Type */
     
-    JsonSchemaBuilder withEnum(JsonValue... values);
-    
-    JsonSchemaBuilder withEnum(Set<JsonValue> values);
-
     JsonSchemaBuilder withType(InstanceType... types);
 
     JsonSchemaBuilder withType(Set<InstanceType> types);
 
-    JsonSchemaBuilder withRequired(String... names);
+    JsonSchemaBuilder withEnum(JsonValue... values);
+    
+    JsonSchemaBuilder withEnum(Set<JsonValue> values);
 
-    JsonSchemaBuilder withRequired(Set<String> names);
+    JsonSchemaBuilder withConst(JsonValue value);
+    
+    /* Validation Keywords for Numeric Instances (number and integer) */
 
+    default JsonSchemaBuilder withMultipleOf(long divisor) {
+        return withMultipleOf(BigDecimal.valueOf(divisor));
+    }
+
+    default JsonSchemaBuilder withMultipleOf(double divisor) {
+        return withMultipleOf(BigDecimal.valueOf(divisor));
+    }
+
+    JsonSchemaBuilder withMultipleOf(BigDecimal divisor);
+    
     /**
      * Specifies the upper bound for numeric value.
      * 
@@ -174,36 +184,48 @@ public interface JsonSchemaBuilder {
      */
     JsonSchemaBuilder withExclusiveMinimum(BigDecimal bound);
     
-    default JsonSchemaBuilder withMultipleOf(long divisor) {
-        return withMultipleOf(BigDecimal.valueOf(divisor));
-    }
-
-    default JsonSchemaBuilder withMultipleOf(double divisor) {
-        return withMultipleOf(BigDecimal.valueOf(divisor));
-    }
-
-    JsonSchemaBuilder withMultipleOf(BigDecimal divisor);
+    /* Validation Keywords for Strings */
     
     JsonSchemaBuilder withMaxLength(int bound);
 
     JsonSchemaBuilder withMinLength(int bound);
+    
+    /* Validation Keywords for Arrays */
+   
+    JsonSchemaBuilder withItem(JsonSchema subschema);
+
+    JsonSchemaBuilder withItems(List<JsonSchema> subschemas);
+    
+    JsonSchemaBuilder withAdditionalItems(JsonSchema subschema);
+
+    JsonSchemaBuilder withMaxItems(int bound);
+
+    JsonSchemaBuilder withMinItems(int bound);
+    
+    JsonSchemaBuilder withUniqueItems(boolean unique);
+    
+    /* Validation Keywords for Objects */
+    
+    JsonSchemaBuilder withRequired(String... names);
+
+    JsonSchemaBuilder withRequired(Set<String> names);
 
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
     
     JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema);
 
     JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema);
-
-    JsonSchemaBuilder withItem(JsonSchema subschema);
-
-    JsonSchemaBuilder withItems(List<JsonSchema> subschemas);
     
-    JsonSchemaBuilder withMaxItems(int bound);
+    /* Keywords for Applying Subschemas Conditionally */
 
-    JsonSchemaBuilder withMinItems(int bound);
+    JsonSchemaBuilder withIf(JsonSchema subschema);
+
+    JsonSchemaBuilder withThen(JsonSchema subschema);
+
+    JsonSchemaBuilder withElse(JsonSchema subschema);
     
-    JsonSchemaBuilder withAdditionalItems(JsonSchema subschema);
-
+    /* Keywords for Applying Subschemas With Boolean Logic */
+    
     JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
 
     JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas);
@@ -224,12 +246,6 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException one of parameters was {@code null}.
      */
     JsonSchemaBuilder withNot(JsonSchema subschema);
-    
-    JsonSchemaBuilder withIf(JsonSchema subschema);
-
-    JsonSchemaBuilder withThen(JsonSchema subschema);
-
-    JsonSchemaBuilder withElse(JsonSchema subschema);
     
     /**
      * Appends a definition of schema.

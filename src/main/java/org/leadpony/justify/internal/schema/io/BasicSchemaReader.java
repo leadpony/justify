@@ -259,6 +259,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "type":
             addType(builder);
             break;
+        case "uniqueItems":
+            addUniqueItems(builder);
+            break;
         default:
             addUnknown(keyName, builder);
             break;
@@ -487,6 +490,20 @@ public class BasicSchemaReader implements JsonSchemaReader {
                 }
             }
             builder.withType(types);
+        }
+    }
+    
+    private void addUniqueItems(JsonSchemaBuilder builder) {
+        switch (parser.next()) {
+        case VALUE_TRUE:
+            builder.withUniqueItems(true);
+            break;
+        case VALUE_FALSE:
+            builder.withUniqueItems(false);
+            break;
+        default:
+            parser.getValue();
+            break;
         }
     }
     

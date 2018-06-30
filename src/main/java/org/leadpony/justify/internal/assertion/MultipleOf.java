@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * 
  * @author leadpony
  */
-public class MultipleOf extends ShallowAssertion {
+class MultipleOf extends ShallowAssertion {
     
     protected final BigDecimal divisor;
     
@@ -39,6 +39,11 @@ public class MultipleOf extends ShallowAssertion {
         this.divisor = divisor;
     }
 
+    @Override
+    public String name() {
+        return "multipleOf";
+    }
+    
     @Override
     public boolean canApplyTo(InstanceType type) {
         return type.isNumeric();

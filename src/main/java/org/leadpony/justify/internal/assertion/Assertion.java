@@ -28,6 +28,8 @@ import org.leadpony.justify.core.InstanceType;
  */
 public interface Assertion {
     
+    String name();
+    
     /**
      * Checks if this assertion can apply to the specified type of JSON instance.
      * 

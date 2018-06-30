@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  * 
  * @author leadpony
  */
-public class MinItems extends AbstractAssertion {
+class MinItems extends AbstractAssertion {
 
     private final int bound;
     
@@ -39,6 +39,11 @@ public class MinItems extends AbstractAssertion {
         this.bound = bound;
     }
 
+    @Override
+    public String name() {
+        return "minItems";
+    }
+    
     @Override
     public boolean canApplyTo(InstanceType type) {
         return type == InstanceType.ARRAY;

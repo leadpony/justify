@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * 
  * @author leadpony
  */
-public class Const extends AbstractEqualityAssertion {
+class Const extends AbstractEqualityAssertion {
 
     private final JsonValue expected;
     
@@ -40,6 +40,11 @@ public class Const extends AbstractEqualityAssertion {
         this.expected = expected;
     }
     
+    @Override
+    public String name() {
+        return "const";
+    }
+  
     @Override
     public void toJson(JsonGenerator generator) {
         generator.write("const", this.expected);

@@ -34,5 +34,8 @@ abstract class AbstractAssertion implements Assertion {
         return this.negated;
     }
     
-    protected abstract AbstractAssertion createNegatedAssertion();
+    protected AbstractAssertion createNegatedAssertion() {
+        throw new UnsupportedOperationException(
+                name() + " does not support negation.");
+    }
 }

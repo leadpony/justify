@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.assertion;
 /**
  * @author leadpony
  */
-public class ExclusiveMinLength extends AbstractStringLengthAssertion {
+class ExclusiveMinLength extends AbstractStringLengthAssertion {
 
     public ExclusiveMinLength(int bound) {
         super(bound, "exclusiveMinLength", "instance.problem.exclusive.min.length");

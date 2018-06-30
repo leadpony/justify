@@ -40,6 +40,11 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     }
 
     @Override
+    public String name() {
+        return name;
+    }
+    
+    @Override
     public boolean canApplyTo(InstanceType type) {
         return type == InstanceType.STRING;
     }

@@ -34,12 +34,17 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  * 
  * @author leadpony
  */
-public class Required extends AbstractAssertion {
+class Required extends AbstractAssertion {
     
     protected final Set<String> names;
     
     public Required(Set<String> names) {
         this.names = new LinkedHashSet<>(names);
+    }
+    
+    @Override
+    public String name() {
+        return "required";
     }
 
     @Override
