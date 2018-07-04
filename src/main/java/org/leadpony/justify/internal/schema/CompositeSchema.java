@@ -19,12 +19,14 @@ package org.leadpony.justify.internal.schema;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -32,18 +34,18 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * 
  * @author leadpony
  */
-class InternalSchema extends LeafSchema {
+class CompositeSchema extends SimpleSchema {
     
     private final PropertySchemaFinder propertySchemaFinder;
     private final ItemSchemaFinder itemSchemaFinder;
-    private final List<JsonSchema> activeSubschemas;
+    private final List<SchemaComponent> components;
     private NavigableSchemaMap subschemaMap;
     
-    InternalSchema(DefaultSchemaBuilder builder) {
+    CompositeSchema(DefaultSchemaBuilder builder) {
         super(builder);
         this.propertySchemaFinder = builder.getPropertySchemaFinder();
         this.itemSchemaFinder = builder.getItemSchemaFinder();
-        this.activeSubschemas = builder.getSubschemas();
+        this.components = builder.getSubschemas();
         this.subschemaMap = builder.getSubschemaMap();
     }
 
@@ -53,14 +55,12 @@ class InternalSchema extends LeafSchema {
      * @param original the original schema.
      * @param negating {@code true} if this schema is negation of the original.
      */
-    protected InternalSchema(InternalSchema original, boolean negating) {
+    CompositeSchema(CompositeSchema original, boolean negating) {
         super(original, negating);
         assert negating;
         this.propertySchemaFinder = original.propertySchemaFinder.negate();
         this.itemSchemaFinder = original.itemSchemaFinder.negate();
-        this.activeSubschemas = original.activeSubschemas.stream()
-                .map(JsonSchema::negate)
-                .collect(Collectors.toList());
+        this.components = original.components;
         this.subschemaMap = original.subschemaMap;
     }
 
@@ -93,16 +93,8 @@ class InternalSchema extends LeafSchema {
     }
     
     @Override
-    public void toJson(JsonGenerator generator) {
-        Objects.requireNonNull(generator, "generator must not be null.");
-        generator.writeStartObject();
-        appendJsonMembers(generator);
-        generator.writeEnd();
-    }
-
-    @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new NegatedInternalSchema(this);
+        return new Negated(this);
     }
     
     private Evaluator createEvaluatorForArray() {
@@ -120,7 +112,7 @@ class InternalSchema extends LeafSchema {
     @Override
     protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
         super.appendEvaluatorsTo(evaluator, type);
-        activeSubschemas.stream()
+        getSubschemaAsStream()
             .map(s->s.createEvaluator(type))
             .filter(Objects::nonNull)
             .forEach(evaluator::append);
@@ -128,10 +120,40 @@ class InternalSchema extends LeafSchema {
     }
     
     @Override
-    protected void appendJsonMembers(JsonGenerator generator) {
-        super.appendJsonMembers(generator);
-        propertySchemaFinder.toJson(generator);
-        itemSchemaFinder.toJson(generator);
-        activeSubschemas.forEach(schema->schema.toJson(generator));
+    public void addToJson(JsonObjectBuilder builder) {
+        super.addToJson(builder);
+        propertySchemaFinder.addToJson(builder);
+        itemSchemaFinder.addToJson(builder);
+        components.forEach(schema->schema.addToJson(builder));
+    }
+    
+    protected Stream<JsonSchema> getSubschemaAsStream() {
+        return components.stream().map(s->s);
+    }
+    
+    /**
+     * Negated type of enclosing class.
+     *  
+     * @author leadpony
+     */
+    private static class Negated extends CompositeSchema {
+        
+        private final List<JsonSchema> negatedSubschemas;
+        
+        private Negated(CompositeSchema original) {
+            super(original, true);
+            this.negatedSubschemas = original.components.stream()
+                    .map(JsonSchema::negate)
+                    .collect(Collectors.toList());
+        }
+        
+        @Override
+        protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
+            return Evaluators.newDisjunctionEvaluator(type, extensible);
+        } 
+
+        protected Stream<JsonSchema> getSubschemaAsStream() {
+            return negatedSubschemas.stream();
+        }
     }
 }

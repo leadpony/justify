@@ -16,9 +16,13 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.Objects;
 
+import javax.json.Json;
+import javax.json.JsonException;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.Evaluator;
@@ -30,9 +34,10 @@ import org.leadpony.justify.core.JsonSchema;
  * 
  * @author leadpony
  */
-public class SchemaReference implements JsonSchema, Resolvable {
+public class SchemaReference implements SchemaComponent {
     
     private URI ref;
+    @SuppressWarnings("unused")
     private final URI originalRef;
     private JsonSchema referencedSchema;
     
@@ -82,21 +87,17 @@ public class SchemaReference implements JsonSchema, Resolvable {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeStartObject();
-        generator.write("$ref", ref.toString());
-        generator.writeEnd();
+    public void addToJson(JsonObjectBuilder buidler) {
+        buidler.add("$ref", ref.toString());
     }
-
-    @Override
-    public URI resolve(URI baseURI) {
-        assert this.originalRef != null;
-        this.ref = baseURI.resolve(this.originalRef);
-        return getRef();
-    }
-
+    
     @Override
     public String toString() {
-        return JsonSchemas.toString(this);
+        StringWriter writer = new StringWriter();
+        try (JsonGenerator generator = Json.createGenerator(writer)) {
+            generator.write(toJson());
+        } catch (JsonException e) {
+        }
+        return writer.toString();
     }
 }

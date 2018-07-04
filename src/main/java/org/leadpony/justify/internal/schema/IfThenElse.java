@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.Optional;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -30,7 +30,7 @@ import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
  *  
  * @author leadpony
  */
-public class IfThenElse extends AbstractJsonSchema {
+public class IfThenElse extends AbstractJsonSchema implements SchemaComponent {
     
     private final JsonSchema ifSchema;
     private final Optional<JsonSchema> thenSchema;
@@ -54,19 +54,16 @@ public class IfThenElse extends AbstractJsonSchema {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeKey("if");
-        ifSchema.toJson(generator);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add("if", ifSchema.toJson());
         thenSchema.ifPresent(schema->{
-            generator.writeKey("then");
-            schema.toJson(generator);
+            builder.add("then", schema.toJson());
         });
         elseSchema.ifPresent(schema->{
-            generator.writeKey("else");
-            schema.toJson(generator);
+            builder.add("else", schema.toJson());
         });
     }
-
+    
     @Override
     protected AbstractJsonSchema createNegatedSchema() {
         throw new UnsupportedOperationException();

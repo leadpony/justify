@@ -24,7 +24,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.JsonSchema;
 
@@ -86,31 +87,26 @@ class PropertySchemaFinder {
                 );
     }
     
-    void toJson(JsonGenerator generator) {
+    void addToJson(JsonObjectBuilder builder) {
         if (!properties.isEmpty()) {
-            generator.writeKey("properties");
-            generator.writeStartObject();
+            JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder();
             properties.forEach((name, schema)->{
-                generator.writeKey(name);
-                schema.toJson(generator);
+                propertiesBuilder.add(name, schema.toJson());
             });
-            generator.writeEnd();
+            builder.add("properties", propertiesBuilder);
         }
         if (!patternProperties.isEmpty()) {
-            generator.writeKey("patternProperties");
-            generator.writeStartObject();
-            patternProperties.forEach((pattern, schema)->{
-                generator.writeKey(pattern.toString());
-                schema.toJson(generator);
+            JsonObjectBuilder patternPropertiesBuilder = Json.createObjectBuilder();
+            patternProperties.forEach((name, schema)->{
+                patternPropertiesBuilder.add(name.toString(), schema.toJson());
             });
-            generator.writeEnd();
+            builder.add("properties", patternPropertiesBuilder);
         }
         additional.ifPresent(schema->{
-            generator.writeKey("additionalProperties");
-            schema.toJson(generator);
+            builder.add("additionalProperties", schema.toJson());
         });
     }
-    
+
     private static <K> Map<K, JsonSchema> negateMap(Map<K, JsonSchema> original) {
         if (original.isEmpty()) {
             return original;

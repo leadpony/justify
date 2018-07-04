@@ -22,7 +22,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.InstanceTypes;
+import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -51,7 +51,7 @@ class ArrayWalker extends ContainerWalker {
         default:
             JsonSchema schema = itemSchemaFinder.findSchema(itemIndex);
             if (schema != null) {
-                InstanceType type = InstanceTypes.fromEvent(event, parser); 
+                InstanceType type = ParserEvents.toInstanceType(event, parser); 
                 appendChild(schema.createEvaluator(type));
             } else {
                 reportRedundantItem(itemIndex, parser, reporter);

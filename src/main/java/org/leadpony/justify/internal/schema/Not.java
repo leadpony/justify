@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.schema;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -45,9 +45,8 @@ public class Not extends BooleanLogicSchema {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeKey(name());
-        this.subschema.toJson(generator);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), this.subschema.toJson());
     }
 
     @Override

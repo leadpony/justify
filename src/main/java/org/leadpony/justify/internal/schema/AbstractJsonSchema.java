@@ -16,6 +16,13 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.io.StringWriter;
+
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.stream.JsonGenerator;
+
 import org.leadpony.justify.core.JsonSchema;
 
 /**
@@ -25,6 +32,9 @@ import org.leadpony.justify.core.JsonSchema;
  */
 abstract class AbstractJsonSchema implements JsonSchema {
 
+    /**
+     *  Cached negated schema of this schema.
+     */
     private AbstractJsonSchema negated;
     
     @Override
@@ -37,9 +47,32 @@ abstract class AbstractJsonSchema implements JsonSchema {
     }
     
     @Override
-    public String toString() {
-        return JsonSchemas.toString(this);
+    public JsonValue toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        addToJson(builder);
+        return builder.build();
     }
     
+    @Override
+    public String toString() {
+        StringWriter writer = new StringWriter();
+        try (JsonGenerator generator = Json.createGenerator(writer)) {
+            generator.write(toJson());
+        }
+        return writer.toString();
+    }
+    
+    /**
+     * Adds this schema to the JSON representation.
+     * 
+     * @param builder the builder for building JSON object, never be {@code null}.
+     */
+    public abstract void addToJson(JsonObjectBuilder builder); 
+
+    /**
+     * Creates a negated version of this schema.
+     * 
+     * @return the negated version of this schema.
+     */
     protected abstract AbstractJsonSchema createNegatedSchema();
 }

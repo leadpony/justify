@@ -21,7 +21,7 @@ package org.leadpony.justify.internal.schema;
  * 
  * @author leadpony
  */
-public abstract class BooleanLogicSchema extends AbstractJsonSchema {
+public abstract class BooleanLogicSchema extends AbstractJsonSchema implements SchemaComponent {
    
     /**
      * Returns the name of the boolean logic.

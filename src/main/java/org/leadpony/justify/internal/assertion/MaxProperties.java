@@ -16,10 +16,11 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
@@ -50,27 +51,33 @@ class MaxProperties extends AbstractAssertion {
     
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return new Evaluator();
+        return new InnerEvaluator();
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(name(), bound);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), bound);
     }
-
+    
     @Override
     protected AbstractAssertion createNegatedAssertion() {
         return new MinProperties(bound + 1);
     }
     
-    private class Evaluator implements ShallowEvaluator {
+    private class InnerEvaluator implements ShallowEvaluator {
 
         private int currentCount;
         
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-            if (depth == 1 && event == Event.KEY_NAME) {
-                if (++currentCount > bound) {
+            if (depth == 1) {
+                if (event == Event.KEY_NAME) {
+                    ++currentCount;
+                }
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                if (currentCount <= bound) {
+                    return Result.TRUE;
+                } else {
                     Problem p = ProblemBuilder.newBuilder(parser)
                             .withMessage("instance.problem.max.properties")
                             .withParameter("actual", currentCount)
@@ -78,11 +85,7 @@ class MaxProperties extends AbstractAssertion {
                             .build();
                     reporter.reportProblem(p);
                     return Result.FALSE;
-                } else {
-                    return Result.PENDING;
                 }
-            } else if (depth == 0 && event == Event.END_OBJECT) {
-                return Result.TRUE;
             }
             return Result.PENDING;
         }

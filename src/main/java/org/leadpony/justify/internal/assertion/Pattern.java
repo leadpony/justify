@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.assertion;
 
 import java.util.regex.Matcher;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -50,10 +50,10 @@ class Pattern extends ShallowAssertion {
     }
     
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(name(), pattern.toString());
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), pattern.toString());
     }
-
+    
     @Override
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
         Matcher m = pattern.matcher(parser.getString());

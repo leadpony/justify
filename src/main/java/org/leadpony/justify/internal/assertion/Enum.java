@@ -18,9 +18,11 @@ package org.leadpony.justify.internal.assertion;
 
 import java.util.Set;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Reporter;
@@ -48,13 +50,12 @@ class Enum extends AbstractEqualityAssertion {
     }
     
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeKey("enum");
-        generator.writeStartArray();
-        expected.forEach(generator::write);
-        generator.writeEnd();
+    public void addToJson(JsonObjectBuilder builder) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        expected.forEach(arrayBuilder::add);
+        builder.add("enum", arrayBuilder);
     }
-
+    
     @Override
     protected AbstractAssertion createNegatedAssertion() {
         throw new UnsupportedOperationException();

@@ -31,7 +31,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemHandler;
-import org.leadpony.justify.internal.base.InstanceTypes;
+import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
 import org.leadpony.justify.internal.base.ProblemReporter;
 
@@ -86,7 +86,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     }
     
     private void handleEventFirst(Event event, JsonParser parser) {
-        InstanceType type = InstanceTypes.fromEvent(event, parser);
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
         this.evaluator = rootSchema.createEvaluator(type);
         if (this.evaluator != null) {
             handleEvent(event, parser);
@@ -99,13 +99,13 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     }
 
     private void handleEvent(Event event, JsonParser parser) {
-        if (event == Event.END_ARRAY || event == Event.END_OBJECT) {
+        if (ParserEvents.isEndOfContainer(event)) {
             if (--depth == 0) {
                 this.eventHandler = this::handleNone;
             }
         }
         Result result = evaluator.evaluate(event, parser, depth, this);
-        if (event == Event.START_ARRAY || event == Event.START_OBJECT) {
+        if (ParserEvents.isStartOfContainer(event)) {
             ++depth;
         }
         if (depth == 0) {

@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.assertion;
 
 import java.math.BigDecimal;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -68,8 +68,8 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(this.name, this.bound);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), this.bound);
     }
     
     protected abstract boolean test(BigDecimal actual, BigDecimal bound);

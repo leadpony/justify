@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -35,20 +36,24 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * 
  * @author leadpony
  */
-public class LeafSchema extends AbstractJsonSchema implements Resolvable {
+public class SimpleSchema extends AbstractJsonSchema {
 
     private URI id;
     private final URI originalId;
     private final URI schema;
+    
     private final String title;
     private final String description;
+    private final JsonValue defaultValue;
+    
     private final List<Assertion> assertions;
     
-    LeafSchema(DefaultSchemaBuilder builder) {
+    SimpleSchema(DefaultSchemaBuilder builder) {
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
         this.title = builder.getTitle();
         this.description = builder.getDescription();
+        this.defaultValue = builder.getDefault();
         this.assertions = builder.getAssertions();
     }
     
@@ -58,13 +63,14 @@ public class LeafSchema extends AbstractJsonSchema implements Resolvable {
      * @param original the original schema.
      * @param negating {@code true} if this schema is negation of the original.
      */
-    protected LeafSchema(LeafSchema original, boolean negating) {
+    SimpleSchema(SimpleSchema original, boolean negating) {
         assert negating;
         this.id = original.id;
         this.originalId = original.originalId;
         this.schema = original.schema;
         this.title = original.title;
         this.description = original.description;
+        this.defaultValue = original.defaultValue;
         this.assertions = original.assertions.stream()
                 .map(Assertion::negate)
                 .collect(Collectors.toList());
@@ -98,28 +104,13 @@ public class LeafSchema extends AbstractJsonSchema implements Resolvable {
         return appendEvaluatorsTo(evaluator, type);
     }
 
-    @Override
-    public void toJson(JsonGenerator generator) {
-        Objects.requireNonNull(generator, "generator must not be null.");
-        generator.writeStartObject();
-        appendJsonMembers(generator);
-        generator.writeEnd();
-    }
-    
-    @Override
-    public URI resolve(URI baseURI) {
-        assert this.originalId != null;
-        this.id = baseURI.resolve(this.originalId);
-        return id();
-    }
-    
     public void setAbsoluteId(URI id) {
         this.id = id;
     }
  
     @Override
     protected AbstractJsonSchema createNegatedSchema() {
-        return new NegatedLeafSchema(this);
+        return new Negated(this);
     }
 
     protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
@@ -135,19 +126,40 @@ public class LeafSchema extends AbstractJsonSchema implements Resolvable {
         return Evaluators.newConjunctionEvaluator(type, extensible);
     } 
     
-    protected void appendJsonMembers(JsonGenerator generator) {
+    @Override
+    public void addToJson(JsonObjectBuilder builder) {
         if (this.originalId != null) {
-            generator.write("$id", this.originalId.toString());
+            builder.add("$id", this.originalId.toString());
         }
         if (this.schema != null) {
-            generator.write("$schema", this.schema.toString());
+            builder.add("$schema", this.schema.toString());
         }
         if (this.title != null) {
-            generator.write("title", this.title);
+            builder.add("title", this.title);
         }
         if (this.description != null) {
-            generator.write("description", this.description);
+            builder.add("description", this.description);
         }
-        this.assertions.forEach(assertion->assertion.toJson(generator));
+        if (this.defaultValue != null) {
+            builder.add("default", this.defaultValue);
+        }
+        assertions.forEach(assertion->assertion.addToJson(builder));
+    }
+
+    /**
+     * Negated type of enclosing class.
+     *  
+     * @author leadpony
+     */
+    private static class Negated extends SimpleSchema {
+        
+        private Negated(SimpleSchema original) {
+            super(original, true);
+        }
+  
+        @Override
+        protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
+            return Evaluators.newDisjunctionEvaluator(type, extensible);
+        } 
     }
 }

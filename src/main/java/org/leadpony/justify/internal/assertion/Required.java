@@ -19,7 +19,9 @@ package org.leadpony.justify.internal.assertion;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -59,10 +61,10 @@ class Required extends AbstractAssertion {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeStartArray("required");
-        names.forEach(generator::write);
-        generator.writeEnd();
+    public void addToJson(JsonObjectBuilder builder) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        names.forEach(arrayBuilder::add);
+        builder.add(name(), arrayBuilder);
     }
     
     @Override

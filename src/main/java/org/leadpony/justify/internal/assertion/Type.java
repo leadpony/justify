@@ -19,13 +19,15 @@ package org.leadpony.justify.internal.assertion;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.InstanceTypes;
+import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -48,7 +50,7 @@ class Type extends ShallowAssertion {
     
     @Override
     protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-        InstanceType type = InstanceTypes.fromEvent(event, parser);
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
             return testType(type, parser, reporter);
         } else {
@@ -57,17 +59,17 @@ class Type extends ShallowAssertion {
     }
   
     @Override
-    public void toJson(JsonGenerator generator) {
+    public void addToJson(JsonObjectBuilder builder) {
         if (typeSet.size() <= 1) {
             InstanceType type = typeSet.iterator().next();
-            generator.write("type", type.name().toLowerCase());
+            builder.add("type", type.name().toLowerCase());
         } else {
-            generator.writeStartArray("type");
+            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             typeSet.stream()
                 .map(InstanceType::name)
                 .map(String::toLowerCase)
-                .forEach(generator::write);
-            generator.writeEnd();
+                .forEach(arrayBuilder::add);
+            builder.add("type", arrayBuilder);
         }
     }
     

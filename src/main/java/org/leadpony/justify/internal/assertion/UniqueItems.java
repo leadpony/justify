@@ -19,9 +19,9 @@ package org.leadpony.justify.internal.assertion;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -64,8 +64,8 @@ class UniqueItems extends AbstractAssertion {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(name(), unique);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), unique);
     }
     
     private class UniquenessEvaluator implements Evaluator {

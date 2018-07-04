@@ -17,10 +17,10 @@ package org.leadpony.justify.core;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.Objects;
 
 import javax.json.JsonException;
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 /**
  * JSON schema.
@@ -96,23 +96,23 @@ public interface JsonSchema {
     JsonSchema negate();
     
     /**
-     * Generates a JSON representation of this schema.
+     * Returns the JSON representation of this schema.
      * 
-     * @param generator the generator of the JSON document.
-     * @throws NullPointerException if {@code generator} is {@code null}.
+     * @return the JSON representation of this schema, never be {@code null}.
      */
-    void toJson(JsonGenerator generator);
-
+    JsonValue toJson();
+    
     /**
      * Returns the string representation of this schema.
      * 
      * @return the string representation of this schema, never be {@code null}.
+     * @throws JsonException if an error occurred while generating a JSON.
      */
     @Override
     String toString();
 
     /**
-     * Empty JSON Schema.
+     * JSON Schema represented by an empty JSON object.
      */
     JsonSchema EMPTY = new JsonSchema() {
         
@@ -127,9 +127,8 @@ public interface JsonSchema {
         }
 
         @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.writeStartObject().writeEnd();
+        public JsonValue toJson() {
+            return JsonObject.EMPTY_JSON_OBJECT;
         }
 
         @Override
@@ -139,7 +138,7 @@ public interface JsonSchema {
     };
 
     /**
-     * The JSON schema which evaluates any instances as valid.
+     * The JSON schema which evaluates any JSON instances as valid.
      */
     JsonSchema TRUE = new JsonSchema() {
         
@@ -152,13 +151,12 @@ public interface JsonSchema {
         public JsonSchema negate() {
             return FALSE;
         }
-
-        @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.write(true);
-        }
         
+        @Override
+        public JsonValue toJson() {
+            return JsonValue.TRUE;
+        }
+
         @Override
         public String toString() {
             return "true";
@@ -166,7 +164,7 @@ public interface JsonSchema {
     };
     
     /**
-     * The JSON schema which evaluates any instances as invalid.
+     * The JSON schema which evaluates any JSON instances as invalid.
      */
     JsonSchema FALSE = new JsonSchema() {
         
@@ -181,9 +179,8 @@ public interface JsonSchema {
         }
 
         @Override
-        public void toJson(JsonGenerator generator) {
-            Objects.requireNonNull(generator, "generator must not be null.");
-            generator.write(false);
+        public JsonValue toJson() {
+            return JsonValue.FALSE;
         }
 
         @Override

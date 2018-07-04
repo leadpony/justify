@@ -16,12 +16,23 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.net.URI;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+
+import org.leadpony.justify.core.JsonSchema;
 
 /**
  * @author leadpony
  */
-public interface Resolvable {
+public interface SchemaComponent extends JsonSchema {
+    
+    @Override
+    default JsonValue toJson() {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        addToJson(builder);
+        return builder.build();
+    }
 
-    URI resolve(URI baseURI);
+    void addToJson(JsonObjectBuilder builder);
 }

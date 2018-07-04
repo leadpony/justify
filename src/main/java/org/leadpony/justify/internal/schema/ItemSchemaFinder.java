@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.JsonSchema;
 
@@ -45,8 +47,8 @@ abstract class ItemSchemaFinder {
     
     abstract ItemSchemaFinder negate();
     
-    abstract void toJson(JsonGenerator generator);
-    
+    abstract void addToJson(JsonObjectBuilder builder);
+
     private static class CommonItemSchemaFinder extends ItemSchemaFinder {
         
         private final Optional<JsonSchema> schema;
@@ -75,10 +77,9 @@ abstract class ItemSchemaFinder {
         }
 
         @Override
-        void toJson(JsonGenerator generator) {
+        void addToJson(JsonObjectBuilder builder) {
             schema.ifPresent(schema->{
-                generator.writeKey("items");
-                schema.toJson(generator);
+                builder.add("items", schema.toJson());
             });
         }
     }
@@ -122,14 +123,14 @@ abstract class ItemSchemaFinder {
         }
 
         @Override
-        void toJson(JsonGenerator generator) {
-            generator.writeKey("items");
-            generator.writeStartArray();
-            schemas.forEach(s->s.toJson(generator));
-            generator.writeEnd();
+        void addToJson(JsonObjectBuilder builder) {
+            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            schemas.stream()
+                .map(JsonSchema::toJson)
+                .forEach(arrayBuilder::add);
+            builder.add("items", arrayBuilder);
             additional.ifPresent(schema->{
-                generator.writeKey("additionalItems");
-                schema.toJson(generator);
+                builder.add("additionalItems", schema.toJson());
             });
         }
     }

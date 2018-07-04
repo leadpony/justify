@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.assertion;
 
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Reporter;
@@ -46,8 +46,8 @@ class Const extends AbstractEqualityAssertion {
     }
   
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write("const", this.expected);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add("const", this.expected);
     }
 
     @Override

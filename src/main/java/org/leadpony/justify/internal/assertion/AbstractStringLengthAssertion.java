@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -67,8 +67,8 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write(this.name, this.bound);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), this.bound);
     }
     
     protected abstract boolean test(int actualLength, int bound);

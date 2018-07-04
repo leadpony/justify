@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.assertion;
 
 import java.math.BigDecimal;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -57,10 +57,10 @@ class MultipleOf extends ShallowAssertion {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.write("multipleOf", divisor);
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), divisor);
     }
-
+    
     @Override
     protected AbstractAssertion createNegatedAssertion() {
         throw new UnsupportedOperationException();

@@ -26,7 +26,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.InstanceTypes;
+import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -66,7 +66,7 @@ class ObjectWalker extends ContainerWalker {
     }
     
     private void appendEvaluators(Event event, JsonParser parser) {
-        InstanceType type = InstanceTypes.fromEvent(event, parser); 
+        InstanceType type = ParserEvents.toInstanceType(event, parser); 
         this.foundSchemas.stream()
             .map(s->s.createEvaluator(type))
             .filter(Objects::nonNull)

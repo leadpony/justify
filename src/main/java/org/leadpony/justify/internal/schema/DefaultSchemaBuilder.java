@@ -54,6 +54,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
     private String title;
     private String description;
+    private JsonValue defaultValue;
+    
     private final List<Assertion> assertions = new ArrayList<>();
     
     private Map<String, JsonSchema> properties;
@@ -63,7 +65,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     private Object items;
     private JsonSchema additionalItems;
 
-    private final List<JsonSchema> subschemas = new ArrayList<>();
+    private final List<SchemaComponent> subschemas = new ArrayList<>();
     
     private JsonSchema ifSchema;
     private JsonSchema thenSchema;
@@ -93,6 +95,10 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     String getDescription() {
         return description;
     }
+    
+    JsonValue getDefault() {
+        return defaultValue;
+    }
 
     List<Assertion> getAssertions() {
         return Collections.unmodifiableList(assertions);
@@ -116,7 +122,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
                 this.additionalProperties);
     }
     
-    List<JsonSchema> getSubschemas() {
+    List<SchemaComponent> getSubschemas() {
         return Collections.unmodifiableList(subschemas);
     }
     
@@ -131,10 +137,10 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         } else if (ref != null) {
             return new SchemaReference(ref, this.subschemaMap);
         } else if (subschemaMap.isEmpty()) {
-            return new LeafSchema(this);
+            return new SimpleSchema(this);
         } else {
             addConditionalSchemaIfExists();
-            return new InternalSchema(this);
+            return new CompositeSchema(this);
         }
     }
 
@@ -163,6 +169,13 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     public JsonSchemaBuilder withDescription(String description) {
         Objects.requireNonNull(description, "description must not be null.");
         this.description = description;
+        return builderNonempty();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withDefault(JsonValue value) {
+        Objects.requireNonNull(value, "value must not be null.");
+        this.defaultValue = value;
         return builderNonempty();
     }
 
@@ -324,6 +337,13 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     }
 
     @Override
+    public JsonSchemaBuilder withContains(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        // TODO:
+        return builderWithSubschema();
+    }
+
+    @Override
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
@@ -365,8 +385,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        JsonSchema schema = new AllOf(subschemas);
-        this.subschemas.add(schema);
+        this.subschemas.add(new AllOf(subschemas));
         registerSubschemas("allOf", subschemas);
         return builderWithSubschema();
     }
@@ -380,8 +399,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        JsonSchema schema = new AnyOf(subschemas);
-        this.subschemas.add(schema);
+        this.subschemas.add(new AnyOf(subschemas));
         registerSubschemas("anyOf", subschemas);
         return builderWithSubschema();
     }
@@ -395,8 +413,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        JsonSchema schema = new OneOf(subschemas);
-        this.subschemas.add(schema);
+        this.subschemas.add(new OneOf(subschemas));
         registerSubschemas("oneOf", subschemas);
         return builderWithSubschema();
     }

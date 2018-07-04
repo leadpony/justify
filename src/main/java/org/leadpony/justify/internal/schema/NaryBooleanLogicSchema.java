@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -51,11 +53,12 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     }
 
     @Override
-    public void toJson(JsonGenerator generator) {
-        generator.writeKey(name());
-        generator.writeStartArray();
-        this.subschemas.forEach(s->s.toJson(generator));
-        generator.writeEnd();
+    public void addToJson(JsonObjectBuilder builder) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        this.subschemas.stream()
+            .map(JsonSchema::toJson)
+            .forEach(arrayBuilder::add);
+        builder.add(name(), arrayBuilder);
     }
     
     protected List<JsonSchema> negateSubschemas() {

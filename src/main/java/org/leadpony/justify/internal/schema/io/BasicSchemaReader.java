@@ -43,7 +43,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.LeafSchema;
+import org.leadpony.justify.internal.schema.SimpleSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
 
@@ -190,6 +190,12 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "const":
             addConst(builder);
             break;
+        case "contains":
+            addContains(builder);
+            break;
+        case "default":
+            addDefault(builder);
+            break;
         case "definitions":
             addDefinitions(builder);
             break;
@@ -323,6 +329,20 @@ public class BasicSchemaReader implements JsonSchemaReader {
         builder.withConst(parser.getValue());
     }
     
+    private void addContains(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (canStartSchema(event)) {
+            builder.withContains(subschema(event));
+        } else {
+            skipValue(event);
+        }
+    }
+    
+    private void addDefault(JsonSchemaBuilder builder) {
+        parser.next();
+        builder.withDefault(parser.getValue());
+    }
+    
     private void addDefinitions(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
@@ -376,8 +396,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
             builder.withItems(arrayOfSubschemas());
-        } else {
+        } else if (canStartSchema(event)) {
             builder.withItem(subschema(event));
+        } else {
+            skipValue(event);
         }
     }
 
@@ -545,6 +567,12 @@ public class BasicSchemaReader implements JsonSchemaReader {
         return InstanceType.valueOf(name.toUpperCase());
     }
     
+    private static boolean canStartSchema(Event event) {
+        return event == Event.START_OBJECT || 
+               event == Event.VALUE_TRUE ||
+               event == Event.VALUE_FALSE;
+    }
+    
     private JsonSchema subschema() {
         return subschema(parser.next());
     }
@@ -568,6 +596,19 @@ public class BasicSchemaReader implements JsonSchemaReader {
             subschemas.add(subschema(event));
         }
         return subschemas;
+    }
+    
+    private void skipValue(Event event) {
+        switch (event) {
+        case START_ARRAY:
+            parser.skipArray();
+            break;
+        case START_OBJECT:
+            parser.skipObject();
+            break;
+        default:
+            break;
+        }
     }
     
     private void processUnknown(Event event, SimpleJsonPointer where, JsonSchemaBuilder builder) {
@@ -603,7 +644,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
         if (schema.hasId()) {
             baseURI = baseURI.resolve(schema.id());
-            ((LeafSchema)schema).setAbsoluteId(baseURI);
+            ((SimpleSchema)schema).setAbsoluteId(baseURI);
             addIdentifiedSchema(baseURI, schema);
         }
         if (schema instanceof SchemaReference) {

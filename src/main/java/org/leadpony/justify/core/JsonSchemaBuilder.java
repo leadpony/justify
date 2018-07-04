@@ -48,6 +48,8 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withDescription(String description);
     
+    JsonSchemaBuilder withDefault(JsonValue value);
+    
     /* Validation Keywords for Any Instance Type */
     
     JsonSchemaBuilder withType(InstanceType... types);
@@ -205,6 +207,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinItems(int bound);
     
     JsonSchemaBuilder withUniqueItems(boolean unique);
+    
+    JsonSchemaBuilder withContains(JsonSchema subschema);
     
     /* Validation Keywords for Objects */
     

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.assertion;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -28,6 +28,11 @@ import org.leadpony.justify.core.InstanceType;
  */
 public interface Assertion {
     
+    /**
+     * Returns the name of this assertion.
+     * 
+     * @return the name of this assertion, never be {@code null}.
+     */
     String name();
     
     /**
@@ -50,7 +55,17 @@ public interface Assertion {
      */
     Evaluator createEvaluator(InstanceType type);
     
+    /**
+     * Returns the negated version of this assertion.
+     * 
+     * @return the negated version of this assertion.
+     */
     Assertion negate();
     
-    void toJson(JsonGenerator generator);
+    /**
+     * Adds this assertion to the specified JSON object.
+     * 
+     * @param builder the builder for building a JSON object, never be {@code null}.
+     */
+    void addToJson(JsonObjectBuilder builder);
 }
