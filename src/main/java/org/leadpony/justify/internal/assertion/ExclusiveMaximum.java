@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.assertion;
 import java.math.BigDecimal;
 
 /**
- * Assertion specified with "exclusiveMaximum" keyword.
+ * Assertion specified with "exclusiveMaximum" validation keyword.
  * 
  * @author leadpony
  */

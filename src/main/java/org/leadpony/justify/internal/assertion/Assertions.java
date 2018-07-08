@@ -25,6 +25,8 @@ import javax.json.spi.JsonProvider;
 import org.leadpony.justify.core.InstanceType;
 
 /**
+ * Provides various kinds of assertions.
+ * 
  * @author leadpony
  */
 public final class Assertions {

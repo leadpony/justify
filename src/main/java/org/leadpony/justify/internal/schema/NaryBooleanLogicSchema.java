@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.schema;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -45,11 +46,12 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
     
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        LogicalEvaluator logical = createLogicalEvaluator(type);
+        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type);
         this.subschemas.stream()
                 .map(s->s.createEvaluator(type))
-                .forEach(logical::append);
-        return logical;
+                .filter(Objects::nonNull)
+                .forEach(builder::append);
+        return builder.build();
     }
 
     @Override
@@ -65,5 +67,5 @@ abstract class NaryBooleanLogicSchema extends BooleanLogicSchema {
         return subschemas.stream().map(JsonSchema::negate).collect(Collectors.toList());
     }
     
-    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type);
+    protected abstract LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type);
 }

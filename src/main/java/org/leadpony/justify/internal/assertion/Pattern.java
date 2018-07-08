@@ -27,7 +27,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion specified with "pattern" keyword.
+ * Assertion specified with "pattern" validation keyword.
  * 
  * @author leadpony
  */

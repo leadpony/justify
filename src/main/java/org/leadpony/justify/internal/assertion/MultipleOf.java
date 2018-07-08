@@ -27,7 +27,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion specified with "multipleOf" keyword.
+ * Assertion specified with "multipleOf" validation keyword.
  * 
  * @author leadpony
  */

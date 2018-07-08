@@ -24,17 +24,21 @@ import javax.json.stream.JsonParser.Event;
  */
 class LongConjunctionEvaluator extends ConjunctionEvaluator {
    
-    protected final Event lastEvent;
+    protected final Event finalEvent;
     
-    LongConjunctionEvaluator(Event lastEvent) {
-        this.lastEvent = lastEvent;
+    public static LogicalEvaluator.Builder builder(Event finalEvent) {
+        return new LongConjunctionEvaluator(finalEvent);
+    }
+    
+    protected LongConjunctionEvaluator(Event finalEvent) {
+        this.finalEvent = finalEvent;
     }
 
     @Override
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
         if (isEmpty()) {
             return conclude(parser, reporter);
-        } else if (depth == 0 && event == lastEvent) {
+        } else if (depth == 0 && event == finalEvent) {
             assert false;
             return conclude(parser, reporter);
         } else {

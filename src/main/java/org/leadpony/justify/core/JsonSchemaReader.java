@@ -19,6 +19,7 @@ package org.leadpony.justify.core;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 
 import javax.json.JsonException;
 
@@ -39,18 +40,31 @@ public interface JsonSchemaReader extends Closeable {
      * 
      * @param in the byte stream from which a JSON schema is to be read.
      * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if {@code in} is {@code null}.
+     * @throws NullPointerException if the specified {@code in} was {@code null}.
      */
     static JsonSchemaReader from(InputStream in) {
         return JsonValidationServiceProvider.provider().createSchemaReader(in);
     }
     
     /**
+     * Creates a JSON schema reader from a byte stream. 
+     * The bytes of the stream are decoded to characters using the specified charset.
+     * 
+     * @param in the byte stream from which a JSON schema is to be read.
+     * @param charset the character set.
+     * @return newly created instance of JSON schema reader.
+     * @throws NullPointerException if the specified {@code in} or {@code charset} was {@code null}.
+     */
+    static JsonSchemaReader from(InputStream in, Charset charset) {
+        return JsonValidationServiceProvider.provider().createSchemaReader(in, charset);
+    }
+
+    /**
      * Creates a JSON schema reader from a reader. 
      * 
      * @param reader the reader from which a JSON schema is to be read.
      * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if {@code reader} is {@code null}.
+     * @throws NullPointerException if the specified {@code reader} was {@code null}.
      */
     static JsonSchemaReader from(Reader reader) {
         return JsonValidationServiceProvider.provider().createSchemaReader(reader);
@@ -62,6 +76,7 @@ public interface JsonSchemaReader extends Closeable {
      * 
      * @param in the byte stream from which a JSON schema is to be read.
      * @return the JSON schema.
+     * @throws NullPointerException if the specified {@code in} was {@code null}.
      * @throws JsonException if an I/O error occurs while reading.
      * @throws JsonValidatingException if the reader found problems during validation of the schema.
      */
@@ -72,10 +87,28 @@ public interface JsonSchemaReader extends Closeable {
     }
 
     /**
+     * Reads a JSON schema reader from a byte stream. 
+     * The bytes of the stream are decoded to characters using the specified charset.
+     * 
+     * @param in the byte stream from which a JSON schema is to be read.
+     * @param charset the character set.
+     * @return the JSON schema.
+     * @throws NullPointerException if the specified {@code in} or {@code charset} was {@code null}.
+     * @throws JsonException if an I/O error occurs while reading.
+     * @throws JsonValidatingException if the reader found problems during validation of the schema.
+     */
+    static JsonSchema readFrom(InputStream in, Charset charset) {
+        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(in, charset)) {
+            return schemaReader.read();
+        }
+    }
+
+    /**
      * Reads a JSON schema reader from a reader. 
      * 
      * @param reader the reader from which a JSON schema is to be read.
      * @return the JSON schema.
+     * @throws NullPointerException if the specified {@code reader} was {@code null}.
      * @throws JsonException if an I/O error occurs while reading.
      * @throws JsonValidatingException if the reader found problems during validation of the schema.
      */
@@ -110,7 +143,7 @@ public interface JsonSchemaReader extends Closeable {
      * 
      * @param resolver the resolver of external JSON schemas.
      * @return this reader.
-     * @throws NullPointerException if {@code resolver} is {@code null}.
+     * @throws NullPointerException if the specified {@code resolver} was {@code null}.
      */
     JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver);
 }

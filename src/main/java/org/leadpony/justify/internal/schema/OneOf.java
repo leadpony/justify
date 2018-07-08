@@ -45,7 +45,7 @@ public class OneOf extends NaryBooleanLogicSchema {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newExclusiveDisjunctionEvaluator(type, false);
+    protected LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type) {
+        return Evaluators.newExclusiveDisjunctionEvaluatorBuilder(type, false);
     }
 }

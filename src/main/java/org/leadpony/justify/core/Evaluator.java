@@ -19,7 +19,7 @@ package org.leadpony.justify.core;
 import javax.json.stream.JsonParser;
 
 /**
- * Evaluator which applies a JSON schema to a JSON instance.
+ * Evaluator which applies a JSON schema to a location in a JSON document.
  * 
  * <p>This type is not intended to be used directly by end users.</p>
  * 
@@ -65,7 +65,7 @@ public interface Evaluator {
     }
     
     /**
-     * Evaluates JSON schema against JSON instance.
+     * Evaluates a JSON schema against each instance location to which it applies.
      * 
      * @param event the event triggered by JSON parser, cannot be {@code null}.
      * @param parser the JSON parser, cannot be {@code null}.
@@ -76,12 +76,12 @@ public interface Evaluator {
     Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Reporter reporter);
 
     /**
-     * The evaluator which evaluates any JSON instances as true ("valid").
+     * The evaluator which evaluates any JSON schema as true ("valid").
      */
     Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
 
     /**
-     * The evaluator which evaluates any JSON instances as false ("invalid")
+     * The evaluator which evaluates any JSON schema as false ("invalid")
      * and reports a problem.
      */
     Evaluator ALWAYS_FALSE = (event, parser, depth, reporter)->{
@@ -90,7 +90,7 @@ public interface Evaluator {
         };
     
     /**
-     * The evaluator whose result should be always ignored.
+     * The evaluator whose result should be ignored.
      */
     Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
 }

@@ -16,8 +16,10 @@
 
 package org.leadpony.justify.internal.base;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +39,7 @@ public class ProblemBuilder {
     private final JsonLocation location;
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
+    private List<List<Problem>> childLists;
     
     /**
      * Creates new instance of this builder.
@@ -58,17 +61,49 @@ public class ProblemBuilder {
         return newBuilder(parser.getLocation());
     }
 
+    /**
+     * Constructs this builder.
+     * 
+     * @param location the location where problem occurred, cannot be {@code null}.
+     */
     private ProblemBuilder(JsonLocation location) {
         this.location = location;
     }
 
+    /**
+     * Specifies the key name of the message used for the problem.
+     * 
+     * @param messageKey the key name of the message
+     * @return this builder.
+     */
     public ProblemBuilder withMessage(String messageKey) {
         this.messageKey = messageKey;
         return this;
     }
 
+    /**
+     * Specifies the parameter which will be added to the problem.
+     * 
+     * @param name the name of the parameter.
+     * @param value the value of the parameter.
+     * @return this builder.
+     */
     public ProblemBuilder withParameter(String name, Object value) {
         this.parameters.put(name, value);
+        return this;
+    }
+    
+    /**
+     * Specifies the child problems of the problem to be built.
+     * 
+     * @param problems the list of problems which are children of the problem to be built.
+     * @return this builder.
+     */
+    public ProblemBuilder withSubproblems(List<Problem> problems) {
+        if (this.childLists == null) {
+            this.childLists = new ArrayList<>();
+        }
+        this.childLists.add(Collections.unmodifiableList(problems));
         return this;
     }
     
@@ -78,21 +113,30 @@ public class ProblemBuilder {
      * @return built problem.
      */
     public Problem build() {
-        return new ValidationProblem(this);
+        if (this.childLists == null || this.childLists.isEmpty()) {
+            return new SimpleProblem(this);
+        } else {
+            return new CompositexProblem(this);
+        }
     }
 
     /**
-     * Problem detected in validation process.
+     * Problem without child problems.
      * 
      * @author leadpony
      */
-    private static class ValidationProblem implements Problem {
+    private static class SimpleProblem implements Problem {
 
         private final String messageKey;
         private final Map<String, Object> parameters;
         private final JsonLocation location;
     
-        private ValidationProblem(ProblemBuilder builder) {
+        /**
+         * Constructs this problem.
+         * 
+         * @param builder the builder of the problem.
+         */
+        protected SimpleProblem(ProblemBuilder builder) {
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
             this.location = builder.location;
@@ -120,16 +164,39 @@ public class ProblemBuilder {
         public Map<String, ?> parametersAsMap() {
             return parameters;
         }
-    
+        
         @Override
-        public String toString() {
-            return getContextualMessage(Locale.getDefault());
+        public boolean hasSubproblem() {
+            return false;
         }
         
+        @Override
+        public List<List<Problem>> getSubproblems() {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public String toString() {
+            return getContextualMessage();
+        }
+        
+        /**
+         * Builds a message for the specified locale.
+         * 
+         * @param locale the locale for which the message will be localized. 
+         * @return the built message.
+         */
         private Message buildMessage(Locale locale) {
             return Message.get(messageKey, locale).withParameters(parameters);
         }
         
+        /**
+         * Builds a message including the location at which this problem occurred.
+         * 
+         * @param message the original message.
+         * @param locale the locale for which the message will be localized. 
+         * @return the built message.
+         */
         private Message buildContextualMessage(Message message, Locale locale) {
             return Message.get("format", locale)
                     .withParameter("message", message)
@@ -144,6 +211,36 @@ public class ProblemBuilder {
                         .withParameter("row", location.getLineNumber())
                         .withParameter("col", location.getColumnNumber());
             }
+        }
+    }
+    
+    /**
+     * Problem with child problems.
+     * 
+     * @author leadpony
+     */
+    private static class CompositexProblem extends SimpleProblem {
+        
+        private final List<List<Problem>> childLists;
+
+        /**
+         * Constructs this problem.
+         * 
+         * @param builder the builder of the problem.
+         */
+        CompositexProblem(ProblemBuilder builder) {
+            super(builder);
+            this.childLists = Collections.unmodifiableList(builder.childLists);
+        }
+
+        @Override
+        public boolean hasSubproblem() {
+            return true;
+        }
+        
+        @Override
+        public List<List<Problem>> getSubproblems() {
+            return childLists;
         }
     }
 }

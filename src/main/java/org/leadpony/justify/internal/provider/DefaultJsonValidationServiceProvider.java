@@ -19,7 +19,10 @@ package org.leadpony.justify.internal.provider;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
@@ -31,7 +34,9 @@ import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.JsonValidatorFactory;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
+import org.leadpony.justify.internal.base.ProblemPrinter;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.BasicSchemaReader;
 import org.leadpony.justify.internal.schema.io.ValidatingSchemaReader;
@@ -63,6 +68,15 @@ public class DefaultJsonValidationServiceProvider
     }
   
     @Override
+    public JsonSchemaReader createSchemaReader(InputStream in, Charset charset) {
+        Objects.requireNonNull(in, "in must not be null.");
+        Objects.requireNonNull(charset, "charset must not be null.");
+        ValidatingJsonParser parser = (ValidatingJsonParser)this.schemaParserFactory.createParser(
+                in, charset, metaschema, problem->{});
+        return createValidatingSchemaReader(parser);
+    }
+
+    @Override
     public JsonSchemaReader createSchemaReader(Reader reader) {
         Objects.requireNonNull(reader, "reader must not be null.");
         ValidatingJsonParser parser = (ValidatingJsonParser)this.schemaParserFactory.createParser(
@@ -78,6 +92,12 @@ public class DefaultJsonValidationServiceProvider
     @Override
     public JsonValidatorFactory createValidatorFactory() {
         return createDefaultJsonValidatorFactory();
+    }
+   
+    @Override
+    public Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer) {
+        Objects.requireNonNull(lineConsumer, "lineConsumer must not be null.");
+        return new ProblemPrinter(lineConsumer);
     }
     
     @Override

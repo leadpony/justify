@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified with "minItems" keyword.
+ * Assertion specified with "minItems" validation keyword.
  * 
  * @author leadpony
  */

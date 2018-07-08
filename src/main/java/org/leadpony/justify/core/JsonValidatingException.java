@@ -37,7 +37,7 @@ public class JsonValidatingException extends JsonParsingException {
     /**
      * Constructs a new runtime exception.
      * 
-     * @param problems the problems found while validating JSON document.
+     * @param problems the problems found while validating the JSON document.
      * @param location the location of the incorrect JSON.
      */
     public JsonValidatingException(List<Problem> problems, JsonLocation location) {
@@ -48,7 +48,7 @@ public class JsonValidatingException extends JsonParsingException {
     /**
      * Returns all problems found in the validation process.
      * 
-     * @return unmodifiable list of problems, which never be {@code null}.
+     * @return unmodifiable collection of problems, which never be {@code null}.
      */
     public List<Problem> getProblems() {
         return problems;

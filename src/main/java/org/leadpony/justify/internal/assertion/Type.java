@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion specified with "type" keyword.
+ * Assertion specified with "type" validation keyword.
  * 
  * @author leadpony
  */

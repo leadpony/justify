@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.assertion;
 import java.math.BigDecimal;
 
 /**
- * Assertion specified with "minimum" keyword.
+ * Assertion specified with "minimum" validation keyword.
  * 
  * @author leadpony
  */

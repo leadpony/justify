@@ -19,18 +19,37 @@ package org.leadpony.justify.internal.evaluator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
+
 /**
+ * {@link ConjunctionEvaluator} which can be extended.
+ * 
  * @author leadpony
  */
-class ExtensibleDisjunctionEvaluator extends LongDisjunctionEvaluator {
+class ExtendableConjunctionEvaluator extends LongConjunctionEvaluator 
+        implements ExtendableLogicalEvaluator {
+    
+    public static LogicalEvaluator.Builder builder(Event finalEvent) {
+        return new ExtendableConjunctionEvaluator(finalEvent);
+    }
 
-    ExtensibleDisjunctionEvaluator(Event lastEvent) {
-        super(lastEvent);
+    private ExtendableConjunctionEvaluator(Event finalEvent) {
+        super(finalEvent);
+    }
+
+    @Override
+    public Evaluator build() {
+        return this;
+    }
+    
+    @Override
+    public void extend(Evaluator evaluator) {
+        append(evaluator);
     }
 
     @Override
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth == 0 && event == lastEvent) {
+        if (depth == 0 && event == finalEvent) {
             assert isEmpty();
             return conclude(parser, reporter);
         } else {

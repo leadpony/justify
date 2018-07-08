@@ -23,28 +23,40 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Exclusive disjunction evaluator used for "oneOf" boolean logic schema.
+ * 
  * @author leadpony
  */
 class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
+ 
+    public static LogicalEvaluator.Builder builder() {
+        return new ExclusiveDisjunctionEvaluator();
+    }
     
     @Override
     protected boolean accumulateResult(Evaluator evaluator, Result result) {
         super.accumulateResult(evaluator, result);
-        return (this.numberOfTrues <= 1);
+        return (this.trueEvaluations <= 1);
     }
 
     @Override
     protected Result conclude(JsonParser parser, Reporter reporter) {
-        if (this.numberOfTrues > 1) {
+        if (this.trueEvaluations > 1) {
             return reportTooManyTrueEvaluations(parser, reporter);
         } else {
             return super.conclude(parser, reporter);
         }
     }
     
+    @Override
+    protected String getMessageKey() {
+        return "instance.problem.one.of";
+    }
+
     private Result reportTooManyTrueEvaluations(JsonParser parser, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
-                .withMessage("instance.problem.one.of")
+                .withMessage("instance.problem.one.of.over")
+                .withParameter("valid", this.trueEvaluations)
                 .build();
         reporter.reportProblem(p);
         return Result.FALSE;

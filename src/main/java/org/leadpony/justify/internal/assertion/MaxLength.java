@@ -17,7 +17,7 @@
 package org.leadpony.justify.internal.assertion;
 
 /**
- * Assertion specified with "maxLength" keyword.
+ * Assertion specified with "maxLength" validation keyword.
  * 
  * @author leadpony
  */

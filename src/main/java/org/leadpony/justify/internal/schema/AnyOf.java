@@ -45,7 +45,7 @@ public class AnyOf extends NaryBooleanLogicSchema {
     }
   
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newDisjunctionEvaluator(type, false);
+    protected LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type) {
+        return Evaluators.newDisjunctionEvaluatorBuilder(type, false);
     }
 }

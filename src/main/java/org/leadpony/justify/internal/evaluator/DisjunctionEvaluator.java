@@ -17,47 +17,72 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Disjunction evaluator used for "oneOf" and "anyOf" boolean logic schemas.
+ * 
  * @author leadpony
  */
 class DisjunctionEvaluator extends AbstractLogicalEvaluator {
 
-    protected int numberOfTrues;
-    protected List<StoringEvaluator> failed;
+    protected int trueEvaluations;
+    protected List<StoringEvaluator> falseEvaluators;
+   
+    public static LogicalEvaluator.Builder builder() {
+        return new DisjunctionEvaluator();
+    }
     
     @Override
     public void append(Evaluator evaluator) {
         super.append(new StoringEvaluator(evaluator));
     }
+
+    @Override
+    public Evaluator build() {
+        if (evaluators.isEmpty()) {
+            return null;
+        } else if (evaluators.size() == 1) {
+            return ((StoringEvaluator)evaluators.get(0)).internalEvaluator();
+        } else {
+            return this;
+        }
+    }
     
     @Override
     protected boolean accumulateResult(Evaluator evaluator, Result result) {
         if (result == Result.TRUE) {
-            ++numberOfTrues;
+            ++trueEvaluations;
         } else {
-            if (failed == null) {
-                failed = new ArrayList<>();
+            if (falseEvaluators == null) {
+                falseEvaluators = new ArrayList<>();
             }
-            failed.add((StoringEvaluator)evaluator);
+            falseEvaluators.add((StoringEvaluator)evaluator);
         }
-        return (numberOfTrues == 0);
+        return (trueEvaluations == 0);
     }
     
     @Override
     protected Result conclude(JsonParser parser, Reporter reporter) {
-        if (numberOfTrues > 0 || failed == null || failed.isEmpty()) {
+        if (trueEvaluations > 0 || falseEvaluators == null || falseEvaluators.isEmpty()) {
             return Result.TRUE;
         }
-        Collections.sort(failed);
-        StoringEvaluator first = failed.get(0);
-        first.problems().forEach(problem->reporter.reportProblem(problem));
+        ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
+        builder.withMessage(getMessageKey())
+               .withParameter("invalid", falseEvaluators.size());
+        falseEvaluators.stream()
+                .map(StoringEvaluator::problems)
+                .forEach(builder::withSubproblems);
+        reporter.reportProblem(builder.build());
         return Result.FALSE;
+    }
+    
+    protected String getMessageKey() {
+        return "instance.problem.any.of";
     }
 }

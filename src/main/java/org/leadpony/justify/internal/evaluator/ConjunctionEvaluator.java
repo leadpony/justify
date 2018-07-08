@@ -21,22 +21,28 @@ import javax.json.stream.JsonParser;
 import org.leadpony.justify.core.Evaluator;
 
 /**
+ * Logical evaluator for "allOf" boolean logic.
+ *  
  * @author leadpony
  */
 class ConjunctionEvaluator extends AbstractLogicalEvaluator {
     
-    private int numberOfFalses;
+    private int falseEvaluations;
+    
+    public static LogicalEvaluator.Builder builder() {
+        return new ConjunctionEvaluator();
+    }
     
     @Override
     protected boolean accumulateResult(Evaluator evaluator, Result result) {
         if (result == Result.FALSE) {
-            this.numberOfFalses++;
+            this.falseEvaluations++;
         }
         return true;
     }
     
     @Override
     protected Result conclude(JsonParser parser, Reporter reporter) {
-        return (this.numberOfFalses == 0) ? Result.TRUE : Result.FALSE;
+        return (this.falseEvaluations == 0) ? Result.TRUE : Result.FALSE;
     }
 }

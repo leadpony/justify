@@ -24,7 +24,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 
 /**
  * Evaluator which walks array items.
@@ -37,7 +37,7 @@ class ArrayWalker extends ContainerWalker {
     private int itemIndex;
     private boolean redundantItemFound;
     
-    ArrayWalker(LogicalEvaluator evaluator, ItemSchemaFinder itemSchemaFinder) {
+    ArrayWalker(ExtendableLogicalEvaluator evaluator, ItemSchemaFinder itemSchemaFinder) {
         super(evaluator);
         this.itemSchemaFinder = itemSchemaFinder;
     }

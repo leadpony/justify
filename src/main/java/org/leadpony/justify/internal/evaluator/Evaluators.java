@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser.Event;
+import static org.leadpony.justify.internal.base.ParserEvents.lastEventOf;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -28,46 +28,36 @@ import org.leadpony.justify.core.InstanceType;
  */
 public final class Evaluators {
 
-    public static LogicalEvaluator newConjunctionEvaluator(InstanceType type, boolean extensible) {
-        if (extensible) {
-            return new ExtensibleConjunctionEvaluator(lastEventOf(type));
+    public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
+        if (extendable) {
+            return ExtendableConjunctionEvaluator.builder(lastEventOf(type));
         } else if (type.isContainer()) {
-            return new LongConjunctionEvaluator(lastEventOf(type));
+            return LongConjunctionEvaluator.builder(lastEventOf(type));
         } else {
-            return new ConjunctionEvaluator();
+            return ConjunctionEvaluator.builder();
         }
     }
     
-    public static LogicalEvaluator newDisjunctionEvaluator(InstanceType type, boolean extensible) {
-        if (extensible) {
-            return new ExtensibleDisjunctionEvaluator(lastEventOf(type));
+    public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
+        if (extendable) {
+            return ExtendableDisjunctionEvaluator.builder(lastEventOf(type));
         } else if (type.isContainer()) {
-            return new LongDisjunctionEvaluator(lastEventOf(type));
+            return LongDisjunctionEvaluator.builder(lastEventOf(type));
         } else {
-            return new DisjunctionEvaluator();
+            return DisjunctionEvaluator.builder();
         }
     }
 
-    public static LogicalEvaluator newExclusiveDisjunctionEvaluator(InstanceType type, boolean extensible) {
-        if (extensible) {
+    public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
+        if (extendable) {
             throw new UnsupportedOperationException("unsupported");
         } else if (type.isContainer()) {
-            return new LongExclusiveDisjunctionEvaluator(lastEventOf(type));
+            return LongExclusiveDisjunctionEvaluator.builder(lastEventOf(type));
         } else {
-            return new ExclusiveDisjunctionEvaluator();
+            return ExclusiveDisjunctionEvaluator.builder();
         }
     }
 
-    private static Event lastEventOf(InstanceType type) {
-        switch (type) {
-        case ARRAY:
-            return Event.END_ARRAY;
-        case OBJECT:
-            return Event.END_OBJECT;
-        default:
-            return null;
-        }
+    private Evaluators() {
     }
-    
-    private Evaluators() {}
 }

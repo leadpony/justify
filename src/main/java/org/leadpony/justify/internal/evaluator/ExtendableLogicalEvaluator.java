@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.core;
+package org.leadpony.justify.internal.evaluator;
 
-import java.util.Collection;
+import org.leadpony.justify.core.Evaluator;
 
 /**
- * Handler of problems found in the validation.
- * <p>
- * The instances of this type can be assigned to JSON parsers or readers
- * through methods provided by {@link JsonValidatorFactory}.  
- * </p>
+ * {@code LogicalEvaluator} which can be extended during the evaluation.
  * 
  * @author leadpony
  */
-@FunctionalInterface
-public interface ProblemHandler {
+public interface ExtendableLogicalEvaluator extends LogicalEvaluator {
 
     /**
-     * Handles reported problems.
+     * Appends an evaluator to this logical evaluator.
      * 
-     * @param problems the collection of problems found in the current parsing event, 
-     *                 never be {@code null}.
+     * @param evaluator the evaluator to append.
      */
-    void handleProblems(Collection<Problem> problems);
+    void extend(Evaluator evaluator);
 }

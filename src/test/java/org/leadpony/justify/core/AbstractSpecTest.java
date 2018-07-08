@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
@@ -67,7 +68,7 @@ abstract class AbstractSpecTest {
         return ()->new ParameterSetIterator(names);
     }
     
-    protected JsonParser createValidatingParser(ProblemHandler handler) {
+    protected JsonParser createValidatingParser(Consumer<List<Problem>> handler) {
         JsonSchema schema = getSchema();
         JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
         StringReader reader = new StringReader(fixture.instance().toString());
@@ -99,10 +100,13 @@ abstract class AbstractSpecTest {
         return JsonSchemaReader.from(reader);
     }
 
-    protected void printProblems(Iterable<Problem> problems) {
-        problems.forEach(p->{
-            System.out.println("[" + getName() + "@" + getTestIndex() + "]" + p.toString());
-        });
+    protected void printProblems(List<Problem> problems) {
+        if (problems.isEmpty()) {
+            return;
+        }
+        String prefix = "(" + getName() + "@" + getTestIndex() + ")";
+        ProblemHandlers.printingWith(line->System.out.println(prefix + line))
+            .accept(problems);
     }
     
     private static class ParameterSetIterator implements Iterator<Object[]> {

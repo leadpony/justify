@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.core.Problem;
 
 /**
- * Assertion specified with "enum" keyword.
+ * Assertion specified with "enum" validation keyword.
  * 
  * @author leadpony
  */

@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified with "maxProperties" keyword.
+ * Assertion specified with "maxProperties" validation keyword.
  * 
  * @author leadpony
  */

@@ -45,7 +45,7 @@ public class AllOf extends NaryBooleanLogicSchema {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newConjunctionEvaluator(type, false);
+    protected LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type) {
+        return Evaluators.newConjunctionEvaluatorBuilder(type, false);
     }
 }

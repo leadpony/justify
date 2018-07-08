@@ -19,7 +19,7 @@ package org.leadpony.justify.core;
 import java.net.URI;
 
 /**
- * The type which resolves external JSON schema.
+ * The type which resolves external JSON schemas.
  * 
  * @author leadpony
  */

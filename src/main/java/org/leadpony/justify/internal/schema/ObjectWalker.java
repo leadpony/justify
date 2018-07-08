@@ -28,7 +28,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 
 /**
  * Evaluator which walks object properties.
@@ -40,7 +40,7 @@ class ObjectWalker extends ContainerWalker {
     private final PropertySchemaFinder propertySchemaFinder;
     private final List<JsonSchema> foundSchemas = new ArrayList<>();
 
-    ObjectWalker(LogicalEvaluator evaluator, PropertySchemaFinder propertySchemaFinder) {
+    ObjectWalker(ExtendableLogicalEvaluator evaluator, PropertySchemaFinder propertySchemaFinder) {
         super(evaluator);
         this.propertySchemaFinder = propertySchemaFinder;
     }

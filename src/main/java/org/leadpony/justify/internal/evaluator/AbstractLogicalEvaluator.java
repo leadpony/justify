@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -28,7 +29,7 @@ import org.leadpony.justify.core.Evaluator;
 /**
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
+abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEvaluator.Builder {
 
     protected final List<Evaluator> evaluators;
     
@@ -54,7 +55,19 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
    
     @Override
     public void append(Evaluator evaluator) {
+        Objects.requireNonNull(evaluator, "evaluator must not be null.");
         this.evaluators.add(evaluator);
+    }
+    
+    @Override
+    public Evaluator build() {
+        if (evaluators.isEmpty()) {
+            return null;
+        } else if (evaluators.size() == 1) {
+            return evaluators.get(0);
+        } else {
+            return this;
+        }
     }
     
     protected boolean isEmpty() {

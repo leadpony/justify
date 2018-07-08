@@ -37,14 +37,12 @@ public abstract class AbstractValidationTest extends AbstractSpecTest {
     @Test
     public void testValidationResult() {
         List<Problem> problems = new ArrayList<>();
-        JsonParser parser = createValidatingParser(problems::addAll);
+        JsonParser parser = createValidatingParser(ProblemHandlers.collectingTo(problems));
         while (parser.hasNext()) {
             parser.next();
         }
         parser.close();
         assertThat(problems.isEmpty()).isEqualTo(getFixture().result());
-        if (!problems.isEmpty()) {
-            printProblems(problems);
-        }
+        printProblems(problems);
     }
 }

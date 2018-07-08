@@ -25,8 +25,12 @@ import javax.json.stream.JsonParser.Event;
 class LongDisjunctionEvaluator extends DisjunctionEvaluator {
 
     protected final Event lastEvent;
+  
+    public static LogicalEvaluator.Builder builder(Event finalEvent) {
+        return new LongDisjunctionEvaluator(finalEvent);
+    }
     
-    LongDisjunctionEvaluator(Event lastEvent) {
+    protected LongDisjunctionEvaluator(Event lastEvent) {
         this.lastEvent = lastEvent;
     }
 

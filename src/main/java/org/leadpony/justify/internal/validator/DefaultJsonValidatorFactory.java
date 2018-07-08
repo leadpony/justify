@@ -20,8 +20,10 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.json.JsonReader;
@@ -32,7 +34,7 @@ import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonValidatorFactory;
-import org.leadpony.justify.core.ProblemHandler;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
 
 /**
@@ -52,7 +54,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
 
     @Override
     public ValidatingJsonParserFactory createParserFactory(Map<String, ?> config, JsonSchema schema, 
-            Function<JsonParser, ProblemHandler> handlerSupplier) {
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
         Objects.requireNonNull(schema, "schema must not be null.");
         if (config == null) {
             config = defaultConfig;
@@ -65,14 +67,14 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     }
     
     @Override
-    public JsonParser createParser(InputStream in, JsonSchema schema, ProblemHandler handler) {
+    public JsonParser createParser(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(in, "in must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
         return createParserFactory(defaultConfig, schema, parser->handler).createParser(in);
     }
     
     @Override
-    public JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler) {
+    public JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(in, "in must not be null.");
         Objects.requireNonNull(charset, "charset must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
@@ -80,7 +82,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     }
 
     @Override
-    public JsonParser createParser(Reader reader, JsonSchema schema, ProblemHandler handler) {
+    public JsonParser createParser(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(reader, "reader must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
         return createParserFactory(defaultConfig, schema, parser->handler).createParser(reader);
@@ -88,7 +90,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     
     @Override
     public ValidatingJsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
-            Function<JsonParser, ProblemHandler> handlerSupplier) {
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
         Objects.requireNonNull(schema, "schema must not be null.");
         if (config == null) {
             config = defaultConfig;
@@ -98,14 +100,14 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     }
 
     @Override
-    public JsonReader createReader(InputStream in, JsonSchema schema, ProblemHandler handler) {
+    public JsonReader createReader(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(in, "in must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
         return createReaderFactory(defaultConfig, schema, parser->handler).createReader(in);
     }
     
     @Override
-    public JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler) {
+    public JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(in, "in must not be null.");
         Objects.requireNonNull(charset, "charset must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
@@ -113,7 +115,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     }
 
     @Override
-    public JsonReader createReader(Reader reader, JsonSchema schema, ProblemHandler handler) {
+    public JsonReader createReader(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler) {
         Objects.requireNonNull(reader, "reader must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
         return createReaderFactory(defaultConfig, schema, parser->handler).createReader(reader);
@@ -121,7 +123,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     
     @Override
     public JsonProvider createJsonProvider(JsonSchema schema, 
-            Function<JsonParser, ProblemHandler> handlerSupplier) {
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
         Objects.requireNonNull(schema, "schema must not be null.");
         return new ValidatingJsonProvider(jsonProvider, schema, handlerSupplier);
     }
@@ -134,10 +136,10 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
     private class ValidatingJsonProvider extends JsonProviderDecorator {
 
         private final JsonSchema schema;
-        private final Function<JsonParser, ProblemHandler> handlerSupplier;
+        private final Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier;
         
         private ValidatingJsonProvider(JsonProvider realProvier, JsonSchema schema, 
-                Function<JsonParser, ProblemHandler> handlerSupplier) {
+                Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
             super(realProvier);
             this.schema = schema;
             this.handlerSupplier = handlerSupplier;

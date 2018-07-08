@@ -100,8 +100,9 @@ public class SimpleSchema extends AbstractJsonSchema {
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
-        LogicalEvaluator evaluator = createLogicalEvaluator(type, false);
-        return appendEvaluatorsTo(evaluator, type);
+        LogicalEvaluator.Builder builder = createLogicalEvaluator(type, false);
+        appendEvaluatorsTo(builder, type);
+        return builder.build();
     }
 
     public void setAbsoluteId(URI id) {
@@ -113,17 +114,16 @@ public class SimpleSchema extends AbstractJsonSchema {
         return new Negated(this);
     }
 
-    protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
+    protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
         assertions.stream()
             .filter(a->a.canApplyTo(type))
             .map(a->a.createEvaluator(type))
             .filter(Objects::nonNull)
-            .forEach(evaluator::append);
-        return evaluator;
+            .forEach(builder::append);
     }
     
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
-        return Evaluators.newConjunctionEvaluator(type, extensible);
+    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
+        return Evaluators.newConjunctionEvaluatorBuilder(type, extendable);
     } 
     
     @Override
@@ -145,7 +145,7 @@ public class SimpleSchema extends AbstractJsonSchema {
         }
         assertions.forEach(assertion->assertion.addToJson(builder));
     }
-
+    
     /**
      * Negated type of enclosing class.
      *  
@@ -158,8 +158,8 @@ public class SimpleSchema extends AbstractJsonSchema {
         }
   
         @Override
-        protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
-            return Evaluators.newDisjunctionEvaluator(type, extensible);
+        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
+            return Evaluators.newDisjunctionEvaluatorBuilder(type, extendable);
         } 
     }
 }

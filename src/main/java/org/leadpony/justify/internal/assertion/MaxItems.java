@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified with "maxItems" keyword.
+ * Assertion specified with "maxItems" validation keyword.
  * 
  * @author leadpony
  */

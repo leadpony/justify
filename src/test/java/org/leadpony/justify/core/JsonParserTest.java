@@ -521,9 +521,13 @@ public class JsonParserTest {
             
             assertThat(actual).isEqualTo(expected);
             assertThat(problems.isEmpty()).isEqualTo(valid);
-            if (!problems.isEmpty()) {
-                problems.forEach(System.out::println);
-            }
+            printProblems(problems);
+        }
+    }
+    
+    private static void printProblems(List<Problem> problems) {
+        if (!problems.isEmpty()) {
+            ProblemHandlers.printingWith(System.out::println).accept(problems);
         }
     }
 }

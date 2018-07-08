@@ -32,7 +32,7 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
- * Assertion specified with "required" keyword.
+ * Assertion specified with "required" validation keyword.
  * 
  * @author leadpony
  */

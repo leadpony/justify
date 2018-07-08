@@ -32,6 +32,8 @@ import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
+ * Assertion specified with "uniqueItems" validation keyword.
+ * 
  * @author leadpony
  */
 class UniqueItems extends AbstractAssertion {

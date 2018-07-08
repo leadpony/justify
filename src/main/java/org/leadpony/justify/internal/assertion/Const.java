@@ -27,7 +27,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Assertion specified with "const" keyword.
+ * Assertion specified with "const" validation keyword.
  * 
  * @author leadpony
  */

@@ -27,6 +27,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -98,25 +99,26 @@ class CompositeSchema extends SimpleSchema {
     }
     
     private Evaluator createEvaluatorForArray() {
-        LogicalEvaluator logical = createLogicalEvaluator(InstanceType.ARRAY, true);
-        appendEvaluatorsTo(logical, InstanceType.ARRAY);
-        return new ArrayWalker(logical, this.itemSchemaFinder);
+        LogicalEvaluator.Builder builder = createLogicalEvaluator(InstanceType.ARRAY, true);
+        appendEvaluatorsTo(builder, InstanceType.ARRAY);
+        ExtendableLogicalEvaluator evaluator = (ExtendableLogicalEvaluator)builder.build();
+        return new ArrayWalker(evaluator, this.itemSchemaFinder);
     }
     
     private Evaluator createEvaluatorForObject() {
-        LogicalEvaluator logical = createLogicalEvaluator(InstanceType.OBJECT, true);
-        appendEvaluatorsTo(logical, InstanceType.OBJECT);
-        return new ObjectWalker(logical, this.propertySchemaFinder);
+        LogicalEvaluator.Builder builder = createLogicalEvaluator(InstanceType.OBJECT, true);
+        appendEvaluatorsTo(builder, InstanceType.OBJECT);
+        ExtendableLogicalEvaluator evaluator = (ExtendableLogicalEvaluator)builder.build();
+        return new ObjectWalker(evaluator, this.propertySchemaFinder);
     }
 
     @Override
-    protected LogicalEvaluator appendEvaluatorsTo(LogicalEvaluator evaluator, InstanceType type) {
-        super.appendEvaluatorsTo(evaluator, type);
+    protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
+        super.appendEvaluatorsTo(builder, type);
         getSubschemaAsStream()
             .map(s->s.createEvaluator(type))
             .filter(Objects::nonNull)
-            .forEach(evaluator::append);
-        return evaluator;
+            .forEach(builder::append);
     }
     
     @Override
@@ -148,8 +150,8 @@ class CompositeSchema extends SimpleSchema {
         }
         
         @Override
-        protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean extensible) {
-            return Evaluators.newDisjunctionEvaluator(type, extensible);
+        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
+            return Evaluators.newDisjunctionEvaluatorBuilder(type, extendable);
         } 
 
         protected Stream<JsonSchema> getSubschemaAsStream() {

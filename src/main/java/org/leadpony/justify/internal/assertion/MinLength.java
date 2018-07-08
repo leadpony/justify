@@ -17,7 +17,7 @@
 package org.leadpony.justify.internal.assertion;
 
 /**
- * Assertion specified with "minLength" keyword.
+ * Assertion specified with "minLength" validation keyword.
  * 
  * @author leadpony
  */

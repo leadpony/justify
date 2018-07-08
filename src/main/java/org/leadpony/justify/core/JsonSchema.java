@@ -113,6 +113,7 @@ public interface JsonSchema {
 
     /**
      * JSON Schema represented by an empty JSON object.
+     * This schema is always evaluated as true.  
      */
     JsonSchema EMPTY = new JsonSchema() {
         
@@ -138,7 +139,8 @@ public interface JsonSchema {
     };
 
     /**
-     * The JSON schema which evaluates any JSON instances as valid.
+     * The JSON schema which is always evaluated as true.
+     * Any JSON instance satisfy this schema.
      */
     JsonSchema TRUE = new JsonSchema() {
         
@@ -164,7 +166,8 @@ public interface JsonSchema {
     };
     
     /**
-     * The JSON schema which evaluates any JSON instances as invalid.
+     * The JSON schema which is always evaluated as false.
+     * Any JSON instance does not satisfy this schema.
      */
     JsonSchema FALSE = new JsonSchema() {
         

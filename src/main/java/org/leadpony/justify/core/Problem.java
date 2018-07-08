@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.core;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -79,9 +80,24 @@ public interface Problem {
      * Returns all parameters of this problem as a map.
      * 
      * @return the map containing all parameters this problem has.
+     *         The map may be empty, but never be {@code null}.
      */
     Map<String, ?> parametersAsMap();
-
+    
+    /**
+     * Checks if this problem has subproblems or not.
+     * 
+     * @return {@code true} if this problem has subproblems, {@code false} otherwise.
+     */
+    boolean hasSubproblem();
+    
+    /**
+     * Returns all subproblems of this problem.
+     * 
+     * @return the list of subproblem list. It may be empty but never be {@code null}.
+     */
+    List<List<Problem>> getSubproblems();
+    
     /**
      * Returns the same string as {@link #getContextualMessage()} for the default locale.
      * 

@@ -20,7 +20,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 
 /**
  * Evaluator which walks a container (array or object).
@@ -29,9 +29,9 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  */
 abstract class ContainerWalker implements Evaluator {
 
-    private final LogicalEvaluator logical;
+    private final ExtendableLogicalEvaluator logical;
     
-    protected ContainerWalker(LogicalEvaluator logical) {
+    protected ContainerWalker(ExtendableLogicalEvaluator logical) {
         this.logical = logical;
     }
 
@@ -44,7 +44,10 @@ abstract class ContainerWalker implements Evaluator {
     }
     
     protected void appendChild(Evaluator child) {
-        this.logical.append((event, parser, depth, reporter)->{
+        if (child == null) {
+            return;
+        }
+        this.logical.extend((event, parser, depth, reporter)->{
             assert depth > 0;
             return child.evaluate(event, parser, depth - 1, reporter);
         });
