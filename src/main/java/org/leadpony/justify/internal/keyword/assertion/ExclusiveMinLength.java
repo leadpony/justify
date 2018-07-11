@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
-
-import org.leadpony.justify.core.Evaluator;
+package org.leadpony.justify.internal.keyword.assertion;
 
 /**
- * Evaluator to be instantiated by boolean logic.
- * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+class ExclusiveMinLength extends AbstractStringLengthAssertion {
 
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    public ExclusiveMinLength(int bound) {
+        super(bound, "exclusiveMinLength", "instance.problem.exclusive.min.length");
+    }
+
+    @Override
+    public Assertion negate() {
+        return new MaxLength(bound);
+    }
+
+    @Override
+    protected boolean test(int actualLength, int bound) {
+        return actualLength > bound;
     }
 }

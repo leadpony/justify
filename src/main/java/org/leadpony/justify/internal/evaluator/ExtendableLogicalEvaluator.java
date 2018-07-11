@@ -16,19 +16,10 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
-
 /**
  * {@code LogicalEvaluator} which can be extended during the evaluation.
  * 
  * @author leadpony
  */
-public interface ExtendableLogicalEvaluator extends LogicalEvaluator {
-
-    /**
-     * Appends an evaluator to this logical evaluator.
-     * 
-     * @param evaluator the evaluator to append.
-     */
-    void extend(Evaluator evaluator);
+public interface ExtendableLogicalEvaluator extends LogicalEvaluator, EvaluatorAppender {
 }

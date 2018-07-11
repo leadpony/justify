@@ -19,24 +19,16 @@ package org.leadpony.justify.internal.evaluator;
 import org.leadpony.justify.core.Evaluator;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Appender of evaluators.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+public interface EvaluatorAppender {
 
     /**
-     * The type for building an instance of {@link LogicalEvaluator}.
+     * Appends an evaluator.
      * 
-     * @author leadpony
+     * @param evaluator the evaluator to append, cannot be {@code null}.
      */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
-    }
+    void append(Evaluator evaluator);
 }

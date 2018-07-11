@@ -14,29 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
-
-import org.leadpony.justify.core.Evaluator;
-
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Provides validation keywords combining subschemas.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
-
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
-    }
-}
+package org.leadpony.justify.internal.keyword.combiner;

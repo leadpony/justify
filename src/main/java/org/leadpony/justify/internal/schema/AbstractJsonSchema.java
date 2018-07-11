@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.schema;
 
 import java.io.StringWriter;
 
-import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
@@ -31,24 +31,20 @@ import org.leadpony.justify.core.JsonSchema;
  * @author leadpony
  */
 abstract class AbstractJsonSchema implements JsonSchema {
+    
+    private final JsonProvider jsonProvider;
 
-    /**
-     *  Cached negated schema of this schema.
-     */
-    private AbstractJsonSchema negated;
-    
-    @Override
-    public JsonSchema negate() {
-        if (this.negated == null) {
-            this.negated = createNegatedSchema();
-            this.negated.negated = this;
-        }
-        return this.negated;
+    protected AbstractJsonSchema(JsonProvider jsonProvider) {
+        this.jsonProvider = jsonProvider;
     }
-    
+
+    protected AbstractJsonSchema(AbstractJsonSchema other) {
+        this.jsonProvider = other.jsonProvider;
+    }
+
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonObjectBuilder builder = getJsonProvider().createObjectBuilder();
         addToJson(builder);
         return builder.build();
     }
@@ -56,10 +52,14 @@ abstract class AbstractJsonSchema implements JsonSchema {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        try (JsonGenerator generator = Json.createGenerator(writer)) {
+        try (JsonGenerator generator = getJsonProvider().createGenerator(writer)) {
             generator.write(toJson());
         }
         return writer.toString();
+    }
+    
+    protected JsonProvider getJsonProvider() {
+        return jsonProvider;
     }
     
     /**
@@ -67,12 +67,5 @@ abstract class AbstractJsonSchema implements JsonSchema {
      * 
      * @param builder the builder for building JSON object, never be {@code null}.
      */
-    public abstract void addToJson(JsonObjectBuilder builder); 
-
-    /**
-     * Creates a negated version of this schema.
-     * 
-     * @return the negated version of this schema.
-     */
-    protected abstract AbstractJsonSchema createNegatedSchema();
+    protected abstract void addToJson(JsonObjectBuilder builder); 
 }

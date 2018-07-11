@@ -14,41 +14,35 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * {@link DisjunctionEvaluator} which can be extended.
+ * Assertion only inspecting events occurred at current depth.
  * 
  * @author leadpony
  */
-class ExtendableDisjunctionEvaluator extends LongDisjunctionEvaluator
-        implements ExtendableLogicalEvaluator {
-
-    public static LogicalEvaluator.Builder builder(Event finalEvent) {
-        return new ExtendableDisjunctionEvaluator(finalEvent);
-    }
-    
-    private ExtendableDisjunctionEvaluator(Event lastEvent) {
-        super(lastEvent);
-    }
+abstract class ShallowAssertion implements Assertion, Evaluator {
 
     @Override
-    public Evaluator build() {
-        return this;
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+        appender.append(this);
     }
     
     @Override
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth == 0 && event == lastEvent) {
-            assert isEmpty();
-            return conclude(parser, reporter);
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        if (depth <= 1) {
+            return evaluateShallow(event, parser, depth, reporter);
         } else {
             return Result.PENDING;
         }
     }
+    
+    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter);
 }

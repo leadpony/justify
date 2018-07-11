@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.assertion;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Assertion on JSON instances.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
-
+public interface Assertion extends Keyword {
+    
     /**
-     * The type for building an instance of {@link LogicalEvaluator}.
+     * {@inheritDoc}
      * 
-     * @author leadpony
+     * <p>All assertions can be evaluated.</p>
      */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    @Override
+    default boolean canEvaluate() {
+        return true;
+    }
+    
+    /**
+     * Returns the negated version of this assertion.
+     * 
+     * @return the negated version of this assertion.
+     */
+    @Override
+    default Assertion negate() {
+        throw new UnsupportedOperationException(
+                name() + " does not support negation.");
     }
 }

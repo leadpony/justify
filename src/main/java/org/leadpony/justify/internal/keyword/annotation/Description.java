@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.annotation;
 
-import org.leadpony.justify.core.Evaluator;
+import javax.json.JsonObjectBuilder;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * "description" annotation keyword.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+public class Description implements Annotation<String> {
+    
+    private final String value;
+    
+    public Description(String value) {
+        this.value = value;
+    }
 
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    @Override
+    public String name() {
+        return "description";
+    }
+
+    @Override
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), value());
+    }
+    
+    @Override
+    public String value() {
+        return value;
     }
 }

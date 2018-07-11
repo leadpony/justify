@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.assertion;
 
-import org.leadpony.justify.core.Evaluator;
+import java.math.BigDecimal;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Assertion specified with "exclusiveMaximum" validation keyword.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+class ExclusiveMaximum extends AbstractNumericBoundAssertion {
 
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    public ExclusiveMaximum(BigDecimal bound) {
+        super(bound, "exclusiveMaximum", "instance.problem.exclusive.maximum");
+    }
+
+    @Override
+    public Assertion negate() {
+        return new Minimum(this.bound);
+    }
+
+    @Override
+    protected boolean test(BigDecimal actual, BigDecimal bound) {
+        return actual.compareTo(bound) < 0;
     }
 }

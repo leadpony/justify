@@ -51,7 +51,6 @@ public final class ProblemHandlers {
      * @throws NullPointerException if specified {@code lineConsumer} was {@code null}.
      */
     public static Consumer<List<Problem>> printingWith(Consumer<String> lineConsumer) {
-        Objects.requireNonNull(lineConsumer, "lineConsumer must not be null.");
         return JsonValidationServiceProvider.provider().createProblemPrinter(lineConsumer);
     }
 

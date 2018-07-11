@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.combiner;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * "Then" conditional keyword.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+public class Then extends Conditional {
 
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    public Then(JsonSchema schema) {
+        super(schema);
+    }
+
+    @Override
+    public String name() {
+        return "then";
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return false;
     }
 }

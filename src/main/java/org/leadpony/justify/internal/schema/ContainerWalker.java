@@ -47,7 +47,7 @@ abstract class ContainerWalker implements Evaluator {
         if (child == null) {
             return;
         }
-        this.logical.extend((event, parser, depth, reporter)->{
+        this.logical.append((event, parser, depth, reporter)->{
             assert depth > 0;
             return child.evaluate(event, parser, depth - 1, reporter);
         });

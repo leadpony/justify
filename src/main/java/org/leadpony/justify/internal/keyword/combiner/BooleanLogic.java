@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword.combiner;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Boolean logic keyword.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
-
+public interface BooleanLogic extends Keyword {
+    
     /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
+     * {@inheritDoc}
      */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    @Override
+    default boolean canEvaluate() {
+        return true;
     }
 }

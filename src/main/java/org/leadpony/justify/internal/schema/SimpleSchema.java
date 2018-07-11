@@ -17,19 +17,19 @@
 package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.assertion.Assertion;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * JSON Schema without any subschemas including child schemas.
@@ -42,19 +42,13 @@ public class SimpleSchema extends AbstractJsonSchema {
     private final URI originalId;
     private final URI schema;
     
-    private final String title;
-    private final String description;
-    private final JsonValue defaultValue;
-    
-    private final List<Assertion> assertions;
+    private final Collection<Keyword> keywords;
     
     SimpleSchema(DefaultSchemaBuilder builder) {
+        super(builder.getJsonProvider());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
-        this.title = builder.getTitle();
-        this.description = builder.getDescription();
-        this.defaultValue = builder.getDefault();
-        this.assertions = builder.getAssertions();
+        this.keywords = builder.getKeywords();
     }
     
     /**
@@ -64,15 +58,13 @@ public class SimpleSchema extends AbstractJsonSchema {
      * @param negating {@code true} if this schema is negation of the original.
      */
     SimpleSchema(SimpleSchema original, boolean negating) {
+        super(original);
         assert negating;
         this.id = original.id;
         this.originalId = original.originalId;
         this.schema = original.schema;
-        this.title = original.title;
-        this.description = original.description;
-        this.defaultValue = original.defaultValue;
-        this.assertions = original.assertions.stream()
-                .map(Assertion::negate)
+        this.keywords = original.keywords.stream()
+                .map(Keyword::negate)
                 .collect(Collectors.toList());
     }
     
@@ -105,21 +97,22 @@ public class SimpleSchema extends AbstractJsonSchema {
         return builder.build();
     }
 
+    @Override
+    public JsonSchema negate() {
+        return new Negated(this);
+    }
+
     public void setAbsoluteId(URI id) {
         this.id = id;
     }
  
-    @Override
-    protected AbstractJsonSchema createNegatedSchema() {
-        return new Negated(this);
-    }
-
     protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
-        assertions.stream()
-            .filter(a->a.canApplyTo(type))
-            .map(a->a.createEvaluator(type))
-            .filter(Objects::nonNull)
-            .forEach(builder::append);
+        JsonProvider jsonProvider = getJsonProvider();
+        for (Keyword keyword : this.keywords) {
+            if (keyword.canEvaluate()) {
+                keyword.createEvaluator(type, builder, jsonProvider);
+            }
+        }
     }
     
     protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
@@ -134,16 +127,7 @@ public class SimpleSchema extends AbstractJsonSchema {
         if (this.schema != null) {
             builder.add("$schema", this.schema.toString());
         }
-        if (this.title != null) {
-            builder.add("title", this.title);
-        }
-        if (this.description != null) {
-            builder.add("description", this.description);
-        }
-        if (this.defaultValue != null) {
-            builder.add("default", this.defaultValue);
-        }
-        assertions.forEach(assertion->assertion.addToJson(builder));
+        keywords.forEach(keyword->keyword.addToJson(builder));
     }
     
     /**

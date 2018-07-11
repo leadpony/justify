@@ -16,10 +16,7 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.json.JsonObjectBuilder;
 
@@ -39,14 +36,12 @@ class CompositeSchema extends SimpleSchema {
     
     private final PropertySchemaFinder propertySchemaFinder;
     private final ItemSchemaFinder itemSchemaFinder;
-    private final List<SchemaComponent> components;
     private NavigableSchemaMap subschemaMap;
     
     CompositeSchema(DefaultSchemaBuilder builder) {
         super(builder);
         this.propertySchemaFinder = builder.getPropertySchemaFinder();
         this.itemSchemaFinder = builder.getItemSchemaFinder();
-        this.components = builder.getSubschemas();
         this.subschemaMap = builder.getSubschemaMap();
     }
 
@@ -61,7 +56,6 @@ class CompositeSchema extends SimpleSchema {
         assert negating;
         this.propertySchemaFinder = original.propertySchemaFinder.negate();
         this.itemSchemaFinder = original.itemSchemaFinder.negate();
-        this.components = original.components;
         this.subschemaMap = original.subschemaMap;
     }
 
@@ -94,7 +88,7 @@ class CompositeSchema extends SimpleSchema {
     }
     
     @Override
-    protected AbstractJsonSchema createNegatedSchema() {
+    public JsonSchema negate() {
         return new Negated(this);
     }
     
@@ -113,24 +107,10 @@ class CompositeSchema extends SimpleSchema {
     }
 
     @Override
-    protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
-        super.appendEvaluatorsTo(builder, type);
-        getSubschemaAsStream()
-            .map(s->s.createEvaluator(type))
-            .filter(Objects::nonNull)
-            .forEach(builder::append);
-    }
-    
-    @Override
     public void addToJson(JsonObjectBuilder builder) {
         super.addToJson(builder);
         propertySchemaFinder.addToJson(builder);
         itemSchemaFinder.addToJson(builder);
-        components.forEach(schema->schema.addToJson(builder));
-    }
-    
-    protected Stream<JsonSchema> getSubschemaAsStream() {
-        return components.stream().map(s->s);
     }
     
     /**
@@ -140,22 +120,13 @@ class CompositeSchema extends SimpleSchema {
      */
     private static class Negated extends CompositeSchema {
         
-        private final List<JsonSchema> negatedSubschemas;
-        
         private Negated(CompositeSchema original) {
             super(original, true);
-            this.negatedSubschemas = original.components.stream()
-                    .map(JsonSchema::negate)
-                    .collect(Collectors.toList());
         }
         
         @Override
         protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
             return Evaluators.newDisjunctionEvaluatorBuilder(type, extendable);
         } 
-
-        protected Stream<JsonSchema> getSubschemaAsStream() {
-            return negatedSubschemas.stream();
-        }
     }
 }
