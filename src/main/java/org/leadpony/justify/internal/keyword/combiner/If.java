@@ -30,12 +30,12 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public class If extends Conditional {
+class If extends Conditional {
     
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
 
-    public If(JsonSchema schema) {
+    If(JsonSchema schema) {
         super(schema);
     }
     

@@ -220,6 +220,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "items":
             addItems(builder);
             break;
+        case "maxContains":
+            addMaxContains(builder);
+            break;
         case "maximum":
             addMaximum(builder);
             break;
@@ -231,6 +234,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
             break;
         case "maxProperties":
             addMaxProperties(builder);
+            break;
+        case "minContains":
+            addMinContains(builder);
             break;
         case "minimum":
             addMinimum(builder);
@@ -402,58 +408,103 @@ public class BasicSchemaReader implements JsonSchemaReader {
             skipValue(event);
         }
     }
+    
+    private void addMaxContains(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
+            builder.withMaxContains(parser.getInt());
+        } else {
+            skipValue(event);
+        }
+    }
 
     private void addMaximum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMaximum(parser.getBigDecimal());
+        } else {
+            skipValue(event);
         }
     }
     
     private void addMaxItems(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMaxItems(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMaxLength(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMaxLength(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMaxProperties(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMaxProperties(parser.getInt());
+        } else {
+            skipValue(event);
+        }
+    }
+
+    private void addMinContains(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
+            builder.withMinContains(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMinimum(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMinimum(parser.getBigDecimal());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMinItems(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMinItems(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMinLength(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMinLength(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMinProperties(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMinProperties(parser.getInt());
+        } else {
+            skipValue(event);
         }
     }
 
     private void addMultipleOf(JsonSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_NUMBER) {
+        Event event = parser.next();
+        if (event == Event.VALUE_NUMBER) {
             builder.withMultipleOf(parser.getBigDecimal());
+        } else {
+            skipValue(event);
         }
     }
 

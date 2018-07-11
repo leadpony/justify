@@ -16,37 +16,43 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
+import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator.Builder;
+import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Boolean logic specified with "anyOf" validation keyword.
- *
  * @author leadpony
  */
-class AnyOf extends NaryBooleanLogic {
+class MinContains implements Keyword {
     
-    AnyOf(Collection<JsonSchema> subschemas) {
-        super(subschemas);
+    private final int value;
+    
+    MinContains(int value) {
+        this.value = value;
+    }
+    
+    int value() {
+        return value;
     }
 
     @Override
     public String name() {
-        return "anyOf";
-    }
-    
-    @Override
-    public Keyword negate() {
-        return new AllOf(negateSubschemas());
+        return "minContains";
     }
 
     @Override
-    protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newDisjunctionEvaluatorBuilder(type, false);
+    public boolean canEvaluate() {
+        return false;
+    }
+    
+    @Override
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    }
+
+    @Override
+    public void addToJson(JsonObjectBuilder builder) {
+        builder.add(name(), value);
     }
 }

@@ -38,6 +38,7 @@ public class SpecTest extends AbstractValidationTest {
             "/spec/tests/draft7/anyOf.json",
             "/spec/tests/draft7/boolean_schema.json",
             "/spec/tests/draft7/const.json",
+            "/spec/tests/draft7/contains.json",
             "/spec/tests/draft7/default.json",
             "/spec/tests/draft7/definitions.json",
             "/spec/tests/draft7/enum.json",

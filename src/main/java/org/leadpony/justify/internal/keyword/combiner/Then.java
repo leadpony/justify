@@ -23,9 +23,9 @@ import org.leadpony.justify.core.JsonSchema;
  * 
  * @author leadpony
  */
-public class Then extends Conditional {
+class Then extends Conditional {
 
-    public Then(JsonSchema schema) {
+    Then(JsonSchema schema) {
         super(schema);
     }
 

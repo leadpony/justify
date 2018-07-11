@@ -210,6 +210,10 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withContains(JsonSchema subschema);
     
+    JsonSchemaBuilder withMaxContains(int value);
+
+    JsonSchemaBuilder withMinContains(int value);
+
     /* Validation Keywords for Objects */
     
     JsonSchemaBuilder withMaxProperties(int bound);

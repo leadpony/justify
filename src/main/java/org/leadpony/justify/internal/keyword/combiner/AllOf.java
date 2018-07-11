@@ -29,9 +29,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-public class AllOf extends NaryBooleanLogic {
+class AllOf extends NaryBooleanLogic {
     
-    public AllOf(Collection<JsonSchema> subschemas) {
+    AllOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
 

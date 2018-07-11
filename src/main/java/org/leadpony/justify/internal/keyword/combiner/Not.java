@@ -29,12 +29,12 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public class Not implements BooleanLogic {
+class Not implements BooleanLogic {
     
     private final JsonSchema subschema;
     private final JsonSchema negatedSubschema;
     
-    public Not(JsonSchema subschema) {
+    Not(JsonSchema subschema) {
         this(subschema, subschema.negate());
     }
 

@@ -16,20 +16,10 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import org.leadpony.justify.internal.keyword.Keyword;
-
 /**
  * Boolean logic keyword.
  * 
  * @author leadpony
  */
-public interface BooleanLogic extends Keyword {
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default boolean canEvaluate() {
-        return true;
-    }
+public interface BooleanLogic extends Combiner {
 }

@@ -42,13 +42,7 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
-import org.leadpony.justify.internal.keyword.combiner.AllOf;
-import org.leadpony.justify.internal.keyword.combiner.AnyOf;
-import org.leadpony.justify.internal.keyword.combiner.Else;
-import org.leadpony.justify.internal.keyword.combiner.If;
-import org.leadpony.justify.internal.keyword.combiner.Not;
-import org.leadpony.justify.internal.keyword.combiner.OneOf;
-import org.leadpony.justify.internal.keyword.combiner.Then;
+import org.leadpony.justify.internal.keyword.combiner.Combiners;
 
 /**
  * Default implementation of {@link JsonSchemaBuilder}.
@@ -329,8 +323,21 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        // TODO:
+        addKeyword(Combiners.contains(subschema));
+        registerSubschema("/contains", subschema);
         return builderWithSubschema();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withMaxContains(int value) {
+        addKeyword(Combiners.maxContains(value));
+        return builderNonempty();
+    }
+
+    @Override
+    public JsonSchemaBuilder withMinContains(int value) {
+        addKeyword(Combiners.minContains(value));
+        return builderNonempty();
     }
 
     @Override
@@ -375,7 +382,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        addKeyword(new AllOf(subschemas));
+        addKeyword(Combiners.allOf(subschemas));
         registerSubschemas("allOf", subschemas);
         return builderWithSubschema();
     }
@@ -389,7 +396,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        addKeyword(new AnyOf(subschemas));
+        addKeyword(Combiners.anyOf(subschemas));
         registerSubschemas("anyOf", subschemas);
         return builderWithSubschema();
     }
@@ -403,7 +410,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        addKeyword(new OneOf(subschemas));
+        addKeyword(Combiners.oneOf(subschemas));
         registerSubschemas("oneOf", subschemas);
         return builderWithSubschema();
     }
@@ -411,7 +418,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        addKeyword(new Not(subschema));
+        addKeyword(Combiners.not(subschema));
         registerSubschema("/not", subschema);
         return builderWithSubschema();
     }
@@ -419,7 +426,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        addKeyword(new If(subschema));
+        addKeyword(Combiners.if_(subschema));
         registerSubschema("/if", subschema);
         return builderWithSubschema();
     }
@@ -427,7 +434,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        addKeyword(new Then(subschema));
+        addKeyword(Combiners.then_(subschema));
         registerSubschema("/then", subschema);
         return builderWithSubschema();
     }
@@ -435,7 +442,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        addKeyword(new Else(subschema));
+        addKeyword(Combiners.else_(subschema));
         registerSubschema("/else", subschema);
         return builderWithSubschema();
     }

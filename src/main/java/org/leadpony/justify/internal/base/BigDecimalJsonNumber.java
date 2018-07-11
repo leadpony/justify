@@ -22,6 +22,8 @@ import java.math.BigInteger;
 import javax.json.JsonNumber;
 
 /**
+ * Implementation of {@link JsonNumber}.
+ * 
  * @author leadpony
  */
 class BigDecimalJsonNumber implements JsonNumber {
@@ -97,5 +99,10 @@ class BigDecimalJsonNumber implements JsonNumber {
         }
         JsonNumber otherNumber  = (JsonNumber)other;
         return value.compareTo(otherNumber.bigDecimalValue()) == 0;
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
     }
 }

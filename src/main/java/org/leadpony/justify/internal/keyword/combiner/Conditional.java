@@ -21,21 +21,22 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
+ * Base type for "if", "then", and "else".
+ * 
  * @author leadpony
  */
-abstract class Conditional implements Keyword {
+abstract class Conditional implements Combiner {
 
-    private final JsonSchema schema;
+    private final JsonSchema subschema;
     
-    protected Conditional(JsonSchema schema) {
-        this.schema = schema;
+    protected Conditional(JsonSchema subschema) {
+        this.subschema = subschema;
     }
     
-    public JsonSchema getSchema() {
-        return schema;
+    JsonSchema getSchema() {
+        return subschema;
     }
 
     @Override
@@ -44,6 +45,6 @@ abstract class Conditional implements Keyword {
     
     @Override
     public void addToJson(JsonObjectBuilder builder) {
-        builder.add(name(), schema.toJson());
+        builder.add(name(), subschema.toJson());
     }
 }

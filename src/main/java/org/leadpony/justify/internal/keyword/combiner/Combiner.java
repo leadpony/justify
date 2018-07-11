@@ -16,37 +16,15 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
-
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator.Builder;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Boolean logic specified with "anyOf" validation keyword.
- *
  * @author leadpony
  */
-class AnyOf extends NaryBooleanLogic {
-    
-    AnyOf(Collection<JsonSchema> subschemas) {
-        super(subschemas);
-    }
+public interface Combiner extends Keyword {
 
     @Override
-    public String name() {
-        return "anyOf";
-    }
-    
-    @Override
-    public Keyword negate() {
-        return new AllOf(negateSubschemas());
-    }
-
-    @Override
-    protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newDisjunctionEvaluatorBuilder(type, false);
+    default boolean canEvaluate() {
+        return true;
     }
 }
