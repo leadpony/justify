@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Map;
 
+import javax.json.spi.JsonProvider;
+
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
@@ -30,7 +32,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-class If extends Conditional {
+class If extends UnaryCombiner {
     
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
@@ -50,11 +52,11 @@ class If extends Conditional {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         if (thenSchema == null && elseSchema == null) {
             return;
         }
-        Evaluator ifEvaluator = getSchema().createEvaluator(type);
+        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
         Evaluator thenEvaluator = thenSchema != null ?
                 thenSchema.createEvaluator(type) : null;
         Evaluator elseEvaluator = elseSchema != null ?
@@ -65,10 +67,10 @@ class If extends Conditional {
     @Override
     public void configure(Map<String, Keyword> others) {
         if (others.containsKey("then")) {
-            thenSchema = ((Conditional)others.get("then")).getSchema();
+            thenSchema = ((UnaryCombiner)others.get("then")).getSubschema();
         }
         if (others.containsKey("else")) {
-            elseSchema = ((Conditional)others.get("else")).getSchema();
+            elseSchema = ((UnaryCombiner)others.get("else")).getSubschema();
         }
     }
 }

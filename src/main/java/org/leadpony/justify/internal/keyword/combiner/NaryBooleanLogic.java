@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -46,7 +47,7 @@ abstract class NaryBooleanLogic implements BooleanLogic {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         LogicalEvaluator.Builder builder = createEvaluatorBuilder(type);
         this.subschemas.stream()
                 .map(s->s.createEvaluator(type))

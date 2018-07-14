@@ -143,27 +143,6 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     }
     
     @Override
-    public JsonSchemaBuilder withTitle(String title) {
-        Objects.requireNonNull(title, "title must not be null.");
-        addKeyword(new Title(title));
-        return builderNonempty();
-    }
-
-    @Override
-    public JsonSchemaBuilder withDescription(String description) {
-        Objects.requireNonNull(description, "description must not be null.");
-        addKeyword(new Description(description));
-        return builderNonempty();
-    }
-    
-    @Override
-    public JsonSchemaBuilder withDefault(JsonValue value) {
-        Objects.requireNonNull(value, "value must not be null.");
-        addKeyword(new Default(value));
-        return builderNonempty();
-    }
-
-    @Override
     public JsonSchemaBuilder withConst(JsonValue value) {
         Objects.requireNonNull(value, "value must not be null.");
         addKeyword(Assertions.const_(value));
@@ -372,6 +351,14 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         registerSubschema("/additionalProperties", subschema);
         return builderWithSubschema();
     }
+   
+    @Override
+    public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        addKeyword(Combiners.propertyNames(subschema));
+        registerSubschema("/propertyNames", subschema);
+        return builderWithSubschema();
+    }
     
     @Override
     public JsonSchemaBuilder withAllOf(JsonSchema... subschemas) {
@@ -464,6 +451,27 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         }
         registerSubschema(jsonPointer, subschema);
         return builderWithSubschema();
+    }
+ 
+    @Override
+    public JsonSchemaBuilder withTitle(String title) {
+        Objects.requireNonNull(title, "title must not be null.");
+        addKeyword(new Title(title));
+        return builderNonempty();
+    }
+
+    @Override
+    public JsonSchemaBuilder withDescription(String description) {
+        Objects.requireNonNull(description, "description must not be null.");
+        addKeyword(new Description(description));
+        return builderNonempty();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withDefault(JsonValue value) {
+        Objects.requireNonNull(value, "value must not be null.");
+        addKeyword(new Default(value));
+        return builderNonempty();
     }
     
     @Override

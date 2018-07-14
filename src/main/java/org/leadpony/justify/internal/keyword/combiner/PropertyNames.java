@@ -16,45 +16,50 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.JsonObjectBuilder;
 import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * @author leadpony
  */
-class MinContains implements Keyword {
-    
-    private final int value;
-    
-    MinContains(int value) {
-        this.value = value;
-    }
-    
-    int value() {
-        return value;
+class PropertyNames extends UnaryCombiner implements Evaluator {
+
+    PropertyNames(JsonSchema subschema) {
+        super(subschema);
     }
 
     @Override
     public String name() {
-        return "minContains";
+        return "propertyNames";
     }
 
-    @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-    
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
-        throw new UnsupportedOperationException();
+        if (type == InstanceType.OBJECT) {
+            appender.append(this);
+        }
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        builder.add(name(), value);
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        if (depth == 0 && event == Event.END_OBJECT) {
+            return Result.TRUE;
+        } else if (depth == 1 && event == Event.KEY_NAME) {
+            evaluateName(event, parser, depth, reporter);
+        }
+        return Result.PENDING;
+    }
+    
+    private void evaluateName(Event event, JsonParser parser, int depth, Reporter reporter) {
+        Evaluator evaluator = getSubschema().createEvaluator(InstanceType.STRING);
+        if (evaluator != null) {
+            evaluator.evaluate(event, parser, depth, reporter);
+        }
     }
 }

@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.math.BigDecimal;
+
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -24,25 +27,32 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * Assertion only inspecting events occurred at current depth.
+ * Assertion on values of numeric type.
  * 
  * @author leadpony
  */
-abstract class ShallowAssertion implements Assertion, Evaluator {
+abstract class AbstractNumericAssertion implements Assertion, Evaluator {
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-        appender.append(this);
-    }
-    
-    @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth <= 1) {
-            return evaluateShallow(event, parser, depth, reporter);
-        } else {
-            return Result.PENDING;
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+        if (type.isNumeric()) {
+            appender.append(this);
         }
     }
+
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        assert event == Event.VALUE_NUMBER;
+        return evaluateAgainstNumber(parser.getBigDecimal(), parser, reporter);
+    }
     
-    protected abstract Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter);
+    /**
+     * Evaluates this assertion on a numeric value.
+     * 
+     * @param value the value to apply this assertion.
+     * @param parser the JSON parser.
+     * @param reporter the reporter to which detected problems will be reported.
+     * @return the result of the evaluation.
+     */
+    protected abstract Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter);
 }

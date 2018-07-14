@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
 
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -38,7 +39,7 @@ class NotRequired extends Required {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         assert type == InstanceType.OBJECT;
         appender.append(new NegatedEvaluator(names));
     }

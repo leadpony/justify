@@ -18,31 +18,25 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * Base type for "if", "then", and "else".
+ * Combiner operating on single subschema.
  * 
  * @author leadpony
  */
-abstract class Conditional implements Combiner {
-
+abstract class UnaryCombiner implements Combiner {
+    
     private final JsonSchema subschema;
     
-    protected Conditional(JsonSchema subschema) {
+    protected UnaryCombiner(JsonSchema subschema) {
         this.subschema = subschema;
     }
     
-    JsonSchema getSchema() {
+    JsonSchema getSubschema() {
         return subschema;
     }
 
-    @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-    }
-    
     @Override
     public void addToJson(JsonObjectBuilder builder) {
         builder.add(name(), subschema.toJson());

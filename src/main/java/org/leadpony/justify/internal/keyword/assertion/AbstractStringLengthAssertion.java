@@ -18,17 +18,14 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * @author leadpony
  */
-abstract class AbstractStringLengthAssertion extends ShallowAssertion {
+abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     
     protected final int bound;
     private final String name;
@@ -46,23 +43,16 @@ abstract class AbstractStringLengthAssertion extends ShallowAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-        if (type == InstanceType.STRING) {
-            appender.append(this);
-        }
-    }
-    
-    @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-        String actual = parser.getString();
-        int actualLength = actual.codePointCount(0, actual.length());
-        if (test(actualLength, this.bound)) {
+    protected Result evaluateAgainstString(String value, Context context, JsonParser parser, Reporter reporter) {
+        int length = value.codePointCount(0, value.length());
+        if (test(length, this.bound)) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage(this.message)
-                    .withParameter("actual", actual.length())
+                    .withParameter("actual", length)
                     .withParameter("bound", this.bound)
+                    .withParameter("context", context.lowerName())
                     .build();
             reporter.reportProblem(p);
             return Result.FALSE;

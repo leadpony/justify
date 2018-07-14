@@ -20,19 +20,16 @@ import java.math.BigDecimal;
 
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.
  * 
  * @author leadpony
  */
-class MultipleOf extends ShallowAssertion {
+class MultipleOf extends AbstractNumericAssertion {
     
     protected final BigDecimal divisor;
     
@@ -46,13 +43,6 @@ class MultipleOf extends ShallowAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-        if (type.isNumeric()) {
-            appender.append(this);
-        }
-    }
-    
-    @Override
     public Assertion negate() {
         throw new UnsupportedOperationException();
     }
@@ -63,20 +53,14 @@ class MultipleOf extends ShallowAssertion {
     }
     
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-        assert event == Event.VALUE_NUMBER;
-        BigDecimal actual = parser.getBigDecimal();
-        return test(actual, parser, reporter);
-    }
-
-    protected Result test(BigDecimal actual, JsonParser parser, Reporter reporter) {
-        BigDecimal remainder = actual.remainder(divisor);
+    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter) {
+        BigDecimal remainder = value.remainder(divisor);
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage("instance.problem.multiple.of")
-                    .withParameter("actual", actual)
+                    .withParameter("actual", value)
                     .withParameter("divisor", divisor)
                     .build();
             reporter.reportProblem(p);

@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
+import javax.json.spi.JsonProvider;
+
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.keyword.Keyword;
@@ -35,7 +37,8 @@ public interface Annotation<T> extends Keyword {
     }
     
     @Override
-    default void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    default void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+        throw new UnsupportedOperationException("Annotations can not be evaluated.");
     }
     
     @Override

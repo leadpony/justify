@@ -62,7 +62,7 @@ public class ProblemBuilderTest {
                 .withParameter("expected", InstanceType.INTEGER)
                 .build();
         
-        String expectedMessage = "Type of value must be integer, but was string.";
+        String expectedMessage = "Type of value must be integer, but actual type was string.";
         assertThat(problem.getMessage(Locale.ENGLISH)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)

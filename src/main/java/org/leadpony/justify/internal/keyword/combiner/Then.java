@@ -16,14 +16,18 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import javax.json.spi.JsonProvider;
+
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * "Then" conditional keyword.
  * 
  * @author leadpony
  */
-class Then extends Conditional {
+class Then extends UnaryCombiner {
 
     Then(JsonSchema schema) {
         super(schema);
@@ -37,5 +41,10 @@ class Then extends Conditional {
     @Override
     public boolean canEvaluate() {
         return false;
+    }
+
+    @Override
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+        throw new UnsupportedOperationException();
     }
 }

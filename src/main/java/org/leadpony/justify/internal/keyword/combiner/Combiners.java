@@ -65,6 +65,10 @@ public final class Combiners {
     public static Keyword minContains(int value) {
         return new MinContains(value);
     }
+    
+    public static Combiner propertyNames(JsonSchema subschema) {
+        return new PropertyNames(subschema);
+    }
 
     private Combiners() {
     }

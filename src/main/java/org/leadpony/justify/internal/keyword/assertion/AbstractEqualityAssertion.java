@@ -34,10 +34,6 @@ import org.leadpony.justify.core.InstanceType;
 abstract class AbstractEqualityAssertion implements Assertion {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-    }
-
-    @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         appender.append(new EqualityEvaluator(jsonProvider));
     }

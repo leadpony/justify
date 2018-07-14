@@ -59,11 +59,15 @@ public class SpecTest extends AbstractValidationTest {
             "/spec/tests/draft7/oneOf.json",
             "/spec/tests/draft7/pattern.json",
             "/spec/tests/draft7/properties.json",
+            "/spec/tests/draft7/propertyNames.json",
             "/spec/tests/draft7/ref.json",
             "/spec/tests/draft7/required.json",
             "/spec/tests/draft7/type.json",
-            "/spec/tests/draft7/uniqueItems.json"
-        };
+            "/spec/tests/draft7/uniqueItems.json",
+            // for draft 8
+            "/spec/tests/draft8/maxContains.json",
+            "/spec/tests/draft8/minContains.json"
+    };
     
     @Parameters(name = "{0}@{1}: {2}")
     public static Iterable<Object[]> parameters() {

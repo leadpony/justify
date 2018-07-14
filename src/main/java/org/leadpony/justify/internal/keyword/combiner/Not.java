@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonObjectBuilder;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -49,7 +50,7 @@ class Not implements BooleanLogic {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         Evaluator evaluator = negatedSubschema.createEvaluator(type);
         if (evaluator != null) {
             appender.append(evaluator);

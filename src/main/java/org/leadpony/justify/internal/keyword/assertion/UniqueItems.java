@@ -51,10 +51,6 @@ class UniqueItems implements Assertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-    }
-    
-    @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
         if (type == InstanceType.ARRAY && unique) {
             appender.append(new UniquenessEvaluator(jsonProvider));

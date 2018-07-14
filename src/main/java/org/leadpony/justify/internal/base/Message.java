@@ -22,12 +22,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Message in resource bundle for this library.
+ * Message contained in resource bundle for this library.
  * 
  * @author leadpony
  */
@@ -35,7 +37,9 @@ public class Message {
     
     private static final String BUNDLE_BASE_NAME = "org.leadpony.justify.internal.message";
     private static final Pattern PLACEHOLDER_PATTERN = 
-            Pattern.compile("\\$\\{(\\p{Alpha}\\w*(\\.\\p{Alpha}\\w*)*)\\}"); 
+            Pattern.compile("\\$\\{((\\$\\{.+?\\}|.)+?)(\\:.+?)?\\}"); 
+    private static final Pattern NESTED_PLACEHOLDER_PATTERN =
+            Pattern.compile("\\$\\{(.+?)\\}");
 
     private final String pattern;
     private final ResourceBundle bundle;
@@ -92,7 +96,7 @@ public class Message {
         if (parameters == null || parameters.isEmpty()) {
             return pattern;
         } else {
-            return replace(pattern, parameters); 
+            return replaceAll(pattern); 
         }
     }
 
@@ -107,23 +111,65 @@ public class Message {
         this.parameters.put(name, value);
     }
     
-    private String replace(String pattern, Map<String, ?> parameters) {
-        Matcher m = PLACEHOLDER_PATTERN.matcher(pattern);
+    private String replaceAll(String input) {
+        return replaceAll(input, PLACEHOLDER_PATTERN,
+                this::expandAll,
+                (replacement, matcher)->{
+                    String string = mapToString(replacement); 
+                    return modify(string, matcher.group(3));
+                });
+    }
+    
+    private String expandAll(String input) {
+        return replaceAll(input, NESTED_PLACEHOLDER_PATTERN, 
+                Function.identity(), 
+                (replacement, matcher)->replacement.toString());
+    }
+    
+    private String replaceAll(String input, Pattern pattern, 
+            Function<String, String> expander, BiFunction<Object, Matcher, String> mapper) {
+        Matcher matcher = pattern.matcher(input);
         StringBuilder sb = new StringBuilder();
-        int start = 0;
-        while (m.find()) {
-            sb.append(pattern.substring(start, m.start()));
-            String name = m.group(1);
-            Object replacement = parameters.get(name);
+        int lastEnd = 0;
+        while (matcher.find()) {
+            sb.append(input.substring(lastEnd, matcher.start()));
+            String name = expander.apply(matcher.group(1));
+            Object replacement = replace(name);
             if (replacement != null) {
-                sb.append(mapToString(replacement));
+                sb.append(mapper.apply(replacement, matcher));
+            } else {
+                throw new IllegalStateException();
             }
-            start = m.end();
+            lastEnd = matcher.end();
         }
-        if (start < pattern.length()) {
-            sb.append(pattern.substring(start));
+        if (lastEnd < input.length()) {
+            sb.append(input.substring(lastEnd));
         }
         return sb.toString();
+    }
+    
+    private Object replace(String name) {
+        Object replacement = parameters.get(name);
+        if (replacement == null) {
+            replacement = Message.get(name);
+        }
+        return replacement;
+    }
+    
+    private String modify(String original, String modifier) {
+        if (":capital".equals(modifier)) {
+            return capitalizeFirst(original);
+        }
+        return original;
+    }
+    
+    private static String capitalizeFirst(String string) {
+        if (string == null || string.isEmpty()) {
+            return string;
+        }
+        char[] chars = string.toCharArray();
+        chars[0] = Character.toUpperCase(chars[0]);
+        return new String(chars);
     }
     
     private String mapToString(Object value) {

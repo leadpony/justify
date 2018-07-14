@@ -221,7 +221,10 @@ public class ProblemBuilder {
      */
     private static class CompositexProblem extends SimpleProblem {
         
-        private final List<List<Problem>> childLists;
+        /**
+         * Lists of subproblems.
+         */
+        private final List<List<Problem>> subproblems;
 
         /**
          * Constructs this problem.
@@ -230,7 +233,7 @@ public class ProblemBuilder {
          */
         CompositexProblem(ProblemBuilder builder) {
             super(builder);
-            this.childLists = Collections.unmodifiableList(builder.childLists);
+            this.subproblems = Collections.unmodifiableList(builder.childLists);
         }
 
         @Override
@@ -240,7 +243,7 @@ public class ProblemBuilder {
         
         @Override
         public List<List<Problem>> getSubproblems() {
-            return childLists;
+            return subproblems;
         }
     }
 }

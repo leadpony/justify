@@ -20,17 +20,14 @@ import java.math.BigDecimal;
 
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * @author leadpony
  */
-abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
+abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     protected final BigDecimal bound;
     private final String name;
@@ -48,21 +45,13 @@ abstract class AbstractNumericBoundAssertion extends ShallowAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-        if (type.isNumeric()) {
-            appender.append(this);
-        }
-    }
-    
-    @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
-        BigDecimal actual = parser.getBigDecimal();
-        if (test(actual, this.bound)) {
+    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter) {
+        if (test(value, this.bound)) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
                     .withMessage(this.message)
-                    .withParameter("actual", actual)
+                    .withParameter("actual", value)
                     .withParameter("bound", this.bound)
                     .build();
             reporter.reportProblem(p);

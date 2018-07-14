@@ -22,32 +22,40 @@ import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * Assertion specified with "type" validation keyword.
  * 
  * @author leadpony
  */
-class Type extends ShallowAssertion {
+class Type implements Assertion, Evaluator {
     
     protected final Set<InstanceType> typeSet;
     
     Type(Set<InstanceType> types) {
         this.typeSet = new LinkedHashSet<>(types);
     }
-
+    
     @Override
     public String name() {
         return "type";
     }
     
+    @Override
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+        appender.append(this);
+    }
+
     @Override
     public Assertion negate() {
         return new NotType(this.typeSet);
@@ -69,7 +77,7 @@ class Type extends ShallowAssertion {
     }
     
     @Override
-    protected Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
             return testType(type, parser, reporter);
@@ -77,7 +85,7 @@ class Type extends ShallowAssertion {
             return Result.TRUE;
         }
     }
-  
+
     protected boolean contains(InstanceType type) {
         return typeSet.contains(type) ||
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));

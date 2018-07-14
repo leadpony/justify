@@ -36,7 +36,7 @@ public class MessageTest {
         
         String message = sut.toString();
         
-        String expectedMessage = "Type of value must be integer, but was string.";
+        String expectedMessage = "Type of value must be integer, but actual type was string.";
         assertThat(message).isEqualTo(expectedMessage);
     }
 }

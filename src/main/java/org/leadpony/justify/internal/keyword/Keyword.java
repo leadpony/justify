@@ -51,19 +51,9 @@ public interface Keyword {
      * 
      * @param type the type of the instance, cannot be {@code null}.
      * @param appender the type for appending evaluators, cannot be {@code null}.
-     */
-    void createEvaluator(InstanceType type, EvaluatorAppender appender);
-    
-    /**
-     * Creates a new evaluator for this keyword.
-     * 
-     * @param type the type of the instance, cannot be {@code null}.
-     * @param appender the type for appending evaluators, cannot be {@code null}.
      * @param jsonProvider the provider of the JSON service.
      */
-    default void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
-        createEvaluator(type, appender);
-    }
+    void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider);
 
     /**
      * Returns the negated version of this keyword.

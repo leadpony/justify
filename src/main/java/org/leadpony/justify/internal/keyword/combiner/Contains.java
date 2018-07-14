@@ -19,9 +19,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
-import javax.json.JsonObjectBuilder;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -38,16 +37,15 @@ import org.leadpony.justify.internal.keyword.Keyword;
 /**
  * @author leadpony
  */
-class Contains implements Combiner {
+class Contains extends UnaryCombiner {
     
-    private final JsonSchema subschema;
     private int minContains;
-    private OptionalInt maxContains;
+    private int maxContains;
     
     Contains(JsonSchema subschema) {
-        this.subschema = subschema;
+        super(subschema);
         this.minContains = 1;
-        this.maxContains = OptionalInt.empty();
+        this.maxContains = -1;
     }
 
     @Override
@@ -56,28 +54,27 @@ class Contains implements Combiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender) {
-        if (type == InstanceType.ARRAY) {
-            appender.append(new RepeatingEvaluator());
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+        if (type == InstanceType.ARRAY && (minContains > 0 || hasMaxContains())) {
+            appender.append(new RepeatingSubschemaEvaluator());
         }
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        builder.add(name(), subschema.toJson());
-    }
-    
-    @Override
     public void configure(Map<String, Keyword> others) {
         if (others.containsKey("maxContains")) {
-            maxContains = OptionalInt.of(((MaxContains)others.get("maxContains")).value());
+            maxContains = (((MaxContains)others.get("maxContains")).value());
         }
         if (others.containsKey("minContains")) {
             minContains = ((MinContains)others.get("minContains")).value();
         }
-    }    
+    }
     
-    private class RepeatingEvaluator implements Evaluator, ProblemReporter {
+    private boolean hasMaxContains() {
+        return maxContains >= 0;
+    }
+    
+    private class RepeatingSubschemaEvaluator implements Evaluator, ProblemReporter {
 
         private int trueEvaluations;
         private Evaluator itemEvaluator;
@@ -94,10 +91,10 @@ class Contains implements Combiner {
             }
             if (depth == 0 && event == Event.END_ARRAY) {
                 if (trueEvaluations < minContains) {
-                    reportTooFews(parser, reporter);
+                    reportTooFewValid(parser, reporter);
                     return Result.FALSE;
-                } else if (maxContains.isPresent() && trueEvaluations > maxContains.getAsInt()) {
-                    reportTooMany(parser, reporter);
+                } else if (hasMaxContains() && trueEvaluations > maxContains) {
+                    reportTooManyValid(parser, reporter);
                     return Result.FALSE;
                 }
                 return Result.TRUE;
@@ -108,7 +105,7 @@ class Contains implements Combiner {
         private Evaluator createSubschemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return subschema.createEvaluator(type);
+                return getSubschema().createEvaluator(type);
             } else {
                 return null;
             }
@@ -127,7 +124,7 @@ class Contains implements Combiner {
             }
         }
         
-        private void reportTooFews(JsonParser parser, Reporter reporter) {
+        private void reportTooFewValid(JsonParser parser, Reporter reporter) {
             ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
             builder.withMessage("instance.problem.min.contains")
                    .withParameter("expected", minContains)
@@ -136,10 +133,10 @@ class Contains implements Combiner {
             reporter.reportProblem(builder.build());
         }
 
-        private void reportTooMany(JsonParser parser, Reporter reporter) {
+        private void reportTooManyValid(JsonParser parser, Reporter reporter) {
             ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
             builder.withMessage("instance.problem.max.contains")
-                   .withParameter("expected", minContains)
+                   .withParameter("expected", maxContains)
                    .withParameter("actual", trueEvaluations);
             reporter.reportProblem(builder.build());
         }

@@ -44,12 +44,6 @@ public interface JsonSchemaBuilder {
     
     JsonSchemaBuilder withSchema(URI schema);
 
-    JsonSchemaBuilder withTitle(String title);
-    
-    JsonSchemaBuilder withDescription(String description);
-    
-    JsonSchemaBuilder withDefault(JsonValue value);
-    
     /* Validation Keywords for Any Instance Type */
     
     JsonSchemaBuilder withType(InstanceType... types);
@@ -230,6 +224,8 @@ public interface JsonSchemaBuilder {
 
     JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema);
     
+    JsonSchemaBuilder withPropertyNames(JsonSchema subschema);
+    
     /* Keywords for Applying Subschemas Conditionally */
 
     JsonSchemaBuilder withIf(JsonSchema subschema);
@@ -272,4 +268,12 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
     
     JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema);
+    
+    /* Keywords for annotation */
+    
+    JsonSchemaBuilder withTitle(String title);
+    
+    JsonSchemaBuilder withDescription(String description);
+    
+    JsonSchemaBuilder withDefault(JsonValue value);
 }
