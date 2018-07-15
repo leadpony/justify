@@ -20,7 +20,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -31,13 +30,12 @@ import javax.json.stream.JsonParser.Event;
  */
 public class JsonInstanceBuilder {
     
-    private final JsonProvider provider;
     private final RootVisitor rootVisitor = new RootVisitor();
-    private JsonBuilderFactory builderFactory;
+    private final JsonBuilderFactory builderFactory;
     private Visitor currentVisitor = rootVisitor;
     
-    public JsonInstanceBuilder(JsonProvider provider) {
-        this.provider = provider;
+    public JsonInstanceBuilder(JsonBuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
     }
     
     public boolean append(Event event, JsonParser parser) {
@@ -47,13 +45,6 @@ public class JsonInstanceBuilder {
     
     public JsonValue build() {
         return rootVisitor.rootValue();
-    }
-    
-    private JsonBuilderFactory createBuilderFactory() {
-        if (this.builderFactory == null) {
-            this.builderFactory = this.provider.createBuilderFactory(null);
-        }
-        return this.builderFactory;
     }
     
     private static JsonValue getLiteral(Event event, JsonParser parser) {
@@ -123,7 +114,7 @@ public class JsonInstanceBuilder {
         
         ArrayVisitor(Visitor parent) {
             this.parent = parent;
-            this.builder = createBuilderFactory().createArrayBuilder();
+            this.builder = builderFactory.createArrayBuilder();
         }
         
         @Override
@@ -163,7 +154,7 @@ public class JsonInstanceBuilder {
         
         ObjectVisitor(Visitor parent) {
             this.parent = parent;
-            this.builder = createBuilderFactory().createObjectBuilder();
+            this.builder = builderFactory.createObjectBuilder();
         }
         
         @Override

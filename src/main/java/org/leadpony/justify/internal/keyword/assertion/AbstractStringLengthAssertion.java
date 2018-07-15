@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
@@ -60,7 +61,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), this.bound);
     }
     

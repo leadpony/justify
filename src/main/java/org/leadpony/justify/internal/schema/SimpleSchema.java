@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -45,7 +45,7 @@ public class SimpleSchema extends AbstractJsonSchema {
     private final Collection<Keyword> keywords;
     
     SimpleSchema(DefaultSchemaBuilder builder) {
-        super(builder.getJsonProvider());
+        super(builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
         this.keywords = builder.getKeywords();
@@ -107,10 +107,10 @@ public class SimpleSchema extends AbstractJsonSchema {
     }
  
     protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
-        JsonProvider jsonProvider = getJsonProvider();
+        JsonBuilderFactory builderFactory = getBuilderFactory();
         for (Keyword keyword : this.keywords) {
             if (keyword.canEvaluate()) {
-                keyword.createEvaluator(type, builder, jsonProvider);
+                keyword.createEvaluator(type, builder, builderFactory);
             }
         }
     }
@@ -127,7 +127,10 @@ public class SimpleSchema extends AbstractJsonSchema {
         if (this.schema != null) {
             builder.add("$schema", this.schema.toString());
         }
-        keywords.forEach(keyword->keyword.addToJson(builder));
+        JsonBuilderFactory builderFactory = getBuilderFactory();
+        for (Keyword keyword : this.keywords) {
+            keyword.addToJson(builder, builderFactory);
+        }
     }
     
     /**

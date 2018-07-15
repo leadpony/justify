@@ -16,10 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
@@ -33,96 +29,93 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * Assertion specified with "type" validation keyword.
- * 
+ * "type" assertion specialized for single type.
+ *  
  * @author leadpony
  */
-class Type implements Assertion, Evaluator {
+class SingleType implements Assertion, Evaluator {
     
-    protected final Set<InstanceType> typeSet;
+    protected final InstanceType type;
     
-    Type(Set<InstanceType> types) {
-        this.typeSet = new LinkedHashSet<>(types);
+    SingleType(InstanceType type) {
+        this.type = type;
     }
     
     @Override
     public String name() {
         return "type";
     }
-    
+
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         appender.append(this);
     }
-
+    
     @Override
     public Assertion negate() {
-        return new Negated(this.typeSet);
+        return new Negated(this.type);
     }
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
-        typeSet.stream()
-            .map(InstanceType::name)
-            .map(String::toLowerCase)
-            .forEach(arrayBuilder::add);
-        builder.add("type", arrayBuilder);
+        builder.add("type", type.name().toLowerCase());
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        if (type != null) {
-            return testType(type, parser, reporter);
-        } else {
-            return Result.TRUE;
-        }
-    }
-
-    protected boolean contains(InstanceType type) {
-        return typeSet.contains(type) ||
-               (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
-    }
-    
-    protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
-        if (contains(type)) {
+        if (type == null || testType(type)) {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.type")
+                    .withMessage("instance.problem.type.single")
                     .withParameter("actual", type)
-                    .withParameter("expected", this.typeSet)
+                    .withParameter("expected", this.type)
                     .build();
             reporter.reportProblem(p);
             return Result.FALSE;
         }
     }
     
-    private static class Negated extends Type {
+    protected boolean testType(InstanceType type) {
+        if (type == this.type) {
+            return true;
+        } else if (type == InstanceType.INTEGER) {
+            return this.type == InstanceType.NUMBER;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Negated version of containing class.
+     * 
+     * @author leadpony
+     */
+    private static class Negated extends SingleType {
 
-        Negated(Set<InstanceType> types) {
-            super(types);
+        private Negated(InstanceType type) {
+            super(type);
         }
-        
+
         @Override
-        public Assertion negate() {
-            return new Type(this.typeSet);
-        }
-        
-        @Override
-        protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
-            if (contains(type)) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+            InstanceType type = ParserEvents.toInstanceType(event, parser);
+            if (type == null || !testType(type)) {
+                return Result.TRUE; 
+            } else {
                 Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage("instance.problem.not.type")
-                        .withParameter("actual", type)
-                        .withParameter("expected", this.typeSet)
+                        .withMessage("instance.problem.not.type.single")
+                        .withParameter("expected", this.type)
                         .build();
                 reporter.reportProblem(p);
                 return Result.FALSE;
-            } else {
-                return Result.TRUE;
             }
+        }
+
+        @Override
+        public Assertion negate() {
+            return new SingleType(type);
         }
     }
 }

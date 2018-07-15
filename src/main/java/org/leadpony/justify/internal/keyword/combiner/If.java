@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Map;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -52,7 +52,7 @@ class If extends UnaryCombiner {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (thenSchema == null && elseSchema == null) {
             return;
         }

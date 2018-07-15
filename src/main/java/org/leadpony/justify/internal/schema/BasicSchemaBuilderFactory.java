@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.schema;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 
@@ -27,14 +27,19 @@ import org.leadpony.justify.core.JsonSchemaBuilderFactory;
  */
 public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
     
-    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory builderFactory;
     
-    public BasicSchemaBuilderFactory(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
+    /**
+     * Constructs this factory.
+     * 
+     * @param builderFactory the factory for producing builders of JSON values.
+     */
+    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
     }
 
     @Override
     public DefaultSchemaBuilder createBuilder() {
-        return new DefaultSchemaBuilder(jsonProvider);
+        return new DefaultSchemaBuilder(builderFactory);
     }
 }

@@ -66,6 +66,10 @@ public final class Combiners {
         return new MinContains(value);
     }
     
+    public static Dependencies dependencies() {
+        return new Dependencies();
+    }
+    
     public static Combiner propertyNames(JsonSchema subschema) {
         return new PropertyNames(subschema);
     }

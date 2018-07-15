@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
@@ -44,7 +44,7 @@ class Then extends UnaryCombiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         throw new UnsupportedOperationException();
     }
 }

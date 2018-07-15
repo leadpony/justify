@@ -57,7 +57,7 @@ public class ProblemBuilderTest {
     public void build_shouldBuildProblem() {
         ProblemBuilder builder = ProblemBuilder.newBuilder(this.parser);
         Problem problem = builder
-                .withMessage("instance.problem.type")
+                .withMessage("instance.problem.type.single")
                 .withParameter("actual", InstanceType.STRING)
                 .withParameter("expected", InstanceType.INTEGER)
                 .build();

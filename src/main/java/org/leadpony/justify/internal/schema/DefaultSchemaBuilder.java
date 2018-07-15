@@ -27,10 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
@@ -43,6 +44,7 @@ import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
+import org.leadpony.justify.internal.keyword.combiner.Dependencies;
 
 /**
  * Default implementation of {@link JsonSchemaBuilder}.
@@ -51,7 +53,7 @@ import org.leadpony.justify.internal.keyword.combiner.Combiners;
  */
 class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
-    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory builderFactory;
     
     private boolean empty;
 
@@ -71,8 +73,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
     private URI ref;
     
-    public DefaultSchemaBuilder(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
+    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
         this.empty = true;
     }
     
@@ -110,8 +112,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         return subschemaMap;
     }
     
-    JsonProvider getJsonProvider() {
-        return jsonProvider;
+    JsonBuilderFactory getBuilderFactory() {
+        return builderFactory;
     }
     
     @Override
@@ -120,7 +122,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
-            return new SchemaReference(ref, this.subschemaMap, this.jsonProvider);
+            return new SchemaReference(ref, this.subschemaMap, getBuilderFactory());
         } else if (subschemaMap.isEmpty()) {
             return new SimpleSchema(this);
         } else {
@@ -353,6 +355,24 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     }
    
     @Override
+    public JsonSchemaBuilder withDependency(String property, JsonSchema subschema) {
+        Objects.requireNonNull(property, "property must not be null.");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
+        keyword.addDependency(property, subschema);
+        return builderWithSubschema();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withDependency(String property, Set<String> requiredProperties) {
+        Objects.requireNonNull(property, "property must not be null.");
+        Objects.requireNonNull(requiredProperties, "requiredProperties must not be null.");
+        Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
+        keyword.addDependency(property, requiredProperties);
+        return builderWithSubschema();
+    }
+    
+    @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.propertyNames(subschema));
@@ -483,6 +503,18 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
     private void addKeyword(Keyword keyword) {
         this.keywords.put(keyword.name(), keyword);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends Keyword> T requireKeyword(String name, Supplier<T> supplier) {
+        T keyword = null;
+        if (keywords.containsKey(name)) {
+            keyword = (T)keywords.get(name);
+        } else {
+            keyword = supplier.get();
+            keywords.put(name, keyword);
+        }
+        return keyword;
     }
   
     private void registerSubschema(String jsonPointer, JsonSchema subschema) {

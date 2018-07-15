@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.JsonSchema;
@@ -38,7 +39,7 @@ abstract class UnaryCombiner implements Combiner {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), subschema.toJson());
     }
 }

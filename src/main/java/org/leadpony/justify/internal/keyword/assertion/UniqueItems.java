@@ -19,9 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -51,26 +51,26 @@ class UniqueItems implements Assertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.ARRAY && unique) {
-            appender.append(new UniquenessEvaluator(jsonProvider));
+            appender.append(new UniquenessEvaluator(builderFactory));
         }
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), unique);
     }
     
     private static class UniquenessEvaluator implements Evaluator {
 
-        private final JsonProvider jsonProvider;
+        private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
         private int index;
         private JsonInstanceBuilder builder;
         
-        private UniquenessEvaluator(JsonProvider jsonProvider) {
-            this.jsonProvider = jsonProvider;
+        private UniquenessEvaluator(JsonBuilderFactory builderFactory) {
+            this.builderFactory = builderFactory;
         }
         
         @Override
@@ -80,7 +80,7 @@ class UniqueItems implements Assertion {
                         Result.TRUE : Result.PENDING;
             }
             if (builder == null) {
-                builder = new JsonInstanceBuilder(jsonProvider);
+                builder = new JsonInstanceBuilder(builderFactory);
             }
             if (builder.append(event, parser)) {
                 return Result.PENDING;

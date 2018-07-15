@@ -199,6 +199,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         case "definitions":
             addDefinitions(builder);
             break;
+        case "dependencies":
+            addDependencies(builder);
+            break;
         case "description":
             addDescription(builder);
             break;
@@ -516,13 +519,19 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
+            skipValue(event);
             return;
         }
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
                 String name = parser.getString(); 
-                builder.withProperty(name, subschema());
+                event = parser.next();
+                if (canStartSchema(event)) {
+                    builder.withProperty(name, subschema(event));
+                } else {
+                    skipValue(event);
+                }
             } else if (event == Event.END_OBJECT) {
                 break;
             }
@@ -532,22 +541,67 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addPatternProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
+            skipValue(event);
             return;
         }
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
-                builder.withPatternProperty(parser.getString(), subschema());
+                String pattern = parser.getString();
+                event = parser.next();
+                if (canStartSchema(event)) {
+                    builder.withPatternProperty(pattern, subschema(event));
+                } else {
+                    skipValue(event);
+                }
+            } else if (event == Event.END_OBJECT) {
+                break;
+            }
+        }
+    }
+    
+    private void addAdditionalProperties(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (canStartSchema(event)) {
+            builder.withAdditionalProperties(subschema(event));
+        } else {
+            skipValue(event);
+        }
+    }
+    
+    private void addDependencies(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event != Event.START_OBJECT) {
+            skipValue(event);
+            return;
+        }
+        while (parser.hasNext()) {
+            event = parser.next();
+            if (event == Event.KEY_NAME) {
+                String property = parser.getString();
+                if (parser.hasNext()) {
+                    event = parser.next();
+                    if (canStartSchema(event)) {
+                        builder.withDependency(property, subschema(event));
+                    } else if (event == Event.START_ARRAY) {
+                        Set<String> required = new HashSet<>();
+                        while (parser.hasNext()) {
+                            event = parser.next();
+                            if (event == Event.VALUE_STRING) {
+                                required.add(parser.getString());
+                            } else if (event == Event.END_ARRAY) {
+                                builder.withDependency(property, required);
+                                break;
+                            } 
+                        }
+                    }
+                 }
             } else if (event == Event.END_OBJECT) {
                 break;
             }
         }
     }
 
-    private void addAdditionalProperties(JsonSchemaBuilder builder) {
-        builder.withAdditionalProperties(subschema());
-    }
-    
     private void addPropertyNames(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (canStartSchema(event)) {

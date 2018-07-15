@@ -30,7 +30,7 @@ public class MessageTest {
 
     @Test
     public void toString_returnsFormattedMessage() {
-        Message sut = Message.get("instance.problem.type", Locale.ENGLISH);
+        Message sut = Message.get("instance.problem.type.single", Locale.ENGLISH);
         sut.withParameter("actual", InstanceType.STRING)
            .withParameter("expected", InstanceType.INTEGER);
         

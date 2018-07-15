@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.regex.Matcher;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
@@ -43,7 +44,7 @@ class Pattern extends AbstractStringAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), pattern.toString());
     }
     

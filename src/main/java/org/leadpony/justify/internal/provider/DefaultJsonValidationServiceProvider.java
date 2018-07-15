@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -140,6 +141,7 @@ public class DefaultJsonValidationServiceProvider
     }
 
     private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {
-        return new BasicSchemaBuilderFactory(this.jsonProvider);
+        JsonBuilderFactory builderFactory = this.jsonProvider.createBuilderFactory(null);
+        return new BasicSchemaBuilderFactory(builderFactory);
     }
 }

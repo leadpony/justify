@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 abstract class AbstractNumericAssertion implements Assertion, Evaluator {
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type.isNumeric()) {
             appender.append(this);
         }

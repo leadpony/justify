@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -49,12 +49,12 @@ class MinContains implements Keyword {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), value);
     }
 }

@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -39,7 +39,7 @@ class NotRequired extends Required {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         assert type == InstanceType.OBJECT;
         appender.append(new NegatedEvaluator(names));
     }
@@ -49,7 +49,7 @@ class NotRequired extends Required {
         return new Required(this.names);
     }
 
-    private static class NegatedEvaluator extends PropertyEvaluator {
+    private static class NegatedEvaluator extends AssertionEvaluator {
         
         private final Set<String> names;
         
@@ -61,7 +61,7 @@ class NotRequired extends Required {
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (event == Event.KEY_NAME) {
-                remaining.remove(parser.getString());
+                missing.remove(parser.getString());
                 return test(parser, reporter, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 return test(parser, reporter, true);
@@ -72,15 +72,20 @@ class NotRequired extends Required {
 
         @Override
         protected Result test(JsonParser parser, Reporter reporter, boolean last) {
-            if (remaining.isEmpty()) {
-                boolean plural = names.size() > 1;
-                Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage(plural ?
-                                "instance.problem.not.required.plural" :
-                                "instance.problem.not.required")
-                        .withParameter("expected", 
-                                plural ? this.names : this.names.iterator().next())
+            if (missing.isEmpty()) {
+                Problem p = null;
+                if (this.names.size() == 1) {
+                    String name = this.names.iterator().next();
+                    p = ProblemBuilder.newBuilder(parser)
+                            .withMessage("instance.problem.not.required.single")
+                            .withParameter("expected", name)
+                            .build();
+                } else {
+                    p = ProblemBuilder.newBuilder(parser)
+                        .withMessage("instance.problem.not.required")
+                        .withParameter("expected", this.names)
                         .build();
+                }
                 reporter.reportProblem(p);
                 return Result.FALSE;
             } else if (last) {

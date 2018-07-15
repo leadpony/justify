@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 /**
@@ -37,7 +38,7 @@ public class Title implements Annotation<String> {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), value());
     }
     

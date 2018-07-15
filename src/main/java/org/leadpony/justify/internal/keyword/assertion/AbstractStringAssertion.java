@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -41,7 +41,7 @@ abstract class AbstractStringAssertion implements Assertion, Evaluator {
     };
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.STRING) {
             appender.append(this);
         }

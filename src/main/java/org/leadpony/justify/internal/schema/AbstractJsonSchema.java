@@ -16,12 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.io.StringWriter;
-
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGenerator;
 
 import org.leadpony.justify.core.JsonSchema;
 
@@ -32,34 +29,35 @@ import org.leadpony.justify.core.JsonSchema;
  */
 abstract class AbstractJsonSchema implements JsonSchema {
     
-    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory builderFactory;
 
-    protected AbstractJsonSchema(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
+    protected AbstractJsonSchema(JsonBuilderFactory builderFactory) {
+        this.builderFactory = builderFactory;
     }
 
     protected AbstractJsonSchema(AbstractJsonSchema other) {
-        this.jsonProvider = other.jsonProvider;
+        this.builderFactory = other.builderFactory;
     }
 
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = getJsonProvider().createObjectBuilder();
+        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
         addToJson(builder);
         return builder.build();
     }
     
     @Override
     public String toString() {
-        StringWriter writer = new StringWriter();
-        try (JsonGenerator generator = getJsonProvider().createGenerator(writer)) {
-            generator.write(toJson());
-        }
-        return writer.toString();
+        return toJson().toString();
     }
     
-    protected JsonProvider getJsonProvider() {
-        return jsonProvider;
+    /**
+     * Returns the factory for producing builders of JSON instances.
+     * 
+     * @return the JSON builder factory.
+     */
+    protected JsonBuilderFactory getBuilderFactory() {
+        return builderFactory;
     }
     
     /**

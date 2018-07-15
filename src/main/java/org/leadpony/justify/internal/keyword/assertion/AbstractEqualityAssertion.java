@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -34,8 +34,8 @@ import org.leadpony.justify.core.InstanceType;
 abstract class AbstractEqualityAssertion implements Assertion {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
-        appender.append(new EqualityEvaluator(jsonProvider));
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        appender.append(new EqualityEvaluator(builderFactory));
     }
     
     protected abstract Result testValue(JsonValue actual, JsonParser parser, Reporter reporter);
@@ -44,8 +44,8 @@ abstract class AbstractEqualityAssertion implements Assertion {
         
         private final JsonInstanceBuilder builder;
         
-        private EqualityEvaluator(JsonProvider jsonProvider) {
-            this.builder = new JsonInstanceBuilder(jsonProvider);
+        private EqualityEvaluator(JsonBuilderFactory builderFactory) {
+            this.builder = new JsonInstanceBuilder(builderFactory);
         }
 
         @Override

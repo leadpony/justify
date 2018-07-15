@@ -33,7 +33,11 @@ public final class Assertions {
     /* Validation Keywords for Any Instance Type */
     
     public static Assertion type(Set<InstanceType> types) {
-        return new Type(types);
+        if (types.size() == 1) {
+            return new SingleType(types.iterator().next());
+        } else {
+            return new Type(types);
+        }
     }
 
     public static Assertion enum_(Set<JsonValue> expected) {

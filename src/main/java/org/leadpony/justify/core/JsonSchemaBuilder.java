@@ -224,6 +224,10 @@ public interface JsonSchemaBuilder {
 
     JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema);
     
+    JsonSchemaBuilder withDependency(String property, JsonSchema subschema);
+    
+    JsonSchemaBuilder withDependency(String property, Set<String> requiredProperties);
+
     JsonSchemaBuilder withPropertyNames(JsonSchema subschema);
     
     /* Keywords for Applying Subschemas Conditionally */

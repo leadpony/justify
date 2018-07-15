@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.schema;
 import java.net.URI;
 import java.util.Objects;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -40,8 +40,8 @@ public class SchemaReference extends AbstractJsonSchema {
     
     private final NavigableSchemaMap subschemaMap;
     
-    public SchemaReference(URI ref, NavigableSchemaMap subschemaMap, JsonProvider jsonProvider) {
-        super(jsonProvider);
+    public SchemaReference(URI ref, NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
+        super(builderFactory);
         this.ref = this.originalRef = ref;
         this.subschemaMap = subschemaMap;
     }

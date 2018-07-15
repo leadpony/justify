@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword;
 
 import java.util.Map;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -51,9 +51,9 @@ public interface Keyword {
      * 
      * @param type the type of the instance, cannot be {@code null}.
      * @param appender the type for appending evaluators, cannot be {@code null}.
-     * @param jsonProvider the provider of the JSON service.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
      */
-    void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider);
+    void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory);
 
     /**
      * Returns the negated version of this keyword.
@@ -69,8 +69,9 @@ public interface Keyword {
      * Adds this keyword to the specified JSON object.
      * 
      * @param builder the builder for building a JSON object, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders, cannot be {@code null}.
      */
-    void addToJson(JsonObjectBuilder builder);
+    void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
 
     /**
      * Configures this keyword.

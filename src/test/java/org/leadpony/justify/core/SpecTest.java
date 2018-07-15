@@ -41,6 +41,7 @@ public class SpecTest extends AbstractValidationTest {
             "/spec/tests/draft7/contains.json",
             "/spec/tests/draft7/default.json",
             "/spec/tests/draft7/definitions.json",
+            "/spec/tests/draft7/dependencies.json",
             "/spec/tests/draft7/enum.json",
             "/spec/tests/draft7/exclusiveMaximum.json",
             "/spec/tests/draft7/exclusiveMinimum.json",
@@ -80,6 +81,6 @@ public class SpecTest extends AbstractValidationTest {
 
     @Before
     public void setUp() {
-        //Assume.assumeTrue(getTestIndex() == 3);
+        //Assume.assumeTrue(getTestIndex() == 2);
     }
 }

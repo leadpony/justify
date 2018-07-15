@@ -19,10 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -51,9 +50,9 @@ class Required implements Assertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new PropertyEvaluator(names));
+            appender.append(new AssertionEvaluator(names));
         }
     }
 
@@ -63,24 +62,24 @@ class Required implements Assertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
         names.forEach(arrayBuilder::add);
         builder.add(name(), arrayBuilder);
     }
 
-    static class PropertyEvaluator implements ShallowEvaluator {
+    static class AssertionEvaluator implements ShallowEvaluator {
         
-        protected final Set<String> remaining;
+        protected final Set<String> missing;
         
-        PropertyEvaluator(Set<String> required) {
-            this.remaining = new LinkedHashSet<>(required);
+        AssertionEvaluator(Set<String> required) {
+            this.missing = new LinkedHashSet<>(required);
         }
 
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
             if (event == Event.KEY_NAME) {
-                remaining.remove(parser.getString());
+                missing.remove(parser.getString());
                 return test(parser, reporter, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 return test(parser, reporter, true);
@@ -90,28 +89,18 @@ class Required implements Assertion {
         }
         
         protected Result test(JsonParser parser, Reporter reporter, boolean last) {
-            if (remaining.isEmpty()) {
+            if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
                 Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage(remaining.size() > 1 ?
-                                "instance.problem.required.plural" : "instance.problem.required")
-                        .withParameter("expected", getRemaining())
+                        .withMessage("instance.problem.required")
+                        .withParameter("expected", missing)
                         .build();
                 reporter.reportProblem(p);
                 return Result.FALSE;
             } else {
                 return Result.PENDING;
             }
-        }
-        
-        /**
-         * Returns remaining property name or a set of names.
-         * @return a string or a set of names.
-         */
-        protected Object getRemaining() {
-            return remaining.size() > 1 ? 
-                    remaining : remaining.iterator().next();
         }
     }
 }

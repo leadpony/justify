@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
 
-import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
@@ -48,8 +48,8 @@ class Enum extends AbstractEqualityAssertion {
     }
     
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
         expected.forEach(arrayBuilder::add);
         builder.add("enum", arrayBuilder);
     }

@@ -22,10 +22,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -47,7 +46,7 @@ abstract class NaryBooleanLogic implements BooleanLogic {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         LogicalEvaluator.Builder builder = createEvaluatorBuilder(type);
         this.subschemas.stream()
                 .map(s->s.createEvaluator(type))
@@ -60,8 +59,8 @@ abstract class NaryBooleanLogic implements BooleanLogic {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
         this.subschemas.stream()
             .map(JsonSchema::toJson)
             .forEach(arrayBuilder::add);

@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -47,7 +47,7 @@ class MaxItems implements Assertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonProvider jsonProvider) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.ARRAY) {
             appender.append(new InnerEvaluator());
         }
@@ -59,7 +59,7 @@ class MaxItems implements Assertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), bound);
     }
     
