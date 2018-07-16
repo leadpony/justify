@@ -62,7 +62,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEval
     @Override
     public Evaluator build() {
         if (evaluators.isEmpty()) {
-            return null;
+            return Evaluator.ALWAYS_TRUE;
         } else if (evaluators.size() == 1) {
             return evaluators.get(0);
         } else {

@@ -17,32 +17,36 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
-class RedundantItemSchema implements JsonSchema {
+/**
+ * Schema for redundant array items.
+ * 
+ * @author leadpony
+ */
+class RedundantItemSchema implements JsonSchema, Evaluator {
     
     private final int itemIndex;
-    
+
+    /**
+     * Constructs this schema.
+     * 
+     * @param itemIndex the index of the item.
+     */
     RedundantItemSchema(int itemIndex) {
         this.itemIndex = itemIndex;
     }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return (event, parser, depth, reporter)->{
-            Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.additionalItems")
-                    .withParameter("index", itemIndex)
-                    .build();
-            reporter.reportProblem(p);
-            return Result.FALSE;
-        };
+        return this;
     }
 
     @Override
@@ -53,5 +57,15 @@ class RedundantItemSchema implements JsonSchema {
     @Override
     public JsonValue toJson() {
         return JsonValue.FALSE;
+    }
+
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        Problem p = ProblemBuilder.newBuilder(parser)
+                .withMessage("instance.problem.additionalItems")
+                .withParameter("index", itemIndex)
+                .build();
+        reporter.reportProblem(p);
+        return Result.FALSE;
     }
 }

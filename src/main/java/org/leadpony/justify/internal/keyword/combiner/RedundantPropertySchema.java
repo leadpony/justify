@@ -17,32 +17,36 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
-class RedundantPropertySchema implements JsonSchema {
+/**
+ * Schema for redundant object properties.
+ * 
+ * @author leadpony
+ */
+class RedundantPropertySchema implements JsonSchema, Evaluator {
     
     private final String keyName;
-    
+
+    /**
+     * Constructs this schema.
+     * 
+     * @param keyName the name of the property.
+     */
     RedundantPropertySchema(String keyName) {
         this.keyName = keyName;
     }
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        return (event, parser, depth, reporter)->{
-            Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.additionalProperties")
-                    .withParameter("name", keyName)
-                    .build();
-            reporter.reportProblem(p);
-            return Result.FALSE;
-        };
+        return this;
     }
 
     @Override
@@ -53,5 +57,15 @@ class RedundantPropertySchema implements JsonSchema {
     @Override
     public JsonValue toJson() {
         return JsonValue.FALSE;
+    }
+
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        Problem p = ProblemBuilder.newBuilder(parser)
+                .withMessage("instance.problem.additionalProperties")
+                .withParameter("name", keyName)
+                .build();
+        reporter.reportProblem(p);
+        return Result.FALSE;
     }
 }

@@ -21,10 +21,15 @@ import java.util.Objects;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * Schema reference containing  "$ref" keyword.
@@ -43,6 +48,7 @@ public class SchemaReference extends AbstractJsonSchema {
     public SchemaReference(URI ref, NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
         super(builderFactory);
         this.ref = this.originalRef = ref;
+        this.referencedSchema = new NonExistentSchema();
         this.subschemaMap = subschemaMap;
     }
     
@@ -55,6 +61,7 @@ public class SchemaReference extends AbstractJsonSchema {
     }
     
     public void setReferencedSchema(JsonSchema schema) {
+        Objects.requireNonNull(schema, "schema must not be null.");
         this.referencedSchema = schema;
     }
 
@@ -70,22 +77,44 @@ public class SchemaReference extends AbstractJsonSchema {
     
     @Override
     public Evaluator createEvaluator(InstanceType type) {
-        if (referencedSchema == null) {
-            return null;
-        }
         return referencedSchema.createEvaluator(type);
     }
 
     @Override
     public JsonSchema negate() {
-        if (referencedSchema == null) {
-            return null;
-        }
         return referencedSchema.negate();
     }
 
     @Override
     protected void addToJson(JsonObjectBuilder buidler) {
-        buidler.add("$ref", ref.toString());
+        buidler.add("$ref", this.ref.toString());
+    }
+    
+    private class NonExistentSchema implements JsonSchema, Evaluator {
+
+        @Override
+        public Evaluator createEvaluator(InstanceType type) {
+            return this;
+        }
+
+        @Override
+        public JsonSchema negate() {
+            return this;
+        }
+
+        @Override
+        public JsonValue toJson() {
+            return JsonValue.FALSE;
+        }
+
+        @Override
+        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+            Problem p = ProblemBuilder.newBuilder(parser)
+                    .withMessage("schema.problem.dereference")
+                    .withParameter("ref", ref)
+                    .build();
+            reporter.reportProblem(p);
+            return Result.FALSE;
+        }
     }
 }

@@ -17,16 +17,21 @@
 package org.leadpony.justify.core;
 
 import java.io.Closeable;
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.charset.Charset;
 
 import javax.json.JsonException;
 
-import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
-
 /**
  * Reads a JSON schema from an input source. 
+ * 
+ * <p>
+ * The following example shows how to read an JSON schema from a string: 
+ * </p>
+ * <pre><code>
+ * StringReader reader = new StringReader("{\"type\": \"integer\"}");
+ * JsonSchemaReader schemaReader = Jsonv.createSchemaReader(reader);
+ * JsonSchema schema = schemaReader.read();
+ * schemaReader.close();
+ * </code></pre>
  * 
  * <p>Each instance of this type is NOT safe for use by multiple concurrent threads.</p>
  * 
@@ -34,91 +39,7 @@ import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
  */
 public interface JsonSchemaReader extends Closeable {
     
-    /**
-     * Creates a JSON schema reader from a byte stream. 
-     * The character encoding of the stream is determined as described in RFC 7159.
-     * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if the specified {@code in} was {@code null}.
-     */
-    static JsonSchemaReader from(InputStream in) {
-        return JsonValidationServiceProvider.provider().createSchemaReader(in);
-    }
-    
-    /**
-     * Creates a JSON schema reader from a byte stream. 
-     * The bytes of the stream are decoded to characters using the specified charset.
-     * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @param charset the character set.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if the specified {@code in} or {@code charset} was {@code null}.
-     */
-    static JsonSchemaReader from(InputStream in, Charset charset) {
-        return JsonValidationServiceProvider.provider().createSchemaReader(in, charset);
-    }
-
-    /**
-     * Creates a JSON schema reader from a reader. 
-     * 
-     * @param reader the reader from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if the specified {@code reader} was {@code null}.
-     */
-    static JsonSchemaReader from(Reader reader) {
-        return JsonValidationServiceProvider.provider().createSchemaReader(reader);
-    }
-
-    /**
-     * Reads a JSON schema reader from a byte stream. 
-     * The character encoding of the stream is determined as described in RFC 7159.
-     * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @return the JSON schema.
-     * @throws NullPointerException if the specified {@code in} was {@code null}.
-     * @throws JsonException if an I/O error occurs while reading.
-     * @throws JsonValidatingException if the reader found problems during validation of the schema.
-     */
-    static JsonSchema readFrom(InputStream in) {
-        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(in)) {
-            return schemaReader.read();
-        }
-    }
-
-    /**
-     * Reads a JSON schema reader from a byte stream. 
-     * The bytes of the stream are decoded to characters using the specified charset.
-     * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @param charset the character set.
-     * @return the JSON schema.
-     * @throws NullPointerException if the specified {@code in} or {@code charset} was {@code null}.
-     * @throws JsonException if an I/O error occurs while reading.
-     * @throws JsonValidatingException if the reader found problems during validation of the schema.
-     */
-    static JsonSchema readFrom(InputStream in, Charset charset) {
-        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(in, charset)) {
-            return schemaReader.read();
-        }
-    }
-
-    /**
-     * Reads a JSON schema reader from a reader. 
-     * 
-     * @param reader the reader from which a JSON schema is to be read.
-     * @return the JSON schema.
-     * @throws NullPointerException if the specified {@code reader} was {@code null}.
-     * @throws JsonException if an I/O error occurs while reading.
-     * @throws JsonValidatingException if the reader found problems during validation of the schema.
-     */
-    static JsonSchema readFrom(Reader reader) {
-        try (JsonSchemaReader schemaReader = JsonSchemaReader.from(reader)) {
-            return schemaReader.read();
-        }
-    }
-
-    /**
+     /**
      * Returns a JSON schema that is represented in the input source. 
      * This method needs to be called only once for a reader instance.
      * 

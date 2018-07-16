@@ -50,9 +50,8 @@ interface JsonSchemas {
     }
     
     static JsonParser newParser(String instance, String schema, Consumer<Collection<Problem>> handler) {
-        JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
-        JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
-        return factory.createParser(new StringReader(instance), s, handler);
+        JsonSchema s = Jsonv.readSchema(new StringReader(schema));
+        return Jsonv.createParser(new StringReader(instance), s, handler);
     }
     
     static JsonReader newReader(String instance) {
@@ -60,8 +59,7 @@ interface JsonSchemas {
     }
     
     static JsonReader newReader(String instance, String schema, Consumer<Collection<Problem>> handler) {
-        JsonSchema s = JsonSchemaReader.readFrom(new StringReader(schema));
-        JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
-        return factory.createReader(new StringReader(instance), s, handler);
+        JsonSchema s = Jsonv.readSchema(new StringReader(schema));
+        return Jsonv.createReader(new StringReader(instance), s, handler);
     }
 }

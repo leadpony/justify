@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
+import org.leadpony.justify.core.spi.JsonValidationProvider;
 
 /**
  * Utility class for providing various kinds of common problem handlers.
@@ -51,7 +51,7 @@ public final class ProblemHandlers {
      * @throws NullPointerException if specified {@code lineConsumer} was {@code null}.
      */
     public static Consumer<List<Problem>> printingWith(Consumer<String> lineConsumer) {
-        return JsonValidationServiceProvider.provider().createProblemPrinter(lineConsumer);
+        return JsonValidationProvider.provider().createProblemPrinter(lineConsumer);
     }
 
     /**

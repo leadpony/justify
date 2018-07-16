@@ -34,7 +34,7 @@ public class ValidatingJsonReaderFactory implements JsonReaderFactory {
     private final ValidatingJsonParserFactory parserFactory;
     private final Map<String, ?> config;
     
-    ValidatingJsonReaderFactory(ValidatingJsonParserFactory parserFactory, Map<String, ?> config) {
+    public ValidatingJsonReaderFactory(ValidatingJsonParserFactory parserFactory, Map<String, ?> config) {
         this.parserFactory = parserFactory;
         this.config = config;
     }

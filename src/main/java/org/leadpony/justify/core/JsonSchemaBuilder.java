@@ -25,7 +25,7 @@ import java.util.Set;
 import javax.json.JsonValue;
 
 /**
- * Builder of JSON schema.
+ * The type for building a JSON schema programmatically.
  * 
  * <p>Each instance of this type is NOT safe for use by multiple concurrent threads.</p>
  * 

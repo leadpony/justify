@@ -70,9 +70,8 @@ abstract class AbstractSpecTest {
     
     protected JsonParser createValidatingParser(Consumer<List<Problem>> handler) {
         JsonSchema schema = getSchema();
-        JsonValidatorFactory factory = JsonValidatorFactory.newFactory();
         StringReader reader = new StringReader(fixture.instance().toString());
-        return factory.createParser(reader, schema, handler);
+        return Jsonv.createParser(reader, schema, handler);
     }
     
     private JsonSchema getSchema() {
@@ -97,7 +96,7 @@ abstract class AbstractSpecTest {
     }
   
     protected JsonSchemaReader createSchemaReader(Reader reader) {
-        return JsonSchemaReader.from(reader);
+        return Jsonv.createSchemaReader(reader);
     }
 
     protected void printProblems(List<Problem> problems) {

@@ -44,7 +44,7 @@ public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     private final Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier;
     private final JsonProvider jsonProvider;
     
-    ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, 
+    public ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, 
             Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier, 
             JsonProvider jsonProvider) {
         super(realFactory);

@@ -26,7 +26,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.base.ParserEvents;
@@ -121,10 +120,7 @@ public abstract class AbstractProperties<K> implements Combiner {
         
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                Evaluator evaluator = subschema.createEvaluator(type);
-                if (evaluator != null) {
-                    appendChild(evaluator);
-                }
+                appendChild(subschema.createEvaluator(type));
             }
             this.subschemas.clear();
         }

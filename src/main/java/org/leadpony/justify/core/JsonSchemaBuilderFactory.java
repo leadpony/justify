@@ -16,10 +16,8 @@
 
 package org.leadpony.justify.core;
 
-import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
-
 /**
- * Factory of JSON schema builders.
+ * Factory for creating {@link JsonSchemaBuilder} instances.
  * <p>
  * Any instance of this class is safe for use by multiple concurrent threads.
  * For most use cases, only one instance of this class is required within the application.
@@ -28,15 +26,6 @@ import org.leadpony.justify.core.spi.JsonValidationServiceProvider;
  * @author leadpony
  */
 public interface JsonSchemaBuilderFactory {
-
-    /**
-     * Creates a new instance of this class.
-     * 
-     * @return the newly created instance of this class.
-     */
-    static JsonSchemaBuilderFactory newFactory() {
-        return JsonValidationServiceProvider.provider().createSchemaBuilderFactory();
-    }
 
     /**
      * Creates a new instance of JSON schema builder.

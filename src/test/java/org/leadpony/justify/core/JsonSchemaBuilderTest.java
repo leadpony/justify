@@ -34,7 +34,7 @@ public class JsonSchemaBuilderTest {
     
     @Before
     public void setUp() {
-        this.factory = JsonSchemaBuilderFactory.newFactory();
+        this.factory = Jsonv.createSchemaBuilder();
     }
 
     @Test

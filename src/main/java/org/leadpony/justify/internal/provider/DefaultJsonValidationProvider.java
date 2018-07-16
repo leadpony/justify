@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.validator;
+package org.leadpony.justify.internal.provider;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
@@ -26,30 +27,75 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
+import org.leadpony.justify.internal.validator.ValidatingJsonParser;
+import org.leadpony.justify.internal.validator.ValidatingJsonParserFactory;
+import org.leadpony.justify.internal.validator.ValidatingJsonReaderFactory;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonValidatorFactory;
+import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.core.JsonSchemaReader;
+import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.spi.JsonValidationProvider;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.ProblemPrinter;
+import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.io.BasicSchemaReader;
+import org.leadpony.justify.internal.schema.io.ValidatingSchemaReader;
 
 /**
- * Default implementation of {@link JsonValidatorFactory}.
+ * Default implementation of {@link JsonValidationProvider}.
  * 
  * @author leadpony
  */
-public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
+public class DefaultJsonValidationProvider 
+        extends JsonValidationProvider implements JsonSchemaResolver {
     
-    private final JsonProvider jsonProvider;
+    private JsonProvider jsonProvider;
+    
+    private JsonSchema metaschema;
+    
+    private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
     
     private static final Map<String, ?> defaultConfig = Collections.emptyMap();
     
-    public DefaultJsonValidatorFactory(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
+    public DefaultJsonValidationProvider() {
+    }
+
+    @Override
+    public JsonSchemaReader createSchemaReader(InputStream in) {
+        Objects.requireNonNull(in, "in must not be null.");
+        ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
+                in, metaschema, problem->{});
+        return createValidatingSchemaReader(parser);
+    }
+  
+    @Override
+    public JsonSchemaReader createSchemaReader(InputStream in, Charset charset) {
+        Objects.requireNonNull(in, "in must not be null.");
+        Objects.requireNonNull(charset, "charset must not be null.");
+        ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
+                in, charset, metaschema, problem->{});
+        return createValidatingSchemaReader(parser);
+    }
+
+    @Override
+    public JsonSchemaReader createSchemaReader(Reader reader) {
+        Objects.requireNonNull(reader, "reader must not be null.");
+        ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
+                reader, metaschema, problem->{});
+        return createValidatingSchemaReader(parser);
+    }
+    
+    @Override
+    public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
+        return createBasicSchemaBuilderFactory();
     }
 
     @Override
@@ -120,7 +166,7 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
         Objects.requireNonNull(schema, "schema must not be null.");
         return createReaderFactory(defaultConfig, schema, parser->handler).createReader(reader);
     }
-    
+   
     @Override
     public JsonProvider createJsonProvider(JsonSchema schema, 
             Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
@@ -128,6 +174,51 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
         return new ValidatingJsonProvider(jsonProvider, schema, handlerSupplier);
     }
     
+    @Override
+    public Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer) {
+        Objects.requireNonNull(lineConsumer, "lineConsumer must not be null.");
+        return new ProblemPrinter(lineConsumer);
+    }
+    
+    @Override
+    protected void initialize(JsonProvider jsonProvider) {
+        Objects.requireNonNull(jsonProvider, "jsonProvider must not be null.");
+        this.jsonProvider = jsonProvider;
+        this.metaschema = loadMetaschema(METASCHEMA_NAME);
+    }
+    
+    @Override
+    public JsonSchema resolveSchema(URI id) {
+        Objects.requireNonNull(id, "id must not be null.");
+        if (id.equals(metaschema.id())) {
+            return metaschema;
+        } else {
+            return null;
+        }
+    }
+    
+    private JsonSchema loadMetaschema(String name) {
+        InputStream in = getClass().getResourceAsStream(name);
+        JsonParser parser = this.jsonProvider.createParser(in);
+        try (JsonSchemaReader reader = new BasicSchemaReader(parser, createBasicSchemaBuilderFactory())) {
+            return reader.read();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    @SuppressWarnings("resource")
+    private JsonSchemaReader createValidatingSchemaReader(ValidatingJsonParser parser) {
+        return new ValidatingSchemaReader(parser, createBasicSchemaBuilderFactory())
+                .withSchemaResolver(this);
+    }
+    
+    private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {
+        JsonBuilderFactory builderFactory = this.jsonProvider.createBuilderFactory(null);
+        return new BasicSchemaBuilderFactory(builderFactory);
+    }
+
     /**
      * {@link JsonProvider} with validation functionality.
      * 
@@ -147,12 +238,14 @@ public class DefaultJsonValidatorFactory implements JsonValidatorFactory {
  
         @Override
         public JsonParserFactory createParserFactory(Map<String, ?> config) {
-            return DefaultJsonValidatorFactory.this.createParserFactory(config, schema, handlerSupplier);
+            return DefaultJsonValidationProvider.this
+                    .createParserFactory(config, schema, handlerSupplier);
         }
 
         @Override
         public JsonReaderFactory createReaderFactory(Map<String, ?> config) {
-            return DefaultJsonValidatorFactory.this.createReaderFactory(config, schema, handlerSupplier);
+            return DefaultJsonValidationProvider.this
+                    .createReaderFactory(config, schema, handlerSupplier);
         }
     }
 }

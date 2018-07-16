@@ -48,7 +48,7 @@ public class InvalidSchemaTest extends AbstractSpecTest {
     @Test
     public void testInvalidSchema() {
         String value = getFixture().schema().toString(); 
-        JsonSchemaReader reader = JsonSchemaReader.from(new StringReader(value));
+        JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
         Throwable thrown = catchThrowable(()->reader.read());
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
         JsonValidatingException e = (JsonValidatingException)thrown;

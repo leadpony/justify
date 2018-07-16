@@ -20,15 +20,21 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import javax.json.JsonReader;
+import javax.json.JsonReaderFactory;
 import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParserFactory;
 
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaException;
 import org.leadpony.justify.core.JsonSchemaReader;
-import org.leadpony.justify.core.JsonValidatorFactory;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -39,10 +45,10 @@ import org.leadpony.justify.core.Problem;
  * @author leadpony
  * @see ServiceLoader
  */
-public abstract class JsonValidationServiceProvider {
+public abstract class JsonValidationProvider {
     
-    private static final ThreadLocal<JsonValidationServiceProvider> threadLocalProvider =
-            ThreadLocal.withInitial(JsonValidationServiceProvider::createProvider);
+    private static final ThreadLocal<JsonValidationProvider> threadLocalProvider =
+            ThreadLocal.withInitial(JsonValidationProvider::createProvider);
     
     /**
      * Returns an instance of this provider class.
@@ -50,8 +56,8 @@ public abstract class JsonValidationServiceProvider {
      * @return the instance of this provider class.
      * @throws JsonSchemaException if there is no provider found.
      */
-    public static JsonValidationServiceProvider provider() {
-        JsonValidationServiceProvider provider = threadLocalProvider.get();
+    public static JsonValidationProvider provider() {
+        JsonValidationProvider provider = threadLocalProvider.get();
         if (provider == null) {
             throw new JsonSchemaException("JSON schema provider is not installed.");
         }
@@ -61,7 +67,7 @@ public abstract class JsonValidationServiceProvider {
     /**
      * Constructs this provider.
      */
-    protected JsonValidationServiceProvider() {
+    protected JsonValidationProvider() {
     }
     
     /**
@@ -101,12 +107,26 @@ public abstract class JsonValidationServiceProvider {
      */
     public abstract JsonSchemaBuilderFactory createSchemaBuilderFactory();
     
-    /**
-     * Creates a new instance of JSON validator factory.
-     * 
-     * @return the newly created instance of JSON validator factory.
-     */
-    public abstract JsonValidatorFactory createValidatorFactory();
+    public abstract JsonParserFactory createParserFactory(Map<String,?> config, JsonSchema schema, 
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
+   
+    public abstract JsonParser createParser(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler);
+  
+    public abstract JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler);
+
+    public abstract JsonParser createParser(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler);
+ 
+    public abstract JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
+
+    public abstract JsonReader createReader(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler);
+
+    public abstract JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler);
+  
+    public abstract JsonReader createReader(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler);
+    
+    public abstract JsonProvider createJsonProvider(JsonSchema schema,
+            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
     
     /**
      * Creates a new instance of problem printer.
@@ -130,12 +150,12 @@ public abstract class JsonValidationServiceProvider {
      * 
      * @return the instance of this provider class.
      */
-    private static JsonValidationServiceProvider createProvider() {
+    private static JsonValidationProvider createProvider() {
         JsonProvider jsonProvider = JsonProvider.provider();
-        ServiceLoader<JsonValidationServiceProvider> loader = ServiceLoader.load(JsonValidationServiceProvider.class);
-        Iterator<JsonValidationServiceProvider> it = loader.iterator();
+        ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class);
+        Iterator<JsonValidationProvider> it = loader.iterator();
         if (it.hasNext()) {
-            JsonValidationServiceProvider found = it.next();
+            JsonValidationProvider found = it.next();
             found.initialize(jsonProvider);
             return found;
         } else {

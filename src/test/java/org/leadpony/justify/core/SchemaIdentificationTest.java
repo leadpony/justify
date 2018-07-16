@@ -57,7 +57,7 @@ public class SchemaIdentificationTest {
     
     private static JsonSchema loadSchema() throws IOException {
         try (InputStream in = Resources.newInputStream(JSON_NAME)) {
-            return JsonSchemaReader.readFrom(in);
+            return Jsonv.readSchema(in);
         }
     }
     

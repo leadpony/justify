@@ -84,7 +84,7 @@ public class RemoteSchemaTest extends AbstractValidationTest {
     
     private static JsonSchema resolveSchema(URI id) {
         try (InputStream in = id.toURL().openStream()) {
-            return JsonSchemaReader.readFrom(in);
+            return Jsonv.readSchema(in);
         } catch (Exception e) {
             log.severe(e.toString());
             return null;
