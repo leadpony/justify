@@ -78,7 +78,7 @@ class MaxItems implements Assertion {
                     return Result.TRUE;
                 } else {
                     Problem p = ProblemBuilder.newBuilder(parser)
-                            .withMessage("instance.problem.max.items")
+                            .withMessage("instance.problem.maxItems")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)
                             .build();

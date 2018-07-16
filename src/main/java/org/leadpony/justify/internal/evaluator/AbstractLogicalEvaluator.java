@@ -42,7 +42,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEval
         Iterator<Evaluator> it = evaluators.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
-            Result result = evaluator.evaluate(event, parser, depth, reporter);
+            Result result = invokeChildEvaluator(evaluator, event, parser, depth, reporter);
             if (result != Result.PENDING) {
                 it.remove();
                 if (!accumulateResult(evaluator, result)) {
@@ -72,6 +72,10 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEval
     
     protected boolean isEmpty() {
         return evaluators.isEmpty();
+    }
+    
+    protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth, Reporter reporter) {
+        return evaluator.evaluate(event, parser, depth, reporter);
     }
 
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {

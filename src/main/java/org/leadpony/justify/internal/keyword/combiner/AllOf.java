@@ -47,6 +47,6 @@ class AllOf extends NaryBooleanLogic {
 
     @Override
     protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newConjunctionEvaluatorBuilder(type, false);
+        return Evaluators.newConjunctionEvaluatorBuilder(type);
     }
 }

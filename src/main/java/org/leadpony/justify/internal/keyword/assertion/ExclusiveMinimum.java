@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMinimum(BigDecimal bound) {
-        super(bound, "exclusiveMinimum", "instance.problem.exclusive.minimum");
+        super(bound, "exclusiveMinimum", "instance.problem.exclusiveMinimum");
     }
 
     @Override

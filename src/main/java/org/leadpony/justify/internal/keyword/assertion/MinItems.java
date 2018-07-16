@@ -80,7 +80,7 @@ class MinItems implements Assertion {
                     return Result.TRUE;
                 } else {
                     Problem p = ProblemBuilder.newBuilder(parser)
-                            .withMessage("instance.problem.min.items")
+                            .withMessage("instance.problem.minItems")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)
                             .build();

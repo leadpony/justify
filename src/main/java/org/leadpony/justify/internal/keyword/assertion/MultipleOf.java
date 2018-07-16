@@ -60,7 +60,7 @@ class MultipleOf extends AbstractNumericAssertion {
             return Result.TRUE;
         } else {
             Problem p = ProblemBuilder.newBuilder(parser)
-                    .withMessage("instance.problem.multiple.of")
+                    .withMessage("instance.problem.multipleOf")
                     .withParameter("actual", value)
                     .withParameter("divisor", divisor)
                     .build();

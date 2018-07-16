@@ -41,6 +41,6 @@ class OneOf extends NaryBooleanLogic {
 
     @Override
     protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newExclusiveDisjunctionEvaluatorBuilder(type, false);
+        return Evaluators.newExclusiveDisjunctionEvaluatorBuilder(type);
     }
 }

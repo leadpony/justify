@@ -28,30 +28,32 @@ import org.leadpony.justify.core.InstanceType;
  */
 public final class Evaluators {
 
-    public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
-        if (extendable) {
-            return ExtendableConjunctionEvaluator.builder(lastEventOf(type));
-        } else if (type.isContainer()) {
+    public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type) {
+        if (type.isContainer()) {
             return LongConjunctionEvaluator.builder(lastEventOf(type));
         } else {
             return ConjunctionEvaluator.builder();
         }
     }
     
-    public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
-        if (extendable) {
-            return ExtendableDisjunctionEvaluator.builder(lastEventOf(type));
-        } else if (type.isContainer()) {
+    public static ExtendableLogicalEvaluator newConjunctionChildEvaluator(InstanceType type) {
+        return new ConjunctionChildEvaluator(lastEventOf(type));
+    }
+    
+    public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type) {
+        if (type.isContainer()) {
             return LongDisjunctionEvaluator.builder(lastEventOf(type));
         } else {
             return DisjunctionEvaluator.builder();
         }
     }
 
-    public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type, boolean extendable) {
-        if (extendable) {
-            throw new UnsupportedOperationException("unsupported");
-        } else if (type.isContainer()) {
+    public static ExtendableLogicalEvaluator newDisjunctionChildEvaluator(InstanceType type) {
+        return new DisjunctionChildEvaluator(lastEventOf(type));
+    }
+
+    public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type) {
+        if (type.isContainer()) {
             return LongExclusiveDisjunctionEvaluator.builder(lastEventOf(type));
         } else {
             return ExclusiveDisjunctionEvaluator.builder();

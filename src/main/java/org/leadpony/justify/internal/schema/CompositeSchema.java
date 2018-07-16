@@ -18,13 +18,9 @@ package org.leadpony.justify.internal.schema;
 
 import java.util.Objects;
 
-import javax.json.JsonObjectBuilder;
-
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -34,14 +30,10 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  */
 class CompositeSchema extends SimpleSchema {
     
-    private final PropertySchemaFinder propertySchemaFinder;
-    private final ItemSchemaFinder itemSchemaFinder;
     private NavigableSchemaMap subschemaMap;
     
     CompositeSchema(DefaultSchemaBuilder builder) {
         super(builder);
-        this.propertySchemaFinder = builder.getPropertySchemaFinder();
-        this.itemSchemaFinder = builder.getItemSchemaFinder();
         this.subschemaMap = builder.getSubschemaMap();
     }
 
@@ -54,8 +46,6 @@ class CompositeSchema extends SimpleSchema {
     CompositeSchema(CompositeSchema original, boolean negating) {
         super(original, negating);
         assert negating;
-        this.propertySchemaFinder = original.propertySchemaFinder.negate();
-        this.itemSchemaFinder = original.itemSchemaFinder.negate();
         this.subschemaMap = original.subschemaMap;
     }
 
@@ -75,42 +65,8 @@ class CompositeSchema extends SimpleSchema {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        Objects.requireNonNull(type, "type must not be null.");
-        switch (type) {
-        case ARRAY:
-            return createEvaluatorForArray();
-        case OBJECT:
-            return createEvaluatorForObject();
-        default:
-            return super.createEvaluator(type);
-        }
-    }
-    
-    @Override
     public JsonSchema negate() {
         return new Negated(this);
-    }
-    
-    private Evaluator createEvaluatorForArray() {
-        LogicalEvaluator.Builder builder = createLogicalEvaluator(InstanceType.ARRAY, true);
-        appendEvaluatorsTo(builder, InstanceType.ARRAY);
-        ExtendableLogicalEvaluator evaluator = (ExtendableLogicalEvaluator)builder.build();
-        return new ArrayWalker(evaluator, this.itemSchemaFinder);
-    }
-    
-    private Evaluator createEvaluatorForObject() {
-        LogicalEvaluator.Builder builder = createLogicalEvaluator(InstanceType.OBJECT, true);
-        appendEvaluatorsTo(builder, InstanceType.OBJECT);
-        ExtendableLogicalEvaluator evaluator = (ExtendableLogicalEvaluator)builder.build();
-        return new ObjectWalker(evaluator, this.propertySchemaFinder);
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        super.addToJson(builder);
-        propertySchemaFinder.addToJson(builder);
-        itemSchemaFinder.addToJson(builder);
     }
     
     /**
@@ -125,8 +81,8 @@ class CompositeSchema extends SimpleSchema {
         }
         
         @Override
-        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
-            return Evaluators.newDisjunctionEvaluatorBuilder(type, extendable);
+        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
+            return Evaluators.newDisjunctionEvaluatorBuilder(type);
         } 
     }
 }

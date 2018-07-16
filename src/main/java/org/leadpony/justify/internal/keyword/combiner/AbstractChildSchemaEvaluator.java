@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
+package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -23,16 +23,14 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
 
 /**
- * Evaluator which walks a container (array or object).
- * 
  * @author leadpony
  */
-abstract class ContainerWalker implements Evaluator {
-
-    private final ExtendableLogicalEvaluator logical;
+abstract class AbstractChildSchemaEvaluator implements Evaluator {
     
-    protected ContainerWalker(ExtendableLogicalEvaluator logical) {
-        this.logical = logical;
+    private final ExtendableLogicalEvaluator dynamicEvaluator;
+    
+    protected AbstractChildSchemaEvaluator(ExtendableLogicalEvaluator dynamicEvaluator) {
+        this.dynamicEvaluator = dynamicEvaluator;
     }
 
     @Override
@@ -40,17 +38,17 @@ abstract class ContainerWalker implements Evaluator {
         if (depth == 1) {
             update(event, parser, reporter);
         }
-        return logical.evaluate(event, parser, depth, reporter);
+        return dynamicEvaluator.evaluate(event, parser, depth, reporter);
     }
     
-    protected void appendChild(Evaluator child) {
-        if (child == null) {
-            return;
-        }
-        this.logical.append((event, parser, depth, reporter)->{
-            assert depth > 0;
-            return child.evaluate(event, parser, depth - 1, reporter);
-        });
+    /**
+     * Appends evaluator for a child instance.
+     * 
+     * @param evaluator the evaluator to append, cannot be {@code null}.
+     */
+    protected void appendChild(Evaluator evaluator) {
+        assert evaluator != null;
+        dynamicEvaluator.append(evaluator);
     }
     
     protected abstract void update(Event event, JsonParser parser, Reporter reporter);

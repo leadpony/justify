@@ -77,7 +77,7 @@ class MinProperties implements Assertion {
                     return Result.TRUE;
                 } else {
                     Problem p = ProblemBuilder.newBuilder(parser)
-                            .withMessage("instance.problem.min.properties")
+                            .withMessage("instance.problem.minProperties")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)
                             .build();

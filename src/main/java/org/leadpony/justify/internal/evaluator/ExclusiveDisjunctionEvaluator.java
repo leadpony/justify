@@ -50,12 +50,12 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     
     @Override
     protected String getMessageKey() {
-        return "instance.problem.one.of";
+        return "instance.problem.oneOf";
     }
 
     private Result reportTooManyTrueEvaluations(JsonParser parser, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
-                .withMessage("instance.problem.one.of.over")
+                .withMessage("instance.problem.oneOf.over")
                 .withParameter("valid", this.trueEvaluations)
                 .build();
         reporter.reportProblem(p);

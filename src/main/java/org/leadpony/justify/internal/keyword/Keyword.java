@@ -74,10 +74,10 @@ public interface Keyword {
     void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
 
     /**
-     * Configures this keyword.
+     * Links this keyword with the sibling keywords in the containing schema.
      *  
-     * @param keywords other keywords in the containing schema.
+     * @param siblings the sibling keywords in the containing schema.
      */
-    default void configure(Map<String, Keyword> others) {
+    default void link(Map<String, Keyword> siblings) {
     }
 }

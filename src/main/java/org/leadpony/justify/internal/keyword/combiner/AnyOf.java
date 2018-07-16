@@ -47,6 +47,6 @@ class AnyOf extends NaryBooleanLogic {
 
     @Override
     protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newDisjunctionEvaluatorBuilder(type, false);
+        return Evaluators.newDisjunctionEvaluatorBuilder(type);
     }
 }

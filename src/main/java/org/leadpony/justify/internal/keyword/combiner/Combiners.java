@@ -17,11 +17,14 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
+ * Facade class for creating combiners.
+ * 
  * @author leadpony
  */
 public final class Combiners {
@@ -53,6 +56,18 @@ public final class Combiners {
     public static Combiner else_(JsonSchema subschema) {
         return new Else(subschema);
     }
+    
+    public static Combiner items(JsonSchema subschema) {
+        return new BroadcastItems(subschema);
+    }
+
+    public static Combiner items(List<JsonSchema> subschemas) {
+        return new SeparateItems(subschemas);
+    }
+    
+    public static Combiner additionalItems(JsonSchema subschema) {
+        return new AdditionalItems(subschema);
+    }
 
     public static Combiner contains(JsonSchema subschema) {
         return new Contains(subschema);
@@ -64,6 +79,18 @@ public final class Combiners {
 
     public static Keyword minContains(int value) {
         return new MinContains(value);
+    }
+    
+    public static Properties properties() {
+        return new Properties();
+    }
+
+    public static PatternProperties patternProperties() {
+        return new PatternProperties();
+    }
+
+    public static Combiner additionalProperties(JsonSchema subschema) {
+        return new AdditionalProperties(subschema);
     }
     
     public static Dependencies dependencies() {

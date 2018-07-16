@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
-
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-
-import org.leadpony.justify.core.JsonSchema;
+package org.leadpony.justify.internal.keyword.combiner;
 
 /**
+ * "items" combiner.
+ * 
  * @author leadpony
  */
-public interface SchemaComponent extends JsonSchema {
+interface Items extends Combiner {
     
     @Override
-    default JsonValue toJson() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        addToJson(builder);
-        return builder.build();
+    default String name() {
+        return "items";
     }
-
-    void addToJson(JsonObjectBuilder builder);
 }

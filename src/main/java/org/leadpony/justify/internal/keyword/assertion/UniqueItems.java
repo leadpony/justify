@@ -95,7 +95,7 @@ class UniqueItems implements Assertion {
             if (values.containsKey(value)) {
                 int lastIndex = values.get(value);
                 Problem p = ProblemBuilder.newBuilder(parser)
-                        .withMessage("instance.problem.unique.items")
+                        .withMessage("instance.problem.uniqueItems")
                         .withParameter("index", index)
                         .withParameter("lastIndex", lastIndex)
                         .build();

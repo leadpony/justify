@@ -54,7 +54,7 @@ public class Message {
         try {
             return new Message(bundle.getString(key), bundle);
         } catch (MissingResourceException e) {
-            return new Message(key, bundle);
+            throw e;
         }
     }
     

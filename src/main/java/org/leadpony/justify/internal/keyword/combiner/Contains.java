@@ -61,12 +61,12 @@ class Contains extends UnaryCombiner {
     }
 
     @Override
-    public void configure(Map<String, Keyword> others) {
-        if (others.containsKey("maxContains")) {
-            maxContains = (((MaxContains)others.get("maxContains")).value());
+    public void link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("maxContains")) {
+            maxContains = (((MaxContains)siblings.get("maxContains")).value());
         }
-        if (others.containsKey("minContains")) {
-            minContains = ((MinContains)others.get("minContains")).value();
+        if (siblings.containsKey("minContains")) {
+            minContains = ((MinContains)siblings.get("minContains")).value();
         }
     }
     
@@ -126,7 +126,7 @@ class Contains extends UnaryCombiner {
         
         private void reportTooFewValid(JsonParser parser, Reporter reporter) {
             ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
-            builder.withMessage("instance.problem.min.contains")
+            builder.withMessage("instance.problem.minContains")
                    .withParameter("expected", minContains)
                    .withParameter("actual", trueEvaluations);
             accumulatedProblems.forEach(builder::withSubproblems);
@@ -135,7 +135,7 @@ class Contains extends UnaryCombiner {
 
         private void reportTooManyValid(JsonParser parser, Reporter reporter) {
             ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
-            builder.withMessage("instance.problem.max.contains")
+            builder.withMessage("instance.problem.maxContains")
                    .withParameter("expected", maxContains)
                    .withParameter("actual", trueEvaluations);
             reporter.reportProblem(builder.build());

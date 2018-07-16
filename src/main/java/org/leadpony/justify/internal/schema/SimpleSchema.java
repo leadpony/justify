@@ -92,7 +92,7 @@ public class SimpleSchema extends AbstractJsonSchema {
     @Override
     public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
-        LogicalEvaluator.Builder builder = createLogicalEvaluator(type, false);
+        LogicalEvaluator.Builder builder = createLogicalEvaluator(type);
         appendEvaluatorsTo(builder, type);
         return builder.build();
     }
@@ -115,8 +115,8 @@ public class SimpleSchema extends AbstractJsonSchema {
         }
     }
     
-    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
-        return Evaluators.newConjunctionEvaluatorBuilder(type, extendable);
+    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
+        return Evaluators.newConjunctionEvaluatorBuilder(type);
     } 
     
     @Override
@@ -145,8 +145,8 @@ public class SimpleSchema extends AbstractJsonSchema {
         }
   
         @Override
-        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type, boolean extendable) {
-            return Evaluators.newDisjunctionEvaluatorBuilder(type, extendable);
+        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
+            return Evaluators.newDisjunctionEvaluatorBuilder(type);
         } 
     }
 }

@@ -23,7 +23,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 class ExclusiveMaxLength extends AbstractStringLengthAssertion {
 
     public ExclusiveMaxLength(int bound) {
-        super(bound, "exclusiveMaxLength", "instance.problem.exclusive.max.length");
+        super(bound, "exclusiveMaxLength", "instance.problem.exclusiveMaxLength");
     }
 
     @Override

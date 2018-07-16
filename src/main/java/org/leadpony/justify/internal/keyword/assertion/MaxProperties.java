@@ -77,7 +77,7 @@ class MaxProperties implements Assertion {
                     return Result.TRUE;
                 } else {
                     Problem p = ProblemBuilder.newBuilder(parser)
-                            .withMessage("instance.problem.max.properties")
+                            .withMessage("instance.problem.maxProperties")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)
                             .build();

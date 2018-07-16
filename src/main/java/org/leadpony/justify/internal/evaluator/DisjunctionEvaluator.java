@@ -83,6 +83,6 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     protected String getMessageKey() {
-        return "instance.problem.any.of";
+        return "instance.problem.anyOf";
     }
 }

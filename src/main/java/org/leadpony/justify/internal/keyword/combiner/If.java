@@ -65,12 +65,12 @@ class If extends UnaryCombiner {
     }
 
     @Override
-    public void configure(Map<String, Keyword> others) {
-        if (others.containsKey("then")) {
-            thenSchema = ((UnaryCombiner)others.get("then")).getSubschema();
+    public void link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("then")) {
+            thenSchema = ((UnaryCombiner)siblings.get("then")).getSubschema();
         }
-        if (others.containsKey("else")) {
-            elseSchema = ((UnaryCombiner)others.get("else")).getSubschema();
+        if (siblings.containsKey("else")) {
+            elseSchema = ((UnaryCombiner)siblings.get("else")).getSubschema();
         }
     }
 }

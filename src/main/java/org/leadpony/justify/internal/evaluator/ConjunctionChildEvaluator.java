@@ -22,29 +22,24 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 
 /**
- * {@link DisjunctionEvaluator} which can be extended.
- * 
  * @author leadpony
  */
-class ExtendableDisjunctionEvaluator extends LongDisjunctionEvaluator
-        implements ExtendableLogicalEvaluator {
+class ConjunctionChildEvaluator extends LongConjunctionEvaluator implements ExtendableLogicalEvaluator{
 
-    public static LogicalEvaluator.Builder builder(Event finalEvent) {
-        return new ExtendableDisjunctionEvaluator(finalEvent);
-    }
-    
-    private ExtendableDisjunctionEvaluator(Event lastEvent) {
-        super(lastEvent);
+    ConjunctionChildEvaluator(Event stopEvent) {
+        super(stopEvent);
     }
 
     @Override
-    public Evaluator build() {
-        return this;
+    protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
+            Reporter reporter) {
+        assert depth > 0;
+        return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
     }
-    
+
     @Override
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth == 0 && event == lastEvent) {
+        if (depth == 0 && event == finalEvent) {
             assert isEmpty();
             return conclude(parser, reporter);
         } else {

@@ -18,10 +18,8 @@ package org.leadpony.justify.internal.schema;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +43,8 @@ import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
+import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
+import org.leadpony.justify.internal.keyword.combiner.Properties;
 
 /**
  * Default implementation of {@link JsonSchemaBuilder}.
@@ -61,14 +61,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     private URI schema;
     
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
-    
-    private Map<String, JsonSchema> properties;
-    private Map<Pattern, JsonSchema> patternProperties;
-    private JsonSchema additionalProperties;
-    
-    private Object items;
-    private JsonSchema additionalItems;
-
+ 
     private final NavigableSchemaMap subschemaMap = new NavigableSchemaMap();
     
     private URI ref;
@@ -90,24 +83,6 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         return keywords.values();
     }
     
-    ItemSchemaFinder getItemSchemaFinder() {
-        if (items == null || items instanceof JsonSchema) {
-            JsonSchema item = (JsonSchema)this.items;
-            return ItemSchemaFinder.of(item);
-        } else {
-            @SuppressWarnings("unchecked")
-            List<JsonSchema> items = (List<JsonSchema>)this.items;
-            return ItemSchemaFinder.of(items, additionalItems);
-        }
-    }
-    
-    PropertySchemaFinder getPropertySchemaFinder() {
-        return new PropertySchemaFinder(
-                this.properties,
-                this.patternProperties,
-                this.additionalProperties);
-    }
-    
     NavigableSchemaMap getSubschemaMap() {
         return subschemaMap;
     }
@@ -118,7 +93,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     
     @Override
     public JsonSchema build() {
-        configureAllKeywords();
+        linkAllKeywords();
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
@@ -262,7 +237,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        this.items = subschema;
+        addKeyword(Combiners.items(subschema));
         registerSubschema("/items", subschema);
         return builderWithSubschema();
     }
@@ -270,7 +245,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
-        this.items = new ArrayList<JsonSchema>(subschemas);
+        addKeyword(Combiners.items(subschemas));
         registerSubschemas("items", subschemas);
         return builderWithSubschema();
     }
@@ -278,7 +253,7 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        this.additionalItems = subschema;
+        addKeyword(Combiners.additionalItems(subschema));
         registerSubschema("/additionalItems", subschema);
         return builderWithSubschema();
     } 
@@ -325,10 +300,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     public JsonSchemaBuilder withProperty(String name, JsonSchema subschema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        if (this.properties == null) {
-            this.properties = new HashMap<>();
-        }
-        this.properties.put(name, subschema);
+        Properties properties = requireKeyword("properties", Combiners::properties);
+        properties.addProperty(name, subschema);
         registerSubschema(SimpleJsonPointer.concat("properties", name), subschema);
         return builderWithSubschema();
     }
@@ -338,18 +311,16 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         Objects.requireNonNull(pattern, "pattern must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
         Pattern compiled = Pattern.compile(pattern);
-        if (this.patternProperties == null) {
-            this.patternProperties = new HashMap<>();
-        }
-        this.patternProperties.put(compiled, subschema);
-        registerSubschema(SimpleJsonPointer.concat("additionalProperties", pattern), subschema);
+        PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
+        properties.addProperty(compiled, subschema);
+        registerSubschema(SimpleJsonPointer.concat("patternProperties", pattern), subschema);
         return builderWithSubschema();
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        this.additionalProperties = subschema;
+        addKeyword(Combiners.additionalProperties(subschema));
         registerSubschema("/additionalProperties", subschema);
         return builderWithSubschema();
     }
@@ -529,9 +500,12 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         }
     }
 
-    private void configureAllKeywords() {
-        for (Keyword keyword : keywords.values()) {
-            keyword.configure(keywords);
+    /**
+     * Links all keywords found in the schema.
+     */
+    private void linkAllKeywords() {
+        for (Keyword keyword : this.keywords.values()) {
+            keyword.link(this.keywords);
         }
     }
 

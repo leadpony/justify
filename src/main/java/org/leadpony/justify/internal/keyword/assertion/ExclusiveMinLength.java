@@ -22,7 +22,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 class ExclusiveMinLength extends AbstractStringLengthAssertion {
 
     public ExclusiveMinLength(int bound) {
-        super(bound, "exclusiveMinLength", "instance.problem.exclusive.min.length");
+        super(bound, "exclusiveMinLength", "instance.problem.exclusiveMinLength");
     }
 
     @Override
