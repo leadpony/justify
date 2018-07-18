@@ -82,6 +82,6 @@ public class SpecTest extends AbstractValidationTest {
 
     @Before
     public void setUp() {
-        //Assume.assumeTrue(getTestIndex() == 7);
+        //Assume.assumeTrue(getTestIndex() == 1);
     }
 }

@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,13 +25,13 @@ import java.util.regex.Pattern;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * @author leadpony
  */
-public class PatternProperties extends AbstractProperties<Pattern> {
+public class PatternProperties extends BaseProperties<Pattern> {
     
     private boolean enabled;
     
@@ -63,31 +63,38 @@ public class PatternProperties extends AbstractProperties<Pattern> {
 
     @Override
     public void link(Map<String, Keyword> siblings) {
+        super.link(siblings);
         enabled = !siblings.containsKey("properties");
-        if (enabled) {
-            super.link(siblings);
-        }
     }
     
     @Override
-    protected void findSubschemas(String keyName, List<JsonSchema> subschemas) {
+    protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
         for (Pattern pattern : propertyMap.keySet()) {
             Matcher m = pattern.matcher(keyName);
             if (m.find()) {
                 subschemas.add(propertyMap.get(pattern));
             }
         }
+        if (subschemas.isEmpty()) {
+            return super.findSubschemas(keyName, subschemas);
+        } else {
+            return null;
+        }
     }
     
-    private static class Negated extends PatternProperties {
+    private class Negated extends PatternProperties {
         
         private Negated(PatternProperties original) {
             super(negateSchemaMap(original.propertyMap),
                   original.additionalProperties.negate(),
                   original.enabled); 
         }
+        
+        public PatternProperties negate() {
+            return PatternProperties.this;
+        }
   
-        protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+        protected DynamicLogicalEvaluator createDynamicEvaluator() {
             return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
         }
     }

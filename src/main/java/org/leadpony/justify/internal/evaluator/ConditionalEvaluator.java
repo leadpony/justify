@@ -34,7 +34,7 @@ public class ConditionalEvaluator implements Evaluator {
     private Result ifResult;
     private Result thenResult;
     private Result elseResult;
-
+    
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         this.ifEvaluator = ifEvaluator;
         this.thenEvaluator = (thenEvaluator != null) ? 

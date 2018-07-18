@@ -21,6 +21,7 @@ import static org.leadpony.justify.core.JsonSchemas.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -34,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.leadpony.justify.Loggers;
 
 /**
  * Tests for {@link JsonReader} validating JSON instance. 
@@ -41,6 +43,8 @@ import org.junit.runners.Parameterized.Parameters;
  * @author leadpony
  */
 public class JsonReaderTest {
+   
+    private static final Logger log = Loggers.getLogger(JsonReaderTest.class);
     
     @Test
     public void read_readArray() {
@@ -194,7 +198,7 @@ public class JsonReaderTest {
     
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            ProblemHandlers.printingWith(System.out::println).accept(problems);
+            ProblemHandlers.printingWith(log::info).accept(problems);
         }
     }
 }

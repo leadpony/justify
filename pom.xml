@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -27,6 +28,7 @@
         <jsonb.impl.groupId>org.eclipse</jsonb.impl.groupId>
         <jsonb.impl.artifactId>yasson</jsonb.impl.artifactId>
         <jsonb.impl.version>1.0.1</jsonb.impl.version>
+        <test.log.level>OFF</test.log.level>
     </properties>
 
     <dependencies>
@@ -74,6 +76,12 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -114,7 +122,7 @@
                             <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.2</url>
                             <location>${basedir}/src/main/javadoc/javax/json/</location>
                         </offlineLink>
-                    </offlineLinks>                    
+                    </offlineLinks>
                 </configuration>
                 <executions>
                     <execution>
@@ -130,16 +138,22 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
                 <configuration>
-                  <argLine>-Duser.language=en -Duser.country=US</argLine>
-                  <excludes>
-                    <exclude></exclude>
-                  </excludes>
+                    <argLine>-Duser.language=en -Duser.country=US</argLine>
+                    <excludes>
+                        <exclude></exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <profile>
+            <id>debug</id>
+            <properties>
+                <test.log.level>INFO</test.log.level>
+            </properties>
+        </profile>
         <profile>
             <id>johnzon</id>
             <properties>
@@ -149,5 +163,5 @@
             </properties>
         </profile>
     </profiles>
-    
+
 </project>

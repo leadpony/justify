@@ -33,7 +33,7 @@ import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
-import org.leadpony.justify.core.JsonSchemaException;
+import org.leadpony.justify.core.JsonvException;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.Problem;
 
@@ -47,21 +47,20 @@ import org.leadpony.justify.core.Problem;
  */
 public abstract class JsonValidationProvider {
     
-    private static final ThreadLocal<JsonValidationProvider> threadLocalProvider =
-            ThreadLocal.withInitial(JsonValidationProvider::createProvider);
-    
     /**
      * Returns an instance of this provider class.
      * 
      * @return the instance of this provider class.
-     * @throws JsonSchemaException if there is no provider found.
+     * @throws JsonvException if there is no provider found.
      */
     public static JsonValidationProvider provider() {
-        JsonValidationProvider provider = threadLocalProvider.get();
-        if (provider == null) {
-            throw new JsonSchemaException("JSON schema provider is not installed.");
+        ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class);
+        Iterator<JsonValidationProvider> it = loader.iterator();
+        if (it.hasNext()) {
+            return it.next();
+        } else {
+            throw new JsonvException("JSON validation provider was not found.");
         }
-        return provider;
     }
     
     /**
@@ -136,30 +135,4 @@ public abstract class JsonValidationProvider {
      * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
      */
     public abstract Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer);
-
-    /**
-     * Initializes this provider immediately after its instantiation.  
-     * 
-     * @param jsonProvider the JSON provider to attach.
-     * @throws NullPointerException if the specified {@code jsonProvider} was {@code null}.
-     */
-    protected abstract void initialize(JsonProvider jsonProvider);
-    
-    /**
-     * Creates an instance of this provider class for each thread.
-     * 
-     * @return the instance of this provider class.
-     */
-    private static JsonValidationProvider createProvider() {
-        JsonProvider jsonProvider = JsonProvider.provider();
-        ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class);
-        Iterator<JsonValidationProvider> it = loader.iterator();
-        if (it.hasNext()) {
-            JsonValidationProvider found = it.next();
-            found.initialize(jsonProvider);
-            return found;
-        } else {
-            return null;
-        }
-    }
 }

@@ -34,15 +34,4 @@ public interface Assertion extends Keyword {
     default boolean canEvaluate() {
         return true;
     }
-    
-    /**
-     * Returns the negated version of this assertion.
-     * 
-     * @return the negated version of this assertion.
-     */
-    @Override
-    default Assertion negate() {
-        throw new UnsupportedOperationException(
-                name() + " does not support negation.");
-    }
 }

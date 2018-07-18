@@ -16,30 +16,40 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.LinkedList;
+import java.util.Objects;
+
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.Evaluator;
 
 /**
  * @author leadpony
  */
-class LongExclusiveDisjunctionEvaluator extends ExclusiveDisjunctionEvaluator {
+class DynamicConjunctionEvaluator extends ConjunctionEvaluator implements DynamicLogicalEvaluator{
 
-    protected final Event lastEvent;
- 
-    public static LogicalEvaluator.Builder builder(Event finalEvent) {
-        return new LongExclusiveDisjunctionEvaluator(finalEvent);
+    DynamicConjunctionEvaluator(Event stopEvent) {
+        super(new LinkedList<>(), stopEvent);
     }
-    
-    private LongExclusiveDisjunctionEvaluator(Event lastEvent) {
-        this.lastEvent = lastEvent;
+
+    @Override
+    public void append(Evaluator evaluator) {
+        Objects.requireNonNull(evaluator, "evaluator must not be null.");
+        children.add(evaluator);
+    }
+
+    @Override
+    protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
+            Reporter reporter) {
+        assert depth > 0;
+        return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
     }
 
     @Override
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (isEmpty()) {
-            return conclude(parser, reporter);
-        } else if (depth == 0 && event == lastEvent) {
-            assert false;
+        if (depth == 0 && event == stopEvent) {
+            assert isEmpty();
             return conclude(parser, reporter);
         } else {
             return Result.PENDING;

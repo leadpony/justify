@@ -16,9 +16,13 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.List;
+
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 
 /**
  * Logical evaluator for "allOf" boolean logic.
@@ -29,8 +33,12 @@ class ConjunctionEvaluator extends AbstractLogicalEvaluator {
     
     private int falseEvaluations;
     
-    public static LogicalEvaluator.Builder builder() {
-        return new ConjunctionEvaluator();
+    static LogicalEvaluator.Builder builder(InstanceType type) {
+        return new Builder(type);
+    }
+    
+    protected ConjunctionEvaluator(List<Evaluator> children, Event stopEvent) {
+        super(children, stopEvent);
     }
     
     @Override
@@ -44,5 +52,17 @@ class ConjunctionEvaluator extends AbstractLogicalEvaluator {
     @Override
     protected Result conclude(JsonParser parser, Reporter reporter) {
         return (this.falseEvaluations == 0) ? Result.TRUE : Result.FALSE;
+    }
+    
+    private static class Builder extends AbstractLogicalEvaluator.Builder {
+
+        private Builder(InstanceType type) {
+            super(type);
+        }
+
+        @Override
+        protected LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent) {
+            return new ConjunctionEvaluator(children, stopEvent);
+        }
     }
 }

@@ -20,16 +20,16 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 
 /**
  * @author leadpony
  */
 abstract class AbstractChildSchemaEvaluator implements Evaluator {
     
-    private final ExtendableLogicalEvaluator dynamicEvaluator;
+    private final DynamicLogicalEvaluator dynamicEvaluator;
     
-    protected AbstractChildSchemaEvaluator(ExtendableLogicalEvaluator dynamicEvaluator) {
+    protected AbstractChildSchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
         this.dynamicEvaluator = dynamicEvaluator;
     }
 

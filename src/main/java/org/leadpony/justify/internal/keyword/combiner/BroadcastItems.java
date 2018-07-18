@@ -26,7 +26,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 
 /**
  * @author leadpony
@@ -54,13 +54,13 @@ class BroadcastItems extends UnaryCombiner implements Items {
      * 
      * @return newly created evaluator.
      */
-    protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+    protected DynamicLogicalEvaluator createDynamicEvaluator() {
         return Evaluators.newConjunctionChildEvaluator(InstanceType.ARRAY);
     }
     
     class ArrayItemSchemaEvaluator extends AbstractChildSchemaEvaluator {
 
-        ArrayItemSchemaEvaluator(ExtendableLogicalEvaluator dynamicEvaluator) {
+        ArrayItemSchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
             super(dynamicEvaluator);
         }
         
@@ -87,7 +87,7 @@ class BroadcastItems extends UnaryCombiner implements Items {
         }
 
         @Override
-        protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+        protected DynamicLogicalEvaluator createDynamicEvaluator() {
             return Evaluators.newDisjunctionChildEvaluator(InstanceType.ARRAY);
         }
     }

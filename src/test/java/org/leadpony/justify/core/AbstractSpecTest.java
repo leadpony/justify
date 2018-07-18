@@ -24,14 +24,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
+
+import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
 abstract class AbstractSpecTest {
+    
+    private static final Logger log = Loggers.getLogger(AbstractSpecTest.class);
     
     private final String name;
     private final int testIndex;
@@ -104,7 +109,7 @@ abstract class AbstractSpecTest {
             return;
         }
         String prefix = "(" + getName() + "@" + getTestIndex() + ")";
-        ProblemHandlers.printingWith(line->System.out.println(prefix + line))
+        ProblemHandlers.printingWith(line->log.info(prefix + line))
             .accept(problems);
     }
     

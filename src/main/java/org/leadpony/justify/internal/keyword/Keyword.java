@@ -53,7 +53,10 @@ public interface Keyword {
      * @param appender the type for appending evaluators, cannot be {@code null}.
      * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
      */
-    void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory);
+    default void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        throw new UnsupportedOperationException(
+                name() + " does not support evaluation.");
+    }
 
     /**
      * Returns the negated version of this keyword.

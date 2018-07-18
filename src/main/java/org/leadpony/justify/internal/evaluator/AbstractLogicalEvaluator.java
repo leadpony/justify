@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,21 +25,29 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.internal.base.ParserEvents;
 
 /**
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEvaluator.Builder {
+abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
 
-    protected final List<Evaluator> evaluators;
+    protected final List<Evaluator> children;
+    protected final Event stopEvent;
     
-    protected AbstractLogicalEvaluator() {
-        this.evaluators = new LinkedList<>();
+    protected AbstractLogicalEvaluator(List<Evaluator> children) {
+        this(children, null);
     }
     
+    protected AbstractLogicalEvaluator(List<Evaluator> children, Event stopEvent) {
+        this.children = children;
+        this.stopEvent = stopEvent;
+    }
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-        Iterator<Evaluator> it = evaluators.iterator();
+        Iterator<Evaluator> it = children.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
             Result result = invokeChildEvaluator(evaluator, event, parser, depth, reporter);
@@ -53,25 +61,8 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEval
         return tryToMakeDecision(event, parser, depth, reporter);
     }
    
-    @Override
-    public void append(Evaluator evaluator) {
-        Objects.requireNonNull(evaluator, "evaluator must not be null.");
-        this.evaluators.add(evaluator);
-    }
-    
-    @Override
-    public Evaluator build() {
-        if (evaluators.isEmpty()) {
-            return Evaluator.ALWAYS_TRUE;
-        } else if (evaluators.size() == 1) {
-            return evaluators.get(0);
-        } else {
-            return this;
-        }
-    }
-    
     protected boolean isEmpty() {
-        return evaluators.isEmpty();
+        return children.isEmpty();
     }
     
     protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth, Reporter reporter) {
@@ -79,11 +70,48 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator, LogicalEval
     }
 
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        assert isEmpty();
-        return conclude(parser, reporter);
+        if (stopEvent == null) {
+            assert isEmpty();
+            return conclude(parser, reporter);
+        } else if (isEmpty()) {
+            return conclude(parser, reporter);
+        } else if (depth == 0 && event == stopEvent) {
+            assert false;
+            return conclude(parser, reporter);
+        } else {
+            return Result.PENDING;
+        }
     }
     
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
     protected abstract Result conclude(JsonParser parser, Reporter reporter);
+    
+    protected static abstract class Builder implements LogicalEvaluator.Builder {
+        
+        private final List<Evaluator> children = new ArrayList<>();
+        private InstanceType type;
+        
+        protected Builder(InstanceType type) {
+            this.type = type;
+        }
+        
+        @Override
+        public void append(Evaluator evaluator) {
+            Objects.requireNonNull(evaluator, "evaluator must not be null.");
+            this.children.add(evaluator);
+        }
+        
+        @Override
+        public Evaluator build() {
+            Event stopEvent = ParserEvents.lastEventOf(type);
+            if (stopEvent == null && children.size() == 1) {
+                return children.get(0);
+            } else {
+                return createEvaluator(children, stopEvent);
+            }
+        }
+        
+        protected abstract LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent);
+    }
 }

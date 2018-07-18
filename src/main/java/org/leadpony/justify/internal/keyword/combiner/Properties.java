@@ -16,14 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -31,16 +31,19 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public class Properties extends AbstractProperties<String> {
+public class Properties extends BaseProperties<String> {
 
     private PatternProperties patternProperties;
 
     Properties() {
-        this(new LinkedHashMap<>(), AdditionalProperties.DEFAULT);
+        super(new LinkedHashMap<>(), AdditionalProperties.DEFAULT);
     }
     
-    Properties(Map<String, JsonSchema> propertyMap, AdditionalProperties additionalProperties) {
+    Properties(Map<String, JsonSchema> propertyMap, 
+            AdditionalProperties additionalProperties,
+            PatternProperties patternProperties) {
         super(propertyMap, additionalProperties);
+        this.patternProperties = patternProperties;
     }
     
     @Override
@@ -62,23 +65,33 @@ public class Properties extends AbstractProperties<String> {
     }
     
     @Override
-    protected void findSubschemas(String keyName, List<JsonSchema> subschemas) {
+    protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
         if (propertyMap.containsKey(keyName)) {
             subschemas.add(propertyMap.get(keyName));
         }
         if (patternProperties != null) {
-            patternProperties.findSubschemas(keyName, subschemas);
+            return patternProperties.findSubschemas(keyName, subschemas);
+        } else if (subschemas.isEmpty()) {
+            return super.findSubschemas(keyName, subschemas);
+        } else {
+            return null;
         }
     }
 
-    private static class Negated extends Properties {
+    private class Negated extends Properties {
         
         private Negated(Properties original) {
             super(negateSchemaMap(original.propertyMap),
-                    original.additionalProperties.negate()); 
+                  original.additionalProperties.negate(),
+                  (original.patternProperties != null) ?
+                      original.patternProperties.negate() : null); 
         }
         
-        protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+        public Properties negate() {
+            return Properties.this;
+        }
+        
+        protected DynamicLogicalEvaluator createDynamicEvaluator() {
             return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
         }
     }

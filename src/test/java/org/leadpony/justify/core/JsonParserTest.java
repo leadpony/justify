@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.leadpony.justify.Loggers;
 
 /**
  * Tests for {@link JsonParser} validating JSON instance. 
@@ -48,6 +50,8 @@ import org.junit.runners.Parameterized.Parameters;
  * @author leadpony
  */
 public class JsonParserTest {
+    
+    private static final Logger log = Loggers.getLogger(JsonParserTest.class);
     
     @Test
     public void hasNext_returnsTrueAtFirst() {
@@ -527,7 +531,7 @@ public class JsonParserTest {
     
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            ProblemHandlers.printingWith(System.out::println).accept(problems);
+            ProblemHandlers.printingWith(log::info).accept(problems);
         }
     }
 }

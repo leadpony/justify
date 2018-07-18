@@ -28,38 +28,26 @@ import org.leadpony.justify.core.InstanceType;
  */
 public final class Evaluators {
 
+    private Evaluators() {
+    }
+
     public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type) {
-        if (type.isContainer()) {
-            return LongConjunctionEvaluator.builder(lastEventOf(type));
-        } else {
-            return ConjunctionEvaluator.builder();
-        }
+        return ConjunctionEvaluator.builder(type);
     }
     
-    public static ExtendableLogicalEvaluator newConjunctionChildEvaluator(InstanceType type) {
-        return new ConjunctionChildEvaluator(lastEventOf(type));
+    public static DynamicLogicalEvaluator newConjunctionChildEvaluator(InstanceType type) {
+        return new DynamicConjunctionEvaluator(lastEventOf(type));
     }
     
     public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type) {
-        if (type.isContainer()) {
-            return LongDisjunctionEvaluator.builder(lastEventOf(type));
-        } else {
-            return DisjunctionEvaluator.builder();
-        }
+        return DisjunctionEvaluator.builder(type);
     }
 
-    public static ExtendableLogicalEvaluator newDisjunctionChildEvaluator(InstanceType type) {
-        return new DisjunctionChildEvaluator(lastEventOf(type));
+    public static DynamicLogicalEvaluator newDisjunctionChildEvaluator(InstanceType type) {
+        return new DynamicDisjunctionEvaluator(lastEventOf(type));
     }
 
     public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type) {
-        if (type.isContainer()) {
-            return LongExclusiveDisjunctionEvaluator.builder(lastEventOf(type));
-        } else {
-            return ExclusiveDisjunctionEvaluator.builder();
-        }
-    }
-
-    private Evaluators() {
+        return ExclusiveDisjunctionEvaluator.builder(type);
     }
 }

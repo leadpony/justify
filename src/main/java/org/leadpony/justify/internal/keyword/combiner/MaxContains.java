@@ -19,11 +19,11 @@ package org.leadpony.justify.internal.keyword.combiner;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
+ * The type representing "maxContains" keyword.
+ * 
  * @author leadpony
  */
 class MaxContains implements Keyword {
@@ -46,11 +46,6 @@ class MaxContains implements Keyword {
     @Override
     public boolean canEvaluate() {
         return false;
-    }
-    
-    @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

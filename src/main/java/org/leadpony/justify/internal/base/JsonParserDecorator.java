@@ -271,7 +271,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super JsonValue> action) {
-            Objects.requireNonNull("action","action must not be null.");
+            Objects.requireNonNull("action", "action must not be null.");
             if (hasNext() && next() != Event.END_ARRAY) {
                 action.accept(getValue());
                 return true;
@@ -285,7 +285,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
-            Objects.requireNonNull("action","action must not be null.");
+            Objects.requireNonNull("action", "action must not be null.");
             if (!hasNext()) {
                 return false;
             }

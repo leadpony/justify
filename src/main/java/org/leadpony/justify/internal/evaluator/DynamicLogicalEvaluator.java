@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
-
-import java.net.URI;
-
-import org.leadpony.justify.core.JsonSchemaBuilder;
+package org.leadpony.justify.internal.evaluator;
 
 /**
+ * {@code LogicalEvaluator} which can be extended during the evaluation.
+ * 
  * @author leadpony
  */
-public interface SchemaReferenceBuilder extends JsonSchemaBuilder {
-    
-    JsonSchemaBuilder withRef(URI ref);
+public interface DynamicLogicalEvaluator extends LogicalEvaluator, EvaluatorAppender {
 }

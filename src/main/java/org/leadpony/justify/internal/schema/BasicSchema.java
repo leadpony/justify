@@ -17,9 +17,9 @@
 package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -32,40 +32,45 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * JSON Schema without any subschemas including child schemas.
+ * JSON Schema with keywords.
  * 
  * @author leadpony
  */
-public class SimpleSchema extends AbstractJsonSchema {
+public class BasicSchema extends AbstractJsonSchema {
 
     private URI id;
     private final URI originalId;
     private final URI schema;
     
-    private final Collection<Keyword> keywords;
+    private final Map<String, Keyword> keywordMap;
+    private final NavigableSchemaMap subschemaMap;
     
-    SimpleSchema(DefaultSchemaBuilder builder) {
+    /**
+     * Constructs this schema.
+     * 
+     * @param builder the builder of this schema.
+     */
+    BasicSchema(DefaultSchemaBuilder builder) {
         super(builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
-        this.keywords = builder.getKeywords();
+        this.keywordMap = builder.getKeywordMap();
+        this.subschemaMap = builder.getSubschemaMap();
     }
     
     /**
      * Copy constructor.
      * 
      * @param original the original schema.
-     * @param negating {@code true} if this schema is negation of the original.
+     * @param keywordMap the keywords of this schema.
      */
-    SimpleSchema(SimpleSchema original, boolean negating) {
+    BasicSchema(BasicSchema original, Map<String, Keyword> keywordMap) {
         super(original);
-        assert negating;
         this.id = original.id;
         this.originalId = original.originalId;
         this.schema = original.schema;
-        this.keywords = original.keywords.stream()
-                .map(Keyword::negate)
-                .collect(Collectors.toList());
+        this.keywordMap = keywordMap;
+        this.subschemaMap = original.subschemaMap;
     }
     
     @Override
@@ -86,7 +91,16 @@ public class SimpleSchema extends AbstractJsonSchema {
     @Override
     public JsonSchema findSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        return jsonPointer.isEmpty() ? this : null;
+        if (jsonPointer.isEmpty()) {
+            return this;
+        } else {
+            return subschemaMap.getSchema(jsonPointer);
+        }
+    }
+    
+    @Override
+    public Iterable<JsonSchema> getSubschemas() {
+        return this.subschemaMap.values();
     }
 
     @Override
@@ -99,7 +113,20 @@ public class SimpleSchema extends AbstractJsonSchema {
 
     @Override
     public JsonSchema negate() {
-        return new Negated(this);
+        BasicSchema original = this;
+        Map<String, Keyword> newMap = new LinkedHashMap<>(this.keywordMap);
+        newMap.replaceAll((k, v)->v.negate());
+        return new BasicSchema(original, newMap) {
+            @Override
+            public JsonSchema negate() {
+                return original;
+            }
+            
+            @Override
+            protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
+                return Evaluators.newDisjunctionEvaluatorBuilder(type);
+            } 
+        };
     }
 
     public void setAbsoluteId(URI id) {
@@ -108,7 +135,7 @@ public class SimpleSchema extends AbstractJsonSchema {
  
     protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : this.keywords) {
+        for (Keyword keyword : this.keywordMap.values()) {
             if (keyword.canEvaluate()) {
                 keyword.createEvaluator(type, builder, builderFactory);
             }
@@ -128,25 +155,8 @@ public class SimpleSchema extends AbstractJsonSchema {
             builder.add("$schema", this.schema.toString());
         }
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : this.keywords) {
+        for (Keyword keyword : this.keywordMap.values()) {
             keyword.addToJson(builder, builderFactory);
         }
-    }
-    
-    /**
-     * Negated type of enclosing class.
-     *  
-     * @author leadpony
-     */
-    private static class Negated extends SimpleSchema {
-        
-        private Negated(SimpleSchema original) {
-            super(original, true);
-        }
-  
-        @Override
-        protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-            return Evaluators.newDisjunctionEvaluatorBuilder(type);
-        } 
     }
 }

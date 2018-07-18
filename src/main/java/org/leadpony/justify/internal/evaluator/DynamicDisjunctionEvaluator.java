@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.LinkedList;
+import java.util.Objects;
+
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -24,22 +27,28 @@ import org.leadpony.justify.core.Evaluator;
 /**
  * @author leadpony
  */
-class ConjunctionChildEvaluator extends LongConjunctionEvaluator implements ExtendableLogicalEvaluator{
+class DynamicDisjunctionEvaluator extends DisjunctionEvaluator implements DynamicLogicalEvaluator {
 
-    ConjunctionChildEvaluator(Event stopEvent) {
-        super(stopEvent);
+    DynamicDisjunctionEvaluator(Event stopEvent) {
+        super(new LinkedList<>(), stopEvent);
     }
 
+    @Override
+    public void append(Evaluator evaluator) {
+        Objects.requireNonNull(evaluator, "evaluator must not be null.");
+        children.add(new StoringEvaluator(evaluator));
+    }
+    
     @Override
     protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
             Reporter reporter) {
         assert depth > 0;
         return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
     }
-
+    
     @Override
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
-        if (depth == 0 && event == finalEvent) {
+        if (depth == 0 && event == stopEvent) {
             assert isEmpty();
             return conclude(parser, reporter);
         } else {

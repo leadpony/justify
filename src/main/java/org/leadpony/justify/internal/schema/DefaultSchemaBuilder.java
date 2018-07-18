@@ -51,7 +51,7 @@ import org.leadpony.justify.internal.keyword.combiner.Properties;
  * 
  * @author leadpony
  */
-class DefaultSchemaBuilder implements SchemaReferenceBuilder {
+class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     
     private final JsonBuilderFactory builderFactory;
     
@@ -79,8 +79,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         return schema;
     }
     
-    Collection<Keyword> getKeywords() {
-        return keywords.values();
+    Map<String, Keyword> getKeywordMap() {
+        return keywords;
     }
     
     NavigableSchemaMap getSubschemaMap() {
@@ -98,10 +98,8 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
             return new SchemaReference(ref, this.subschemaMap, getBuilderFactory());
-        } else if (subschemaMap.isEmpty()) {
-            return new SimpleSchema(this);
         } else {
-            return new CompositeSchema(this);
+            return new BasicSchema(this);
         }
     }
 
@@ -434,17 +432,6 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
     }
     
     @Override
-    public JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema) {
-        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        Objects.requireNonNull(subschema, "subschema must not be null.");
-        if (jsonPointer.isEmpty()) {
-            throw new IllegalArgumentException("jsonPointer must not be empty.");
-        }
-        registerSubschema(jsonPointer, subschema);
-        return builderWithSubschema();
-    }
- 
-    @Override
     public JsonSchemaBuilder withTitle(String title) {
         Objects.requireNonNull(title, "title must not be null.");
         addKeyword(new Title(title));
@@ -472,6 +459,17 @@ class DefaultSchemaBuilder implements SchemaReferenceBuilder {
         return builderNonempty();
     }
     
+    @Override
+    public JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        Objects.requireNonNull(subschema, "subschema must not be null.");
+        if (jsonPointer.isEmpty()) {
+            throw new IllegalArgumentException("jsonPointer must not be empty.");
+        }
+        registerSubschema(jsonPointer, subschema);
+        return builderWithSubschema();
+    }
+ 
     private void addKeyword(Keyword keyword) {
         this.keywords.put(keyword.name(), keyword);
     }

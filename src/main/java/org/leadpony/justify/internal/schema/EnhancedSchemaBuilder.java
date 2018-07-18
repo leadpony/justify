@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify.internal.schema;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import java.net.URI;
+
+import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.JsonSchemaBuilder;
 
 /**
- * Keyword for annotation.
- * 
- * @param <T> the type of this annotation value.
+ * Enhanced version of {@link JsonSchemaBuilder}.
  * 
  * @author leadpony
  */
-public interface Annotation<T> extends Keyword {
+public interface EnhancedSchemaBuilder extends JsonSchemaBuilder {
     
-    @Override
-    default boolean canEvaluate() {
-        return false;
-    }
-    
-    @Override
-    default Annotation<T> negate() {
-        return this;
-    }
+    JsonSchemaBuilder withRef(URI ref);
 
-    /**
-     * Returns the value of this annotation.
-     * 
-     * @return the value of this annotation. 
-     */
-    T value();
+    JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema);
 }

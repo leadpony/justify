@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -39,16 +40,16 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public abstract class AbstractProperties<K> implements Combiner {
+public abstract class BaseProperties<K> implements Combiner {
     
     protected final Map<K, JsonSchema> propertyMap;
     protected AdditionalProperties additionalProperties;
     
-    protected AbstractProperties() {
+    protected BaseProperties() {
         this(new LinkedHashMap<>(), AdditionalProperties.DEFAULT);
     }
     
-    protected AbstractProperties(Map<K, JsonSchema> propertyMap, AdditionalProperties additionalProperties) {
+    protected BaseProperties(Map<K, JsonSchema> propertyMap, AdditionalProperties additionalProperties) {
         this.propertyMap = propertyMap;
         this.additionalProperties = additionalProperties;
     }
@@ -78,21 +79,20 @@ public abstract class AbstractProperties<K> implements Combiner {
         propertyMap.put(key, subschema);
     }
 
-    protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+    protected DynamicLogicalEvaluator createDynamicEvaluator() {
         return Evaluators.newConjunctionChildEvaluator(InstanceType.OBJECT);
     }
     
-    protected JsonSchema getDefaultSchema(String keyName) {
-        return additionalProperties.getSubschemaFor(keyName);
+    protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
+        assert subschemas.isEmpty();
+        return additionalProperties.findSubshcmeas(keyName, subschemas);
     }
-    
-    protected abstract void findSubschemas(String keyName, List<JsonSchema> subschemas);
 
     class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
-        ProperySchemaEvaluator(ExtendableLogicalEvaluator dynamicEvaluator) {
+        ProperySchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
             super(dynamicEvaluator);
         }
 
@@ -107,14 +107,9 @@ public abstract class AbstractProperties<K> implements Combiner {
         }
         
         private void findSubschemas(String keyName) {
-            AbstractProperties.this.findSubschemas(keyName, this.subschemas);
-            if (this.subschemas.isEmpty()) {
-                JsonSchema subschema = AbstractProperties.this.getDefaultSchema(keyName);
-                if (subschema instanceof RedundantPropertySchema) {
-                    appendChild(subschema.createEvaluator(InstanceType.OBJECT));
-                } else {
-                    this.subschemas.add(subschema);
-                }
+            JsonSchema immediate = BaseProperties.this.findSubschemas(keyName, this.subschemas);
+            if (immediate != null) {
+                appendChild(immediate.createEvaluator(InstanceType.OBJECT));
             }
         }
         

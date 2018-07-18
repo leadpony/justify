@@ -21,12 +21,14 @@ import static org.leadpony.justify.core.JsonSchemas.*;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
 
 import org.junit.Test;
+import org.leadpony.justify.Loggers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +38,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author leadpony
  */
 public class JsonbTest {
+  
+    private static final Logger log = Loggers.getLogger(JsonbTest.class);
     
     @Test
     public void fromJson_deserializes() {
@@ -67,7 +71,7 @@ public class JsonbTest {
         assertThat(person.name).isEqualTo("John Smith");
         assertThat(person.age).isEqualTo(46);
         assertThat(problems).isNotEmpty();
-        problems.forEach(System.out::println);
+        problems.stream().map(Object::toString).forEach(log::info);
     }
 
     public static class Person {

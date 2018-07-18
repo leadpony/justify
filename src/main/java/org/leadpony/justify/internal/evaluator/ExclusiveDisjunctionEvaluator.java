@@ -16,9 +16,13 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.List;
+
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
@@ -29,8 +33,12 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  */
 class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
  
-    public static LogicalEvaluator.Builder builder() {
-        return new ExclusiveDisjunctionEvaluator();
+    static LogicalEvaluator.Builder builder(InstanceType type) {
+        return new Builder(type);
+    }
+    
+    protected ExclusiveDisjunctionEvaluator(List<Evaluator> children, Event stopEvent) {
+        super(children, stopEvent);
     }
     
     @Override
@@ -60,5 +68,17 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
                 .build();
         reporter.reportProblem(p);
         return Result.FALSE;
+    }
+
+    private static class Builder extends AbstractLogicalEvaluator.Builder {
+
+        private Builder(InstanceType type) {
+            super(type);
+        }
+
+        @Override
+        protected LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent) {
+            return new ExclusiveDisjunctionEvaluator(children, stopEvent);
+        }
     }
 }

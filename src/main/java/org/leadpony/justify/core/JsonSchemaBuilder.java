@@ -271,8 +271,6 @@ public interface JsonSchemaBuilder {
      */
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
     
-    JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema);
-    
     /* Keywords for annotation */
     
     JsonSchemaBuilder withTitle(String title);

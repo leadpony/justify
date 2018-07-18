@@ -32,7 +32,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ExtendableLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -80,7 +80,7 @@ class SeparateItems implements Items {
      * 
      * @return newly created evaluator.
      */
-    protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+    protected DynamicLogicalEvaluator createDynamicEvaluator() {
         return Evaluators.newConjunctionChildEvaluator(InstanceType.ARRAY);
     }
     
@@ -88,7 +88,7 @@ class SeparateItems implements Items {
 
         private int currentIndex;
         
-        private ArrayItemSchemaEvaluator(ExtendableLogicalEvaluator dynamicEvaluator) {
+        private ArrayItemSchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
             super(dynamicEvaluator);
             this.currentIndex = 0;
         }
@@ -122,7 +122,7 @@ class SeparateItems implements Items {
         }
         
         @Override
-        protected ExtendableLogicalEvaluator createDynamicEvaluator() {
+        protected DynamicLogicalEvaluator createDynamicEvaluator() {
             return Evaluators.newDisjunctionChildEvaluator(InstanceType.ARRAY);
         }
 

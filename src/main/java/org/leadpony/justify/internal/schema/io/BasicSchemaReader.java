@@ -43,9 +43,9 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.SimpleJsonPointer;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.SimpleSchema;
+import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
-import org.leadpony.justify.internal.schema.SchemaReferenceBuilder;
+import org.leadpony.justify.internal.schema.EnhancedSchemaBuilder;
 
 /**
  * Basic implementation of {@link JsonSchemaReader}.
@@ -134,7 +134,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
     }
     
     private JsonSchema objectSchema(boolean root) {
-        SchemaReferenceBuilder builder = this.factory.createBuilder();
+        EnhancedSchemaBuilder builder = this.factory.createBuilder();
         JsonLocation refLocation = null;
         Event event = null;
         while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
@@ -167,7 +167,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private void populateSchema(String keyName, JsonSchemaBuilder builder) {
+    private void populateSchema(String keyName, EnhancedSchemaBuilder builder) {
         switch (keyName) {
         case "$id":
             addId(builder);
@@ -295,7 +295,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private void addRef(SchemaReferenceBuilder builder) {
+    private void addRef(EnhancedSchemaBuilder builder) {
         if (parser.next() == Event.VALUE_STRING) {
             URI uri = URI.create(parser.getString());
             builder.withRef(uri);
@@ -674,7 +674,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         builder.withDefault(parser.getValue());
     }
     
-    private void addUnknown(String name, JsonSchemaBuilder builder) {
+    private void addUnknown(String name, EnhancedSchemaBuilder builder) {
         if (parser.hasNext()) {
             processUnknown(parser.next(), SimpleJsonPointer.of(name), builder);
         }
@@ -728,7 +728,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private void processUnknown(Event event, SimpleJsonPointer where, JsonSchemaBuilder builder) {
+    private void processUnknown(Event event, SimpleJsonPointer where, EnhancedSchemaBuilder builder) {
         switch (event) {
         case START_OBJECT:
             builder.withSubschema(where.toString(), objectSchema(false));
@@ -761,7 +761,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
         if (schema.hasId()) {
             baseURI = baseURI.resolve(schema.id());
-            ((SimpleSchema)schema).setAbsoluteId(baseURI);
+            ((BasicSchema)schema).setAbsoluteId(baseURI);
             addIdentifiedSchema(baseURI, schema);
         }
         if (schema instanceof SchemaReference) {

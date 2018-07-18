@@ -18,10 +18,13 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -34,24 +37,12 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     protected int trueEvaluations;
     protected List<StoringEvaluator> falseEvaluators;
    
-    public static LogicalEvaluator.Builder builder() {
-        return new DisjunctionEvaluator();
+    static LogicalEvaluator.Builder builder(InstanceType type) {
+        return new Builder(type);
     }
     
-    @Override
-    public void append(Evaluator evaluator) {
-        super.append(new StoringEvaluator(evaluator));
-    }
-
-    @Override
-    public Evaluator build() {
-        if (evaluators.isEmpty()) {
-            return null;
-        } else if (evaluators.size() == 1) {
-            return ((StoringEvaluator)evaluators.get(0)).internalEvaluator();
-        } else {
-            return this;
-        }
+    protected DisjunctionEvaluator(List<Evaluator> children, Event stopEvent) {
+        super(wrapChildren(children), stopEvent);
     }
     
     @Override
@@ -84,5 +75,23 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     
     protected String getMessageKey() {
         return "instance.problem.anyOf";
+    }
+    
+    private static List<Evaluator> wrapChildren(List<Evaluator> children) {
+        return children.stream()
+            .map(StoringEvaluator::new)
+            .collect(Collectors.toList());
+    }
+
+    private static class Builder extends AbstractLogicalEvaluator.Builder {
+
+        private Builder(InstanceType type) {
+            super(type);
+        }
+
+        @Override
+        protected LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent) {
+            return new DisjunctionEvaluator(children, stopEvent);
+        }
     }
 }

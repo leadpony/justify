@@ -14,33 +14,27 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
- * Keyword for annotation.
- * 
- * @param <T> the type of this annotation value.
- * 
  * @author leadpony
  */
-public interface Annotation<T> extends Keyword {
+public class Loggers {
     
-    @Override
-    default boolean canEvaluate() {
-        return false;
-    }
-    
-    @Override
-    default Annotation<T> negate() {
-        return this;
+    static {
+        try (InputStream ins = Loggers.class.getResourceAsStream("/logging.properties")) {
+            LogManager.getLogManager().readConfiguration(ins);
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Returns the value of this annotation.
-     * 
-     * @return the value of this annotation. 
-     */
-    T value();
+    public static Logger getLogger(Class<?> clazz) {
+        return Logger.getLogger(clazz.getName());
+    }
 }

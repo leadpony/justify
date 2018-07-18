@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify;
+
+import java.util.logging.ConsoleHandler;
 
 /**
- * {@code LogicalEvaluator} which can be extended during the evaluation.
+ * Console handler for standard output.
  * 
  * @author leadpony
  */
-public interface ExtendableLogicalEvaluator extends LogicalEvaluator, EvaluatorAppender {
-}
+public class StdConsoleHandler extends ConsoleHandler {{
+    this.setOutputStream(System.out);
+}}

@@ -41,6 +41,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
+import org.leadpony.justify.core.JsonvException;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.spi.JsonValidationProvider;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
@@ -58,7 +59,6 @@ public class DefaultJsonValidationProvider
         extends JsonValidationProvider implements JsonSchemaResolver {
     
     private JsonProvider jsonProvider;
-    
     private JsonSchema metaschema;
     
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
@@ -72,7 +72,7 @@ public class DefaultJsonValidationProvider
     public JsonSchemaReader createSchemaReader(InputStream in) {
         Objects.requireNonNull(in, "in must not be null.");
         ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
-                in, metaschema, problem->{});
+                in, getMetaschema(), problem->{});
         return createValidatingSchemaReader(parser);
     }
   
@@ -81,7 +81,7 @@ public class DefaultJsonValidationProvider
         Objects.requireNonNull(in, "in must not be null.");
         Objects.requireNonNull(charset, "charset must not be null.");
         ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
-                in, charset, metaschema, problem->{});
+                in, charset, getMetaschema(), problem->{});
         return createValidatingSchemaReader(parser);
     }
 
@@ -89,7 +89,7 @@ public class DefaultJsonValidationProvider
     public JsonSchemaReader createSchemaReader(Reader reader) {
         Objects.requireNonNull(reader, "reader must not be null.");
         ValidatingJsonParser parser = (ValidatingJsonParser)createParser(
-                reader, metaschema, problem->{});
+                reader, getMetaschema(), problem->{});
         return createValidatingSchemaReader(parser);
     }
     
@@ -108,8 +108,8 @@ public class DefaultJsonValidationProvider
         if (handlerSupplier == null) {
             handlerSupplier = parser->null;
         }
-        JsonParserFactory realFactory = jsonProvider.createParserFactory(config);
-        return new ValidatingJsonParserFactory(schema, realFactory, handlerSupplier, this.jsonProvider);
+        JsonParserFactory realFactory = getJsonProvider().createParserFactory(config);
+        return new ValidatingJsonParserFactory(schema, realFactory, handlerSupplier, getJsonProvider());
     }
     
     @Override
@@ -171,20 +171,13 @@ public class DefaultJsonValidationProvider
     public JsonProvider createJsonProvider(JsonSchema schema, 
             Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
         Objects.requireNonNull(schema, "schema must not be null.");
-        return new ValidatingJsonProvider(jsonProvider, schema, handlerSupplier);
+        return new ValidatingJsonProvider(getJsonProvider(), schema, handlerSupplier);
     }
     
     @Override
     public Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer) {
         Objects.requireNonNull(lineConsumer, "lineConsumer must not be null.");
         return new ProblemPrinter(lineConsumer);
-    }
-    
-    @Override
-    protected void initialize(JsonProvider jsonProvider) {
-        Objects.requireNonNull(jsonProvider, "jsonProvider must not be null.");
-        this.jsonProvider = jsonProvider;
-        this.metaschema = loadMetaschema(METASCHEMA_NAME);
     }
     
     @Override
@@ -199,12 +192,11 @@ public class DefaultJsonValidationProvider
     
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
-        JsonParser parser = this.jsonProvider.createParser(in);
+        JsonParser parser = getJsonProvider().createParser(in);
         try (JsonSchemaReader reader = new BasicSchemaReader(parser, createBasicSchemaBuilderFactory())) {
             return reader.read();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new JsonvException("Failed to read metaschema.", e);
         }
     }
     
@@ -214,8 +206,22 @@ public class DefaultJsonValidationProvider
                 .withSchemaResolver(this);
     }
     
+    private JsonProvider getJsonProvider() {
+        if (jsonProvider == null) {
+            jsonProvider = JsonProvider.provider();
+        }
+        return jsonProvider;
+    }
+    
+    private JsonSchema getMetaschema() {
+        if (metaschema == null) {
+            metaschema = loadMetaschema(METASCHEMA_NAME);
+        }
+        return metaschema;
+    }
+    
     private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {
-        JsonBuilderFactory builderFactory = this.jsonProvider.createBuilderFactory(null);
+        JsonBuilderFactory builderFactory = getJsonProvider().createBuilderFactory(null);
         return new BasicSchemaBuilderFactory(builderFactory);
     }
 

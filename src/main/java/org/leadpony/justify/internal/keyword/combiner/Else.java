@@ -16,11 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.JsonBuilderFactory;
-
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * "Else" conditional keyword.
@@ -41,10 +37,5 @@ class Else extends UnaryCombiner {
     @Override
     public boolean canEvaluate() {
         return false;
-    }
-
-    @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        throw new UnsupportedOperationException();
     }
 }
