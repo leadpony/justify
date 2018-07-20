@@ -17,12 +17,14 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.base.JsonSchemas;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -53,7 +55,24 @@ public class Properties extends BaseProperties<String> {
 
     @Override
     public Properties negate() {
-        return new Negated(this);
+        Properties original = this;
+        return new Properties(
+                JsonSchemas.negate(this.propertyMap),
+                this.additionalProperties.negate(),
+                this.patternProperties != null ?
+                        this.patternProperties.negate() : null
+                ) {
+            
+            @Override
+            public Properties negate() {
+                return original;
+            }
+
+            @Override
+            protected DynamicLogicalEvaluator createDynamicEvaluator() {
+                return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
+            }
+        };
     }
 
     @Override
@@ -61,6 +80,15 @@ public class Properties extends BaseProperties<String> {
         super.link(siblings);
         if (siblings.containsKey("patternProperties")) {
             this.patternProperties = (PatternProperties)siblings.get("patternProperties");
+        }
+    }
+    
+    @Override
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        if (jsonPointer.hasNext()) {
+            return propertyMap.get(jsonPointer.next());
+        } else {
+            return null;
         }
     }
     
@@ -75,24 +103,6 @@ public class Properties extends BaseProperties<String> {
             return super.findSubschemas(keyName, subschemas);
         } else {
             return null;
-        }
-    }
-
-    private class Negated extends Properties {
-        
-        private Negated(Properties original) {
-            super(negateSchemaMap(original.propertyMap),
-                  original.additionalProperties.negate(),
-                  (original.patternProperties != null) ?
-                      original.patternProperties.negate() : null); 
-        }
-        
-        public Properties negate() {
-            return Properties.this;
-        }
-        
-        protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
         }
     }
 }

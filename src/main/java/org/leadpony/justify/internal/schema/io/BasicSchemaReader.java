@@ -140,11 +140,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
         while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
             if (event == Event.KEY_NAME) {
                 String keyName = parser.getString();
+                populateSchema(keyName, builder);
                 if (keyName.equals("$ref")) {
-                    addRef(builder);
                     refLocation = parser.getLocation();
-                } else {
-                    populateSchema(keyName, builder);
                 }
             }
         }
@@ -174,6 +172,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
             break;
         case "$schema":
             addSchema(builder);
+            break;
+        case "$ref":
+            addRef(builder);
             break;
         case "additionalItems":
             addAdditionalItems(builder);
@@ -296,9 +297,12 @@ public class BasicSchemaReader implements JsonSchemaReader {
     }
     
     private void addRef(EnhancedSchemaBuilder builder) {
-        if (parser.next() == Event.VALUE_STRING) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
             URI uri = URI.create(parser.getString());
             builder.withRef(uri);
+        } else {
+            skipValue(event);
         }
     }
     
@@ -768,7 +772,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
             SchemaReference ref = (SchemaReference)schema;
             ref.setRef(baseURI.resolve(ref.getRef()));
         }
-        for (JsonSchema subschema : schema.getSubschemas()) {
+        for (JsonSchema subschema : schema.getAllSubschemas()) {
             makeIdentifiersAbsolute(subschema, baseURI);
         }
     }
@@ -800,7 +804,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         if (fragment.startsWith("/")) {
             JsonSchema schema = resolveSchema(URIs.withEmptyFragment(ref));
             if (schema != null) {
-                return schema.findSubschema(fragment);
+                return schema.getSubschema(fragment);
             }
             return null;
         } else {

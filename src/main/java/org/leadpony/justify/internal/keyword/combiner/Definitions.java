@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -25,39 +27,51 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Combiner operating on single subschema.
- * 
  * @author leadpony
  */
-abstract class UnaryCombiner implements Combiner {
+public class Definitions implements Combiner {
     
-    private final JsonSchema subschema;
+    private final Map<String, JsonSchema> definitionMap = new LinkedHashMap<>();
     
-    protected UnaryCombiner(JsonSchema subschema) {
-        this.subschema = subschema;
-    }
-    
-    JsonSchema getSubschema() {
-        return subschema;
+    Definitions() {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), subschema.toJson());
+    public String name() {
+        return "definitions";
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return false;
     }
     
     @Override
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        JsonObjectBuilder childBuilder = builderFactory.createObjectBuilder();
+        definitionMap.forEach((k, v)->childBuilder.add(k, v.toJson()));
+        builder.add(name(), childBuilder.build());
+    }
+   
+    @Override
     public boolean hasSubschemas() {
-        return true;
+        return !definitionMap.isEmpty();
     }
 
     @Override
     public void collectSubschemas(Collection<JsonSchema> collection) {
-        collection.add(this.subschema);
+        collection.addAll(definitionMap.values());
     }
-
+    
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        return subschema;
+        if (jsonPointer.hasNext()) {
+            return definitionMap.get(jsonPointer.next());
+        }
+        return null;
+    }
+
+    public void addDefinition(String name, JsonSchema schema) {
+        definitionMap.put(name, schema);
     }
 }

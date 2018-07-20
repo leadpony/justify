@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Skeletal implementation for "properties" and "patternProperties".
+ * Skeletal implementation for "properties" and "patternProperties" keywords.
  * 
  * @author leadpony
  */
@@ -75,6 +75,16 @@ public abstract class BaseProperties<K> implements Combiner {
         }
     }
     
+    @Override
+    public boolean hasSubschemas() {
+        return !propertyMap.isEmpty();
+    }
+    
+    @Override
+    public void collectSubschemas(Collection<JsonSchema> collection) {
+        collection.addAll(propertyMap.values());
+    }
+    
     public void addProperty(K key, JsonSchema subschema) {
         propertyMap.put(key, subschema);
     }
@@ -87,8 +97,8 @@ public abstract class BaseProperties<K> implements Combiner {
         assert subschemas.isEmpty();
         return additionalProperties.findSubshcmeas(keyName, subschemas);
     }
-
-    class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
+    
+    private class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
@@ -119,11 +129,5 @@ public abstract class BaseProperties<K> implements Combiner {
             }
             this.subschemas.clear();
         }
-    }
-    
-    protected static <K> Map<K, JsonSchema> negateSchemaMap(Map<K, JsonSchema> map) {
-        Map<K, JsonSchema> newMap = new LinkedHashMap<>(map);
-        newMap.replaceAll((key, value)->value.negate());
-        return newMap;
     }
 }

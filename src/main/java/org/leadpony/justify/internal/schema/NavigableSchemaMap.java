@@ -33,7 +33,7 @@ public class NavigableSchemaMap extends TreeMap<String, JsonSchema> {
             String key = floorKey(jsonPointer);
             if (key != null && jsonPointer.startsWith(key + "/")) {
                 String newPointer = jsonPointer.substring(key.length());
-                schema = get(key).findSubschema(newPointer);
+                schema = get(key).getSubschema(newPointer);
             }
         }
         return schema;

@@ -28,6 +28,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * @author leadpony
  */
 public final class Combiners {
+  
+    private Combiners() {
+    }
     
     public static Combiner allOf(Collection<JsonSchema> subschemas) {
         return new AllOf(subschemas);
@@ -100,7 +103,8 @@ public final class Combiners {
     public static Combiner propertyNames(JsonSchema subschema) {
         return new PropertyNames(subschema);
     }
-
-    private Combiners() {
+    
+    public static Definitions definitions() {
+        return new Definitions();
     }
 }

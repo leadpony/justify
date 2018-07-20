@@ -16,22 +16,26 @@
 
 package org.leadpony.justify;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
+ * Utility class operating on Java Utility Logging.
+ * 
  * @author leadpony
  */
-public class Loggers {
+public final class Loggers {
     
     static {
         try (InputStream ins = Loggers.class.getResourceAsStream("/logging.properties")) {
             LogManager.getLogManager().readConfiguration(ins);
-        } catch (SecurityException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Loggers() {
     }
 
     public static Logger getLogger(Class<?> clazz) {

@@ -17,6 +17,7 @@ package org.leadpony.justify.core;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.Objects;
 
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -57,7 +58,7 @@ public interface JsonSchema {
     }
     
     /**
-     * Finds the subschema at the location specified with a JSON pointer.
+     * Returns the subschema at the location specified with a JSON pointer.
      * 
      * @param jsonPointer the valid escaped JSON Pointer string.
      *                    It must be an empty string or a sequence of '/' prefixed tokens.
@@ -65,16 +66,17 @@ public interface JsonSchema {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}.
      * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
      */
-    default JsonSchema findSubschema(String jsonPointer) {
-        return null;
+    default JsonSchema getSubschema(String jsonPointer) {
+        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+        return jsonPointer.isEmpty() ? this : null;
     }
     
     /**
      * Returns the all subschemas contained in this schema.
      * 
-     * @return the object to iterate subschemas.
+     * @return the object to iterate all subschemas of this schema.
      */
-    default Iterable<JsonSchema> getSubschemas() {
+    default Iterable<JsonSchema> getAllSubschemas() {
         return Collections.emptySet();
     }
     

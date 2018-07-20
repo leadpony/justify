@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,6 +75,30 @@ class SeparateItems implements Items {
         if (siblings.containsKey("additionalItems")) {
             this.additionalItems = (AdditionalItems)siblings.get("additionalItems");
         }
+    }
+  
+    @Override
+    public boolean hasSubschemas() {
+        return !subschemas.isEmpty();
+    }
+    
+    @Override
+    public void collectSubschemas(Collection<JsonSchema> collection) {
+        collection.addAll(this.subschemas);
+    }
+    
+    @Override
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        if (jsonPointer.hasNext()) {
+            try {
+                int index = Integer.parseInt(jsonPointer.next());
+                if (index < subschemas.size()) {
+                    return subschemas.get(index);
+                }
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
     }
     
     /**

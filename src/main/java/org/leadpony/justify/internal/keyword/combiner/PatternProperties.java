@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.base.JsonSchemas;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -58,7 +60,23 @@ public class PatternProperties extends BaseProperties<Pattern> {
     
     @Override
     public PatternProperties negate() {
-        return new Negated(this);
+        PatternProperties original = this;
+        return new PatternProperties(
+                JsonSchemas.negate(this.propertyMap),
+                this.additionalProperties.negate(),
+                this.enabled
+                ) {
+            
+            @Override
+            public PatternProperties negate() {
+                return original;
+            }
+
+            @Override
+            protected DynamicLogicalEvaluator createDynamicEvaluator() {
+                return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
+            }
+        };
     }
 
     @Override
@@ -66,6 +84,20 @@ public class PatternProperties extends BaseProperties<Pattern> {
         super.link(siblings);
         enabled = !siblings.containsKey("properties");
     }
+    
+    @Override
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        if (jsonPointer.hasNext()) {
+            String token = jsonPointer.next();
+            for (Pattern key : propertyMap.keySet()) {
+                if (key.pattern().equals(token)) {
+                    return propertyMap.get(key);
+                }
+            }
+        }
+        return null;
+    }
+    
     
     @Override
     protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
@@ -79,23 +111,6 @@ public class PatternProperties extends BaseProperties<Pattern> {
             return super.findSubschemas(keyName, subschemas);
         } else {
             return null;
-        }
-    }
-    
-    private class Negated extends PatternProperties {
-        
-        private Negated(PatternProperties original) {
-            super(negateSchemaMap(original.propertyMap),
-                  original.additionalProperties.negate(),
-                  original.enabled); 
-        }
-        
-        public PatternProperties negate() {
-            return PatternProperties.this;
-        }
-  
-        protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
         }
     }
 }

@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -67,6 +68,30 @@ abstract class NaryBooleanLogic implements BooleanLogic {
         builder.add(name(), arrayBuilder);
     }
 
+    @Override
+    public boolean hasSubschemas() {
+        return !subschemas.isEmpty();
+    }
+
+    @Override
+    public void collectSubschemas(Collection<JsonSchema> collection) {
+        collection.addAll(this.subschemas);
+    }
+   
+    @Override
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        if (jsonPointer.hasNext()) {
+            try {
+                int index = Integer.parseInt(jsonPointer.next());
+                if (index < subschemas.size()) {
+                    return subschemas.get(index);
+                }
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
+    }
+   
     protected List<JsonSchema> negateSubschemas() {
         return subschemas.stream().map(JsonSchema::negate).collect(Collectors.toList());
     }

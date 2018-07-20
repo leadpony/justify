@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
@@ -30,9 +29,8 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-class Not implements BooleanLogic {
+class Not extends UnaryCombiner implements BooleanLogic {
     
-    private final JsonSchema subschema;
     private final JsonSchema negatedSubschema;
     
     Not(JsonSchema subschema) {
@@ -40,7 +38,7 @@ class Not implements BooleanLogic {
     }
 
     private Not(JsonSchema subschema, JsonSchema negatedSubschema) {
-        this.subschema = subschema;
+        super(subschema);
         this.negatedSubschema = negatedSubschema;
     }
     
@@ -60,11 +58,6 @@ class Not implements BooleanLogic {
     @Override
     public Keyword negate() {
         // Swaps affirmation and negation.
-        return new Not(negatedSubschema, subschema);
-    }
-    
-    @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), this.subschema.toJson());
+        return new Not(negatedSubschema, getSubschema());
     }
 }

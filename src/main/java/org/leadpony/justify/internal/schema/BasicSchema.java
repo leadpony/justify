@@ -42,20 +42,15 @@ public class BasicSchema extends AbstractJsonSchema {
     private final URI originalId;
     private final URI schema;
     
-    private final Map<String, Keyword> keywordMap;
-    private final NavigableSchemaMap subschemaMap;
-    
     /**
      * Constructs this schema.
      * 
      * @param builder the builder of this schema.
      */
     BasicSchema(DefaultSchemaBuilder builder) {
-        super(builder.getBuilderFactory());
+        super(builder.getKeywordMap(), builder.getSubschemaMap(), builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
-        this.keywordMap = builder.getKeywordMap();
-        this.subschemaMap = builder.getSubschemaMap();
     }
     
     /**
@@ -65,12 +60,10 @@ public class BasicSchema extends AbstractJsonSchema {
      * @param keywordMap the keywords of this schema.
      */
     BasicSchema(BasicSchema original, Map<String, Keyword> keywordMap) {
-        super(original);
+        super(original, keywordMap);
         this.id = original.id;
         this.originalId = original.originalId;
         this.schema = original.schema;
-        this.keywordMap = keywordMap;
-        this.subschemaMap = original.subschemaMap;
     }
     
     @Override
@@ -89,21 +82,6 @@ public class BasicSchema extends AbstractJsonSchema {
     }
     
     @Override
-    public JsonSchema findSubschema(String jsonPointer) {
-        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        if (jsonPointer.isEmpty()) {
-            return this;
-        } else {
-            return subschemaMap.getSchema(jsonPointer);
-        }
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getSubschemas() {
-        return this.subschemaMap.values();
-    }
-
-    @Override
     public Evaluator createEvaluator(InstanceType type) {
         Objects.requireNonNull(type, "type must not be null.");
         LogicalEvaluator.Builder builder = createLogicalEvaluator(type);
@@ -114,7 +92,7 @@ public class BasicSchema extends AbstractJsonSchema {
     @Override
     public JsonSchema negate() {
         BasicSchema original = this;
-        Map<String, Keyword> newMap = new LinkedHashMap<>(this.keywordMap);
+        Map<String, Keyword> newMap = new LinkedHashMap<>(getKeywordMap());
         newMap.replaceAll((k, v)->v.negate());
         return new BasicSchema(original, newMap) {
             @Override
@@ -129,23 +107,6 @@ public class BasicSchema extends AbstractJsonSchema {
         };
     }
 
-    public void setAbsoluteId(URI id) {
-        this.id = id;
-    }
- 
-    protected void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
-        JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : this.keywordMap.values()) {
-            if (keyword.canEvaluate()) {
-                keyword.createEvaluator(type, builder, builderFactory);
-            }
-        }
-    }
-    
-    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newConjunctionEvaluatorBuilder(type);
-    } 
-    
     @Override
     public void addToJson(JsonObjectBuilder builder) {
         if (this.originalId != null) {
@@ -154,9 +115,23 @@ public class BasicSchema extends AbstractJsonSchema {
         if (this.schema != null) {
             builder.add("$schema", this.schema.toString());
         }
+        super.addToJson(builder);
+    }
+
+    public void setAbsoluteId(URI id) {
+        this.id = id;
+    }
+ 
+    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
+        return Evaluators.newConjunctionEvaluatorBuilder(type);
+    } 
+
+    private void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : this.keywordMap.values()) {
-            keyword.addToJson(builder, builderFactory);
+        for (Keyword keyword : getKeywordMap().values()) {
+            if (keyword.canEvaluate()) {
+                keyword.createEvaluator(type, builder, builderFactory);
+            }
         }
     }
 }

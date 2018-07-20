@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.json.JsonBuilderFactory;
@@ -30,6 +31,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Schema reference containing  "$ref" keyword.
@@ -43,13 +45,11 @@ public class SchemaReference extends AbstractJsonSchema {
     private final URI originalRef;
     private JsonSchema referencedSchema;
     
-    private final NavigableSchemaMap subschemaMap;
-    
-    public SchemaReference(URI ref, NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
-        super(builderFactory);
+    public SchemaReference(URI ref, Map<String, Keyword> keywordMap, 
+            NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
+        super(keywordMap, subschemaMap, builderFactory);
         this.ref = this.originalRef = ref;
         this.referencedSchema = new NonExistentSchema();
-        this.subschemaMap = subschemaMap;
     }
     
     public URI getRef() {
@@ -66,16 +66,6 @@ public class SchemaReference extends AbstractJsonSchema {
     }
 
     @Override
-    public JsonSchema findSubschema(String jsonPointer) {
-        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        if (jsonPointer.isEmpty()) {
-            return this;
-        } else {
-            return subschemaMap.getSchema(jsonPointer);
-        }
-    }
-    
-    @Override
     public Evaluator createEvaluator(InstanceType type) {
         return referencedSchema.createEvaluator(type);
     }
@@ -86,8 +76,9 @@ public class SchemaReference extends AbstractJsonSchema {
     }
 
     @Override
-    protected void addToJson(JsonObjectBuilder buidler) {
-        buidler.add("$ref", this.ref.toString());
+    protected void addToJson(JsonObjectBuilder builder) {
+        builder.add("$ref", this.ref.toString());
+        super.addToJson(builder);
     }
     
     private class NonExistentSchema implements JsonSchema, Evaluator {

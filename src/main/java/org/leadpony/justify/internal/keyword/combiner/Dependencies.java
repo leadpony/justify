@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -73,6 +74,21 @@ public class Dependencies implements Combiner {
         builder.add(name(), dependencyBuilder.build());
     }
     
+    @Override
+    public boolean hasSubschemas() {
+        return dependencyMap.values().stream()
+                .anyMatch(Dependency::hasSubschema);
+    }
+  
+    @Override
+    public void collectSubschemas(Collection<JsonSchema> collection) {
+        dependencyMap.values().stream()
+            .filter(Dependency::hasSubschema)
+            .map(d->(SubschemaDependency)d)
+            .map(SubschemaDependency::getSubschema)
+            .forEach(collection::add);
+    }
+    
     public void addDependency(String property, JsonSchema subschema) {
         dependencyMap.put(property, new SubschemaDependency(property, subschema));
     }
@@ -98,6 +114,10 @@ public class Dependencies implements Combiner {
             return property;
         }
         
+        boolean hasSubschema() {
+            return false;
+        }
+
         abstract Evaluator createEvaluator();
         
         abstract void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
@@ -125,6 +145,15 @@ public class Dependencies implements Combiner {
         @Override
         void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
             builder.add(getProperty(), subschema.toJson());
+        }
+
+        @Override
+        boolean hasSubschema() {
+            return true;
+        }
+        
+        JsonSchema getSubschema() {
+            return subschema;
         }
     }
     

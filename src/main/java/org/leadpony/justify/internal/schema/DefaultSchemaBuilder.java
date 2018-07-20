@@ -35,13 +35,13 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.internal.base.Sets;
-import org.leadpony.justify.internal.base.SimpleJsonPointer;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
+import org.leadpony.justify.internal.keyword.combiner.Definitions;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
 import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
@@ -97,7 +97,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
-            return new SchemaReference(ref, this.subschemaMap, getBuilderFactory());
+            return new SchemaReference(ref, this.keywords, this.subschemaMap, getBuilderFactory());
         } else {
             return new BasicSchema(this);
         }
@@ -236,7 +236,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.items(subschema));
-        registerSubschema("/items", subschema);
         return builderWithSubschema();
     }
 
@@ -244,7 +243,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         addKeyword(Combiners.items(subschemas));
-        registerSubschemas("items", subschemas);
         return builderWithSubschema();
     }
   
@@ -252,7 +250,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.additionalItems(subschema));
-        registerSubschema("/additionalItems", subschema);
         return builderWithSubschema();
     } 
 
@@ -278,7 +275,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.contains(subschema));
-        registerSubschema("/contains", subschema);
         return builderWithSubschema();
     }
     
@@ -300,7 +296,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         Properties properties = requireKeyword("properties", Combiners::properties);
         properties.addProperty(name, subschema);
-        registerSubschema(SimpleJsonPointer.concat("properties", name), subschema);
         return builderWithSubschema();
     }
 
@@ -311,7 +306,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         Pattern compiled = Pattern.compile(pattern);
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
         properties.addProperty(compiled, subschema);
-        registerSubschema(SimpleJsonPointer.concat("patternProperties", pattern), subschema);
         return builderWithSubschema();
     }
 
@@ -319,7 +313,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.additionalProperties(subschema));
-        registerSubschema("/additionalProperties", subschema);
         return builderWithSubschema();
     }
    
@@ -345,7 +338,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.propertyNames(subschema));
-        registerSubschema("/propertyNames", subschema);
         return builderWithSubschema();
     }
     
@@ -359,7 +351,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         addKeyword(Combiners.allOf(subschemas));
-        registerSubschemas("allOf", subschemas);
         return builderWithSubschema();
     }
 
@@ -373,7 +364,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         addKeyword(Combiners.anyOf(subschemas));
-        registerSubschemas("anyOf", subschemas);
         return builderWithSubschema();
     }
 
@@ -387,7 +377,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
         addKeyword(Combiners.oneOf(subschemas));
-        registerSubschemas("oneOf", subschemas);
         return builderWithSubschema();
     }
 
@@ -395,7 +384,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.not(subschema));
-        registerSubschema("/not", subschema);
         return builderWithSubschema();
     }
   
@@ -403,7 +391,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.if_(subschema));
-        registerSubschema("/if", subschema);
         return builderWithSubschema();
     }
 
@@ -411,7 +398,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.then_(subschema));
-        registerSubschema("/then", subschema);
         return builderWithSubschema();
     }
 
@@ -419,7 +405,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         Objects.requireNonNull(subschema, "subschema must not be null.");
         addKeyword(Combiners.else_(subschema));
-        registerSubschema("/else", subschema);
         return builderWithSubschema();
     }
    
@@ -427,7 +412,8 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withDefinition(String name, JsonSchema schema) {
         Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(schema, "schema must not be null.");
-        registerSubschema(SimpleJsonPointer.concat("definitions", name), schema);
+        Definitions definitions = requireKeyword("definitions", Combiners::definitions);
+        definitions.addDefinition(name, schema);
         return builderWithSubschema();
     }
     
@@ -490,14 +476,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         this.subschemaMap.put(jsonPointer, subschema);
     }
     
-    private void registerSubschemas(String jsonPointer, Iterable<JsonSchema> subschemas) {
-        SimpleJsonPointer basePointer = SimpleJsonPointer.of(jsonPointer);
-        int i = 0;
-        for (JsonSchema subschema : subschemas) {
-            registerSubschema(basePointer.concat(i++).toString(), subschema);
-        }
-    }
-
     /**
      * Links all keywords found in the schema.
      */

@@ -16,16 +16,19 @@
 
 package org.leadpony.justify.internal.keyword;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * Super type of Keywords which can compose a JSON schema.
+ * Super type of all keywords that can compose a JSON schema.
  * 
  * @author leadpony
  */
@@ -82,5 +85,32 @@ public interface Keyword {
      * @param siblings the sibling keywords in the containing schema.
      */
     default void link(Map<String, Keyword> siblings) {
+    }
+    
+    /**
+     * Checks whether this keyword has any subschemas or not.
+     * 
+     * @return {@code true} if this keyword contains any subschemas, {@code false} otherwise.
+     */
+    default boolean hasSubschemas() {
+        return false;
+    }
+    
+    /**
+     * Collects subschemas contained in this keyword.
+     * 
+     * @param collection the collection to which subschemas will be added.
+     */
+    default void collectSubschemas(Collection<JsonSchema> collection) {
+    }
+
+    /**
+     * Searches this keyword for a subschema located at the position specified by a JSON pointer. 
+     * 
+     * @param jsonPointer the JSON pointer identifying the subschema in this keyword.
+     * @return the subschema if found or {@code null} if not found.
+     */
+    default JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        return null;
     }
 }
