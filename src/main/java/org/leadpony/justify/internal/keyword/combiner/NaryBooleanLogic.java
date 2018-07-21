@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -74,8 +75,8 @@ abstract class NaryBooleanLogic implements BooleanLogic {
     }
 
     @Override
-    public void collectSubschemas(Collection<JsonSchema> collection) {
-        collection.addAll(this.subschemas);
+    public Stream<JsonSchema> subschemas() {
+        return this.subschemas.stream();
     }
    
     @Override

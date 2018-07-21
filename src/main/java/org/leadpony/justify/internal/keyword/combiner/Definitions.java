@@ -16,10 +16,10 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -59,8 +59,8 @@ public class Definitions implements Combiner {
     }
 
     @Override
-    public void collectSubschemas(Collection<JsonSchema> collection) {
-        collection.addAll(definitionMap.values());
+    public Stream<JsonSchema> subschemas() {
+        return this.definitionMap.values().stream();
     }
     
     @Override

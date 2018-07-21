@@ -56,14 +56,9 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     private final JsonBuilderFactory builderFactory;
     
     private boolean empty;
-
     private URI id;
     private URI schema;
-    
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
- 
-    private final NavigableSchemaMap subschemaMap = new NavigableSchemaMap();
-    
     private URI ref;
     
     public DefaultSchemaBuilder(JsonBuilderFactory builderFactory) {
@@ -83,10 +78,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         return keywords;
     }
     
-    NavigableSchemaMap getSubschemaMap() {
-        return subschemaMap;
-    }
-    
     JsonBuilderFactory getBuilderFactory() {
         return builderFactory;
     }
@@ -97,7 +88,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
-            return new SchemaReference(ref, this.keywords, this.subschemaMap, getBuilderFactory());
+            return new SchemaReference(ref, this.keywords, getBuilderFactory());
         } else {
             return new BasicSchema(this);
         }
@@ -446,16 +437,13 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     }
     
     @Override
-    public JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema) {
-        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+    public JsonSchemaBuilder withUnknown(String name, JsonSchema subschema) {
+        Objects.requireNonNull(name, "name must not be null.");
         Objects.requireNonNull(subschema, "subschema must not be null.");
-        if (jsonPointer.isEmpty()) {
-            throw new IllegalArgumentException("jsonPointer must not be empty.");
-        }
-        registerSubschema(jsonPointer, subschema);
+        addKeyword(Combiners.unknown(name, subschema));
         return builderWithSubschema();
     }
- 
+
     private void addKeyword(Keyword keyword) {
         this.keywords.put(keyword.name(), keyword);
     }
@@ -472,10 +460,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         return keyword;
     }
   
-    private void registerSubschema(String jsonPointer, JsonSchema subschema) {
-        this.subschemaMap.put(jsonPointer, subschema);
-    }
-    
     /**
      * Links all keywords found in the schema.
      */

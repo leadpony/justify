@@ -16,10 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -37,19 +36,15 @@ import org.leadpony.justify.internal.keyword.Keyword;
 abstract class AbstractJsonSchema implements JsonSchema {
    
     private final Map<String, Keyword> keywordMap;
-    private final NavigableSchemaMap subschemaMap;
-    
     private final JsonBuilderFactory builderFactory;
 
-    protected AbstractJsonSchema(Map<String, Keyword> keywordMap, NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
+    protected AbstractJsonSchema(Map<String, Keyword> keywordMap, JsonBuilderFactory builderFactory) {
         this.keywordMap = keywordMap;
-        this.subschemaMap = subschemaMap;
         this.builderFactory = builderFactory;
     }
 
     protected AbstractJsonSchema(AbstractJsonSchema other, Map<String, Keyword> keywordMap) {
         this.keywordMap = keywordMap;
-        this.subschemaMap = other.subschemaMap;
         this.builderFactory = other.builderFactory;
     }
 
@@ -61,25 +56,20 @@ abstract class AbstractJsonSchema implements JsonSchema {
     }
     
     @Override
+    public Iterable<JsonSchema> getAllSubschemas() {
+        Stream<JsonSchema> stream = keywordMap.values().stream()
+                .filter(Keyword::hasSubschemas)
+                .flatMap(Keyword::subschemas);
+        return ()->stream.iterator();
+    }
+    
+    @Override
     public JsonSchema getSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         if (jsonPointer.isEmpty()) {
             return this;
         }
-        JsonSchema subschema = searchKeywordsForSubschema(jsonPointer);
-        if (subschema == null) {
-            subschema = subschemaMap.getSchema(jsonPointer); 
-        }
-        return subschema;
-    }
-    
-    @Override
-    public Iterable<JsonSchema> getAllSubschemas() {
-        List<JsonSchema> collection = new ArrayList<>();
-        keywordMap.values().stream()
-            .filter(Keyword::hasSubschemas)
-            .forEach(k->k.collectSubschemas(collection));
-        return collection;
+        return searchKeywordsForSubschema(jsonPointer);
     }
     
     @Override

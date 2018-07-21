@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -97,11 +97,12 @@ public interface Keyword {
     }
     
     /**
-     * Collects subschemas contained in this keyword.
+     * Returns all subschemas contained in this keyword as a stream.
      * 
-     * @param collection the collection to which subschemas will be added.
+     * @return the stream of subschemas.
      */
-    default void collectSubschemas(Collection<JsonSchema> collection) {
+    default Stream<JsonSchema> subschemas() {
+        return Stream.empty();
     }
 
     /**

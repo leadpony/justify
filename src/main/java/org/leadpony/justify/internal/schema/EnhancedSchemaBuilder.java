@@ -30,5 +30,5 @@ public interface EnhancedSchemaBuilder extends JsonSchemaBuilder {
     
     JsonSchemaBuilder withRef(URI ref);
 
-    JsonSchemaBuilder withSubschema(String jsonPointer, JsonSchema subschema);
+    JsonSchemaBuilder withUnknown(String name, JsonSchema subschema);
 }

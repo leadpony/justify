@@ -17,13 +17,13 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -81,13 +81,13 @@ public class Dependencies implements Combiner {
     }
   
     @Override
-    public void collectSubschemas(Collection<JsonSchema> collection) {
-        dependencyMap.values().stream()
-            .filter(Dependency::hasSubschema)
-            .map(d->(SubschemaDependency)d)
-            .map(SubschemaDependency::getSubschema)
-            .forEach(collection::add);
+    public Stream<JsonSchema> subschemas() {
+        return dependencyMap.values().stream()
+                .filter(Dependency::hasSubschema)
+                .map(d->(SubschemaDependency)d)
+                .map(SubschemaDependency::getSubschema);
     }
+    
     
     public void addDependency(String property, JsonSchema subschema) {
         dependencyMap.put(property, new SubschemaDependency(property, subschema));

@@ -58,6 +58,15 @@ public interface JsonSchema {
     }
     
     /**
+     * Returns the all subschemas contained in this schema.
+     * 
+     * @return the object to iterate all subschemas of this schema.
+     */
+    default Iterable<JsonSchema> getAllSubschemas() {
+        return Collections.emptyList();
+    }
+    
+    /**
      * Returns the subschema at the location specified with a JSON pointer.
      * 
      * @param jsonPointer the valid escaped JSON Pointer string.
@@ -69,15 +78,6 @@ public interface JsonSchema {
     default JsonSchema getSubschema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         return jsonPointer.isEmpty() ? this : null;
-    }
-    
-    /**
-     * Returns the all subschemas contained in this schema.
-     * 
-     * @return the object to iterate all subschemas of this schema.
-     */
-    default Iterable<JsonSchema> getAllSubschemas() {
-        return Collections.emptySet();
     }
     
     /**

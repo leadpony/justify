@@ -25,27 +25,35 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Combiner operating on single subschema.
+ * Unknown keyword containing subschema.
  * 
  * @author leadpony
  */
-abstract class UnaryCombiner implements Combiner {
+class Unknown implements Combiner {
     
+    private final String name;
     private final JsonSchema subschema;
     
-    protected UnaryCombiner(JsonSchema subschema) {
+    Unknown(String name, JsonSchema subschema) {
+        this.name = name;
         this.subschema = subschema;
     }
-    
-    JsonSchema getSubschema() {
-        return subschema;
+
+    @Override
+    public String name() {
+        return name;
     }
 
+    @Override
+    public boolean canEvaluate() {
+        return false;
+    }
+    
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), subschema.toJson());
     }
-    
+
     @Override
     public boolean hasSubschemas() {
         return true;
@@ -55,7 +63,7 @@ abstract class UnaryCombiner implements Combiner {
     public Stream<JsonSchema> subschemas() {
         return Stream.of(subschema);
     }
-
+    
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         return subschema;

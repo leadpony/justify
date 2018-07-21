@@ -46,8 +46,8 @@ public class SchemaReference extends AbstractJsonSchema {
     private JsonSchema referencedSchema;
     
     public SchemaReference(URI ref, Map<String, Keyword> keywordMap, 
-            NavigableSchemaMap subschemaMap, JsonBuilderFactory builderFactory) {
-        super(keywordMap, subschemaMap, builderFactory);
+            JsonBuilderFactory builderFactory) {
+        super(keywordMap, builderFactory);
         this.ref = this.originalRef = ref;
         this.referencedSchema = new NonExistentSchema();
     }

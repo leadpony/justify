@@ -107,4 +107,8 @@ public final class Combiners {
     public static Definitions definitions() {
         return new Definitions();
     }
+    
+    public static Combiner unknown(String name, JsonSchema subschema) {
+        return new Unknown(name, subschema);
+    }
 }

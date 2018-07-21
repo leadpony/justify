@@ -48,7 +48,7 @@ public class BasicSchema extends AbstractJsonSchema {
      * @param builder the builder of this schema.
      */
     BasicSchema(DefaultSchemaBuilder builder) {
-        super(builder.getKeywordMap(), builder.getSubschemaMap(), builder.getBuilderFactory());
+        super(builder.getKeywordMap(), builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
     }

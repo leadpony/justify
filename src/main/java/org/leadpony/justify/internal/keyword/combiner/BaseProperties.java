@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -81,8 +82,8 @@ public abstract class BaseProperties<K> implements Combiner {
     }
     
     @Override
-    public void collectSubschemas(Collection<JsonSchema> collection) {
-        collection.addAll(propertyMap.values());
+    public Stream<JsonSchema> subschemas() {
+        return propertyMap.values().stream();
     }
     
     public void addProperty(K key, JsonSchema subschema) {
