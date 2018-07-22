@@ -37,7 +37,7 @@ public abstract class AbstractValidationTest extends AbstractSpecTest {
     @Test
     public void testValidationResult() {
         List<Problem> problems = new ArrayList<>();
-        JsonParser parser = createValidatingParser(ProblemHandlers.collectingTo(problems));
+        JsonParser parser = createValidatingParser(Jsonv.createProblemCollector(problems));
         while (parser.hasNext()) {
             parser.next();
         }

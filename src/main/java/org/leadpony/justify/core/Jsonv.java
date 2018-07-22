@@ -19,8 +19,10 @@ package org.leadpony.justify.core;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -324,5 +326,29 @@ public final class Jsonv {
             Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier) {
         return JsonValidationProvider.provider()
                 .createJsonProvider(schema, handlerSupplier);
+    }
+
+    /**
+     * Creates a problem handler which will store problems to the specified collection.
+     * 
+     * @param collection the collection to which problems will be stored.
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the specified {@code collection} was {@code null}.
+     */
+    public static Consumer<List<Problem>> createProblemCollector(Collection<Problem> collection) {
+        Objects.requireNonNull(collection, "collection must not be null.");
+        return problems->collection.addAll(problems);
+    }
+    
+    /**
+     * Creates a problem handler which will print problems 
+     * with the aid of the specified line consumer.
+     * 
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
+     */
+    public static Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer) {
+        return JsonValidationProvider.provider().createProblemPrinter(lineConsumer);
     }
 }

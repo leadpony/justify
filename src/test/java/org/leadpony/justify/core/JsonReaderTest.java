@@ -198,7 +198,7 @@ public class JsonReaderTest {
     
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            ProblemHandlers.printingWith(log::info).accept(problems);
+            Jsonv.createProblemPrinter(log::info).accept(problems);
         }
     }
 }

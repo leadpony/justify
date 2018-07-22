@@ -109,7 +109,7 @@ abstract class AbstractSpecTest {
             return;
         }
         String prefix = "(" + getName() + "@" + getTestIndex() + ")";
-        ProblemHandlers.printingWith(line->log.info(prefix + line))
+        Jsonv.createProblemPrinter(line->log.info(prefix + line))
             .accept(problems);
     }
     
