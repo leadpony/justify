@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import javax.json.spi.JsonProvider;
+import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
@@ -51,13 +51,26 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     private List<Problem> currentProblems = new ArrayList<>();
     private Event eventNotDelivered;
 
-    ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
-        super(real, jsonProvider);
+    /**
+     * Constructs this parser.
+     * 
+     * @param real the underlying JSON parser.
+     * @param rootSchema the root JSON schema to be evaluated during validation.
+     * @param builderFactory the JSON builder factory.
+     */
+    ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonBuilderFactory builderFactory) {
+        super(real, builderFactory);
         this.rootSchema = rootSchema;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
     }
     
+    /**
+     * Assigns a problem handler this this parser.
+     * 
+     * @param problemHandler the problem handler to be assigned.
+     * @return this parser.
+     */
     public ValidatingJsonParser withHandler(Consumer<? super List<Problem>> problemHandler) {
         this.problemHandler = (problemHandler != null) 
                 ? problemHandler : this::throwProblems;

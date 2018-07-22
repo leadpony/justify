@@ -29,11 +29,11 @@ import java.util.stream.StreamSupport;
 
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParsingException;
@@ -46,15 +46,28 @@ import javax.json.stream.JsonParsingException;
 public class JsonParserDecorator implements JsonParser {
     
     private final JsonParser real;
-    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory builderFactory;
     private Event currentEvent;
     private int depth;
     
-    public JsonParserDecorator(JsonParser real, JsonProvider jsonProvider) {
+    /**
+     * Constructs this object.
+     * 
+     * @param real the underlying real JSON parser.
+     * @param builderFactory the factory of builders to build JSON arrays and objects.
+     */
+    public JsonParserDecorator(JsonParser real, JsonBuilderFactory builderFactory) {
+        Objects.requireNonNull(real, "real must not be null.");
+        Objects.requireNonNull(builderFactory, "builderFactory must not be null.");
         this.real = real;
-        this.jsonProvider = jsonProvider;
+        this.builderFactory = builderFactory;
     }
     
+    /**
+     * Returns the underlying real JSON parser.
+     * 
+     * @return the underlying JSON parser, never be {@code null}.
+     */
     public JsonParser realParser() {
         return real;
     }
@@ -210,7 +223,7 @@ public class JsonParserDecorator implements JsonParser {
     }
     
     private JsonArray buildArray() {
-        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
+        JsonArrayBuilder builder = builderFactory.createArrayBuilder();
         while (hasNext()) {
             Event event = next();
             if (event == Event.END_ARRAY) {
@@ -230,7 +243,7 @@ public class JsonParserDecorator implements JsonParser {
     }
 
     private JsonObject buildObject() {
-        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
+        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
         while (hasNext()) {
             Event event = next();
             if (event == Event.END_OBJECT) {

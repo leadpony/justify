@@ -109,7 +109,8 @@ public class DefaultJsonValidationProvider
             handlerSupplier = parser->null;
         }
         JsonParserFactory realFactory = getJsonProvider().createParserFactory(config);
-        return new ValidatingJsonParserFactory(schema, realFactory, handlerSupplier, getJsonProvider());
+        return new ValidatingJsonParserFactory(schema, realFactory, handlerSupplier, 
+                createJsonBuilderFactory());
     }
     
     @Override
@@ -220,9 +221,12 @@ public class DefaultJsonValidationProvider
         return metaschema;
     }
     
+    private JsonBuilderFactory createJsonBuilderFactory() {
+        return getJsonProvider().createBuilderFactory(null);
+    }
+    
     private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {
-        JsonBuilderFactory builderFactory = getJsonProvider().createBuilderFactory(null);
-        return new BasicSchemaBuilderFactory(builderFactory);
+        return new BasicSchemaBuilderFactory(createJsonBuilderFactory());
     }
 
     /**

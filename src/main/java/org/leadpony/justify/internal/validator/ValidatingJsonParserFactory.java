@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.json.JsonArray;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
@@ -42,15 +42,23 @@ public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     
     private final JsonSchema schema;
     private final Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier;
-    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory builderFactory;
     
+    /**
+     * Constructs this factory.
+     * 
+     * @param schema the JSON schema to be evaluated while parsing JSON documents.
+     * @param realFactory the underlying JSON parser factory.
+     * @param handlerSupplier the supplier of problem handlers.
+     * @param builderFactory the JSON builder factory.
+     */
     public ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory, 
             Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier, 
-            JsonProvider jsonProvider) {
+            JsonBuilderFactory builderFactory) {
         super(realFactory);
         this.schema = schema;
         this.handlerSupplier = handlerSupplier;
-        this.jsonProvider = jsonProvider;
+        this.builderFactory = builderFactory;
     }
 
     @Override
@@ -84,7 +92,7 @@ public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     }
 
     private ValidatingJsonParser wrapParser(JsonParser parser) {
-        ValidatingJsonParser wrapper = new ValidatingJsonParser(parser, this.schema, this.jsonProvider);
+        ValidatingJsonParser wrapper = new ValidatingJsonParser(parser, this.schema, this.builderFactory);
         return wrapper.withHandler(this.handlerSupplier.apply(wrapper));
     }
 }
