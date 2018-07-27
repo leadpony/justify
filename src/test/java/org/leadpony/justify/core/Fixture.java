@@ -16,107 +16,41 @@
 
 package org.leadpony.justify.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
-
 /**
- * Test fixture.
+ * Base type of fixtures.
  * 
  * @author leadpony
  */
-public class Fixture {
+abstract class Fixture {
 
-    private final JsonValue schema;
-    private final String schemaDescription;
-    private final JsonValue instance;
-    private final String instanceDescription;
-    private final boolean result;
+    private final String name;
+    private final int index;
     
-    private Fixture(JsonValue schema, String schemaDescription) {
-        this(schema, schemaDescription, JsonValue.NULL, null, false);
-    }
-
-    private Fixture(JsonValue schema, String schemaDescription, JsonValue instance, String instanceDescription, boolean result) {
-        this.schema = schema;
-        this.schemaDescription = schemaDescription;
-        this.instance = instance;
-        this.instanceDescription = instanceDescription;
-        this.result = result;
-    }
-
-    public String description() {
-        if (instanceDescription != null) {
-            return instanceDescription;
-        } else {
-            return schemaDescription;
-        }
-    }
-
-    public JsonValue schema() {
-        return schema;
+    protected Fixture(String name, int index) {
+        this.name = name;
+        this.index = index;    
     }
     
-    public String schemaDescription() {
-        return schemaDescription;
-    }
-
-    public JsonValue instance() {
-        return instance;
+    String name() {
+        return name;
     }
     
-    public String instanceDescription() {
-        return instanceDescription;
-    }
-
-    public boolean result() {
-        return result;
+    int index() {
+        return index;
     }
     
-    public static List<Fixture> load(String name) {
-        JsonArray schemas = readArray(name);
-        return schemas.stream()
-            .map(JsonValue::asJsonObject)
-            .flatMap(schema->
-                schema.getJsonArray("tests").stream()
-                    .map(JsonValue::asJsonObject)
-                    .map(test->buildFixture(schema, test))
-            )
-            .collect(Collectors.toList());
+    String displayName() {
+        StringBuilder builder = new StringBuilder();
+        int beginIndex = name.lastIndexOf('/') + 1;
+        int endIndex = name.lastIndexOf('.');
+        builder.append(name.substring(beginIndex, endIndex))
+               .append("[").append(index).append("]"); 
+        return builder.toString();
     }
     
-    private static JsonArray readArray(String name) {
-        try (InputStream in = Resources.newInputStream(name)) {
-            try (JsonReader reader = Json.createReader(in)) {
-                return reader.readArray();
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    Object[] toArguments() {
+        return new Object[] { displayName(), description(), this };
     }
     
-    private static Fixture buildFixture(JsonObject schema, JsonObject test) {
-        if (test.isEmpty()) {
-            return new Fixture(
-                    schema.getValue("/schema"), 
-                    schema.getString("description")
-                    );
-        } else {
-            return new Fixture(
-                    schema.getValue("/schema"), 
-                    schema.getString("description"),
-                    test.get("data"), 
-                    test.getString("description"),
-                    test.getBoolean("valid")
-                    );
-        }
-    }
+    abstract String description();
 }

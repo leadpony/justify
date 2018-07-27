@@ -17,26 +17,30 @@
 package org.leadpony.justify.core;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonReader;
+
 /**
+ * Utility class operating on test resources.
+ * 
  * @author leadpony
  */
-class Resources {
+class TestResources {
 
     public static InputStream newInputStream(String name) {
-        return Resources.class.getResourceAsStream(name);
-    }
-
-    public static Reader newReader(String name) {
-        InputStream in = newInputStream(name);
-        return new InputStreamReader(in, StandardCharsets.UTF_8);
+        return TestResources.class.getResourceAsStream(name);
     }
     
+    public static JsonArray readJsonArray(String name) {
+        try (JsonReader reader = Json.createReader(newInputStream(name))) {
+            return reader.readArray();
+        }
+    }
+
     public static Path pathToResource(String name) {
         return Paths.get("target/test-classes", name.substring(1));
     }

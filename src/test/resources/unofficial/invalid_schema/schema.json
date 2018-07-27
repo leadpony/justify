@@ -1,0 +1,22 @@
+[
+    {
+        "description": "schema is string",
+        "schema": "foo",
+        "valid": false
+    },
+    {
+        "description": "schema is null",
+        "schema": null,
+        "valid": false
+    },
+    {
+        "description": "schema is number",
+        "schema": "42",
+        "valid": false
+    },
+    {
+        "description": "schema is array",
+        "schema": [],
+        "valid": false
+    }
+]

@@ -36,17 +36,17 @@ import org.junit.runners.Parameterized.Parameters;
  * @author leadpony
  */
 @RunWith(Parameterized.class)
-public class RemoteSchemaTest extends AbstractValidationTest {
+public class RemoteSchemaTest extends BaseValidationTest {
     
     private static final Logger log = Logger.getLogger(RemoteSchemaTest.class.getName());
 
     private static final String[] TESTS = {
-            "/spec/tests/draft7/refRemote.json",
+            "/official/tests/draft7/refRemote.json",
         };
     
     private static Server server;
   
-    @Parameters(name = "{0}@{1}: {2}")
+    @Parameters(name = "{0} {1}")
     public static Iterable<Object[]> parameters() {
         return fixtures(TESTS);
     }
@@ -57,7 +57,7 @@ public class RemoteSchemaTest extends AbstractValidationTest {
         
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
-        Path basePath = Resources.pathToResource("/spec/remotes");
+        Path basePath = TestResources.pathToResource("/official/remotes");
         resourceHandler.setResourceBase(basePath.toString());
         HandlerList handlers = new HandlerList();
         handlers.addHandler(resourceHandler);
@@ -72,8 +72,8 @@ public class RemoteSchemaTest extends AbstractValidationTest {
         server.stop();
     }
     
-    public RemoteSchemaTest(String name, int testIndex, String description, Fixture fixture) {
-        super(name, testIndex, description, fixture);
+    public RemoteSchemaTest(String name, String description, ValidationFixture fixture) {
+        super(name, description, fixture);
     }
 
     @Override

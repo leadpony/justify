@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class SchemaIdentificationTest {
 
-    private static final String JSON_NAME = "/additional/identification.json";
+    private static final String JSON_NAME = "/unofficial/other/identification.json";
     
     @Test
     public void testSchemaIdentification() throws IOException {
@@ -56,7 +56,7 @@ public class SchemaIdentificationTest {
     }
     
     private static JsonSchema loadSchema() throws IOException {
-        try (InputStream in = Resources.newInputStream(JSON_NAME)) {
+        try (InputStream in = TestResources.newInputStream(JSON_NAME)) {
             return Jsonv.readSchema(in);
         }
     }

@@ -1,0 +1,47 @@
+[
+    {
+        "description": "type is numeric",
+        "schema": { "type": 42 },
+        "valid": false
+    },
+    {
+        "description": "type is true",
+        "schema": { "type": true },
+        "valid": false
+    },
+    {
+        "description": "type is false",
+        "schema": { "type": false },
+        "valid": false
+    },
+    {
+        "description": "type is null",
+        "schema": { "type": null },
+        "valid": false
+    },
+    {
+        "description": "type is object",
+        "schema": { "type": {} },
+        "valid": false
+    },
+    {
+        "description": "array elements are not string",
+        "schema": { "type": [1, true, false, null] },
+        "valid": false
+    },
+    {
+        "description": "array elements are not unique",
+        "schema": { "type": ["string", "number", "string"] },
+        "valid": false
+    },
+    {
+        "description": "type is unknown",
+        "schema": { "type": "unknown" },
+        "valid": false
+    },
+    {
+        "description": "array element is unknown",
+        "schema": { "type": ["unknown"] },
+        "valid": false
+    }
+]

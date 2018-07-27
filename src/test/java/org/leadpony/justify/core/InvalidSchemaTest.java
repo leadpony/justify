@@ -20,38 +20,58 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 import java.io.StringReader;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
 @RunWith(Parameterized.class)
-public class InvalidSchemaTest extends AbstractSpecTest {
+public class InvalidSchemaTest {
 
+    private static final Logger log = Loggers.getLogger(InvalidSchemaTest.class);
+    
     private static final String[] TESTS = {
-            "/additional/invalid_schema.json",
+            "/unofficial/invalid_schema/schema.json",
+            "/unofficial/invalid_schema/keyword/type.json",
         };
     
-    @Parameters(name = "{0}@{1}: {2}")
+    @Parameters(name = "{0} {1}")
     public static Iterable<Object[]> parameters() {
-        return fixtures(TESTS);
+        return ()->Stream.of(TESTS)
+                .flatMap(SchemaFixture::newStream)
+                .map(Fixture::toArguments)
+                .iterator();
     }
+    
+    private final SchemaFixture fixture;
 
-    public InvalidSchemaTest(String name, int testIndex, String description, Fixture fixture) {
-        super(name, testIndex, description, fixture);
+    public InvalidSchemaTest(String name, String description, SchemaFixture fixture) {
+        this.fixture = fixture;
     }
     
     @Test
     public void testInvalidSchema() {
-        String value = getFixture().schema().toString(); 
+        String value = fixture.schema().toString();
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
         Throwable thrown = catchThrowable(()->reader.read());
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
         JsonValidatingException e = (JsonValidatingException)thrown;
         printProblems(e.getProblems());
+    }
+
+    private void printProblems(List<Problem> problems) {
+        if (problems.isEmpty()) {
+            return;
+        }
+        log.info(fixture.displayName() + ": The schema has the following problem(s).");
+        Jsonv.createProblemPrinter(log::info).accept(problems);
     }
 }

@@ -47,7 +47,7 @@ public class JsonReaderTest {
     private static final Logger log = Loggers.getLogger(JsonReaderTest.class);
     
     @Test
-    public void read_readArray() {
+    public void read_readsArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
         
@@ -65,7 +65,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void read_readObject() {
+    public void read_readsObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
         

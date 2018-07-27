@@ -326,12 +326,18 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
-            builder.withType(findType(parser.getString()));
+            InstanceType type = findType(parser.getString());
+            if (type != null) {
+                builder.withType(type);
+            }
         } else if (event == Event.START_ARRAY) {
             Set<InstanceType> types = EnumSet.noneOf(InstanceType.class);
             while ((event = parser.next()) != Event.END_ARRAY) {
                 if (event == Event.VALUE_STRING) {
-                    types.add(findType(parser.getString()));
+                    InstanceType type = findType(parser.getString());
+                    if (type != null) {
+                        types.add(type);
+                    }
                 } else {
                     skipValue(event);
                 }
@@ -759,7 +765,11 @@ public class BasicSchemaReader implements JsonSchemaReader {
     }
     
     private static InstanceType findType(String name) {
-        return InstanceType.valueOf(name.toUpperCase());
+        try {
+            return InstanceType.valueOf(name.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
     
     private static boolean canStartSchema(Event event) {
