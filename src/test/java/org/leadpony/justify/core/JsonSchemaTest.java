@@ -16,10 +16,11 @@
 
 package org.leadpony.justify.core;
 
-import org.junit.Test;
 import org.leadpony.justify.core.JsonSchema;
 
 import static org.assertj.core.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author leadpony

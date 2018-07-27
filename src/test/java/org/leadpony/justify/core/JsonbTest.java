@@ -27,7 +27,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.leadpony.justify.Loggers;
 
 import static org.assertj.core.api.Assertions.assertThat;

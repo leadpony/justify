@@ -19,9 +19,9 @@ package org.leadpony.justify.core;
 import static org.leadpony.justify.core.JsonSchemas.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -31,10 +31,10 @@ import javax.json.JsonValue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
 /**
@@ -118,84 +118,70 @@ public class JsonReaderTest {
         assertThat(problems).isEmpty();
     }
     
-    @RunWith(Parameterized.class)
-    public static class ReadValueTest {
-        
-        private final String schema;
-        private final String instance;
-        private final boolean valid;
-        
-        public ReadValueTest(String schema, String instance, boolean valid) {
-            this.schema = schema;
-            this.instance = instance;
-            this.valid = valid;
-        }
-   
-        @Parameters
-        public static Iterable<Object[]> parameters() {
-            return Arrays.asList(new Object[][] {
-                { "{\"type\":\"boolean\"}", "true", true },
-                { "{\"type\":\"string\"}", "true", false },
-                { "{\"type\":\"boolean\"}", "false", true },
-                { "{\"type\":\"string\"}", "false", false },
-                { "{\"type\":\"null\"}", "null", true },
-                { "{\"type\":\"string\"}", "null", false },
-                { "{\"type\":\"string\"}", "\"foo\"", true },
-                { "{\"type\":\"integer\"}", "\"foo\"", false },
-                { "{\"type\":\"integer\"}", "42", true },
-                { "{\"type\":\"integer\"}", "9223372036854775807", true },
-                { "{\"type\":\"string\"}", "42", false },
-                { "{\"type\":\"number\"}", "3.14", true },
-                { "{\"type\":\"string\"}", "3.14", false },
-                { INTEGER_ARRAY_SCHEMA, "[1,2,3]", true },
-                { INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false },
-                { PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true },
-                { PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false },
-            });
-        }
-        
-        @Test
-        public void readValue_readsValue() {
-            JsonReader reader = newReader(instance);
-            JsonValue expected = reader.readValue();
-            reader.close();
-
-            List<Problem> problems = new ArrayList<>();
-            JsonReader sut = newReader(instance, schema, problems::addAll);
-            JsonValue actual = sut.readValue();
-            sut.close();
-            
-            assertThat(actual).isEqualTo(expected);
-            assertThat(problems.isEmpty()).isEqualTo(valid);
-            printProblems(problems);
-        }
-
-        @Test
-        public void readValue_throwsExceptionIfInvalid() {
-            JsonReader reader = newReader(instance);
-            JsonValue expected = reader.readValue();
-            reader.close();
-
-            List<Problem> problems = new ArrayList<>();
-            JsonReader sut = newReader(instance, schema, null);
-            JsonValue actual = null;
-            try {
-                actual = sut.readValue();
-            } catch (JsonValidatingException e) {
-                problems.addAll(e.getProblems());
-            }
-            sut.close();
-            
-            if (actual != null) {
-                assertThat(actual).isEqualTo(expected);
-                assertThat(problems).isEmpty();
-            } else {
-                assertThat(problems).isNotEmpty();
-            }
-            printProblems(problems);
-        }
+    public static Stream<Arguments> argumentsForReadValue() {
+        return Stream.of(
+            Arguments.of("{\"type\":\"boolean\"}", "true", true),
+            Arguments.of("{\"type\":\"string\"}", "true", false),
+            Arguments.of("{\"type\":\"boolean\"}", "false", true),
+            Arguments.of("{\"type\":\"string\"}", "false", false),
+            Arguments.of("{\"type\":\"null\"}", "null", true),
+            Arguments.of("{\"type\":\"string\"}", "null", false),
+            Arguments.of("{\"type\":\"string\"}", "\"foo\"", true),
+            Arguments.of("{\"type\":\"integer\"}", "\"foo\"", false),
+            Arguments.of("{\"type\":\"integer\"}", "42", true),
+            Arguments.of("{\"type\":\"integer\"}", "9223372036854775807", true),
+            Arguments.of("{\"type\":\"string\"}", "42", false),
+            Arguments.of("{\"type\":\"number\"}", "3.14", true),
+            Arguments.of("{\"type\":\"string\"}", "3.14", false),
+            Arguments.of(INTEGER_ARRAY_SCHEMA, "[1,2,3]", true),
+            Arguments.of(INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false),
+            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true),
+            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false)
+        );
     }
-    
+    @ParameterizedTest
+    @MethodSource("argumentsForReadValue")
+    public void readValue_readsValue(String schema, String data, boolean valid) {
+        JsonReader reader = newReader(data);
+        JsonValue expected = reader.readValue();
+        reader.close();
+
+        List<Problem> problems = new ArrayList<>();
+        JsonReader sut = newReader(data, schema, problems::addAll);
+        JsonValue actual = sut.readValue();
+        sut.close();
+        
+        assertThat(actual).isEqualTo(expected);
+        assertThat(problems.isEmpty()).isEqualTo(valid);
+        printProblems(problems);
+    }
+
+    @ParameterizedTest
+    @MethodSource("argumentsForReadValue")
+    public void readValue_throwsExceptionIfInvalid(String schema, String data, boolean valid) {
+        JsonReader reader = newReader(data);
+        JsonValue expected = reader.readValue();
+        reader.close();
+
+        List<Problem> problems = new ArrayList<>();
+        JsonReader sut = newReader(data, schema, null);
+        JsonValue actual = null;
+        try {
+            actual = sut.readValue();
+        } catch (JsonValidatingException e) {
+            problems.addAll(e.getProblems());
+        }
+        sut.close();
+        
+        if (actual != null) {
+            assertThat(actual).isEqualTo(expected);
+            assertThat(problems).isEmpty();
+        } else {
+            assertThat(problems).isNotEmpty();
+        }
+        printProblems(problems);
+    }
+
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
             Jsonv.createProblemPrinter(log::info).accept(problems);

@@ -24,9 +24,9 @@ import java.util.Locale;
 import javax.json.Json;
 import javax.json.stream.JsonParser;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 
@@ -39,13 +39,13 @@ public class ProblemBuilderTest {
 
     private JsonParser parser;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         StringReader reader = new StringReader("{}");
         this.parser = Json.createParser(reader);
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         if (parser != null) {
             parser.close();

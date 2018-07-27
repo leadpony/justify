@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.leadpony.justify.core.InstanceType;
 
 /**

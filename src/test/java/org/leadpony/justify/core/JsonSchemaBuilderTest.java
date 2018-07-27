@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.core;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
@@ -32,7 +32,7 @@ public class JsonSchemaBuilderTest {
 
     private JsonSchemaBuilderFactory factory;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.factory = Jsonv.createSchemaBuilder();
     }

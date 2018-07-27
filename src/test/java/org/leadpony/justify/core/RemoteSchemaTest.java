@@ -21,21 +21,19 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.provider.Arguments;
 
 /**
  * @author leadpony
  */
-@RunWith(Parameterized.class)
 public class RemoteSchemaTest extends BaseValidationTest {
     
     private static final Logger log = Logger.getLogger(RemoteSchemaTest.class.getName());
@@ -46,12 +44,11 @@ public class RemoteSchemaTest extends BaseValidationTest {
     
     private static Server server;
   
-    @Parameters(name = "{0} {1}")
-    public static Iterable<Object[]> parameters() {
+    public static Stream<Arguments> fixtureProvider() {
         return fixtures(TESTS);
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setUpOnce() throws Exception {
         server = new Server(1234);
         
@@ -67,15 +64,11 @@ public class RemoteSchemaTest extends BaseValidationTest {
         server.start();
     }
     
-    @AfterClass
+    @AfterAll
     public static void tearDownOnce() throws Exception {
         server.stop();
     }
     
-    public RemoteSchemaTest(String name, String description, ValidationFixture fixture) {
-        super(name, description, fixture);
-    }
-
     @Override
     protected JsonSchemaReader createSchemaReader(Reader reader) {
         return super.createSchemaReader(reader)

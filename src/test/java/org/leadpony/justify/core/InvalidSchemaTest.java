@@ -24,16 +24,14 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
-@RunWith(Parameterized.class)
 public class InvalidSchemaTest {
 
     private static final Logger log = Loggers.getLogger(InvalidSchemaTest.class);
@@ -43,31 +41,24 @@ public class InvalidSchemaTest {
             "/unofficial/invalid_schema/keyword/type.json",
         };
     
-    @Parameters(name = "{0} {1}")
-    public static Iterable<Object[]> parameters() {
-        return ()->Stream.of(TESTS)
+    public static Stream<Arguments> fixtureProvider() {
+        return Stream.of(TESTS)
                 .flatMap(SchemaFixture::newStream)
-                .map(Fixture::toArguments)
-                .iterator();
+                .map(fixture->Arguments.of(fixture.displayName(), fixture.description(), fixture));
     }
     
-    private final SchemaFixture fixture;
-
-    public InvalidSchemaTest(String name, String description, SchemaFixture fixture) {
-        this.fixture = fixture;
-    }
-    
-    @Test
-    public void testInvalidSchema() {
+    @ParameterizedTest(name = "{0} {1}")
+    @MethodSource("fixtureProvider")
+    public void testInvalidSchema(String name, String description, SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
         Throwable thrown = catchThrowable(()->reader.read());
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
         JsonValidatingException e = (JsonValidatingException)thrown;
-        printProblems(e.getProblems());
+        printProblems(fixture, e.getProblems());
     }
 
-    private void printProblems(List<Problem> problems) {
+    private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (problems.isEmpty()) {
             return;
         }

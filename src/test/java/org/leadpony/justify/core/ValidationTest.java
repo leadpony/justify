@@ -16,19 +16,15 @@
 
 package org.leadpony.justify.core;
 
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.provider.Arguments;
 
 /**
  * Test suite provided by json-schema.org.
  * 
  * @author leadpony
  */
-@SuppressWarnings("unused")
-@RunWith(Parameterized.class)
 public class ValidationTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
@@ -71,17 +67,7 @@ public class ValidationTest extends BaseValidationTest {
             "/official/tests/draft8/minContains.json"
     };
     
-    @Parameters(name = "{0} {1}")
-    public static Iterable<Object[]> parameters() {
+    public static Stream<Arguments> fixtureProvider() {
         return fixtures(TESTS);
-    }
-
-    public ValidationTest(String name, String description, ValidationFixture fixture) {
-        super(name, description, fixture);
-    }
-
-    @Before
-    public void setUp() {
-        //Assume.assumeTrue(getTestIndex() == 23);
     }
 }

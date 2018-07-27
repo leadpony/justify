@@ -29,7 +29,9 @@ import java.util.stream.Stream;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
 /**
@@ -39,43 +41,35 @@ public abstract class BaseValidationTest {
     
     private static final Logger log = Loggers.getLogger(BaseValidationTest.class);
     
-    private final ValidationFixture fixture;
-
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
-    protected BaseValidationTest(String name, String description, ValidationFixture fixture) {
-        this.fixture = fixture;
-    }
-    
-    public ValidationFixture getFixture() {
-        return fixture;
-    }
-    
-    @Test
-    public void testValidationResult() {
+    @ParameterizedTest(name = "{0} {1}")
+    @MethodSource("fixtureProvider")
+    public void testValidationResult(String name, String description, ValidationFixture fixture) {
         List<Problem> problems = new ArrayList<>();
-        JsonParser parser = createValidatingParser(Jsonv.createProblemCollector(problems));
+        JsonParser parser = createValidatingParser(fixture, Jsonv.createProblemCollector(problems));
         while (parser.hasNext()) {
             parser.next();
         }
         parser.close();
-        assertThat(problems.isEmpty()).isEqualTo(getFixture().isValid());
-        printProblems(problems);
+        assertThat(problems.isEmpty()).isEqualTo(fixture.isValid());
+        printProblems(fixture, problems);
     }
     
-    protected static Iterable<Object[]> fixtures(String[] names) {
-        Stream<ValidationFixture> stream = Stream.of(names).flatMap(ValidationFixture::newStream);
-        return ()->stream.map(Fixture::toArguments).iterator();
+    protected static Stream<Arguments> fixtures(String[] names) {
+        return Stream.of(names)
+                .flatMap(ValidationFixture::newStream)
+                .map(fixture->Arguments.of(fixture.displayName(), fixture.description(), fixture));
     }
     
-    protected JsonParser createValidatingParser(Consumer<List<Problem>> handler) {
-        JsonSchema schema = getSchema();
+    protected JsonParser createValidatingParser(ValidationFixture fixture, Consumer<List<Problem>> handler) {
+        JsonSchema schema = getSchema(fixture);
         StringReader reader = new StringReader(fixture.data().toString());
         return Jsonv.createParser(reader, schema, handler);
     }
     
-    private JsonSchema getSchema() {
+    private JsonSchema getSchema(ValidationFixture fixture) {
         JsonValue value = fixture.schema();
         if (value == lastValue) {
             return lastSchema;
@@ -100,11 +94,11 @@ public abstract class BaseValidationTest {
         return Jsonv.createSchemaReader(reader);
     }
 
-    protected void printProblems(List<Problem> problems) {
+    protected void printProblems(ValidationFixture fixture, List<Problem> problems) {
         if (problems.isEmpty()) {
             return;
         }
-        log.info(getFixture().displayName() + ": Validation found the following problem(s).");
+        log.info(fixture.displayName() + ": Validation found the following problem(s).");
         Jsonv.createProblemPrinter(log::info).accept(problems);
     }
 }
