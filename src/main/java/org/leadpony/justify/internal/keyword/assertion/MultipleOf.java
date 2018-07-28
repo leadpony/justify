@@ -23,7 +23,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.
@@ -59,7 +58,7 @@ class MultipleOf extends AbstractNumericAssertion {
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage("instance.problem.multipleOf")
                     .withParameter("actual", value)
                     .withParameter("divisor", divisor)

@@ -72,9 +72,17 @@ public interface Problem {
     /**
      * Returns the location where this problem was found in the input source.
      * 
-     * @return the location of this problem, can be {@code null} if the location is unknown.
+     * @return the location where this problem occurred. 
+     *         This can be {@code null} if the location is unknown.
      */
     JsonLocation getLocation();
+    
+    /**
+     * Returns the keyword which supplies the assertion this problem violated.
+     * 
+     * @return the keyword of the assertion, may be {@code null}.
+     */
+    String getKeyword();
     
     /**
      * Returns all parameters of this problem as a map.

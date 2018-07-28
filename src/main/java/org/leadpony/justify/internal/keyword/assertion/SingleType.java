@@ -25,7 +25,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -33,7 +32,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  *  
  * @author leadpony
  */
-class SingleType implements Assertion, Evaluator {
+class SingleType extends AbstractAssertion implements Evaluator {
     
     protected final InstanceType type;
     
@@ -67,7 +66,7 @@ class SingleType implements Assertion, Evaluator {
         if (type == null || testType(type)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage("instance.problem.type.single")
                     .withParameter("actual", type)
                     .withParameter("expected", this.type)
@@ -92,7 +91,7 @@ class SingleType implements Assertion, Evaluator {
      * 
      * @author leadpony
      */
-    private static class Negated extends SingleType {
+    private class Negated extends SingleType {
 
         private Negated(InstanceType type) {
             super(type);
@@ -104,7 +103,7 @@ class SingleType implements Assertion, Evaluator {
             if (type == null || !testType(type)) {
                 return Result.TRUE; 
             } else {
-                Problem p = ProblemBuilder.newBuilder(parser)
+                Problem p = newProblemBuilder(parser)
                         .withMessage("instance.problem.not.type.single")
                         .withParameter("expected", this.type)
                         .build();

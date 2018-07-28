@@ -66,4 +66,28 @@ public class SimpleJsonLocation implements JsonLocation {
                .append(")");
         return builder.toString();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (columnNumber ^ (columnNumber >>> 32));
+        result = prime * result + (int) (lineNumber ^ (lineNumber >>> 32));
+        result = prime * result + (int) (streamOffset ^ (streamOffset >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof JsonLocation)) {
+            return false;
+        }
+        JsonLocation other = (JsonLocation)obj;
+        return lineNumber == other.getLineNumber() &&
+               columnNumber == other.getColumnNumber() &&
+               streamOffset == other.getStreamOffset();
+    }
 }

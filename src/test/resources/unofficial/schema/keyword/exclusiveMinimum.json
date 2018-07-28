@@ -1,0 +1,27 @@
+[
+    {
+        "description": "value is integer",
+        "schema": { "exclusiveMinimum": 3 },
+        "valid": true
+    },
+    {
+        "description": "value is number",
+        "schema": { "exclusiveMinimum": 2.5 },
+        "valid": true
+    },
+    {
+        "description": "value is 0",
+        "schema": { "exclusiveMinimum": 0 },
+        "valid": true
+    },
+    {
+        "description": "value is negative",
+        "schema": { "exclusiveMinimum": -3 },
+        "valid": true
+    },
+    {
+        "description": "value is string",
+        "schema": { "exclusiveMinimum": "123" },
+        "valid": false
+    }
+]

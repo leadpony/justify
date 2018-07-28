@@ -24,7 +24,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -49,7 +48,7 @@ class NotRequired extends Required {
         return new Required(this.names);
     }
 
-    private static class NegatedEvaluator extends AssertionEvaluator {
+    private class NegatedEvaluator extends AssertionEvaluator {
         
         private final Set<String> names;
         
@@ -76,12 +75,12 @@ class NotRequired extends Required {
                 Problem p = null;
                 if (this.names.size() == 1) {
                     String name = this.names.iterator().next();
-                    p = ProblemBuilder.newBuilder(parser)
+                    p = newProblemBuilder(parser)
                             .withMessage("instance.problem.not.required.single")
                             .withParameter("expected", name)
                             .build();
                 } else {
-                    p = ProblemBuilder.newBuilder(parser)
+                    p = newProblemBuilder(parser)
                         .withMessage("instance.problem.not.required")
                         .withParameter("expected", this.names)
                         .build();

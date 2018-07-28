@@ -21,7 +21,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * @author leadpony
@@ -49,7 +48,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
         if (test(length, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage(this.message)
                     .withParameter("actual", length)
                     .withParameter("bound", this.bound)

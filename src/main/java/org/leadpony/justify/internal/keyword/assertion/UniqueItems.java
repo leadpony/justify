@@ -29,7 +29,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -37,7 +36,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-class UniqueItems implements Assertion {
+class UniqueItems extends AbstractAssertion {
     
     private final boolean unique;
     
@@ -53,7 +52,7 @@ class UniqueItems implements Assertion {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.ARRAY && unique) {
-            appender.append(new UniquenessEvaluator(builderFactory));
+            appender.append(new AssertionEvaluator(builderFactory));
         }
     }
 
@@ -62,14 +61,14 @@ class UniqueItems implements Assertion {
         builder.add(name(), unique);
     }
     
-    private static class UniquenessEvaluator implements Evaluator {
+    private class AssertionEvaluator implements Evaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
         private int index;
         private JsonInstanceBuilder builder;
         
-        private UniquenessEvaluator(JsonBuilderFactory builderFactory) {
+        private AssertionEvaluator(JsonBuilderFactory builderFactory) {
             this.builderFactory = builderFactory;
         }
         
@@ -94,7 +93,7 @@ class UniqueItems implements Assertion {
         private Result testValue(JsonValue value, int index, JsonParser parser, Reporter reporter) {
             if (values.containsKey(value)) {
                 int lastIndex = values.get(value);
-                Problem p = ProblemBuilder.newBuilder(parser)
+                Problem p = newProblemBuilder(parser)
                         .withMessage("instance.problem.uniqueItems")
                         .withParameter("index", index)
                         .withParameter("lastIndex", lastIndex)

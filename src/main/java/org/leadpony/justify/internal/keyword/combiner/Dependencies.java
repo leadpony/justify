@@ -35,14 +35,13 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * @author leadpony
  */
-public class Dependencies implements Combiner {
+public class Dependencies extends AbstractCombiner {
 
     private final Map<String, Dependency> dependencyMap = new HashMap<>();
     
@@ -217,7 +216,7 @@ public class Dependencies implements Combiner {
         }
     }
     
-    private static class PropertyDependency extends Dependency {
+    private class PropertyDependency extends Dependency {
         
         private final Set<String> requiredProperties;
 
@@ -239,7 +238,7 @@ public class Dependencies implements Combiner {
         }
     }
     
-    private static class PropertyEvaluator implements Evaluator {
+    private class PropertyEvaluator implements Evaluator {
         
         private final String property;
         private boolean active;
@@ -273,7 +272,7 @@ public class Dependencies implements Combiner {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
-                Problem p = ProblemBuilder.newBuilder(parser)
+                Problem p = newProblemBuilder(parser)
                         .withMessage("instance.problem.dependencies")
                         .withParameter("missing", missing)
                         .withParameter("dependant", property)

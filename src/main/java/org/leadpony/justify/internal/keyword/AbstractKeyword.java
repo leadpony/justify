@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.keyword;
 
-import org.leadpony.justify.core.Evaluator;
+import javax.json.stream.JsonParser;
+
+import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Skeletal implementation of {@link Keyword}.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
-    
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+public abstract class AbstractKeyword implements Keyword {
+
+    protected ProblemBuilder newProblemBuilder(JsonParser parser) {
+        return ProblemBuilder.newBuilder(parser)
+                .withKeyword(name());
     }
 }

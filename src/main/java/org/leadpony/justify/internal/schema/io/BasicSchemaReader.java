@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
@@ -40,6 +41,7 @@ import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.SimpleJsonLocation;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.BasicSchema;
@@ -105,10 +107,6 @@ public class BasicSchemaReader implements JsonSchemaReader {
         return this;
     }
     
-    protected JsonParser getParser() {
-        return parser;
-    }
-    
     protected void postprocess(JsonSchema rootSchema) {
         if (rootSchema != null) {
             makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
@@ -120,6 +118,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
     }
     
     private JsonSchema rootSchema() {
+        if (!parser.hasNext()) {
+            return null;
+        }
         Event event = parser.next();
         switch (event) {
         case VALUE_TRUE:
@@ -148,7 +149,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         JsonSchema schema = builder.build();
         if (schema instanceof SchemaReference) {
             SchemaReference reference = (SchemaReference)schema;
-            references.put(reference, refLocation);
+            references.put(reference, SimpleJsonLocation.before(refLocation));
         }
         return schema;
     }
@@ -326,23 +327,19 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
-            InstanceType type = findType(parser.getString());
-            if (type != null) {
-                builder.withType(type);
-            }
+            consumeType(parser.getString(), builder::withType);
         } else if (event == Event.START_ARRAY) {
             Set<InstanceType> types = EnumSet.noneOf(InstanceType.class);
             while ((event = parser.next()) != Event.END_ARRAY) {
                 if (event == Event.VALUE_STRING) {
-                    InstanceType type = findType(parser.getString());
-                    if (type != null) {
-                        types.add(type);
-                    }
+                    consumeType(parser.getString(), types::add);
                 } else {
                     skipValue(event);
                 }
             }
-            builder.withType(types);
+            if (!types.isEmpty()) {
+                builder.withType(types);
+            }
         } else {
             skipValue(event);
         }
@@ -764,11 +761,11 @@ public class BasicSchemaReader implements JsonSchemaReader {
         }
     }
     
-    private static InstanceType findType(String name) {
+    private static void consumeType(String name, Consumer<InstanceType> consumer) {
         try {
-            return InstanceType.valueOf(name.toUpperCase());
+            InstanceType type = InstanceType.valueOf(name.toUpperCase());
+            consumer.accept(type);
         } catch (IllegalArgumentException e) {
-            return null;
         }
     }
     

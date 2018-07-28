@@ -58,7 +58,7 @@ class AdditionalItems extends UnaryCombiner {
     JsonSchema getSubschemaAt(int itemIndex) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.FALSE) {
-            subschema = new RedundantItemSchema(itemIndex);
+            subschema = new RedundantItemSchema(itemIndex, this);
         }
         return subschema;
     }

@@ -1,0 +1,22 @@
+[
+    {
+        "description": "value is array",
+        "schema": { "enum": ["short", "tall"] },
+        "valid": true
+    },
+    {
+        "description": "value is object",
+        "schema": { "enum": {} },
+        "valid": false
+    },
+    {
+        "description": "value is string",
+        "schema": { "enum": "abc" },
+        "valid": false
+    },
+    {
+        "description": "elements are not unique",
+        "schema": { "enum": ["short", "short"] },
+        "valid": false
+    }
+]

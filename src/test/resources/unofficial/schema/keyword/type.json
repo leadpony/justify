@@ -1,26 +1,36 @@
 [
     {
-        "description": "type is numeric",
+        "description": "value is string",
+        "schema": { "type": "number" },
+        "valid": true
+    },
+    {
+        "description": "value is array of string",
+        "schema": { "type": ["number", "string"] },
+        "valid": true
+    },
+    {
+        "description": "value is numeric",
         "schema": { "type": 42 },
         "valid": false
     },
     {
-        "description": "type is true",
+        "description": "value is true",
         "schema": { "type": true },
         "valid": false
     },
     {
-        "description": "type is false",
+        "description": "value is false",
         "schema": { "type": false },
         "valid": false
     },
     {
-        "description": "type is null",
+        "description": "value is null",
         "schema": { "type": null },
         "valid": false
     },
     {
-        "description": "type is object",
+        "description": "value is object",
         "schema": { "type": {} },
         "valid": false
     },
@@ -35,13 +45,18 @@
         "valid": false
     },
     {
-        "description": "type is unknown",
+        "description": "value is unknown",
         "schema": { "type": "unknown" },
         "valid": false
     },
     {
         "description": "array element is unknown",
         "schema": { "type": ["unknown"] },
+        "valid": false
+    },
+    {
+        "description": "value is empty array",
+        "schema": { "type": [] },
         "valid": false
     }
 ]

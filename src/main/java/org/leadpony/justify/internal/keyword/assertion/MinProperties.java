@@ -23,7 +23,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -32,7 +31,7 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  * 
  * @author leadpony
  */
-class MinProperties implements Assertion {
+class MinProperties extends AbstractAssertion {
     
     private final int bound;
     
@@ -48,7 +47,7 @@ class MinProperties implements Assertion {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new InnerEvaluator());
+            appender.append(new AssertionEvaluator());
         }
     }
 
@@ -62,7 +61,7 @@ class MinProperties implements Assertion {
         builder.add(name(), bound);
     }
     
-    private class InnerEvaluator implements ShallowEvaluator {
+    private class AssertionEvaluator implements ShallowEvaluator {
 
         private int currentCount;
         
@@ -76,7 +75,7 @@ class MinProperties implements Assertion {
                 if (currentCount >= bound) {
                     return Result.TRUE;
                 } else {
-                    Problem p = ProblemBuilder.newBuilder(parser)
+                    Problem p = newProblemBuilder(parser)
                             .withMessage("instance.problem.minProperties")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)

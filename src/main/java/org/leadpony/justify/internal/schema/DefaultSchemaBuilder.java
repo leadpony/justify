@@ -131,12 +131,18 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withType(InstanceType... types) {
         Objects.requireNonNull(types, "types must not be null.");
+        if (types.length == 0) {
+            throw new IllegalArgumentException("types must not be empty.");
+        }
         return withType(Sets.asSet(types));
     }
     
     @Override
     public JsonSchemaBuilder withType(Set<InstanceType> types) {
         Objects.requireNonNull(types, "types must not be null.");
+        if (types.isEmpty()) {
+            throw new IllegalArgumentException("types must not be empty.");
+        }
         addKeyword(Assertions.type(types));
         return builderNonempty();
     }

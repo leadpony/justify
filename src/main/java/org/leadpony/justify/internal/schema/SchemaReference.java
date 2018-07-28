@@ -101,6 +101,7 @@ public class SchemaReference extends AbstractJsonSchema {
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
             Problem p = ProblemBuilder.newBuilder(parser)
+                    .withKeyword("$ref")
                     .withMessage("schema.problem.dereference")
                     .withParameter("ref", ref)
                     .build();

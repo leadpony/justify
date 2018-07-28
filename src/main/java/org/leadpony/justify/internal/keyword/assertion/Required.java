@@ -27,7 +27,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -36,7 +35,7 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  * 
  * @author leadpony
  */
-class Required implements Assertion {
+class Required extends AbstractAssertion {
     
     protected final Set<String> names;
     
@@ -68,7 +67,7 @@ class Required implements Assertion {
         builder.add(name(), arrayBuilder);
     }
 
-    static class AssertionEvaluator implements ShallowEvaluator {
+    class AssertionEvaluator implements ShallowEvaluator {
         
         protected final Set<String> missing;
         
@@ -92,7 +91,7 @@ class Required implements Assertion {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
-                Problem p = ProblemBuilder.newBuilder(parser)
+                Problem p = newProblemBuilder(parser)
                         .withMessage("instance.problem.required")
                         .withParameter("expected", missing)
                         .build();

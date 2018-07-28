@@ -29,7 +29,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -37,7 +36,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-class Type implements Assertion, Evaluator {
+class Type extends AbstractAssertion implements Evaluator {
     
     protected final Set<InstanceType> typeSet;
     
@@ -89,7 +88,7 @@ class Type implements Assertion, Evaluator {
         if (contains(type)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage("instance.problem.type")
                     .withParameter("actual", type)
                     .withParameter("expected", this.typeSet)
@@ -99,7 +98,7 @@ class Type implements Assertion, Evaluator {
         }
     }
     
-    private static class Negated extends Type {
+    private class Negated extends Type {
 
         Negated(Set<InstanceType> types) {
             super(types);
@@ -113,7 +112,7 @@ class Type implements Assertion, Evaluator {
         @Override
         protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
             if (contains(type)) {
-                Problem p = ProblemBuilder.newBuilder(parser)
+                Problem p = newProblemBuilder(parser)
                         .withMessage("instance.problem.not.type")
                         .withParameter("actual", type)
                         .withParameter("expected", this.typeSet)

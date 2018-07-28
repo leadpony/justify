@@ -37,10 +37,22 @@ import org.leadpony.justify.core.Problem;
 public class ProblemBuilder {
 
     private final JsonLocation location;
+    private String keyword;
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     private List<List<Problem>> childLists;
     
+    /**
+     * Creates new instance of this builder.
+     * 
+     * @param parser the JSON parser, cannot be {@code null}.
+     * @return newly created instance of this type.
+     */
+    public static ProblemBuilder newBuilder(JsonParser parser) {
+        JsonLocation current = parser.getLocation();
+        return newBuilder(SimpleJsonLocation.before(current));
+    }
+
     /**
      * Creates new instance of this builder.
      * 
@@ -52,16 +64,6 @@ public class ProblemBuilder {
     }
 
     /**
-     * Creates new instance of this builder.
-     * 
-     * @param parser the JSON parser, cannot be {@code null}.
-     * @return newly created instance of this type.
-     */
-    public static ProblemBuilder newBuilder(JsonParser parser) {
-        return newBuilder(parser.getLocation());
-    }
-
-    /**
      * Constructs this builder.
      * 
      * @param location the location where problem occurred, cannot be {@code null}.
@@ -69,11 +71,22 @@ public class ProblemBuilder {
     private ProblemBuilder(JsonLocation location) {
         this.location = location;
     }
+    
+    /**
+     * Specifies the keyword which supplies the constraint the problem violated.
+     * 
+     * @param keyword the keyword supplying the constraint.
+     * @return this builder.
+     */
+    public ProblemBuilder withKeyword(String keyword) {
+        this.keyword = keyword;
+        return this;
+    }
 
     /**
      * Specifies the key name of the message used for the problem.
      * 
-     * @param messageKey the key name of the message
+     * @param messageKey the key name of the message.
      * @return this builder.
      */
     public ProblemBuilder withMessage(String messageKey) {
@@ -127,9 +140,10 @@ public class ProblemBuilder {
      */
     private static class SimpleProblem implements Problem {
 
+        private final JsonLocation location;
+        private final String keyword;
         private final String messageKey;
         private final Map<String, Object> parameters;
-        private final JsonLocation location;
     
         /**
          * Constructs this problem.
@@ -137,17 +151,24 @@ public class ProblemBuilder {
          * @param builder the builder of the problem.
          */
         protected SimpleProblem(ProblemBuilder builder) {
+            this.location = builder.location;
+            this.keyword = builder.keyword;
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
-            this.location = builder.location;
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getMessage(Locale locale) {
             Objects.requireNonNull(locale, "locale must not be null.");
             return buildMessage(locale).toString();
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getContextualMessage(Locale locale) {
             Objects.requireNonNull(locale, "locale must not be null.");
@@ -155,26 +176,49 @@ public class ProblemBuilder {
             return buildContextualMessage(message, locale).toString();
         }
     
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public JsonLocation getLocation() {
             return location;
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getKeyword() {
+            return keyword;
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Map<String, ?> parametersAsMap() {
             return parameters;
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean hasSubproblem() {
             return false;
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public List<List<Problem>> getSubproblems() {
             return Collections.emptyList();
         }
         
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return getContextualMessage();
@@ -203,6 +247,13 @@ public class ProblemBuilder {
                     .withParameter("location", buildLocation(getLocation(), locale));
         }
         
+        /**
+         * Builds a message containing the location at which this problem occurred.
+         * 
+         * @param location the location at which this problem occurred.
+         * @param locale the locale for which the message will be localized. 
+         * @return the built message.
+         */
         private Message buildLocation(JsonLocation location, Locale locale) {
             if (location == null) {
                 return Message.get("location.unknown", locale);

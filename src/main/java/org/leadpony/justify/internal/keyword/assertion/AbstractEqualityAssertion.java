@@ -31,20 +31,20 @@ import org.leadpony.justify.core.InstanceType;
 /**
  * @author leadpony
  */
-abstract class AbstractEqualityAssertion implements Assertion {
+abstract class AbstractEqualityAssertion extends AbstractAssertion {
     
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        appender.append(new EqualityEvaluator(builderFactory));
+        appender.append(new AssertionEvaluator(builderFactory));
     }
     
     protected abstract Result testValue(JsonValue actual, JsonParser parser, Reporter reporter);
 
-    private class EqualityEvaluator implements Evaluator {
+    private class AssertionEvaluator implements Evaluator {
         
         private final JsonInstanceBuilder builder;
         
-        private EqualityEvaluator(JsonBuilderFactory builderFactory) {
+        private AssertionEvaluator(JsonBuilderFactory builderFactory) {
             this.builder = new JsonInstanceBuilder(builderFactory);
         }
 

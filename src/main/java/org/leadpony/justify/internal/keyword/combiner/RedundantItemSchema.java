@@ -25,6 +25,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Schema for redundant array items.
@@ -34,14 +35,17 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 class RedundantItemSchema implements JsonSchema, Evaluator {
     
     private final int itemIndex;
+    private final Keyword keyword;
 
     /**
      * Constructs this schema.
      * 
      * @param itemIndex the index of the item.
+     * @param keyword the keyword owning this schema.
      */
-    RedundantItemSchema(int itemIndex) {
+    RedundantItemSchema(int itemIndex, Keyword keyword) {
         this.itemIndex = itemIndex;
+        this.keyword = keyword;
     }
 
     @Override
@@ -62,6 +66,7 @@ class RedundantItemSchema implements JsonSchema, Evaluator {
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
+                .withKeyword(keyword.name())
                 .withMessage("instance.problem.additionalItems")
                 .withParameter("index", itemIndex)
                 .build();

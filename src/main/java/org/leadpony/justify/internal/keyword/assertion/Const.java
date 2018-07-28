@@ -24,7 +24,6 @@ import javax.json.stream.JsonParser;
 import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * Assertion specified with "const" validation keyword.
@@ -54,7 +53,7 @@ class Const extends AbstractEqualityAssertion {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage("instance.problem.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)

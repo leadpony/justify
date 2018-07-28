@@ -26,7 +26,6 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -61,7 +60,7 @@ class Enum extends AbstractEqualityAssertion {
                 return Result.TRUE;
             }
         }
-        Problem p = ProblemBuilder.newBuilder(parser)
+        Problem p = newProblemBuilder(parser)
                 .withMessage("instance.problem.enum")
                 .withParameter("actual", actual)
                 .withParameter("expected", this.expected)

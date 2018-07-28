@@ -32,7 +32,7 @@ class ValidationFixture extends Fixture {
     private final String schemaDescription; 
     private final JsonValue data;
     private final String dataDescription;
-    private boolean valid;
+    private boolean dataValidity;
     
     private ValidationFixture(String name, int index, JsonValue schema, String schemaDescription, JsonValue data, String dataDescription, boolean valid) {
         super(name, index);
@@ -40,7 +40,7 @@ class ValidationFixture extends Fixture {
         this.schemaDescription = schemaDescription;
         this.data = data;
         this.dataDescription = dataDescription;
-        this.valid = valid;
+        this.dataValidity = valid;
     }
     
     @Override
@@ -64,8 +64,8 @@ class ValidationFixture extends Fixture {
         return dataDescription;
     }
 
-    boolean isValid() {
-        return valid;
+    boolean getDataValidity() {
+        return dataValidity;
     }
     
     static Stream<ValidationFixture> newStream(String name) {

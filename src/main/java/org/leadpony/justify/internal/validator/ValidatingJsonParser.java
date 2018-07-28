@@ -142,6 +142,6 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     }
     
     private void throwProblems(List<Problem> problems) {
-        throw new JsonValidatingException(problems, realParser().getLocation());
+        throw new JsonValidatingException(problems, getLastCharLocation());
     }
 }

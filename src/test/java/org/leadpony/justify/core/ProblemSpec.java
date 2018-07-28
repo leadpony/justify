@@ -14,29 +14,34 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.evaluator;
-
-import org.leadpony.justify.core.Evaluator;
+package org.leadpony.justify.core;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Problem specification.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+class ProblemSpec {
+
+    private final long line;
+    private final long column;
+    private final String keyword;
     
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
+    ProblemSpec(long line, long column, String keyword) {
+        this.line = line;
+        this.column = column;
+        this.keyword = keyword;
+    }
+    
+    long lineNumber() {
+        return line;
+    }
+    
+    long columnNumber() {
+        return column;
+    }
+    
+    String keyword() {
+        return keyword;
     }
 }

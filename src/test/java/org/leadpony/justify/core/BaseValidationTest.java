@@ -44,23 +44,23 @@ public abstract class BaseValidationTest {
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
-    @ParameterizedTest(name = "{0} {1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("fixtureProvider")
-    public void testValidationResult(String name, String description, ValidationFixture fixture) {
+    public void testValidationResult(String displayName, ValidationFixture fixture) {
         List<Problem> problems = new ArrayList<>();
         JsonParser parser = createValidatingParser(fixture, Jsonv.createProblemCollector(problems));
         while (parser.hasNext()) {
             parser.next();
         }
         parser.close();
-        assertThat(problems.isEmpty()).isEqualTo(fixture.isValid());
+        assertThat(problems.isEmpty()).isEqualTo(fixture.getDataValidity());
         printProblems(fixture, problems);
     }
     
     protected static Stream<Arguments> fixtures(String[] names) {
         return Stream.of(names)
                 .flatMap(ValidationFixture::newStream)
-                .map(fixture->Arguments.of(fixture.displayName(), fixture.description(), fixture));
+                .map(Fixture::toArguments);
     }
     
     protected JsonParser createValidatingParser(ValidationFixture fixture, Consumer<List<Problem>> handler) {
@@ -98,7 +98,7 @@ public abstract class BaseValidationTest {
         if (problems.isEmpty()) {
             return;
         }
-        log.info(fixture.displayName() + ": Validation found the following problem(s).");
+        log.info(fixture.displayName());
         Jsonv.createProblemPrinter(log::info).accept(problems);
     }
 }

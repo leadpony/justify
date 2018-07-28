@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-abstract class AbstractNumericAssertion implements Assertion, Evaluator {
+abstract class AbstractNumericAssertion extends AbstractAssertion implements Evaluator {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {

@@ -29,7 +29,7 @@ import org.leadpony.justify.core.JsonSchema;
  * 
  * @author leadpony
  */
-abstract class UnaryCombiner implements Combiner {
+abstract class UnaryCombiner extends AbstractCombiner {
     
     private final JsonSchema subschema;
     

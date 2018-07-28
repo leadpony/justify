@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.core;
 
+import org.junit.jupiter.params.provider.Arguments;
+
 /**
  * Base type of fixtures.
  * 
@@ -26,20 +28,18 @@ abstract class Fixture {
     private final String name;
     private final int index;
     
+    /**
+     * Constructs this fixture.
+     * 
+     * @param name the base nmae of this fixture.
+     * @param index the index of this fixture.
+     */
     protected Fixture(String name, int index) {
         this.name = name;
         this.index = index;    
     }
     
     String name() {
-        return name;
-    }
-    
-    int index() {
-        return index;
-    }
-    
-    String displayName() {
         StringBuilder builder = new StringBuilder();
         int beginIndex = name.lastIndexOf('/') + 1;
         int endIndex = name.lastIndexOf('.');
@@ -48,8 +48,18 @@ abstract class Fixture {
         return builder.toString();
     }
     
-    Object[] toArguments() {
-        return new Object[] { displayName(), description(), this };
+    String displayName() {
+        StringBuilder builder = new StringBuilder();
+        int beginIndex = name.lastIndexOf('/') + 1;
+        int endIndex = name.lastIndexOf('.');
+        builder.append(name.substring(beginIndex, endIndex))
+               .append("[").append(index).append("]") 
+               .append(" ").append(description()); 
+        return builder.toString();
+    }
+    
+    Arguments toArguments() {
+        return Arguments.of(displayName(), this);
     }
     
     abstract String description();

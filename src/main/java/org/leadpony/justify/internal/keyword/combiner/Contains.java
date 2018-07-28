@@ -125,7 +125,7 @@ class Contains extends UnaryCombiner {
         }
         
         private void reportTooFewValid(JsonParser parser, Reporter reporter) {
-            ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
+            ProblemBuilder builder = newProblemBuilder(parser);
             builder.withMessage("instance.problem.minContains")
                    .withParameter("expected", minContains)
                    .withParameter("actual", trueEvaluations);
@@ -134,7 +134,7 @@ class Contains extends UnaryCombiner {
         }
 
         private void reportTooManyValid(JsonParser parser, Reporter reporter) {
-            ProblemBuilder builder = ProblemBuilder.newBuilder(parser);
+            ProblemBuilder builder = newProblemBuilder(parser);
             builder.withMessage("instance.problem.maxContains")
                    .withParameter("expected", maxContains)
                    .withParameter("actual", trueEvaluations);

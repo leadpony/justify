@@ -1,0 +1,22 @@
+[
+    {
+        "description": "value is true",
+        "schema": { "const": true },
+        "valid": true
+    },
+    {
+        "description": "value is null",
+        "schema": { "const": null },
+        "valid": true
+    },
+    {
+        "description": "value is empty object",
+        "schema": { "const": {} },
+        "valid": true
+    },
+    {
+        "description": "value is empty array",
+        "schema": { "const": [] },
+        "valid": true
+    }
+]

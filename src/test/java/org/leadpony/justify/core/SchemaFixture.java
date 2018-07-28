@@ -28,15 +28,13 @@ class SchemaFixture extends Fixture {
 
     private final String description;
     private final JsonValue schema;
-    private final JsonValue data;
-    private final boolean valid;
+    private final boolean validity;
 
-    private SchemaFixture(String name, int index, String description, JsonValue schema, JsonValue data, boolean valid) {
+    private SchemaFixture(String name, int index, String description, JsonValue schema, boolean valid) {
         super(name, index);
         this.description = description;
         this.schema = schema;
-        this.data = data;
-        this.valid = valid;
+        this.validity = valid;
     }
 
     @Override
@@ -48,12 +46,8 @@ class SchemaFixture extends Fixture {
         return schema;
     }
 
-    JsonValue data() {
-        return data;
-    }
-
-    boolean isValid() {
-        return valid;
+    boolean getSchemaValidity() {
+        return validity;
     }
 
     static Stream<SchemaFixture> newStream(String name) {
@@ -65,7 +59,6 @@ class SchemaFixture extends Fixture {
                         counter.getAndIncrement(),
                         object.getString("description"),
                         object.get("schema"),
-                        object.get("data"),
                         object.getBoolean("valid")
                         ));
     }

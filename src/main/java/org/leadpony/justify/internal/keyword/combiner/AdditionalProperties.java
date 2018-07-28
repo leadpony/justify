@@ -83,7 +83,7 @@ class AdditionalProperties extends UnaryCombiner {
         assert subschemas.isEmpty();
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.FALSE) {
-            return new RedundantPropertySchema(keyName);
+            return new RedundantPropertySchema(keyName, this);
         } else {
             subschemas.add(subschema);
             return null;
@@ -118,7 +118,7 @@ class AdditionalProperties extends UnaryCombiner {
         private void findSubschema(String keyName) {
             JsonSchema subschema = getSubschema();
             if (subschema == JsonSchema.FALSE) {
-                subschema = new RedundantPropertySchema(keyName);
+                subschema = new RedundantPropertySchema(keyName, AdditionalProperties.this);
                 appendChild(subschema.createEvaluator(InstanceType.OBJECT));
             } else {
                 nextSubschema = subschema;

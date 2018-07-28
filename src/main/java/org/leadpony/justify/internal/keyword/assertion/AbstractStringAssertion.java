@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-abstract class AbstractStringAssertion implements Assertion, Evaluator {
+abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
     
     static enum Context {
         KEY,

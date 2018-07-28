@@ -25,6 +25,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Schema for redundant object properties.
@@ -34,14 +35,17 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 class RedundantPropertySchema implements JsonSchema, Evaluator {
     
     private final String keyName;
+    private final Keyword keyword;
 
     /**
      * Constructs this schema.
      * 
      * @param keyName the name of the property.
+     * @param keyword the keyword owning this schema.
      */
-    RedundantPropertySchema(String keyName) {
+    RedundantPropertySchema(String keyName, Keyword keyword) {
         this.keyName = keyName;
+        this.keyword = keyword;
     }
 
     @Override
@@ -62,6 +66,7 @@ class RedundantPropertySchema implements JsonSchema, Evaluator {
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
         Problem p = ProblemBuilder.newBuilder(parser)
+                .withKeyword(keyword.name())
                 .withMessage("instance.problem.additionalProperties")
                 .withParameter("name", keyName)
                 .build();

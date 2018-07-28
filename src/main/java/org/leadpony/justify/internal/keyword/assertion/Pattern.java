@@ -23,7 +23,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
  * Assertion specified with "pattern" validation keyword.
@@ -54,7 +53,7 @@ class Pattern extends AbstractStringAssertion {
         if (m.find()) {
             return Result.TRUE;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = newProblemBuilder(parser)
                     .withMessage("instance.problem.pattern")
                     .withParameter("pattern", pattern.toString())
                     .withParameter("context", context.lowerName())

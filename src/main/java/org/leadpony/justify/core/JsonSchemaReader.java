@@ -43,7 +43,7 @@ public interface JsonSchemaReader extends Closeable {
      * Returns a JSON schema that is represented in the input source. 
      * This method needs to be called only once for a reader instance.
      * 
-     * @return the JSON schema.
+     * @return the JSON schema, never be {@code null}.
      * @throws JsonException if an I/O error occurs while reading.
      * @throws JsonValidatingException if the reader found problems during validation of the schema.
      * @throws IllegalStateException if read or close method is already called.
