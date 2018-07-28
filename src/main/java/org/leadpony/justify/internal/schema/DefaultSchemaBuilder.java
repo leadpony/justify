@@ -118,12 +118,18 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withEnum(JsonValue... values) {
         Objects.requireNonNull(values, "values must not be null.");
+        if (values.length == 0) {
+            throw new IllegalArgumentException("values must not be empty.");
+        }
         return withEnum(Sets.asSet(values));
     }
     
     @Override
     public JsonSchemaBuilder withEnum(Set<JsonValue> values) {
         Objects.requireNonNull(values, "values must not be null.");
+        if (values.isEmpty()) {
+            throw new IllegalArgumentException("values must not be empty.");
+        }
         addKeyword(Assertions.enum_(values));
         return builderNonempty();
     }

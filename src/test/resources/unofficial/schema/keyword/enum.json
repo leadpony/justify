@@ -15,6 +15,11 @@
         "valid": false
     },
     {
+        "description": "empty array",
+        "schema": { "enum": [] },
+        "valid": false
+    },
+    {
         "description": "elements are not unique",
         "schema": { "enum": ["short", "short"] },
         "valid": false

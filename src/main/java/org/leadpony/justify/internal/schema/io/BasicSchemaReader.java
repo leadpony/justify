@@ -352,7 +352,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
             while ((event = parser.next()) != Event.END_ARRAY) {
                 values.add(parser.getValue());
             }
-            builder.withEnum(values);
+            if (!values.isEmpty()) {
+                builder.withEnum(values);
+            }
         } else {
             skipValue(event);
         }
