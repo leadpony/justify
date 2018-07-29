@@ -1,0 +1,58 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { 
+            "if": false,
+            "else": {}
+        },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { 
+            "if": false,
+            "else": true
+        },
+        "valid": true
+    },
+    {
+        "description": "value is false",
+        "schema": { 
+            "if": false,
+            "else": false
+        },
+        "valid": true
+    },
+    {
+        "description": "value is an array",
+        "schema": { 
+            "if": false,
+            "else": [] 
+        },
+        "valid": false
+    },
+    {
+        "description": "value is a string",
+        "schema": { 
+            "if": false,
+            "else": "foo" 
+        },
+        "valid": false
+    },
+    {
+        "description": "value is a number",
+        "schema": { 
+            "if": false,
+            "else": 42 
+        },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { 
+            "if": false,
+            "else": null 
+        },
+        "valid": false
+    }
+]

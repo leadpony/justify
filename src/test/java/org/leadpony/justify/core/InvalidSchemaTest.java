@@ -47,6 +47,34 @@ public class InvalidSchemaTest {
             "/unofficial/schema/keyword/exclusiveMaximum.json",
             "/unofficial/schema/keyword/minimum.json",
             "/unofficial/schema/keyword/exclusiveMinimum.json",
+            "/unofficial/schema/keyword/maxLength.json",
+            "/unofficial/schema/keyword/minLength.json",
+            "/unofficial/schema/keyword/pattern.json",
+            "/unofficial/schema/keyword/items.json",
+            "/unofficial/schema/keyword/additionalItems.json",
+            "/unofficial/schema/keyword/maxItems.json",
+            "/unofficial/schema/keyword/minItems.json",
+            "/unofficial/schema/keyword/uniqueItems.json",
+            "/unofficial/schema/keyword/contains.json",
+            "/unofficial/schema/keyword/maxProperties.json",
+            "/unofficial/schema/keyword/minProperties.json",
+            "/unofficial/schema/keyword/required.json",
+            "/unofficial/schema/keyword/properties.json",
+            "/unofficial/schema/keyword/patternProperties.json",
+            "/unofficial/schema/keyword/additionalProperties.json",
+            "/unofficial/schema/keyword/dependencies.json",
+            "/unofficial/schema/keyword/propertyNames.json",
+            "/unofficial/schema/keyword/if.json",
+            "/unofficial/schema/keyword/then.json",
+            "/unofficial/schema/keyword/else.json",
+            "/unofficial/schema/keyword/allOf.json",
+            "/unofficial/schema/keyword/anyOf.json",
+            "/unofficial/schema/keyword/oneOf.json",
+            "/unofficial/schema/keyword/not.json",
+            "/unofficial/schema/keyword/definitions.json",
+            "/unofficial/schema/keyword/title.json",
+            "/unofficial/schema/keyword/description.json",
+            "/unofficial/schema/keyword/default.json",
         };
     
     public static Stream<Arguments> fixtureProvider() {
@@ -62,9 +90,9 @@ public class InvalidSchemaTest {
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
         try {
             reader.read();
-            assertThat(fixture.getSchemaValidity()).isTrue();
+            assertThat(true).isEqualTo(fixture.getSchemaValidity());
         } catch (JsonValidatingException e) {
-            assertThat(fixture.getSchemaValidity()).isFalse();
+            assertThat(false).isEqualTo(fixture.getSchemaValidity());
             printProblems(fixture, e.getProblems());
         }
     }

@@ -1,0 +1,32 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { "propertyNames": {} },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "propertyNames": true },
+        "valid": true
+    },
+    {
+        "description": "value is false",
+        "schema": { "propertyNames": false },
+        "valid": true
+    },
+    {
+        "description": "value is an array",
+        "schema": { "propertyNames": [] },
+        "valid": false
+    },
+    {
+        "description": "value is an integer",
+        "schema": { "propertyNames": 42},
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "propertyNames": null },
+        "valid": false
+    }
+]

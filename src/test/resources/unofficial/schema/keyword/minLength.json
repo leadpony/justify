@@ -1,0 +1,27 @@
+[
+    {
+        "description": "value is integer",
+        "schema": { "minLength": 3 },
+        "valid": true
+    },
+    {
+        "description": "value is 0",
+        "schema": { "minLength": 0 },
+        "valid": true
+    },
+    {
+        "description": "value is number",
+        "schema": { "minLength": 3.0 },
+        "valid": false
+    },
+    {
+        "description": "value is negative",
+        "schema": { "minLength": -1 },
+        "valid": false
+    },
+    {
+        "description": "value is string",
+        "schema": { "minLength": "foo" },
+        "valid": false
+    }
+]

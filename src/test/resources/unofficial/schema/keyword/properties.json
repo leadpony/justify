@@ -1,0 +1,46 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { 
+            "properties": {
+                "foo": {},
+                "bar": true
+            } 
+        },
+        "valid": true
+    },
+    {
+        "description": "value is an empty object",
+        "schema": { "properties": {} },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "properties": true },
+        "valid": false
+    },
+    {
+        "description": "value is false",
+        "schema": { "properties": false },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "properties": null },
+        "valid": false
+    },
+    {
+        "description": "value is an array",
+        "schema": { "properties": [] },
+        "valid": false
+    },
+    {
+        "description": "member value is a string",
+        "schema": { 
+            "properties": {
+                "foo": "bar"
+            } 
+        },
+        "valid": false
+    }
+]

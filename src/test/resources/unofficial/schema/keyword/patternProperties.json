@@ -1,0 +1,47 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { 
+            "patternProperties": {
+                "^a+$": {},
+                "^b+$": true,
+                "^c+$": false
+            } 
+        },
+        "valid": true
+    },
+    {
+        "description": "value is an empty object",
+        "schema": { "patternProperties": {} },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "patternProperties": true },
+        "valid": false
+    },
+    {
+        "description": "value is false",
+        "schema": { "patternProperties": false },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "patternProperties": null },
+        "valid": false
+    },
+    {
+        "description": "value is an array",
+        "schema": { "patternProperties": [] },
+        "valid": false
+    },
+    {
+        "description": "member value is a string",
+        "schema": { 
+            "patternProperties": {
+                "^a+$": "bar"
+            } 
+        },
+        "valid": false
+    }
+]

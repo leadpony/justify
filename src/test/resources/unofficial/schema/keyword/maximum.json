@@ -1,11 +1,11 @@
 [
     {
-        "description": "value is integer",
+        "description": "value is an integer",
         "schema": { "maximum": 3 },
         "valid": true
     },
     {
-        "description": "value is number",
+        "description": "value is a number",
         "schema": { "maximum": 2.5 },
         "valid": true
     },
@@ -20,8 +20,8 @@
         "valid": true
     },
     {
-        "description": "value is string",
-        "schema": { "maximum": "123" },
+        "description": "value is a string",
+        "schema": { "maximum": "foo" },
         "valid": false
     }
 ]

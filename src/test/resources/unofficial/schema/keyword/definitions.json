@@ -1,0 +1,51 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { 
+            "definitions": {
+                "foo": {},
+                "bar": true,
+                "baz": false
+            }
+        },
+        "valid": true
+    },
+    {
+        "description": "value is an empty object",
+        "schema": { "definitions": {} },
+        "valid": true
+    },
+    {
+        "description": "value is a string",
+        "schema": { "definitions": "foo" },
+        "valid": false
+    },
+    {
+        "description": "value is a number",
+        "schema": { "definitions": 42 },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "definitions": null },
+        "valid": false
+    },
+    {
+        "description": "member is a string",
+        "schema": { 
+            "definitions": {
+                "foo": "bar"
+            }
+        },
+        "valid": false
+    },
+    {
+        "description": "member is a number",
+        "schema": { 
+            "definitions": {
+                "foo": 42
+            }
+        },
+        "valid": false
+    }
+]

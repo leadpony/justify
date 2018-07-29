@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.PatternSyntaxException;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
@@ -413,7 +414,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMaxLength(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMaxLength(parser.getInt());
+            int bound = parser.getInt();
+            if (bound >= 0) {
+                builder.withMaxLength(bound);
+            }
         } else {
             skipValue(event);
         }
@@ -422,7 +426,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMinLength(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMinLength(parser.getInt());
+            int bound = parser.getInt();
+            if (bound >= 0) {
+                builder.withMinLength(bound);
+            }
         } else {
             skipValue(event);
         }
@@ -431,7 +438,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addPattern(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
-            builder.withPattern(parser.getString());
+            try {
+                builder.withPattern(parser.getString());
+            } catch (PatternSyntaxException e) {
+            }
         } else {
             skipValue(event);
         }
@@ -440,7 +450,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            builder.withItems(arrayOfSubschemas());
+            List<JsonSchema> subschemas = arrayOfSubschemas();
+            if (!subschemas.isEmpty()) {
+                builder.withItems(subschemas);
+            }
         } else if (canStartSchema(event)) {
             builder.withItem(subschema(event));
         } else {
@@ -502,7 +515,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMaxContains(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMaxContains(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMaxContains(value);
+            }
         } else {
             skipValue(event);
         }
@@ -511,7 +527,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMinContains(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMinContains(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMinContains(value);
+            }
         } else {
             skipValue(event);
         }
@@ -520,7 +539,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMaxProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMaxProperties(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMaxProperties(value);
+            }
         } else {
             skipValue(event);
         }
@@ -529,7 +551,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMinProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMinProperties(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMinProperties(value);
+            }
         } else {
             skipValue(event);
         }
@@ -650,7 +675,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addAllOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            builder.withAllOf(arrayOfSubschemas());
+            List<JsonSchema> subschemas = arrayOfSubschemas();
+            if (!subschemas.isEmpty()) {
+                builder.withAllOf(subschemas);
+            }
         } else {
             skipValue(event);
         }
@@ -659,7 +687,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addAnyOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            builder.withAnyOf(arrayOfSubschemas());
+            List<JsonSchema> subschemas = arrayOfSubschemas();
+            if (!subschemas.isEmpty()) {
+                builder.withAnyOf(subschemas);
+            }
         } else {
             skipValue(event);
         }
@@ -668,7 +699,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addOneOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            builder.withOneOf(arrayOfSubschemas());
+            List<JsonSchema> subschemas = arrayOfSubschemas();
+            if (!subschemas.isEmpty()) {
+                builder.withOneOf(subschemas);
+            }
         } else {
             skipValue(event);
         }

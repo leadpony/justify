@@ -1,0 +1,17 @@
+[
+    {
+        "description": "value is a string",
+        "schema": { "pattern": "^\\W+$" },
+        "valid": true
+    },
+    {
+        "description": "value is an empty string",
+        "schema": { "pattern": "" },
+        "valid": true
+    },
+    {
+        "description": "value is a number",
+        "schema": { "pattern": 123 },
+        "valid": false
+    }
+]

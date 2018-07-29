@@ -1,0 +1,42 @@
+[
+    {
+        "description": "value is an array of a single schema",
+        "schema": { "anyOf": [{}] },
+        "valid": true
+    },
+    {
+        "description": "value is an array of multiple schemas",
+        "schema": { "anyOf": [{}, true, false] },
+        "valid": true
+    },
+    {
+        "description": "value is an object",
+        "schema": { "anyOf": {} },
+        "valid": false
+    },
+    {
+        "description": "value is a string",
+        "schema": { "anyOf": "foo" },
+        "valid": false
+    },
+    {
+        "description": "value is a number",
+        "schema": { "anyOf": 42 },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "anyOf": null },
+        "valid": false
+    },
+    {
+        "description": "array element is not a schema",
+        "schema": { "anyOf": ["foo"] },
+        "valid": false
+    },
+    {
+        "description": "array is empty",
+        "schema": { "anyOf": [] },
+        "valid": false
+    }
+]

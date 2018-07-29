@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonEmpty;
+import static org.leadpony.justify.internal.base.Arguments.requireNonNegative;
+
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
@@ -118,18 +121,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withEnum(JsonValue... values) {
         Objects.requireNonNull(values, "values must not be null.");
-        if (values.length == 0) {
-            throw new IllegalArgumentException("values must not be empty.");
-        }
+        requireNonEmpty(values, "values");
         return withEnum(Sets.asSet(values));
     }
     
     @Override
     public JsonSchemaBuilder withEnum(Set<JsonValue> values) {
         Objects.requireNonNull(values, "values must not be null.");
-        if (values.isEmpty()) {
-            throw new IllegalArgumentException("values must not be empty.");
-        }
+        requireNonEmpty(values, "values");
         addKeyword(Assertions.enum_(values));
         return builderNonempty();
     }
@@ -137,18 +136,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withType(InstanceType... types) {
         Objects.requireNonNull(types, "types must not be null.");
-        if (types.length == 0) {
-            throw new IllegalArgumentException("types must not be empty.");
-        }
+        requireNonEmpty(types, "types");
         return withType(Sets.asSet(types));
     }
     
     @Override
     public JsonSchemaBuilder withType(Set<InstanceType> types) {
         Objects.requireNonNull(types, "types must not be null.");
-        if (types.isEmpty()) {
-            throw new IllegalArgumentException("types must not be empty.");
-        }
+        requireNonEmpty(types, "types");
         addKeyword(Assertions.type(types));
         return builderNonempty();
     }
@@ -156,12 +151,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withMaxProperties(int bound) {
         addKeyword(Assertions.maxProperties(bound));
+        requireNonNegative(bound, "bound");
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMinProperties(int bound) {
         addKeyword(Assertions.minProperties(bound));
+        requireNonNegative(bound, "bound");
         return builderNonempty();
     }
 
@@ -215,12 +212,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     
     @Override
     public JsonSchemaBuilder withMaxLength(int bound) {
+        requireNonNegative(bound, "bound");
         addKeyword(Assertions.maxLength(bound));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMinLength(int bound) {
+        requireNonNegative(bound, "bound");
         addKeyword(Assertions.minLength(bound));
         return builderNonempty();
     }
@@ -245,6 +244,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.items(subschemas));
         return builderWithSubschema();
     }
@@ -283,12 +283,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     
     @Override
     public JsonSchemaBuilder withMaxContains(int value) {
+        requireNonNegative(value, "value");
         addKeyword(Combiners.maxContains(value));
         return builderNonempty();
     }
 
     @Override
     public JsonSchemaBuilder withMinContains(int value) {
+        requireNonNegative(value, "value");
         addKeyword(Combiners.minContains(value));
         return builderNonempty();
     }
@@ -347,12 +349,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withAllOf(JsonSchema... subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         return withAllOf(Arrays.asList(subschemas));
     }
 
     @Override
     public JsonSchemaBuilder withAllOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.allOf(subschemas));
         return builderWithSubschema();
     }
@@ -360,12 +364,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withAnyOf(JsonSchema... subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         return withAnyOf(Arrays.asList(subschemas));
     }
 
     @Override
     public JsonSchemaBuilder withAnyOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.anyOf(subschemas));
         return builderWithSubschema();
     }
@@ -373,12 +379,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withOneOf(JsonSchema... subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         return withOneOf(Arrays.asList(subschemas));
     }
 
     @Override
     public JsonSchemaBuilder withOneOf(Collection<JsonSchema> subschemas) {
         Objects.requireNonNull(subschemas, "subschemas must not be null.");
+        requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.oneOf(subschemas));
         return builderWithSubschema();
     }

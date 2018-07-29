@@ -1,0 +1,37 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { "contains": {} },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "contains": true },
+        "valid": true
+    },
+    {
+        "description": "value is false",
+        "schema": { "contains": false },
+        "valid": true
+    },
+    {
+        "description": "value is an array",
+        "schema": { "contains": [{}, true, false] },
+        "valid": false
+    },
+    {
+        "description": "value is a string",
+        "schema": { "contains": "foo" },
+        "valid": false
+    },
+    {
+        "description": "value is a number",
+        "schema": { "contains": 42 },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "contains": null },
+        "valid": false
+    }
+]

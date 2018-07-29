@@ -1,0 +1,37 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { "not": {} },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "not": true },
+        "valid": true
+    },
+    {
+        "description": "value is false",
+        "schema": { "not": false },
+        "valid": true
+    },
+    {
+        "description": "value is an array",
+        "schema": { "not": [{}, true, false] },
+        "valid": false
+    },
+    {
+        "description": "value is a string",
+        "schema": { "not": "foo" },
+        "valid": false
+    },
+    {
+        "description": "value is a number",
+        "schema": { "not": 42 },
+        "valid": false
+    },
+    {
+        "description": "value is null",
+        "schema": { "not": null },
+        "valid": false
+    }
+]

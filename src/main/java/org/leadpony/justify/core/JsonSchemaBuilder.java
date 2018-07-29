@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 
 import javax.json.JsonValue;
 
@@ -186,6 +187,14 @@ public interface JsonSchemaBuilder {
 
     JsonSchemaBuilder withMinLength(int bound);
 
+    /**
+     * Specifies the pattern of string instance as a regular expression.
+     * 
+     * @param pattern the regular expression which will be tested against string instances.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code pattern} was {@code null}.
+     * @throws PatternSyntaxException if the specified {@code pattern} was not a valid regular expression.
+     */
     JsonSchemaBuilder withPattern(String pattern);
     
     /* Validation Keywords for Arrays */

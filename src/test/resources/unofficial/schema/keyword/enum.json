@@ -1,26 +1,26 @@
 [
     {
-        "description": "value is array",
+        "description": "value is an array",
         "schema": { "enum": ["short", "tall"] },
         "valid": true
     },
     {
-        "description": "value is object",
+        "description": "value is an object",
         "schema": { "enum": {} },
         "valid": false
     },
     {
-        "description": "value is string",
+        "description": "value is a string",
         "schema": { "enum": "abc" },
         "valid": false
     },
     {
-        "description": "empty array",
+        "description": "value is an empty array",
         "schema": { "enum": [] },
         "valid": false
     },
     {
-        "description": "elements are not unique",
+        "description": "array elements are not unique",
         "schema": { "enum": ["short", "short"] },
         "valid": false
     }

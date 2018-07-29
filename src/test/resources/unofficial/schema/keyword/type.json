@@ -1,16 +1,16 @@
 [
     {
-        "description": "value is string",
+        "description": "value is a string",
         "schema": { "type": "number" },
         "valid": true
     },
     {
-        "description": "value is array of string",
+        "description": "value is an array of string",
         "schema": { "type": ["number", "string"] },
         "valid": true
     },
     {
-        "description": "value is numeric",
+        "description": "value is a number",
         "schema": { "type": 42 },
         "valid": false
     },
@@ -30,12 +30,12 @@
         "valid": false
     },
     {
-        "description": "value is object",
+        "description": "value is an object",
         "schema": { "type": {} },
         "valid": false
     },
     {
-        "description": "array elements are not string",
+        "description": "array element is not a string",
         "schema": { "type": [1, true, false, null] },
         "valid": false
     },
@@ -55,7 +55,7 @@
         "valid": false
     },
     {
-        "description": "value is empty array",
+        "description": "value is an empty array",
         "schema": { "type": [] },
         "valid": false
     }

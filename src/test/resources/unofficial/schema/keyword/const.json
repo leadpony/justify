@@ -10,12 +10,12 @@
         "valid": true
     },
     {
-        "description": "value is empty object",
+        "description": "value is an empty object",
         "schema": { "const": {} },
         "valid": true
     },
     {
-        "description": "value is empty array",
+        "description": "value is an empty array",
         "schema": { "const": [] },
         "valid": true
     }

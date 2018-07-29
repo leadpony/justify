@@ -1,11 +1,11 @@
 [
     {
-        "description": "value is integer",
+        "description": "value is an integer",
         "schema": { "exclusiveMinimum": 3 },
         "valid": true
     },
     {
-        "description": "value is number",
+        "description": "value is a number",
         "schema": { "exclusiveMinimum": 2.5 },
         "valid": true
     },
@@ -20,7 +20,7 @@
         "valid": true
     },
     {
-        "description": "value is string",
+        "description": "value is a string",
         "schema": { "exclusiveMinimum": "123" },
         "valid": false
     }

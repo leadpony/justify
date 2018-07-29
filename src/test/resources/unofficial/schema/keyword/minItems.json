@@ -1,27 +1,27 @@
 [
     {
         "description": "value is an integer",
-        "schema": { "multipleOf": 3 },
-        "valid": true
-    },
-    {
-        "description": "value is a number",
-        "schema": { "multipleOf": 2.5 },
+        "schema": { "minItems": 3 },
         "valid": true
     },
     {
         "description": "value is 0",
-        "schema": { "multipleOf": 0 },
+        "schema": { "minItems": 0 },
+        "valid": true
+    },
+    {
+        "description": "value is a number",
+        "schema": { "minItems": 3.0 },
         "valid": false
     },
     {
         "description": "value is negative",
-        "schema": { "multipleOf": -1 },
+        "schema": { "minItems": -1 },
         "valid": false
     },
     {
         "description": "value is a string",
-        "schema": { "multipleOf": "foo" },
+        "schema": { "minItems": "foo" },
         "valid": false
     }
 ]

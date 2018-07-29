@@ -1,6 +1,6 @@
 [
     {
-        "description": "schema is empty object",
+        "description": "schema is an empty object",
         "schema": {},
         "valid": true
     },
@@ -15,7 +15,7 @@
         "valid": true
     },
     {
-        "description": "schema is string",
+        "description": "schema is a string",
         "schema": "foo",
         "valid": false
     },
@@ -25,12 +25,12 @@
         "valid": false
     },
     {
-        "description": "schema is number",
+        "description": "schema is a number",
         "schema": 42,
         "valid": false
     },
     {
-        "description": "schema is array",
+        "description": "schema is an array",
         "schema": [],
         "valid": false
     }

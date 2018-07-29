@@ -1,11 +1,11 @@
 [
     {
-        "description": "value is integer",
+        "description": "value is an integer",
         "schema": { "minimum": 3 },
         "valid": true
     },
     {
-        "description": "value is number",
+        "description": "value is a number",
         "schema": { "minimum": 2.5 },
         "valid": true
     },
@@ -20,8 +20,8 @@
         "valid": true
     },
     {
-        "description": "value is string",
-        "schema": { "minimum": "123" },
+        "description": "value is a string",
+        "schema": { "minimum": "foo" },
         "valid": false
     }
 ]

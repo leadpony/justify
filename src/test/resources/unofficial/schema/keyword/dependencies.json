@@ -1,0 +1,82 @@
+[
+    {
+        "description": "value is an object",
+        "schema": { 
+            "dependencies": {
+                "foo": {},
+                "bar": true,
+                "baz": ["foo", "bar"]
+            }
+        },
+        "valid": true
+    },
+    {
+        "description": "value is an empty object",
+        "schema": { "dependencies": {} },
+        "valid": true
+    },
+    {
+        "description": "member value is an empty array",
+        "schema": { 
+            "dependencies": {
+                "foo": []
+            } 
+        },
+        "valid": true
+    },
+    {
+        "description": "member value is a string",
+        "schema": { 
+            "dependencies": {
+                "foo": "bar"
+            } 
+        },
+        "valid": false
+    },
+    {
+        "description": "member value is an integer",
+        "schema": { 
+            "dependencies": {
+                "foo": 42
+            } 
+        },
+        "valid": false
+    },
+    {
+        "description": "member value is null",
+        "schema": { 
+            "dependencies": {
+                "foo": null
+            } 
+        },
+        "valid": false
+    },
+    {
+        "description": "array element is not a string",
+        "schema": { 
+            "dependencies": {
+                "foo": [{}, true, false]
+            } 
+        },
+        "valid": false
+    },
+    {
+        "description": "array elements are not unique",
+        "schema": { 
+            "dependencies": {
+                "foo": ["bar", "bar"]
+            } 
+        },
+        "valid": false
+    },
+    {
+        "description": "value is a string",
+        "schema": { "dependencies": "foo" },
+        "valid": false
+    },
+    {
+        "description": "value is an array",
+        "schema": { "dependencies": [] },
+        "valid": false
+    }
+]

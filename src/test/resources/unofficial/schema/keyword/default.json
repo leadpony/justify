@@ -1,0 +1,27 @@
+[
+    {
+        "description": "value is a number",
+        "schema": { "default": 42 },
+        "valid": true
+    },
+    {
+        "description": "value is a string",
+        "schema": { "default": "foo" },
+        "valid": true
+    },
+    {
+        "description": "value is true",
+        "schema": { "default": true },
+        "valid": true
+    },
+    {
+        "description": "value is false",
+        "schema": { "default": false },
+        "valid": true
+    },
+    {
+        "description": "value is null",
+        "schema": { "default": null },
+        "valid": true
+    }
+]

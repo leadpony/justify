@@ -1,0 +1,12 @@
+[
+    {
+        "description": "value is a string",
+        "schema": { "description": "foo" },
+        "valid": true
+    },
+    {
+        "description": "value is a number",
+        "schema": { "description": 42 },
+        "valid": false
+    }
+]
