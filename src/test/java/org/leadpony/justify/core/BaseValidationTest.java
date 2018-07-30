@@ -45,7 +45,7 @@ public abstract class BaseValidationTest {
     private static JsonSchema lastSchema;
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("fixtureProvider")
+    @MethodSource("provideFixtures")
     public void testValidationResult(String displayName, ValidationFixture fixture) {
         List<Problem> problems = new ArrayList<>();
         JsonParser parser = createValidatingParser(fixture, Jsonv.createProblemCollector(problems));

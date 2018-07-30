@@ -17,14 +17,12 @@
 package org.leadpony.justify.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,9 +31,9 @@ import org.leadpony.justify.Loggers;
 /**
  * @author leadpony
  */
-public class InvalidSchemaTest {
+public class SchemaValidationTest {
 
-    private static final Logger log = Loggers.getLogger(InvalidSchemaTest.class);
+    private static final Logger log = Loggers.getLogger(SchemaValidationTest.class);
     
     private static final String[] TESTS = {
             "/unofficial/schema/schema.json",
@@ -77,14 +75,14 @@ public class InvalidSchemaTest {
             "/unofficial/schema/keyword/default.json",
         };
     
-    public static Stream<Arguments> fixtureProvider() {
+    public static Stream<Arguments> provideFixtures() {
         return Stream.of(TESTS)
                 .flatMap(SchemaFixture::newStream)
                 .map(Fixture::toArguments);
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("fixtureProvider")
+    @MethodSource("provideFixtures")
     public void testInvalidSchema(String displayName, SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
@@ -97,18 +95,6 @@ public class InvalidSchemaTest {
         }
     }
     
-    @Test
-    public void testBlankSchema() {
-        String schemaJson = "";
-        JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(schemaJson));
-        Throwable thrown = catchThrowable(()->reader.read());
-        assertThat(thrown).isInstanceOf(JsonValidatingException.class);
-        JsonValidatingException e = (JsonValidatingException)thrown;
-        List<Problem> problems = e.getProblems();
-        assertThat(problems).hasSize(1);
-        Jsonv.createProblemPrinter(log::info).accept(problems);
-    }
-
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());

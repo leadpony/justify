@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
  * 
  * @author leadpony
  */
-public class ValidationTest extends BaseValidationTest {
+public class InstanceValidationTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
             "/official/tests/draft7/additionalItems.json",
@@ -67,7 +67,7 @@ public class ValidationTest extends BaseValidationTest {
             "/official/tests/draft8/minContains.json"
     };
     
-    public static Stream<Arguments> fixtureProvider() {
+    public static Stream<Arguments> provideFixtures() {
         return fixtures(TESTS);
     }
 }

@@ -118,10 +118,11 @@ public class BasicSchemaReader implements JsonSchemaReader {
     protected void addProblem(Problem problem) {
     }
     
+    protected JsonLocation getLastCharLocation() {
+        return SimpleJsonLocation.before(parser.getLocation());
+    }
+    
     private JsonSchema rootSchema() {
-        if (!parser.hasNext()) {
-            return null;
-        }
         Event event = parser.next();
         switch (event) {
         case VALUE_TRUE:

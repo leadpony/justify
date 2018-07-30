@@ -44,7 +44,7 @@ public class RemoteSchemaTest extends BaseValidationTest {
     
     private static Server server;
   
-    public static Stream<Arguments> fixtureProvider() {
+    public static Stream<Arguments> provideFixtures() {
         return fixtures(TESTS);
     }
     

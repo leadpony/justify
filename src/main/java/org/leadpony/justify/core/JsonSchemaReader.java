@@ -17,8 +17,10 @@
 package org.leadpony.justify.core;
 
 import java.io.Closeable;
+import java.util.NoSuchElementException;
 
 import javax.json.JsonException;
+import javax.json.stream.JsonParsingException;
 
 /**
  * Reads a JSON schema from an input source. 
@@ -45,7 +47,9 @@ public interface JsonSchemaReader extends Closeable {
      * 
      * @return the JSON schema, never be {@code null}.
      * @throws JsonException if an I/O error occurs while reading.
-     * @throws JsonValidatingException if the reader found problems during validation of the schema.
+     * @throws JsonParsingException if the parser encounters invalid JSON while reading.
+     * @throws NoSuchElementException if the input is empty.
+     * @throws JsonValidatingException if the reader found any problems during validation of the schema.
      * @throws IllegalStateException if read or close method is already called.
      */
     JsonSchema read();
