@@ -37,8 +37,14 @@ public class SimpleJsonLocation implements JsonLocation {
     
     public static JsonLocation before(JsonLocation other) {
         long lineNumber = other.getLineNumber();
-        long columnNumber = other.getColumnNumber() - 1;
-        long streamOffset = other.getStreamOffset() - 1;
+        long columnNumber = other.getColumnNumber();
+        long streamOffset = other.getStreamOffset();
+        if (columnNumber > 1) {
+            --columnNumber;
+        }
+        if (streamOffset > 0) {
+            --streamOffset;
+        }
         return new SimpleJsonLocation(lineNumber, columnNumber, streamOffset);
     }
 

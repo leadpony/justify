@@ -40,6 +40,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
+import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.SimpleJsonLocation;
@@ -70,6 +71,8 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
 
     private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
+ 
+    private List<Problem> problems = new ArrayList<>();
     
     /**
      * Constructs this schema reader.
@@ -87,9 +90,13 @@ public class BasicSchemaReader implements JsonSchemaReader {
         if (alreadyRead || alreadyClosed) {
             throw new IllegalStateException("already read");
         }
-        JsonSchema rootSchema = rootSchema();
-        postprocess(rootSchema);
+        JsonSchema rootSchema = null;
+        if (!checkEmptyInput()) {
+            rootSchema = rootSchema();
+            postprocess(rootSchema);
+        }
         this.alreadyRead = true;
+        dispatchProblems();
         return rootSchema;
     }
     
@@ -108,16 +115,6 @@ public class BasicSchemaReader implements JsonSchemaReader {
         return this;
     }
     
-    protected void postprocess(JsonSchema rootSchema) {
-        if (rootSchema != null) {
-            makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
-            resolveAllReferences();
-        }
-    }
-    
-    protected void addProblem(Problem problem) {
-    }
-    
     protected JsonLocation getLastCharLocation() {
         return SimpleJsonLocation.before(parser.getLocation());
     }
@@ -132,6 +129,27 @@ public class BasicSchemaReader implements JsonSchemaReader {
             return objectSchema(true);
         default:
             return null;
+        }
+    }
+
+    /**
+     * Checks if the input is empty or not.
+     * <p>
+     * {@link JsonParser#hasNext()} in both RI and Apache Johnzon returns {@code false}
+     * if input is empty.
+     * </p>
+     * 
+     * @return {@code true} is the input is empty, {@code false} otherwise.
+     */
+    private boolean checkEmptyInput() {
+        if (parser.hasNext()) {
+            return false;
+        } else {
+            Problem p = ProblemBuilder.newBuilder(parser)
+                    .withMessage("schema.problem.empty")
+                    .build();
+            addProblem(p);
+            return true;
         }
     }
     
@@ -849,6 +867,21 @@ public class BasicSchemaReader implements JsonSchemaReader {
             break;
         }
     }
+   
+    private void addProblem(Problem problem) {
+        this.problems.add(problem);
+    }
+    
+    protected void addProblems(List<Problem> problems) {
+        this.problems.addAll(problems);
+    }
+    
+    private void postprocess(JsonSchema rootSchema) {
+        if (rootSchema != null) {
+            makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
+            resolveAllReferences();
+        }
+    }
     
     private void makeIdentifiersAbsoluteFromRoot(JsonSchema root, URI baseURI) {
         if (!root.hasId()) {
@@ -919,5 +952,13 @@ public class BasicSchemaReader implements JsonSchemaReader {
             }
         }
         return null;
+    }
+    
+    private void dispatchProblems() {
+        if (!problems.isEmpty()) {
+            throw new JsonValidatingException(
+                    this.problems, 
+                    getLastCharLocation());
+        }
     }
 }

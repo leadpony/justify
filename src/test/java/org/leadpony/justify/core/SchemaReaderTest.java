@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
-import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParsingException;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
@@ -37,20 +37,26 @@ public class SchemaReaderTest {
   
     private static final Logger log = Loggers.getLogger(SchemaReaderTest.class);
     
-    public static Stream<String> provideSchemas() {
+    public static Stream<Arguments> provideSchemas() {
         return Stream.of(
-                "",
-                "{\"type\":"
+                Arguments.of("", JsonValidatingException.class),
+                Arguments.of(" ", JsonValidatingException.class),
+                Arguments.of(" {}", null),
+                Arguments.of("{\"type\":", JsonParsingException.class),
+                Arguments.of("{\"type\":\"number\"},", null)
                 );
     }
 
     @ParameterizedTest(name = "{index}")
     @MethodSource("provideSchemas")
-    public void testInvalidSchema(String schemaJson) {
+    public void testInvalidSchema(String schemaJson, Class<?> exceptionClass) {
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(schemaJson));
         Throwable thrown = catchThrowable(()->reader.read());
-        assertThat(thrown)
-            .isInstanceOfAny(NoSuchElementException.class, JsonParsingException.class);
-        log.info(thrown.toString());
+        if (exceptionClass != null) {
+            assertThat(thrown).isInstanceOf(exceptionClass);
+            log.info(thrown.toString());
+        }  else {
+            assertThat(thrown).isNull();
+        }
     }
 }
