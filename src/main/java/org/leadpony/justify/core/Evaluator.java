@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.core;
 
+import java.util.function.Consumer;
+
 import javax.json.stream.JsonParser;
 
 /**
@@ -25,6 +27,7 @@ import javax.json.stream.JsonParser;
  * 
  * @author leadpony
  */
+@FunctionalInterface
 public interface Evaluator {
 
     /**
@@ -43,54 +46,14 @@ public interface Evaluator {
     };
     
     /**
-     * Reporter of problems found during the evaluation.
-     */
-    interface Reporter {
-        
-        /**
-         * Reports a problem found during the evaluation.
-         * 
-         * @param problem the problem to be reported, cannot be {@code null}.
-         * @throws NullPointerException if the specified {@code problem} was {@code null}.
-         */
-        void reportProblem(Problem problem);
-        
-        /**
-         * Reports an unknown problem found at the current parsing position.
-         * 
-         * @param parser the JSON parser which found the problem, cannot be {@code null}.
-         * @throws NullPointerException if the specified {@code parser} was {@code null}.
-         */
-        void reportUnknownProblem(JsonParser parser);
-    }
-    
-    /**
      * Evaluates a JSON schema against each instance location to which it applies.
      * 
-     * @param event the event triggered by JSON parser, cannot be {@code null}.
+     * @param event the event triggered by the JSON parser, cannot be {@code null}.
      * @param parser the JSON parser, cannot be {@code null}.
      * @param depth the depth where the event occurred.
      * @param reporter the reporter of the found problems, cannot be {@code null}.
-     * @return the result of the evaluation, never be {@code null}.
+     * @return the result of the evaluation, one defined in {@link Result}. 
+     *         This cannot be {@code null}.
      */
-    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Reporter reporter);
-
-    /**
-     * The evaluator which evaluates any JSON schema as true ("valid").
-     */
-    Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
-
-    /**
-     * The evaluator which evaluates any JSON schema as false ("invalid")
-     * and reports a problem.
-     */
-    Evaluator ALWAYS_FALSE = (event, parser, depth, reporter)->{
-            reporter.reportUnknownProblem(parser);
-            return Result.FALSE;
-        };
-    
-    /**
-     * The evaluator whose result should be ignored.
-     */
-    Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
+    Result evaluate(JsonParser.Event event, JsonParser parser, int depth, Consumer<Problem> reporter);
 }

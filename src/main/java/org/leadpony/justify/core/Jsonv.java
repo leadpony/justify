@@ -36,7 +36,7 @@ import javax.json.stream.JsonParserFactory;
 import org.leadpony.justify.core.spi.JsonValidationProvider;
 
 /**
- * Factory class for creating JSON validation objects.
+ * This is the facade class for creating JSON validation objects.
  * 
  * <p>
  * The following example shows how to read a JSON schema from a string:
@@ -44,6 +44,16 @@ import org.leadpony.justify.core.spi.JsonValidationProvider;
  * <pre><code>
  * StringReader reader = new StringReader("{\"type\": \"integer\"}");
  * JsonSchema schema = Jsonv.readSchema(reader);
+ * </code></pre>
+ * 
+ * <p>
+ * Alternatively, a JSON schema can be built programmatically 
+ * with {@link JsonSchemaBuilder}.
+ * </p>
+ * <pre><code>
+ * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
+ * JsonSchemaBuilder builder = factory.createBuilder();
+ * JsonSchema schema = builder.withType(InstanceType.INTEGER).build();
  * </code></pre>
  * 
  * <p>

@@ -19,14 +19,15 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
  * The type for combining subschemas.
  * 
  * @author leadpony
  */
-public interface Combiner extends Keyword {
+public abstract class Combiner extends AbstractKeyword {
 
     /**
      * {@inheritDoc}
@@ -34,7 +35,7 @@ public interface Combiner extends Keyword {
      * <p>Combiners can be evaluated.</p>
      */
     @Override
-    default boolean canEvaluate() {
+    public boolean canEvaluate() {
         return true;
     }
 
@@ -43,7 +44,11 @@ public interface Combiner extends Keyword {
      * 
      * <p>This method must be overridden.</p>
      */
-    default JsonSchema getSubschema(Iterator<String> jsonPointer) {
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         throw new UnsupportedOperationException();
+    }
+    
+    protected JsonSchema.EvaluatorFactory getEvaluatorFactory() {
+        return DefaultEvaluatorFactory.SINGLETON;
     }
 }

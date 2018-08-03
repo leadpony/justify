@@ -25,7 +25,7 @@ import javax.json.stream.JsonParsingException;
  * Reads a JSON schema from an input source. 
  * 
  * <p>
- * The following example shows how to read an JSON schema from a string: 
+ * The following example shows how to read a JSON schema from a string: 
  * </p>
  * <pre><code>
  * StringReader reader = new StringReader("{\"type\": \"integer\"}");
@@ -48,7 +48,7 @@ public interface JsonSchemaReader extends Closeable {
      * @throws JsonException if an I/O error occurs while reading.
      * @throws JsonParsingException if the parser encounters invalid JSON while reading.
      * @throws JsonValidatingException if the reader found any problems during validation of the schema.
-     * @throws IllegalStateException if read or close method is already called.
+     * @throws IllegalStateException if {@link #read()} or {@link #close()} method is already called.
      */
     JsonSchema read();
     
@@ -67,6 +67,7 @@ public interface JsonSchemaReader extends Closeable {
      * @param resolver the resolver of external JSON schemas.
      * @return this reader.
      * @throws NullPointerException if the specified {@code resolver} was {@code null}.
+     * @throws IllegalStateException if {@link #read()} or {@link #close()} method is already called.
      */
     JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver);
 }

@@ -18,17 +18,33 @@ package org.leadpony.justify.internal.keyword;
 
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * Skeletal implementation of {@link Keyword}.
  * 
  * @author leadpony
  */
-public abstract class AbstractKeyword implements Keyword {
+public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory {
+    
+    private JsonSchema schema;
 
-    protected ProblemBuilder newProblemBuilder(JsonParser parser) {
-        return ProblemBuilder.newBuilder(parser)
+    @Override
+    public JsonSchema getEnclosingSchema() {
+        return schema;
+    }
+
+    @Override
+    public void setEnclosingSchema(JsonSchema schema) {
+        this.schema = schema;
+    }
+    
+    @Override
+    public ProblemBuilder createProblemBuilder(JsonParser parser) {
+        return ProblemBuilderFactory.super.createProblemBuilder(parser)
+                .withSchema(schema)
                 .withKeyword(name());
     }
 }

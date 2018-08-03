@@ -16,11 +16,12 @@
 
 package org.leadpony.justify.internal.base;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -57,8 +58,8 @@ public class JsonParserDecorator implements JsonParser {
      * @param builderFactory the factory of builders to build JSON arrays and objects.
      */
     public JsonParserDecorator(JsonParser real, JsonBuilderFactory builderFactory) {
-        Objects.requireNonNull(real, "real must not be null.");
-        Objects.requireNonNull(builderFactory, "builderFactory must not be null.");
+        requireNonNull(real, "real");
+        requireNonNull(builderFactory, "builderFactory");
         this.real = real;
         this.builderFactory = builderFactory;
     }
@@ -284,7 +285,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super JsonValue> action) {
-            Objects.requireNonNull("action", "action must not be null.");
+            requireNonNull("action", "action");
             if (hasNext() && next() != Event.END_ARRAY) {
                 action.accept(getValue());
                 return true;
@@ -298,7 +299,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
-            Objects.requireNonNull("action", "action must not be null.");
+            requireNonNull("action", "action");
             if (!hasNext()) {
                 return false;
             }
@@ -332,7 +333,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super JsonValue> action) {
-            Objects.requireNonNull("action","action must not be null.");
+            requireNonNull("action","action");
             if (hasNext()) {
                 next();
                 action.accept(getValue());

@@ -15,9 +15,12 @@
  */
 package org.leadpony.justify.core;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -25,6 +28,25 @@ import javax.json.JsonValue;
 
 /**
  * JSON schema.
+ * 
+ * <p>
+ * A JSON schema can be read from {@link InputStream} or {@link Reader}.
+ * The following example shows how to read a JSON schema from a {@link StringReader}: 
+ * </p>
+ * <pre><code>
+ * StringReader reader = new StringReader("{\"type\": \"integer\"}");
+ * JsonSchema schema = Jsonv.readSchema(reader);
+ * </code></pre>
+ *
+ * <p>
+ * Alternatively, a JSON schema can be built programmatically 
+ * with {@link JsonSchemaBuilder}.
+ * </p>
+ * <pre><code>
+ * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
+ * JsonSchemaBuilder builder = factory.createBuilder();
+ * JsonSchema schema = builder.withType(InstanceType.INTEGER).build();
+ * </code></pre>
  * 
  * @author leadpony
  */
@@ -49,21 +71,30 @@ public interface JsonSchema {
     }
     
     /**
-     * Returns the schema URI of this schema, specified with "$schema" keyword.
+     * Returns the version identifier of this schema, specified with "$schema" keyword.
      * 
-     * @return the schema URI of this schema, or {@code null}.
+     * @return the version identifier of this schema, or {@code null}.
      */
-    default URI schemaURI() {
+    default URI schemaId() {
         return null;
+    }
+    
+    /**
+     * Checks if this schema is a boolean schema.
+     * 
+     * @return {@code true} if this schema is a boolean schema, {@code false} otherwise.
+     */
+    default boolean isBoolean() {
+        return false;
     }
     
     /**
      * Returns the all subschemas contained in this schema.
      * 
-     * @return the object to iterate all subschemas of this schema.
+     * @return the stream of subschemas contained in this schema.
      */
-    default Iterable<JsonSchema> getAllSubschemas() {
-        return Collections.emptyList();
+    default Stream<JsonSchema> subschemas() {
+        return Stream.empty();
     }
     
     /**
@@ -75,7 +106,7 @@ public interface JsonSchema {
      * @throws NullPointerException if {@code jsonPointer} is {@code null}.
      * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
      */
-    default JsonSchema getSubschema(String jsonPointer) {
+    default JsonSchema subschemaAt(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         return jsonPointer.isEmpty() ? this : null;
     }
@@ -84,10 +115,11 @@ public interface JsonSchema {
      * Creates an evaluator of this schema.
      * 
      * @param type the type of the instance to which this schema will be applied.
+     * @param factory the factory of basic evaluators.
      * @return the evaluator of this schema. It must not be {@code null}.
-     * @throws NullPointerException if {@code type} is {@code null}.
+     * @throws NullPointerException if the specified {@code type} or {@code factory} is {@code null}.
      */
-    Evaluator createEvaluator(InstanceType type);
+    Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory);
 
     /**
      * Returns the negation of this schema.
@@ -111,6 +143,29 @@ public interface JsonSchema {
      */
     @Override
     String toString();
+    
+    /**
+     * Factory for producing the predefined basic evaluators.
+     * 
+     * @author leadpony
+     */
+    public static interface EvaluatorFactory {
+
+        /**
+         * Returns the evaluator which evaluates any JSON schema as true ("valid").
+         * 
+         * @return the evaluator, never be {@code null}.
+         */
+        Evaluator alwaysTrue();
+        
+        /**
+         * Returns the evaluator which evaluates any JSON schema as false ("invalid").
+         * 
+         * @param schema the JSON schema to be evaluated, cannot be {@code null}.
+         * @return the evaluator, never be {@code null}.
+         */
+        Evaluator alwaysFalse(JsonSchema schema);
+    }
 
     /**
      * JSON Schema represented by an empty JSON object.
@@ -119,8 +174,8 @@ public interface JsonSchema {
     JsonSchema EMPTY = new JsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
+            return factory.alwaysTrue();
         }
 
         @Override
@@ -146,8 +201,13 @@ public interface JsonSchema {
     JsonSchema TRUE = new JsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+        public boolean isBoolean() {
+            return true;
+        }
+        
+        @Override
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
+            return factory.alwaysTrue();
         }
         
         @Override
@@ -173,8 +233,13 @@ public interface JsonSchema {
     JsonSchema FALSE = new JsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_FALSE;
+        public boolean isBoolean() {
+            return true;
+        }
+
+        @Override
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
+            return factory.alwaysFalse(this);
         }
 
         @Override

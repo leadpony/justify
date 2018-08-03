@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -53,17 +54,17 @@ class MultipleOf extends AbstractNumericAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter) {
+    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
         BigDecimal remainder = value.remainder(divisor);
         if (remainder.compareTo(BigDecimal.ZERO) == 0) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.multipleOf")
                     .withParameter("actual", value)
                     .withParameter("divisor", divisor)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

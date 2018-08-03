@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
@@ -61,17 +63,17 @@ class SingleType extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type == null || testType(type)) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.type.single")
                     .withParameter("actual", type)
                     .withParameter("expected", this.type)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }
@@ -98,16 +100,16 @@ class SingleType extends AbstractAssertion implements Evaluator {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             InstanceType type = ParserEvents.toInstanceType(event, parser);
             if (type == null || !testType(type)) {
                 return Result.TRUE; 
             } else {
-                Problem p = newProblemBuilder(parser)
+                Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.not.type.single")
                         .withParameter("expected", this.type)
                         .build();
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             }
         }

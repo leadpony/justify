@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -24,8 +26,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * Schema for redundant object properties.
@@ -35,21 +36,21 @@ import org.leadpony.justify.internal.keyword.Keyword;
 class RedundantPropertySchema implements JsonSchema, Evaluator {
     
     private final String keyName;
-    private final Keyword keyword;
+    private final ProblemBuilderFactory problemBuilderFactory;
 
     /**
      * Constructs this schema.
      * 
      * @param keyName the name of the property.
-     * @param keyword the keyword owning this schema.
+     * @param problemBuilderFactory the factory producing problem builders.
      */
-    RedundantPropertySchema(String keyName, Keyword keyword) {
+    RedundantPropertySchema(String keyName, ProblemBuilderFactory problemBuilderFactory) {
         this.keyName = keyName;
-        this.keyword = keyword;
+        this.problemBuilderFactory = problemBuilderFactory;
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
+    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory evaluatorFactory) {
         return this;
     }
 
@@ -64,13 +65,12 @@ class RedundantPropertySchema implements JsonSchema, Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-        Problem p = ProblemBuilder.newBuilder(parser)
-                .withKeyword(keyword.name())
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        Problem p = problemBuilderFactory.createProblemBuilder(parser)
                 .withMessage("instance.problem.additionalProperties")
                 .withParameter("name", keyName)
                 .build();
-        reporter.reportProblem(p);
+        reporter.accept(p);
         return Result.FALSE;
     }
 }

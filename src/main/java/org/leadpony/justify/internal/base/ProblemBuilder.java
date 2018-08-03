@@ -16,17 +16,18 @@
 
 package org.leadpony.justify.internal.base;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.json.stream.JsonLocation;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -37,38 +38,18 @@ import org.leadpony.justify.core.Problem;
 public class ProblemBuilder {
 
     private final JsonLocation location;
+    private JsonSchema schema;
     private String keyword;
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     private List<List<Problem>> childLists;
     
     /**
-     * Creates new instance of this builder.
-     * 
-     * @param parser the JSON parser, cannot be {@code null}.
-     * @return newly created instance of this type.
-     */
-    public static ProblemBuilder newBuilder(JsonParser parser) {
-        JsonLocation current = parser.getLocation();
-        return newBuilder(SimpleJsonLocation.before(current));
-    }
-
-    /**
-     * Creates new instance of this builder.
-     * 
-     * @param location the location where problem occurred, cannot be {@code null}.
-     * @return newly created instance of this type.
-     */
-    public static ProblemBuilder newBuilder(JsonLocation location) {
-        return new ProblemBuilder(location);
-    }
-
-    /**
      * Constructs this builder.
      * 
      * @param location the location where problem occurred, cannot be {@code null}.
      */
-    private ProblemBuilder(JsonLocation location) {
+    ProblemBuilder(JsonLocation location) {
         this.location = location;
     }
     
@@ -80,6 +61,17 @@ public class ProblemBuilder {
      */
     public ProblemBuilder withKeyword(String keyword) {
         this.keyword = keyword;
+        return this;
+    }
+    
+    /**
+     * Specifies the schema whose evaluation caused this problem.
+     * 
+     * @param schema the schema whose evaluation caused this problem.
+     * @return this builder.
+     */
+    public ProblemBuilder withSchema(JsonSchema schema) {
+        this.schema = schema;
         return this;
     }
 
@@ -141,6 +133,7 @@ public class ProblemBuilder {
     private static class SimpleProblem implements Problem {
 
         private final JsonLocation location;
+        private final JsonSchema schema;
         private final String keyword;
         private final String messageKey;
         private final Map<String, Object> parameters;
@@ -152,6 +145,7 @@ public class ProblemBuilder {
          */
         protected SimpleProblem(ProblemBuilder builder) {
             this.location = builder.location;
+            this.schema = builder.schema;
             this.keyword = builder.keyword;
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
@@ -162,7 +156,7 @@ public class ProblemBuilder {
          */
         @Override
         public String getMessage(Locale locale) {
-            Objects.requireNonNull(locale, "locale must not be null.");
+            requireNonNull(locale, "locale");
             return buildMessage(locale).toString();
         }
         
@@ -171,7 +165,7 @@ public class ProblemBuilder {
          */
         @Override
         public String getContextualMessage(Locale locale) {
-            Objects.requireNonNull(locale, "locale must not be null.");
+            requireNonNull(locale, "locale");
             Message message = buildMessage(locale);
             return buildContextualMessage(message, locale).toString();
         }
@@ -184,6 +178,14 @@ public class ProblemBuilder {
             return location;
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JsonSchema getSchema() {
+            return schema;
+        }
+
         /**
          * {@inheritDoc}
          */

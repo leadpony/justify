@@ -55,7 +55,8 @@ public class ProblemBuilderTest {
     
     @Test
     public void build_shouldBuildProblem() {
-        ProblemBuilder builder = ProblemBuilder.newBuilder(this.parser);
+        ProblemBuilderFactory factory = new ProblemBuilderFactory() {};
+        ProblemBuilder builder = factory.createProblemBuilder(this.parser);
         Problem problem = builder
                 .withMessage("instance.problem.type.single")
                 .withParameter("actual", InstanceType.STRING)

@@ -16,31 +16,19 @@
 
 package org.leadpony.justify.internal.base;
 
-import java.util.Objects;
+import java.util.function.Consumer;
 
-import javax.json.stream.JsonParser;
-
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 
 /**
- * {@link Reporter} with default implementation.
+ * Marker interface representing a problem reporter.
  *  
  * @author leadpony
  */
-public interface ProblemReporter extends Evaluator.Reporter {
+public interface ProblemReporter extends Consumer<Problem> {
     
     /**
-     * Silent reporter which ignores the problem.
+     * Silent reporter which ignores any problems.
      */
     ProblemReporter SILENT = problem->{};
-
-    @Override
-    default void reportUnknownProblem(JsonParser parser) {
-        Objects.requireNonNull(parser, "parser must not be null.");
-        Problem problem = ProblemBuilder.newBuilder(parser)
-                .withMessage("instance.problem.unknown")
-                .build();
-        reportProblem(problem);
-    }
 }

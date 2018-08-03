@@ -16,10 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.function.Consumer;
+
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 
 /**
@@ -34,7 +37,7 @@ abstract class AbstractChildSchemaEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (depth == 1) {
             update(event, parser, reporter);
         }
@@ -51,5 +54,5 @@ abstract class AbstractChildSchemaEvaluator implements Evaluator {
         dynamicEvaluator.append(evaluator);
     }
     
-    protected abstract void update(Event event, JsonParser parser, Reporter reporter);
+    protected abstract void update(Event event, JsonParser parser, Consumer<Problem> reporter);
 }

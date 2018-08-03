@@ -16,9 +16,11 @@
 
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.net.URI;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -30,7 +32,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -61,13 +63,13 @@ public class SchemaReference extends AbstractJsonSchema {
     }
     
     public void setReferencedSchema(JsonSchema schema) {
-        Objects.requireNonNull(schema, "schema must not be null.");
+        requireNonNull(schema, "schema");
         this.referencedSchema = schema;
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        return referencedSchema.createEvaluator(type);
+    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
+        return referencedSchema.createEvaluator(type, factory);
     }
 
     @Override
@@ -81,10 +83,10 @@ public class SchemaReference extends AbstractJsonSchema {
         super.addToJson(builder);
     }
     
-    private class NonExistentSchema implements JsonSchema, Evaluator {
+    private class NonExistentSchema implements JsonSchema, Evaluator, ProblemBuilderFactory {
 
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory evaluatorFactory) {
             return this;
         }
 
@@ -99,13 +101,13 @@ public class SchemaReference extends AbstractJsonSchema {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-            Problem p = ProblemBuilder.newBuilder(parser)
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+            Problem p = createProblemBuilder(parser)
                     .withKeyword("$ref")
                     .withMessage("schema.problem.dereference")
                     .withParameter("ref", ref)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

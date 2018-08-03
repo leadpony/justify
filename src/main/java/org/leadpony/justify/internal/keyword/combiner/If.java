@@ -56,11 +56,11 @@ class If extends UnaryCombiner {
         if (thenSchema == null && elseSchema == null) {
             return;
         }
-        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
+        Evaluator ifEvaluator = getSubschema().createEvaluator(type, getEvaluatorFactory());
         Evaluator thenEvaluator = thenSchema != null ?
-                thenSchema.createEvaluator(type) : null;
+                thenSchema.createEvaluator(type, getEvaluatorFactory()) : null;
         Evaluator elseEvaluator = elseSchema != null ?
-                elseSchema.createEvaluator(type) : null;
+                elseSchema.createEvaluator(type, getEvaluatorFactory()) : null;
         appender.append(new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator));
     }
 

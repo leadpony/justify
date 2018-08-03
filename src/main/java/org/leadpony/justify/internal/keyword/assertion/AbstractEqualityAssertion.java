@@ -16,17 +16,19 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -38,7 +40,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
         appender.append(new AssertionEvaluator(builderFactory));
     }
     
-    protected abstract Result testValue(JsonValue actual, JsonParser parser, Reporter reporter);
+    protected abstract Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> reporter);
 
     private class AssertionEvaluator implements Evaluator {
         
@@ -49,7 +51,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (builder.append(event, parser)) {
                 return Result.PENDING;
             }

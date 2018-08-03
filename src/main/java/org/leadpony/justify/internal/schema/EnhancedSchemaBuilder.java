@@ -28,7 +28,22 @@ import org.leadpony.justify.core.JsonSchemaBuilder;
  */
 public interface EnhancedSchemaBuilder extends JsonSchemaBuilder {
     
+    /**
+     * Adds the "$ref" keyword to the schema.
+     * 
+     * @param ref the URI of the referenced schema.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code ref} is {@code null}.
+     */
     JsonSchemaBuilder withRef(URI ref);
 
+    /**
+     * Adds an unknown property to the schema.
+     * 
+     * @param name the name of the unknown property.
+     * @param subschema the subschema defined for the property.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code name} of {@code subschema} is {@code null}.
+     */
     JsonSchemaBuilder withUnknown(String name, JsonSchema subschema);
 }

@@ -16,8 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -41,11 +42,13 @@ abstract class AbstractJsonSchema implements JsonSchema {
     protected AbstractJsonSchema(Map<String, Keyword> keywordMap, JsonBuilderFactory builderFactory) {
         this.keywordMap = keywordMap;
         this.builderFactory = builderFactory;
+        keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
     }
 
     protected AbstractJsonSchema(AbstractJsonSchema other, Map<String, Keyword> keywordMap) {
         this.keywordMap = keywordMap;
         this.builderFactory = other.builderFactory;
+        keywordMap.forEach((k, v)->v.setEnclosingSchema(other));
     }
 
     @Override
@@ -56,16 +59,15 @@ abstract class AbstractJsonSchema implements JsonSchema {
     }
     
     @Override
-    public Iterable<JsonSchema> getAllSubschemas() {
-        Stream<JsonSchema> stream = keywordMap.values().stream()
+    public Stream<JsonSchema> subschemas() {
+        return keywordMap.values().stream()
                 .filter(Keyword::hasSubschemas)
                 .flatMap(Keyword::subschemas);
-        return ()->stream.iterator();
     }
     
     @Override
-    public JsonSchema getSubschema(String jsonPointer) {
-        Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
+    public JsonSchema subschemaAt(String jsonPointer) {
+        requireNonNull(jsonPointer, "jsonPointer");
         if (jsonPointer.isEmpty()) {
             return this;
         }
@@ -108,7 +110,7 @@ abstract class AbstractJsonSchema implements JsonSchema {
             JsonSchema candidate = keyword.getSubschema(tokenizer);
             if (candidate != null) {
                 if (tokenizer.hasNext()) {
-                    return candidate.getSubschema(tokenizer.remaining());
+                    return candidate.subschemaAt(tokenizer.remaining());
                 } else {
                     return candidate;
                 }

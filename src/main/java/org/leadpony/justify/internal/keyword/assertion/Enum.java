@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -24,7 +25,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
@@ -54,18 +54,18 @@ class Enum extends AbstractEqualityAssertion {
     }
     
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, Reporter reporter) {
+    protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
         for (JsonValue expected : this.expected) {
             if (actual.equals(expected)) {
                 return Result.TRUE;
             }
         }
-        Problem p = newProblemBuilder(parser)
+        Problem p = createProblemBuilder(parser)
                 .withMessage("instance.problem.enum")
                 .withParameter("actual", actual)
                 .withParameter("expected", this.expected)
                 .build();
-        reporter.reportProblem(p);
+        reporter.accept(p);
         return Result.FALSE;
     }
 }

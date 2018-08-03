@@ -16,9 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Problem;
 
@@ -43,18 +46,18 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstString(String value, Context context, JsonParser parser, Reporter reporter) {
+    protected Result evaluateAgainstString(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         int length = value.codePointCount(0, value.length());
         if (test(length, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage(this.message)
                     .withParameter("actual", length)
                     .withParameter("bound", this.bound)
-                    .withParameter("context", context.lowerName())
+                    .withParameter("context", getContextName(event))
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

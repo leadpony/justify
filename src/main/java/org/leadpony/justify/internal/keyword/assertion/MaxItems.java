@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
@@ -67,7 +69,7 @@ class MaxItems extends AbstractAssertion {
         private int currentCount;
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
                     ++currentCount;
@@ -76,12 +78,12 @@ class MaxItems extends AbstractAssertion {
                 if (currentCount <= bound) {
                     return Result.TRUE;
                 } else {
-                    Problem p = newProblemBuilder(parser)
+                    Problem p = createProblemBuilder(parser)
                             .withMessage("instance.problem.maxItems")
                             .withParameter("actual", currentCount)
                             .withParameter("bound", bound)
                             .build();
-                    reporter.reportProblem(p);
+                    reporter.accept(p);
                     return Result.FALSE;
                 }
             }

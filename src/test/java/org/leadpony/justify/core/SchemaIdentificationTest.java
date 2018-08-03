@@ -65,7 +65,7 @@ public class SchemaIdentificationTest {
         if (schema.hasId()) {
             identifiers.add(schema.id());
         }
-        schema.getAllSubschemas()
+        schema.subschemas()
             .forEach(s->collectIdentifiers(s, identifiers));
     }
 }

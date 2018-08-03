@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.base.JsonSchemas;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -70,7 +70,7 @@ public class Properties extends BaseProperties<String> {
 
             @Override
             protected DynamicLogicalEvaluator createDynamicEvaluator() {
-                return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
+                return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.OBJECT, original);
             }
         };
     }

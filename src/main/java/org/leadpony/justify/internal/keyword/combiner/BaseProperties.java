@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -30,9 +31,10 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -41,7 +43,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public abstract class BaseProperties<K> implements Combiner {
+public abstract class BaseProperties<K> extends Combiner {
     
     protected final Map<K, JsonSchema> propertyMap;
     protected AdditionalProperties additionalProperties;
@@ -65,7 +67,7 @@ public abstract class BaseProperties<K> implements Combiner {
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         JsonObjectBuilder propertiesBuilder = builderFactory.createObjectBuilder();
-        propertyMap.forEach((key, value)->builder.add(key.toString(), value.toJson()));
+        propertyMap.forEach((key, value)->propertiesBuilder.add(key.toString(), value.toJson()));
         builder.add(name(), propertiesBuilder.build());
     }
 
@@ -91,7 +93,7 @@ public abstract class BaseProperties<K> implements Combiner {
     }
 
     protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return Evaluators.newConjunctionChildEvaluator(InstanceType.OBJECT);
+        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.OBJECT);
     }
     
     protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
@@ -108,7 +110,7 @@ public abstract class BaseProperties<K> implements Combiner {
         }
 
         @Override
-        protected void update(Event event, JsonParser parser, Reporter reporter) {
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (event == Event.KEY_NAME) {
                 findSubschemas(parser.getString());
             } else if (ParserEvents.isValue(event)) {
@@ -120,13 +122,13 @@ public abstract class BaseProperties<K> implements Combiner {
         private void findSubschemas(String keyName) {
             JsonSchema immediate = BaseProperties.this.findSubschemas(keyName, this.subschemas);
             if (immediate != null) {
-                appendChild(immediate.createEvaluator(InstanceType.OBJECT));
+                appendChild(immediate.createEvaluator(InstanceType.OBJECT, getEvaluatorFactory()));
             }
         }
         
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                appendChild(subschema.createEvaluator(type));
+                appendChild(subschema.createEvaluator(type, getEvaluatorFactory()));
             }
             this.subschemas.clear();
         }

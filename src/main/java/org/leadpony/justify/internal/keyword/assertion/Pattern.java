@@ -16,11 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Problem;
 
@@ -48,17 +50,17 @@ class Pattern extends AbstractStringAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstString(String value, Context context, JsonParser parser, Reporter reporter) {
+    protected Result evaluateAgainstString(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         Matcher m = pattern.matcher(value);
         if (m.find()) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.pattern")
                     .withParameter("pattern", pattern.toString())
-                    .withParameter("context", context.lowerName())
+                    .withParameter("context", getContextName(event))
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

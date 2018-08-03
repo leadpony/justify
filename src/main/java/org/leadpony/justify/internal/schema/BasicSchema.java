@@ -16,18 +16,22 @@
 
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -36,7 +40,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public class BasicSchema extends AbstractJsonSchema {
+public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
     private URI id;
     private final URI originalId;
@@ -77,13 +81,14 @@ public class BasicSchema extends AbstractJsonSchema {
     }
     
     @Override
-    public URI schemaURI() {
+    public URI schemaId() {
         return schema;
     }
     
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        Objects.requireNonNull(type, "type must not be null.");
+    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
+        requireNonNull(type, "type");
+        requireNonNull(factory, "factory");
         LogicalEvaluator.Builder builder = createLogicalEvaluator(type);
         appendEvaluatorsTo(builder, type);
         return builder.build();
@@ -102,7 +107,8 @@ public class BasicSchema extends AbstractJsonSchema {
             
             @Override
             protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-                return Evaluators.newDisjunctionEvaluatorBuilder(type);
+                return DefaultEvaluatorFactory.SINGLETON.createDisjunctionEvaluatorBuilder(type)
+                        .withProblemBuilderFactory(this);
             } 
         };
     }
@@ -117,13 +123,19 @@ public class BasicSchema extends AbstractJsonSchema {
         }
         super.addToJson(builder);
     }
+    
+    @Override
+    public ProblemBuilder createProblemBuilder(JsonParser parser) {
+        return ProblemBuilderFactory.super.createProblemBuilder(parser)
+                .withSchema(this);
+    }
 
     public void setAbsoluteId(URI id) {
         this.id = id;
     }
  
     protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-        return Evaluators.newConjunctionEvaluatorBuilder(type);
+        return DefaultEvaluatorFactory.SINGLETON.createConjunctionEvaluatorBuilder(type);
     } 
 
     private void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {

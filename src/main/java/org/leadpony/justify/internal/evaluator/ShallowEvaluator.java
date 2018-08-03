@@ -16,10 +16,13 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.function.Consumer;
+
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -27,12 +30,12 @@ import org.leadpony.justify.core.Evaluator;
 public interface ShallowEvaluator extends Evaluator {
     
     @Override
-    default Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    default Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (depth > 1) {
             return Result.PENDING;
         }
         return evaluateShallow(event, parser, depth, reporter);
     }
     
-    Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter);
+    Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter);
 }

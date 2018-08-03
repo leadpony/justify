@@ -16,7 +16,10 @@
 
 package org.leadpony.justify.internal.base;
 
+import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Provides parameter validation for methods.
@@ -26,6 +29,13 @@ import java.util.Collection;
 public final class Arguments {
 
     private Arguments() {
+    }
+    
+    public static <T> T requireNonNull(T object, String name) {
+        if (object == null) {
+            throw new NullPointerException(name + " must not be null.");
+        }
+        return object;
     }
     
     public static <T> T[] requireNonEmpty(T[] array, String name) {
@@ -41,11 +51,43 @@ public final class Arguments {
         }
         return collection;
     }
+    
+    public static long requirePositive(long value, String name) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(name + " must not be positive.");
+        }
+        return value;
+    }
+    
+    public static double requirePositive(double value, String name) {
+        if (value <= 0.0) {
+            throw new IllegalArgumentException(name + " must not be positive.");
+        }
+        return value;
+    }
+
+    public static BigDecimal requirePositive(BigDecimal value, String name) {
+        if (value.signum() <= 0) {
+            throw new IllegalArgumentException(name + " must not be positive.");
+        }
+        return value;
+    }
 
     public static int requireNonNegative(int value, String name) {
         if (value < 0) {
             throw new IllegalArgumentException(name + " must not be negative.");
         }
         return value;
+    }
+    
+    public static <T> Set<T> requireUnique(T[] values, String name) {
+        Set<T> set = new LinkedHashSet<>();
+        for (T value : values) {
+            if (set.contains(value)) {
+                throw new IllegalArgumentException(name + " must be unique.");
+            }
+            set.add(value);
+        }
+        return set;
     }
 }

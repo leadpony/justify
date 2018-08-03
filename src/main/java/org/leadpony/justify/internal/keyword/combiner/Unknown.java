@@ -29,7 +29,7 @@ import org.leadpony.justify.core.JsonSchema;
  * 
  * @author leadpony
  */
-class Unknown implements Combiner {
+class Unknown extends Combiner {
     
     private final String name;
     private final JsonSchema subschema;

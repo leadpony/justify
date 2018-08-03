@@ -18,6 +18,15 @@ package org.leadpony.justify.core;
 
 /**
  * Factory for creating {@link JsonSchemaBuilder} instances.
+ * 
+ * <p>
+ * The following example shows how to create an instance of {@link JsonSchemaBuilder}.
+ * </p>
+ * <pre><code>
+ * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
+ * JsonSchemaBuilder builder = factory.createBuilder();
+ * </code></pre>
+ * 
  * <p>
  * Any instance of this class is safe for use by multiple concurrent threads.
  * For most use cases, only one instance of this class is required within the application.

@@ -16,12 +16,13 @@
 
 package org.leadpony.justify.internal.base;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -51,7 +52,7 @@ public class JsonProviderDecorator extends JsonProvider {
      * @param real the underlying JSON provider to be decorated.
      */
     public JsonProviderDecorator(JsonProvider real) {
-        Objects.requireNonNull(real, "real must not be null.");
+        requireNonNull(real, "real");
         this.real = real;
     }
     

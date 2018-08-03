@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -23,6 +25,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -47,7 +50,7 @@ class PropertyNames extends UnaryCombiner implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (depth == 0 && event == Event.END_OBJECT) {
             return Result.TRUE;
         } else if (depth == 1 && event == Event.KEY_NAME) {
@@ -56,8 +59,8 @@ class PropertyNames extends UnaryCombiner implements Evaluator {
         return Result.PENDING;
     }
     
-    private void evaluateName(Event event, JsonParser parser, int depth, Reporter reporter) {
-        Evaluator evaluator = getSubschema().createEvaluator(InstanceType.STRING);
+    private void evaluateName(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        Evaluator evaluator = getSubschema().createEvaluator(InstanceType.STRING, getEvaluatorFactory());
         if (evaluator != null) {
             evaluator.evaluate(event, parser, depth, reporter);
         }

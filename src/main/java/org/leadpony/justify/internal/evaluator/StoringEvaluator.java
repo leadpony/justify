@@ -16,9 +16,11 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -42,13 +44,13 @@ class StoringEvaluator implements Evaluator, ProblemReporter, Comparable<Storing
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         return evaluator.evaluate(event, parser, depth, this);
     }
     
     @Override
-    public void reportProblem(Problem problem) {
-        Objects.requireNonNull(problem, "problem must not be null.");
+    public void accept(Problem problem) {
+        requireNonNull(problem, "problem");
         if (this.problems == null) {
             this.problems = new ArrayList<>();
         }

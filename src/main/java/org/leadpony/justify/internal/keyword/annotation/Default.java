@@ -25,7 +25,7 @@ import javax.json.JsonValue;
  * 
  * @author leadpony
  */
-public class Default implements Annotation<JsonValue> {
+public class Default extends Annotation<JsonValue> {
     
     private final JsonValue value;
     

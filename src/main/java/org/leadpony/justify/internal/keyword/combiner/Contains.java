@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -82,7 +83,7 @@ class Contains extends UnaryCombiner {
         private List<List<Problem>> accumulatedProblems = new ArrayList<>();
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (itemEvaluator == null) {
                 itemEvaluator = createSubschemaEvaluator(event, parser, depth);
             }
@@ -105,7 +106,7 @@ class Contains extends UnaryCombiner {
         private Evaluator createSubschemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return getSubschema().createEvaluator(type);
+                return getSubschema().createEvaluator(type, getEvaluatorFactory());
             } else {
                 return null;
             }
@@ -124,25 +125,25 @@ class Contains extends UnaryCombiner {
             }
         }
         
-        private void reportTooFewValid(JsonParser parser, Reporter reporter) {
-            ProblemBuilder builder = newProblemBuilder(parser);
+        private void reportTooFewValid(JsonParser parser, Consumer<Problem> reporter) {
+            ProblemBuilder builder = createProblemBuilder(parser);
             builder.withMessage("instance.problem.minContains")
                    .withParameter("expected", minContains)
                    .withParameter("actual", trueEvaluations);
             accumulatedProblems.forEach(builder::withSubproblems);
-            reporter.reportProblem(builder.build());
+            reporter.accept(builder.build());
         }
 
-        private void reportTooManyValid(JsonParser parser, Reporter reporter) {
-            ProblemBuilder builder = newProblemBuilder(parser);
+        private void reportTooManyValid(JsonParser parser, Consumer<Problem> reporter) {
+            ProblemBuilder builder = createProblemBuilder(parser);
             builder.withMessage("instance.problem.maxContains")
                    .withParameter("expected", maxContains)
                    .withParameter("actual", trueEvaluations);
-            reporter.reportProblem(builder.build());
+            reporter.accept(builder.build());
         }
 
         @Override
-        public void reportProblem(Problem problem) {
+        public void accept(Problem problem) {
             problems.add(problem);
         }
     }

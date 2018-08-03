@@ -16,17 +16,21 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
@@ -46,7 +50,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         Iterator<Evaluator> it = children.iterator();
         while (it.hasNext()) {
             Evaluator evaluator = it.next();
@@ -65,11 +69,11 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
         return children.isEmpty();
     }
     
-    protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth, Reporter reporter) {
+    protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         return evaluator.evaluate(event, parser, depth, reporter);
     }
 
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (stopEvent == null) {
             assert isEmpty();
             return conclude(parser, reporter);
@@ -85,12 +89,13 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
-    protected abstract Result conclude(JsonParser parser, Reporter reporter);
+    protected abstract Result conclude(JsonParser parser, Consumer<Problem> reporter);
     
     protected static abstract class Builder implements LogicalEvaluator.Builder {
         
+        private final InstanceType type;
         private final List<Evaluator> children = new ArrayList<>();
-        private InstanceType type;
+        private ProblemBuilderFactory problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
         
         protected Builder(InstanceType type) {
             this.type = type;
@@ -98,8 +103,14 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
         
         @Override
         public void append(Evaluator evaluator) {
-            Objects.requireNonNull(evaluator, "evaluator must not be null.");
+            requireNonNull(evaluator, "evaluator");
             this.children.add(evaluator);
+        }
+        
+        @Override
+        public Builder withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
+            this.problemBuilderFactory = problemBuilderFactory;
+            return this;
         }
         
         @Override
@@ -108,10 +119,11 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
             if (stopEvent == null && children.size() == 1) {
                 return children.get(0);
             } else {
-                return createEvaluator(children, stopEvent);
+                return createEvaluator(children, stopEvent, problemBuilderFactory);
             }
         }
         
-        protected abstract LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent);
+        protected abstract LogicalEvaluator createEvaluator(
+                List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory);
     }
 }

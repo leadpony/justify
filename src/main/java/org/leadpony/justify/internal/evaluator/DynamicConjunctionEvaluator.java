@@ -16,13 +16,16 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.LinkedList;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 
 /**
  * @author leadpony
@@ -35,19 +38,19 @@ class DynamicConjunctionEvaluator extends ConjunctionEvaluator implements Dynami
 
     @Override
     public void append(Evaluator evaluator) {
-        Objects.requireNonNull(evaluator, "evaluator must not be null.");
+        requireNonNull(evaluator, "evaluator");
         children.add(evaluator);
     }
 
     @Override
     protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
-            Reporter reporter) {
+            Consumer<Problem> reporter) {
         assert depth > 0;
         return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
     }
 
     @Override
-    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Reporter reporter) {
+    protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (depth == 0 && event == stopEvent) {
             assert isEmpty();
             return conclude(parser, reporter);

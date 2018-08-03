@@ -24,7 +24,7 @@ import javax.json.JsonObjectBuilder;
  * 
  * @author leadpony
  */
-public class Title implements Annotation<String> {
+public class Title extends Annotation<String> {
     
     private final String value;
     

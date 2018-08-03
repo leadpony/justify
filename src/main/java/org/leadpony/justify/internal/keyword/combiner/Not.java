@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-class Not extends UnaryCombiner implements BooleanLogic {
+class Not extends UnaryCombiner {
     
     private final JsonSchema negatedSubschema;
     
@@ -49,7 +49,7 @@ class Not extends UnaryCombiner implements BooleanLogic {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        Evaluator evaluator = negatedSubschema.createEvaluator(type);
+        Evaluator evaluator = negatedSubschema.createEvaluator(type, getEvaluatorFactory());
         if (evaluator != null) {
             appender.append(evaluator);
         }

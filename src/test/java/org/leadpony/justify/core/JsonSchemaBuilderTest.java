@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.core;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.core.InstanceType;
@@ -24,6 +25,10 @@ import org.leadpony.justify.core.JsonSchemaBuilder;
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 
 import static org.assertj.core.api.Assertions.*;
+
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
 
 /**
  * @author leadpony
@@ -36,9 +41,14 @@ public class JsonSchemaBuilderTest {
     public void setUp() {
         this.factory = Jsonv.createSchemaBuilder();
     }
+    
+    @AfterEach
+    public void tearDown() {
+        this.factory = null;
+    }
 
     @Test
-    public void build_shouldReturnNewSchema() {
+    public void build_returnsNewSchema() {
         // Given
         JsonSchemaBuilder sut = this.factory.createBuilder();
         sut.withTitle("Person")
@@ -57,7 +67,34 @@ public class JsonSchemaBuilderTest {
            ;
         // When
         JsonSchema schema = sut.build();
+        JsonObject expected = buildExpectedObject();
         // Then
         assertThat(schema).isNotNull();
+        assertThat(schema.toJson()).isEqualTo(expected);
+    }
+    
+    private static JsonObject buildExpectedObject() {
+        JsonBuilderFactory factory = Json.createBuilderFactory(null);
+        return factory.createObjectBuilder()
+            .add("title", "Person")
+            .add("type", "object")
+            .add("properties", factory.createObjectBuilder()
+                    .add("firstName", factory.createObjectBuilder()
+                            .add("type", "string")
+                            .build())
+                    .add("lastName", factory.createObjectBuilder()
+                            .add("type", "string")
+                            .build())
+                    .add("age", factory.createObjectBuilder()
+                            .add("description", "Age in years")
+                            .add("type", "integer")
+                            .add("minimum", 0)
+                            .build())
+                    .build())
+            .add("required", factory.createArrayBuilder()
+                    .add("firstName")
+                    .add("lastName")
+                    .build())
+            .build();
     }
 }

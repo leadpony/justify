@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -73,7 +74,7 @@ class UniqueItems extends AbstractAssertion {
         }
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (depth == 0) { 
                 return event == Event.END_ARRAY ? 
                         Result.TRUE : Result.PENDING;
@@ -90,15 +91,15 @@ class UniqueItems extends AbstractAssertion {
             }
         }
         
-        private Result testValue(JsonValue value, int index, JsonParser parser, Reporter reporter) {
+        private Result testValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
             if (values.containsKey(value)) {
                 int lastIndex = values.get(value);
-                Problem p = newProblemBuilder(parser)
+                Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.uniqueItems")
                         .withParameter("index", index)
                         .withParameter("lastIndex", lastIndex)
                         .build();
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             }
             values.put(value, index);

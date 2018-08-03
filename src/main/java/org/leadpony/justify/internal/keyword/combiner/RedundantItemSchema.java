@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -24,8 +26,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * Schema for redundant array items.
@@ -35,21 +36,21 @@ import org.leadpony.justify.internal.keyword.Keyword;
 class RedundantItemSchema implements JsonSchema, Evaluator {
     
     private final int itemIndex;
-    private final Keyword keyword;
+    private final ProblemBuilderFactory problemBuilderFactory;
 
     /**
      * Constructs this schema.
      * 
      * @param itemIndex the index of the item.
-     * @param keyword the keyword owning this schema.
+     * @param problemBuilderFactory the factory producing problem builders.
      */
-    RedundantItemSchema(int itemIndex, Keyword keyword) {
+    RedundantItemSchema(int itemIndex, ProblemBuilderFactory problemBuilderFactory) {
         this.itemIndex = itemIndex;
-        this.keyword = keyword;
+        this.problemBuilderFactory = problemBuilderFactory;
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
+    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory evaluatorFactory) {
         return this;
     }
 
@@ -64,13 +65,12 @@ class RedundantItemSchema implements JsonSchema, Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
-        Problem p = ProblemBuilder.newBuilder(parser)
-                .withKeyword(keyword.name())
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        Problem p = problemBuilderFactory.createProblemBuilder(parser)
                 .withMessage("instance.problem.additionalItems")
                 .withParameter("index", itemIndex)
                 .build();
-        reporter.reportProblem(p);
+        reporter.accept(p);
         return Result.FALSE;
     }
 }

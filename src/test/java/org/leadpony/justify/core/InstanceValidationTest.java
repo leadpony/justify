@@ -18,8 +18,6 @@ package org.leadpony.justify.core;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.params.provider.Arguments;
-
 /**
  * Test suite provided by json-schema.org.
  * 
@@ -67,7 +65,7 @@ public class InstanceValidationTest extends BaseValidationTest {
             "/official/tests/draft8/minContains.json"
     };
     
-    public static Stream<Arguments> provideFixtures() {
-        return fixtures(TESTS);
+    public static Stream<ValidationFixture> provideFixtures() {
+        return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }
 }

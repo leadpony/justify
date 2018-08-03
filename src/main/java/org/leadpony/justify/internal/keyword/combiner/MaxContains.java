@@ -19,14 +19,14 @@ package org.leadpony.justify.internal.keyword.combiner;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
  * The type representing "maxContains" keyword.
  * 
  * @author leadpony
  */
-class MaxContains implements Keyword {
+class MaxContains extends AbstractKeyword {
     
     private final int value;
     

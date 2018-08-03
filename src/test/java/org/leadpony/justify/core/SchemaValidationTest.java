@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
@@ -75,15 +74,13 @@ public class SchemaValidationTest {
             "/unofficial/schema/keyword/default.json",
         };
     
-    public static Stream<Arguments> provideFixtures() {
-        return Stream.of(TESTS)
-                .flatMap(SchemaFixture::newStream)
-                .map(Fixture::toArguments);
+    public static Stream<SchemaFixture> provideFixtures() {
+        return Stream.of(TESTS).flatMap(SchemaFixture::newStream);
     }
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("provideFixtures")
-    public void testInvalidSchema(String displayName, SchemaFixture fixture) {
+    public void testInvalidSchema(SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
         try {

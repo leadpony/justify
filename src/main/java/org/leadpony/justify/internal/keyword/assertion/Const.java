@@ -16,12 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Evaluator.Reporter;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
@@ -49,16 +50,16 @@ class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, Reporter reporter) {
+    protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

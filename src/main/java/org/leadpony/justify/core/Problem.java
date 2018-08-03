@@ -78,9 +78,16 @@ public interface Problem {
     JsonLocation getLocation();
     
     /**
-     * Returns the keyword which supplies the assertion this problem violated.
+     * Returns the JSON schema which provided the assertion.
      * 
-     * @return the keyword of the assertion, may be {@code null}.
+     * @return the JSON schema which provided the assertion, never be {@code null}.
+     */
+    JsonSchema getSchema();
+    
+    /**
+     * Returns the keyword which provided the assertion.
+     * 
+     * @return the keyword which provided the assertion. This may be {@code null}.
      */
     String getKeyword();
     

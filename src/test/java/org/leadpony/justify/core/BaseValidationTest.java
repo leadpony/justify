@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
@@ -44,9 +42,9 @@ public abstract class BaseValidationTest {
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("provideFixtures")
-    public void testValidationResult(String displayName, ValidationFixture fixture) {
+    public void testValidationResult(ValidationFixture fixture) {
         List<Problem> problems = new ArrayList<>();
         JsonParser parser = createValidatingParser(fixture, Jsonv.createProblemCollector(problems));
         while (parser.hasNext()) {
@@ -54,16 +52,14 @@ public abstract class BaseValidationTest {
         }
         parser.close();
         assertThat(problems.isEmpty()).isEqualTo(fixture.getDataValidity());
+        for (Problem problem : problems) {
+            JsonSchema schema = problem.getSchema();
+            assertThat(schema).isNotNull();
+        }
         printProblems(fixture, problems);
     }
     
-    protected static Stream<Arguments> fixtures(String[] names) {
-        return Stream.of(names)
-                .flatMap(ValidationFixture::newStream)
-                .map(Fixture::toArguments);
-    }
-    
-    protected JsonParser createValidatingParser(ValidationFixture fixture, Consumer<List<Problem>> handler) {
+    private JsonParser createValidatingParser(ValidationFixture fixture, Consumer<List<Problem>> handler) {
         JsonSchema schema = getSchema(fixture);
         StringReader reader = new StringReader(fixture.data().toString());
         return Jsonv.createParser(reader, schema, handler);

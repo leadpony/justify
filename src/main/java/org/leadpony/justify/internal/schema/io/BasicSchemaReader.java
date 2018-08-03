@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.schema.io;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,7 +28,6 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
@@ -42,7 +44,7 @@ import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.SimpleJsonLocation;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
@@ -55,7 +57,7 @@ import org.leadpony.justify.internal.schema.EnhancedSchemaBuilder;
  * 
  * @author leadpony
  */
-public class BasicSchemaReader implements JsonSchemaReader {
+public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactory {
     
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
     
@@ -110,7 +112,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     
     @Override
     public JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver) {
-        Objects.requireNonNull(resolver, "resolver must not be null.");
+        requireNonNull(resolver, "resolver");
+        if (alreadyRead || alreadyClosed) {
+            throw new IllegalStateException("already read");
+        }
         resolvers.add(resolver);
         return this;
     }
@@ -145,7 +150,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         if (parser.hasNext()) {
             return false;
         } else {
-            Problem p = ProblemBuilder.newBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("schema.problem.empty")
                     .build();
             addProblem(p);
@@ -424,7 +429,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMultipleOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMultipleOf(parser.getBigDecimal());
+            BigDecimal value = parser.getBigDecimal();
+            if (value.signum() > 0) {
+                builder.withMultipleOf(value);
+            }
         } else {
             skipValue(event);
         }
@@ -492,7 +500,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMaxItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMaxItems(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMaxItems(value);
+            }
         } else {
             skipValue(event);
         }
@@ -501,7 +512,10 @@ public class BasicSchemaReader implements JsonSchemaReader {
     private void addMinItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
-            builder.withMinItems(parser.getInt());
+            int value = parser.getInt();
+            if (value >= 0) {
+                builder.withMinItems(value);
+            }
         } else {
             skipValue(event);
         }
@@ -900,9 +914,9 @@ public class BasicSchemaReader implements JsonSchemaReader {
             SchemaReference ref = (SchemaReference)schema;
             ref.setRef(baseURI.resolve(ref.getRef()));
         }
-        for (JsonSchema subschema : schema.getAllSubschemas()) {
-            makeIdentifiersAbsolute(subschema, baseURI);
-        }
+        final URI nextURI = baseURI;
+        schema.subschemas().forEach(
+                subschema->makeIdentifiersAbsolute(subschema, nextURI));
     }
     
     private void addIdentifiedSchema(URI id, JsonSchema schema) {
@@ -917,7 +931,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
                 reference.setReferencedSchema(schema);
             } else {
                 JsonLocation location = this.references.get(reference);
-                Problem p = ProblemBuilder.newBuilder(location)
+                Problem p = createProblemBuilder(location)
                         .withMessage("schema.problem.dereference")
                         .withParameter("ref", ref)
                         .build();
@@ -932,7 +946,7 @@ public class BasicSchemaReader implements JsonSchemaReader {
         if (fragment.startsWith("/")) {
             JsonSchema schema = resolveSchema(URIs.withEmptyFragment(ref));
             if (schema != null) {
-                return schema.getSubschema(fragment);
+                return schema.subschemaAt(fragment);
             }
             return null;
         } else {

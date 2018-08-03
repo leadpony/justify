@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator.Builder;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -47,6 +47,6 @@ class AnyOf extends NaryBooleanLogic {
 
     @Override
     protected Builder createEvaluatorBuilder(InstanceType type) {
-        return Evaluators.newDisjunctionEvaluatorBuilder(type);
+        return DefaultEvaluatorFactory.SINGLETON.createDisjunctionEvaluatorBuilder(type);
     }
 }

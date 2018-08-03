@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -24,6 +25,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -41,7 +43,7 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Eva
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         assert event == Event.VALUE_NUMBER;
         return evaluateAgainstNumber(parser.getBigDecimal(), parser, reporter);
     }
@@ -54,5 +56,5 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Eva
      * @param reporter the reporter to which detected problems will be reported.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter);
+    protected abstract Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter);
 }

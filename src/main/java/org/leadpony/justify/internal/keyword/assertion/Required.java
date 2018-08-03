@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -76,7 +77,7 @@ class Required extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (event == Event.KEY_NAME) {
                 missing.remove(parser.getString());
                 return test(parser, reporter, false);
@@ -87,15 +88,15 @@ class Required extends AbstractAssertion {
             }
         }
         
-        protected Result test(JsonParser parser, Reporter reporter, boolean last) {
+        protected Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
-                Problem p = newProblemBuilder(parser)
+                Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.required")
                         .withParameter("expected", missing)
                         .build();
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             } else {
                 return Result.PENDING;

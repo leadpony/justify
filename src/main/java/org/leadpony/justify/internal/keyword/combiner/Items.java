@@ -16,12 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import org.leadpony.justify.internal.keyword.Keyword;
+
 /**
  * "items" combiner.
  * 
  * @author leadpony
  */
-interface Items extends Combiner {
+interface Items extends Keyword {
     
     @Override
     default String name() {

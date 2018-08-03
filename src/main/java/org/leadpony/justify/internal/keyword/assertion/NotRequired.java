@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -58,7 +59,7 @@ class NotRequired extends Required {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (event == Event.KEY_NAME) {
                 missing.remove(parser.getString());
                 return test(parser, reporter, false);
@@ -70,22 +71,22 @@ class NotRequired extends Required {
         }
 
         @Override
-        protected Result test(JsonParser parser, Reporter reporter, boolean last) {
+        protected Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
             if (missing.isEmpty()) {
                 Problem p = null;
                 if (this.names.size() == 1) {
                     String name = this.names.iterator().next();
-                    p = newProblemBuilder(parser)
+                    p = createProblemBuilder(parser)
                             .withMessage("instance.problem.not.required.single")
                             .withParameter("expected", name)
                             .build();
                 } else {
-                    p = newProblemBuilder(parser)
+                    p = createProblemBuilder(parser)
                         .withMessage("instance.problem.not.required")
                         .withParameter("expected", this.names)
                         .build();
                 }
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             } else if (last) {
                 return Result.TRUE;

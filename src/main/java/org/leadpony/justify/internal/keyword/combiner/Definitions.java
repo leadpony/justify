@@ -29,7 +29,7 @@ import org.leadpony.justify.core.JsonSchema;
 /**
  * @author leadpony
  */
-public class Definitions implements Combiner {
+public class Definitions extends Combiner {
     
     private final Map<String, JsonSchema> definitionMap = new LinkedHashMap<>();
     

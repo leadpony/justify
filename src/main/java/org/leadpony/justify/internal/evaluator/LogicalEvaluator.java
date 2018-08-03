@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * Evaluator to be instantiated by boolean logic.
@@ -31,6 +32,14 @@ public interface LogicalEvaluator extends Evaluator {
      * @author leadpony
      */
     interface Builder extends EvaluatorAppender {
+        
+        /**
+         * Specifies the instance of {@link ProblemBuilderFactory}.
+         * 
+         * @param problemBuilderFactory the problem builder factory to be used by the evaluator.
+         * @return this builder.
+         */
+        Builder withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory);
         
         /**
          * Builds an evaluator.

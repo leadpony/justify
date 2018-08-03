@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -24,7 +25,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * Exclusive disjunction evaluator used for "oneOf" boolean logic schema.
@@ -37,8 +38,9 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
         return new Builder(type);
     }
     
-    protected ExclusiveDisjunctionEvaluator(List<Evaluator> children, Event stopEvent) {
-        super(children, stopEvent);
+    protected ExclusiveDisjunctionEvaluator(
+            List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
+        super(children, stopEvent, problemBuilderFactory);
     }
     
     @Override
@@ -48,7 +50,7 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     }
 
     @Override
-    protected Result conclude(JsonParser parser, Reporter reporter) {
+    protected Result conclude(JsonParser parser, Consumer<Problem> reporter) {
         if (this.trueEvaluations > 1) {
             return reportTooManyTrueEvaluations(parser, reporter);
         } else {
@@ -61,12 +63,12 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
         return "instance.problem.oneOf";
     }
 
-    private Result reportTooManyTrueEvaluations(JsonParser parser, Reporter reporter) {
-        Problem p = ProblemBuilder.newBuilder(parser)
+    private Result reportTooManyTrueEvaluations(JsonParser parser, Consumer<Problem> reporter) {
+        Problem p = problemBuilderFactory.createProblemBuilder(parser)
                 .withMessage("instance.problem.oneOf.over")
                 .withParameter("valid", this.trueEvaluations)
                 .build();
-        reporter.reportProblem(p);
+        reporter.accept(p);
         return Result.FALSE;
     }
 
@@ -77,8 +79,9 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
         }
 
         @Override
-        protected LogicalEvaluator createEvaluator(List<Evaluator> children, Event stopEvent) {
-            return new ExclusiveDisjunctionEvaluator(children, stopEvent);
+        protected LogicalEvaluator createEvaluator(
+                List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
+            return new ExclusiveDisjunctionEvaluator(children, stopEvent, problemBuilderFactory);
         }
     }
 }

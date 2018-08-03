@@ -16,9 +16,10 @@
 
 package org.leadpony.justify.internal.validator;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -34,6 +35,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
 import org.leadpony.justify.internal.base.ProblemReporter;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 
 /**
  * JSON parser with validation functionality.
@@ -95,14 +97,14 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     }
   
     @Override
-    public void reportProblem(Problem problem) {
-        Objects.requireNonNull(problem, "problem must not be null.");
+    public void accept(Problem problem) {
+        requireNonNull(problem, "problem");
         this.currentProblems.add(problem);
     }
     
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        this.evaluator = rootSchema.createEvaluator(type);
+        this.evaluator = rootSchema.createEvaluator(type, DefaultEvaluatorFactory.SINGLETON);
         if (this.evaluator != null) {
             handleEvent(event, parser);
         }

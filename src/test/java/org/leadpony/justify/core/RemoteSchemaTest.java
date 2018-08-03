@@ -29,7 +29,6 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.provider.Arguments;
 
 /**
  * @author leadpony
@@ -44,8 +43,8 @@ public class RemoteSchemaTest extends BaseValidationTest {
     
     private static Server server;
   
-    public static Stream<Arguments> provideFixtures() {
-        return fixtures(TESTS);
+    public static Stream<ValidationFixture> provideFixtures() {
+        return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }
     
     @BeforeAll

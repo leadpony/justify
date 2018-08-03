@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -25,9 +26,10 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -91,7 +93,7 @@ class AdditionalProperties extends UnaryCombiner {
     }
 
     protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return Evaluators.newConjunctionChildEvaluator(InstanceType.OBJECT);
+        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.OBJECT);
     }
     
     class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
@@ -103,13 +105,13 @@ class AdditionalProperties extends UnaryCombiner {
         }
 
         @Override
-        protected void update(Event event, JsonParser parser, Reporter reporter) {
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (event == Event.KEY_NAME) {
                 findSubschema(parser.getString());
             } else if (ParserEvents.isValue(event)) {
                 if (nextSubschema != null) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    appendChild(nextSubschema.createEvaluator(type));
+                    appendChild(nextSubschema.createEvaluator(type, getEvaluatorFactory()));
                     nextSubschema = null;
                 }
             }
@@ -119,7 +121,7 @@ class AdditionalProperties extends UnaryCombiner {
             JsonSchema subschema = getSubschema();
             if (subschema == JsonSchema.FALSE) {
                 subschema = new RedundantPropertySchema(keyName, AdditionalProperties.this);
-                appendChild(subschema.createEvaluator(InstanceType.OBJECT));
+                appendChild(subschema.createEvaluator(InstanceType.OBJECT, getEvaluatorFactory()));
             } else {
                 nextSubschema = subschema;
             }
@@ -133,7 +135,7 @@ class AdditionalProperties extends UnaryCombiner {
         }
 
         protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return Evaluators.newDisjunctionChildEvaluator(InstanceType.OBJECT);
+            return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.OBJECT, this);
         }
     }
 }

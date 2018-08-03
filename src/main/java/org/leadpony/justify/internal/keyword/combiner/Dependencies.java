@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
@@ -36,12 +37,13 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemReporter;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * @author leadpony
  */
-public class Dependencies extends AbstractCombiner {
+public class Dependencies extends Combiner {
 
     private final Map<String, Dependency> dependencyMap = new HashMap<>();
     
@@ -133,7 +135,9 @@ public class Dependencies extends AbstractCombiner {
         
         @Override
         Evaluator createEvaluator() {
-            Evaluator evaluator = subschema.createEvaluator(InstanceType.OBJECT);
+            Evaluator evaluator = subschema.createEvaluator(
+                    InstanceType.OBJECT,
+                    DefaultEvaluatorFactory.SINGLETON);
             if (evaluator != null) {
                 return new SubschemaEvaluator(getProperty(), evaluator);
             } else {
@@ -171,7 +175,7 @@ public class Dependencies extends AbstractCombiner {
         }
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (!active) {
                 if (depth == 1 && event == Event.KEY_NAME) {
                     String keyName = parser.getString();
@@ -199,19 +203,19 @@ public class Dependencies extends AbstractCombiner {
         }
         
         @Override
-        public void reportProblem(Problem problem) {
+        public void accept(Problem problem) {
             if (problems == null) {
                 problems = new ArrayList<>();
             }
             problems.add(problem);
         }
 
-        private void dispatchAllProblems(Reporter reporter) {
+        private void dispatchAllProblems(Consumer<Problem> reporter) {
             if (problems == null) {
                 return;
             }
             for (Problem problem : problems) {
-                reporter.reportProblem(problem);
+                reporter.accept(problem);
             }
         }
     }
@@ -251,7 +255,7 @@ public class Dependencies extends AbstractCombiner {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = parser.getString();
                 if (keyName.equals(property)) {
@@ -268,16 +272,16 @@ public class Dependencies extends AbstractCombiner {
             return Result.PENDING;
         }
         
-        private Result test(JsonParser parser, Reporter reporter) {
+        private Result test(JsonParser parser, Consumer<Problem> reporter) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
-                Problem p = newProblemBuilder(parser)
+                Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.dependencies")
                         .withParameter("missing", missing)
                         .withParameter("dependant", property)
                         .build();
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             }
         }

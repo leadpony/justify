@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -45,16 +46,16 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Reporter reporter) {
+    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
         if (test(value, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage(this.message)
                     .withParameter("actual", value)
                     .withParameter("bound", this.bound)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }

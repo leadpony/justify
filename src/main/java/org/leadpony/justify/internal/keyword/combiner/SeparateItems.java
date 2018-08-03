@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,10 +31,11 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -42,7 +44,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-class SeparateItems implements Items {
+class SeparateItems extends Combiner implements Items {
     
     private final List<JsonSchema> subschemas;
     private AdditionalItems additionalItems = AdditionalItems.DEFAULT;
@@ -107,7 +109,7 @@ class SeparateItems implements Items {
      * @return newly created evaluator.
      */
     protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return Evaluators.newConjunctionChildEvaluator(InstanceType.ARRAY);
+        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.ARRAY);
     }
     
     private class ArrayItemSchemaEvaluator extends AbstractChildSchemaEvaluator {
@@ -120,11 +122,11 @@ class SeparateItems implements Items {
         }
 
         @Override
-        protected void update(Event event, JsonParser parser, Reporter reporter) {
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (ParserEvents.isValue(event)) {
                 JsonSchema subschema = findSubschema(currentIndex);
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                Evaluator evaluator = subschema.createEvaluator(type);
+                Evaluator evaluator = subschema.createEvaluator(type, getEvaluatorFactory());
                 if (evaluator != null) {
                     appendChild(evaluator);
                 }
@@ -149,7 +151,7 @@ class SeparateItems implements Items {
         
         @Override
         protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return Evaluators.newDisjunctionChildEvaluator(InstanceType.ARRAY);
+            return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.ARRAY, this);
         }
 
         private static List<JsonSchema> negateSubschemas(List<JsonSchema> subschemas) {

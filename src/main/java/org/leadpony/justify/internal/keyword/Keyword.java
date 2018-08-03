@@ -41,6 +41,10 @@ public interface Keyword {
      */
     String name();
     
+    JsonSchema getEnclosingSchema();
+
+    void setEnclosingSchema(JsonSchema schema);
+    
     /**
      * Checks if this keyword can be evaluated.
      * 

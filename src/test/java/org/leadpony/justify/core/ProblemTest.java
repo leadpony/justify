@@ -29,7 +29,6 @@ import javax.json.JsonReader;
 import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
@@ -43,13 +42,13 @@ public class ProblemTest {
     
     private static final String RESOURCE_NAME = "/unofficial/other/problem.tml";
   
-    public static Stream<Arguments> fixtureProvider() {
-        return ProblemFixture.newStream(RESOURCE_NAME).map(Fixture::toArguments);
+    public static Stream<ProblemFixture> fixtureProvider() {
+        return ProblemFixture.newStream(RESOURCE_NAME);
     }
 
-    @ParameterizedTest(name = "{0}")
+    @ParameterizedTest
     @MethodSource("fixtureProvider")
-    public void testProblem(String displayName, ProblemFixture fixture) {
+    public void testProblem(ProblemFixture fixture) {
         JsonSchema schema = readSchema(fixture.schema());
         List<Problem> problems = new ArrayList<>();
         JsonReader reader = Jsonv.createReader(new StringReader(fixture.data()), schema, problems::addAll);

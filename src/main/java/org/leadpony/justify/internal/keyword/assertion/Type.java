@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -70,7 +71,7 @@ class Type extends AbstractAssertion implements Evaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Reporter reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
             return testType(type, parser, reporter);
@@ -84,16 +85,16 @@ class Type extends AbstractAssertion implements Evaluator {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
     
-    protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
+    protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
-            Problem p = newProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.type")
                     .withParameter("actual", type)
                     .withParameter("expected", this.typeSet)
                     .build();
-            reporter.reportProblem(p);
+            reporter.accept(p);
             return Result.FALSE;
         }
     }
@@ -110,14 +111,14 @@ class Type extends AbstractAssertion implements Evaluator {
         }
         
         @Override
-        protected Result testType(InstanceType type, JsonParser parser, Reporter reporter) {
+        protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
             if (contains(type)) {
-                Problem p = newProblemBuilder(parser)
+                Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.not.type")
                         .withParameter("actual", type)
                         .withParameter("expected", this.typeSet)
                         .build();
-                reporter.reportProblem(p);
+                reporter.accept(p);
                 return Result.FALSE;
             } else {
                 return Result.TRUE;

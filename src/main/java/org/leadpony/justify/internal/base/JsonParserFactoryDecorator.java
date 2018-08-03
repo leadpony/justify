@@ -16,11 +16,12 @@
 
 package org.leadpony.justify.internal.base;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -42,7 +43,7 @@ public class JsonParserFactoryDecorator implements JsonParserFactory {
      * @param real the underlying JSON parser factory to be decorated.
      */
     public JsonParserFactoryDecorator(JsonParserFactory real) {
-        Objects.requireNonNull(real, "real must not be null.");
+        requireNonNull(real, "real");
         this.real = real;
     }
     

@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.function.Consumer;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -23,9 +25,10 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
 
 /**
@@ -55,7 +58,7 @@ class BroadcastItems extends UnaryCombiner implements Items {
      * @return newly created evaluator.
      */
     protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return Evaluators.newConjunctionChildEvaluator(InstanceType.ARRAY);
+        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.ARRAY);
     }
     
     class ArrayItemSchemaEvaluator extends AbstractChildSchemaEvaluator {
@@ -65,7 +68,7 @@ class BroadcastItems extends UnaryCombiner implements Items {
         }
         
         @Override
-        protected void update(Event event, JsonParser parser, Reporter reporter) {
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (ParserEvents.isValue(event)) {
                 Evaluator evaluator = createChildEvaluator(event, parser);
                 if (evaluator != null) {
@@ -76,7 +79,7 @@ class BroadcastItems extends UnaryCombiner implements Items {
         
         protected Evaluator createChildEvaluator(Event event, JsonParser parser) {
             InstanceType type = ParserEvents.toInstanceType(event, parser);
-            return getSubschema().createEvaluator(type);
+            return getSubschema().createEvaluator(type, getEvaluatorFactory());
         }
     }
     
@@ -88,7 +91,7 @@ class BroadcastItems extends UnaryCombiner implements Items {
 
         @Override
         protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return Evaluators.newDisjunctionChildEvaluator(InstanceType.ARRAY);
+            return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.ARRAY, this);
         }
     }
 }

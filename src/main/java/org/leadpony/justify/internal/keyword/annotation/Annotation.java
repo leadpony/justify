@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
  * Keyword for annotation.
@@ -25,15 +25,15 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-public interface Annotation<T> extends Keyword {
+public abstract class Annotation<T> extends AbstractKeyword {
     
     @Override
-    default boolean canEvaluate() {
+    public boolean canEvaluate() {
         return false;
     }
     
     @Override
-    default Annotation<T> negate() {
+    public Annotation<T> negate() {
         return this;
     }
 
@@ -42,5 +42,5 @@ public interface Annotation<T> extends Keyword {
      * 
      * @return the value of this annotation. 
      */
-    T value();
+    abstract T value();
 }

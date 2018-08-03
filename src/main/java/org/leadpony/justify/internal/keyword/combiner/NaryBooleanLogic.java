@@ -39,7 +39,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * 
  * @author leadpony
  */
-abstract class NaryBooleanLogic implements BooleanLogic {
+abstract class NaryBooleanLogic extends Combiner {
    
     private final List<JsonSchema> subschemas;
     
@@ -49,9 +49,10 @@ abstract class NaryBooleanLogic implements BooleanLogic {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type);
+        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type)
+                .withProblemBuilderFactory(this);
         this.subschemas.stream()
-                .map(s->s.createEvaluator(type))
+                .map(s->s.createEvaluator(type, getEvaluatorFactory()))
                 .filter(Objects::nonNull)
                 .forEach(builder::append);
         Evaluator evaluator = builder.build();
