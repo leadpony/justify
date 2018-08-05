@@ -20,9 +20,8 @@ import java.util.Collection;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator.Builder;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Boolean logic specified with "anyOf" validation keyword.
@@ -41,12 +40,11 @@ class AnyOf extends NaryBooleanLogic {
     }
     
     @Override
-    public Keyword negate() {
-        return new AllOf(negateSubschemas());
-    }
-
-    @Override
-    protected Builder createEvaluatorBuilder(InstanceType type) {
-        return DefaultEvaluatorFactory.SINGLETON.createDisjunctionEvaluatorBuilder(type);
+    protected Builder createEvaluatorBuilder(InstanceType type, boolean affirmative) {
+        if (affirmative) {
+            return Evaluators.newDisjunctionEvaluatorBuilder(type);
+        } else {
+            return Evaluators.newConjunctionEvaluatorBuilder(type);
+        }
     }
 }

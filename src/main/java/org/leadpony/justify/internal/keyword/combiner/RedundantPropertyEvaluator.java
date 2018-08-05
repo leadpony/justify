@@ -22,37 +22,32 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-abstract class AbstractChildSchemaEvaluator implements Evaluator {
+class RedundantPropertyEvaluator implements Evaluator {
     
-    private final DynamicLogicalEvaluator dynamicEvaluator;
+    private final String keyName;
+    private final JsonSchema schema;
     
-    protected AbstractChildSchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
-        this.dynamicEvaluator = dynamicEvaluator;
+    RedundantPropertyEvaluator(String keyName, JsonSchema schema) {
+        assert schema.isBoolean();
+        this.keyName = keyName;
+        this.schema = schema;
     }
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        if (depth == 1) {
-            update(event, parser, reporter);
-        }
-        return dynamicEvaluator.evaluate(event, parser, depth, reporter);
+        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+                .withMessage("instance.problem.unexpected.property")
+                .withParameter("name", keyName)
+                .withSchema(schema)
+                .build();
+        reporter.accept(p);
+        return Result.FALSE;
     }
-    
-    /**
-     * Appends evaluator for a child instance.
-     * 
-     * @param evaluator the evaluator to append, cannot be {@code null}.
-     */
-    protected void appendChild(Evaluator evaluator) {
-        assert evaluator != null;
-        dynamicEvaluator.append(evaluator);
-    }
-    
-    protected abstract void update(Event event, JsonParser parser, Consumer<Problem> reporter);
 }

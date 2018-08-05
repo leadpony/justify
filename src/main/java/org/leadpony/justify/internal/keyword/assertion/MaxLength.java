@@ -24,16 +24,11 @@ package org.leadpony.justify.internal.keyword.assertion;
 class MaxLength extends AbstractStringLengthAssertion {
 
     MaxLength(int bound) {
-        super(bound, "maxLength", "instance.problem.maxLength");
+        super(bound, "maxLength", "instance.problem.maxLength", "instance.problem.not.maxLength");
     }
 
     @Override
-    public Assertion negate() {
-        return new ExclusiveMinLength(bound);
-    }
-
-    @Override
-    protected boolean test(int actualLength, int bound) {
+    protected boolean testLength(int actualLength, int bound) {
         return actualLength <= bound;
     }
 }

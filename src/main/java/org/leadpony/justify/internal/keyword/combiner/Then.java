@@ -34,6 +34,10 @@ class Then extends UnaryCombiner {
         return "then";
     }
 
+    /**
+     * {@inheritDoc}
+     * Schema evaluation will be done in "if" keyword.
+     */
     @Override
     public boolean canEvaluate() {
         return false;

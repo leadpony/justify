@@ -16,22 +16,40 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObjectBuilder;
+
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
+
 /**
+ * The type representing "maxContains" keyword.
+ * 
  * @author leadpony
  */
-class ExclusiveMinLength extends AbstractStringLengthAssertion {
+public class MaxContains extends AbstractKeyword {
+    
+    private final int value;
+    
+    MaxContains(int value) {
+        this.value = value;
+    }
 
-    public ExclusiveMinLength(int bound) {
-        super(bound, "exclusiveMinLength", "instance.problem.exclusiveMinLength");
+    public int value() {
+        return value;
+    }
+    
+    @Override
+    public String name() {
+        return "maxContains";
     }
 
     @Override
-    public Assertion negate() {
-        return new MaxLength(bound);
+    public boolean canEvaluate() {
+        return false;
     }
 
     @Override
-    protected boolean test(int actualLength, int bound) {
-        return actualLength > bound;
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        builder.add(name(), value);
     }
 }

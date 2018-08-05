@@ -58,7 +58,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
             if (result != Result.PENDING) {
                 it.remove();
                 if (!accumulateResult(evaluator, result)) {
-                    return conclude(parser, reporter);
+                    return getFinalResult(parser, reporter);
                 }
             }
         }
@@ -76,12 +76,12 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (stopEvent == null) {
             assert isEmpty();
-            return conclude(parser, reporter);
+            return getFinalResult(parser, reporter);
         } else if (isEmpty()) {
-            return conclude(parser, reporter);
+            return getFinalResult(parser, reporter);
         } else if (depth == 0 && event == stopEvent) {
             assert false;
-            return conclude(parser, reporter);
+            return getFinalResult(parser, reporter);
         } else {
             return Result.PENDING;
         }
@@ -89,7 +89,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
-    protected abstract Result conclude(JsonParser parser, Consumer<Problem> reporter);
+    protected abstract Result getFinalResult(JsonParser parser, Consumer<Problem> reporter);
     
     protected static abstract class Builder implements LogicalEvaluator.Builder {
         

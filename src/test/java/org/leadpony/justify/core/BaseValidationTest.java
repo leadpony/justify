@@ -22,17 +22,24 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
 
 /**
+ * Base type of validation test.
+ * 
  * @author leadpony
  */
 public abstract class BaseValidationTest {
@@ -42,31 +49,50 @@ public abstract class BaseValidationTest {
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
+    private List<Problem> problems;
+    
+    @BeforeEach
+    public void setUp() {
+        problems = new ArrayList<>();
+    }
+    
     @ParameterizedTest
     @MethodSource("provideFixtures")
-    public void testValidationResult(ValidationFixture fixture) {
-        List<Problem> problems = new ArrayList<>();
-        JsonParser parser = createValidatingParser(fixture, Jsonv.createProblemCollector(problems));
+    //@Disabled
+    public void testValidationWithSchema(ValidationFixture fixture) {
+        JsonSchema schema = getSchema(fixture.schema());
+        JsonValue data = fixture.data();
+        JsonParser parser = createValidatingParser(data, schema);
         while (parser.hasNext()) {
             parser.next();
         }
         parser.close();
         assertThat(problems.isEmpty()).isEqualTo(fixture.getDataValidity());
         for (Problem problem : problems) {
-            JsonSchema schema = problem.getSchema();
-            assertThat(schema).isNotNull();
+            assertThat(problem.getSchema()).isNotNull();
         }
         printProblems(fixture, problems);
     }
     
-    private JsonParser createValidatingParser(ValidationFixture fixture, Consumer<List<Problem>> handler) {
-        JsonSchema schema = getSchema(fixture);
-        StringReader reader = new StringReader(fixture.data().toString());
-        return Jsonv.createParser(reader, schema, handler);
+    @ParameterizedTest
+    @MethodSource("provideFixtures")
+    @Disabled
+    public void testValidationWithNegatedSchema(ValidationFixture fixture) {
+        JsonSchema schema = getSchema(negate(fixture.schema()));
+        JsonValue data = fixture.data();
+        JsonParser parser = createValidatingParser(data, schema);
+        while (parser.hasNext()) {
+            parser.next();
+        }
+        parser.close();
+        assertThat(problems.isEmpty()).isEqualTo(!fixture.getDataValidity());
+        for (Problem problem : problems) {
+            assertThat(problem.getSchema()).isNotNull();
+        }
+        printProblems(fixture, problems);
     }
-    
-    private JsonSchema getSchema(ValidationFixture fixture) {
-        JsonValue value = fixture.schema();
+
+    private JsonSchema getSchema(JsonValue value) {
         if (value == lastValue) {
             return lastSchema;
         } else {
@@ -86,15 +112,26 @@ public abstract class BaseValidationTest {
         }
     }
   
+    private JsonParser createValidatingParser(JsonValue data, JsonSchema schema) {
+        StringReader reader = new StringReader(data.toString());
+        return Jsonv.createParser(reader, schema, Jsonv.createProblemCollector(problems));
+    }
+    
+    private JsonObject negate(JsonValue value) {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("not", value);
+        return builder.build();
+    }
+    
     protected JsonSchemaReader createSchemaReader(Reader reader) {
         return Jsonv.createSchemaReader(reader);
     }
 
-    protected void printProblems(ValidationFixture fixture, List<Problem> problems) {
+    protected void printProblems(Fixture fixture, List<Problem> problems) {
         if (problems.isEmpty()) {
             return;
         }
-        log.info(fixture.displayName());
+        log.info(">>>" + fixture.displayName());
         Jsonv.createProblemPrinter(log::info).accept(problems);
     }
 }

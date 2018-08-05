@@ -23,11 +23,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.base.JsonSchemas;
-import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -59,27 +55,6 @@ public class PatternProperties extends BaseProperties<Pattern> {
     }
     
     @Override
-    public PatternProperties negate() {
-        PatternProperties original = this;
-        return new PatternProperties(
-                JsonSchemas.negate(this.propertyMap),
-                this.additionalProperties.negate(),
-                this.enabled
-                ) {
-            
-            @Override
-            public PatternProperties negate() {
-                return original;
-            }
-
-            @Override
-            protected DynamicLogicalEvaluator createDynamicEvaluator() {
-                return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.OBJECT, original);
-            }
-        };
-    }
-
-    @Override
     public void link(Map<String, Keyword> siblings) {
         super.link(siblings);
         enabled = !siblings.containsKey("properties");
@@ -100,7 +75,7 @@ public class PatternProperties extends BaseProperties<Pattern> {
     
     
     @Override
-    protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
+    protected void findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
         for (Pattern pattern : propertyMap.keySet()) {
             Matcher m = pattern.matcher(keyName);
             if (m.find()) {
@@ -108,9 +83,7 @@ public class PatternProperties extends BaseProperties<Pattern> {
             }
         }
         if (subschemas.isEmpty()) {
-            return super.findSubschemas(keyName, subschemas);
-        } else {
-            return null;
+            super.findSubschemas(keyName, subschemas);
         }
     }
 }

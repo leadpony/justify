@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Provides various kinds of assertions.
@@ -96,6 +97,14 @@ public final class Assertions {
     
     public static Assertion uniqueItems(boolean unique) {
         return new UniqueItems(unique);
+    }
+   
+    public static Keyword maxContains(int value) {
+        return new MaxContains(value);
+    }
+
+    public static Keyword minContains(int value) {
+        return new MinContains(value);
     }
     
     /* Validation Keywords for Objects */

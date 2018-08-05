@@ -33,9 +33,9 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
-import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -58,9 +58,10 @@ public abstract class BaseProperties<K> extends Combiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new ProperySchemaEvaluator(createDynamicEvaluator()));
+            appender.append(new ProperySchemaEvaluator(affirmative, this));
         }
     }
     
@@ -92,27 +93,25 @@ public abstract class BaseProperties<K> extends Combiner {
         propertyMap.put(key, subschema);
     }
 
-    protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.OBJECT);
-    }
-    
-    protected JsonSchema findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
+    protected void findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
         assert subschemas.isEmpty();
-        return additionalProperties.findSubshcmeas(keyName, subschemas);
+        additionalProperties.findSubshcmeas(keyName, subschemas);
     }
     
-    private class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
+    private class ProperySchemaEvaluator extends DynamicChildrenEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
-        ProperySchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
-            super(dynamicEvaluator);
+        ProperySchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
+            super(affirmative, Event.END_OBJECT, problemBuilderFactory);
         }
-
+        
         @Override
         protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (event == Event.KEY_NAME) {
-                findSubschemas(parser.getString());
+                String keyName = parser.getString();
+                findSubschemas(keyName);
+                appendImmediateEvaluator(keyName);
             } else if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 appendEvaluators(type);
@@ -120,15 +119,20 @@ public abstract class BaseProperties<K> extends Combiner {
         }
         
         private void findSubschemas(String keyName) {
-            JsonSchema immediate = BaseProperties.this.findSubschemas(keyName, this.subschemas);
-            if (immediate != null) {
-                appendChild(immediate.createEvaluator(InstanceType.OBJECT, getEvaluatorFactory()));
+            BaseProperties.this.findSubschemas(keyName, this.subschemas);
+        }
+        
+        private void appendImmediateEvaluator(String keyName) {
+            JsonSchema schemaToFail = getSchemaToFail();
+            if (subschemas.contains(schemaToFail)) {
+                append(new RedundantPropertyEvaluator(keyName, schemaToFail));
+                subschemas.removeIf(s->s == schemaToFail);
             }
         }
         
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                appendChild(subschema.createEvaluator(type, getEvaluatorFactory()));
+                append(subschema, type);
             }
             this.subschemas.clear();
         }

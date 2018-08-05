@@ -50,7 +50,7 @@ class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
@@ -61,6 +61,21 @@ class Const extends AbstractEqualityAssertion {
                     .build();
             reporter.accept(p);
             return Result.FALSE;
+        }
+    }
+
+    @Override
+    protected Result assertNotEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+        if (actual.equals(expected)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.const")
+                    .withParameter("actual", actual)
+                    .withParameter("expected", expected)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
         }
     }
 }

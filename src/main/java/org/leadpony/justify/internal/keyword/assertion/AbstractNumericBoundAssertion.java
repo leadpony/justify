@@ -23,6 +23,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -30,14 +31,25 @@ import org.leadpony.justify.core.Problem;
  */
 abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
-    protected final BigDecimal bound;
+    private final BigDecimal bound;
     private final String name;
-    private final String message;
+    private final String messageKey;
+    private final String negatedMessageKey;
     
-    protected AbstractNumericBoundAssertion(BigDecimal bound, String name, String message) {
+    /**
+     * Constructs this assertion.
+     * 
+     * @param bound the lower of upper bound.
+     * @param name the name of this assertion.
+     * @param messageKey the error message for normal evaluation. 
+     * @param negatedMessageKey the error message for negated evaluation.
+     */
+    protected AbstractNumericBoundAssertion(
+            BigDecimal bound, String name, String messageKey, String negatedMessageKey) {
         this.bound = bound;
         this.name = name;
-        this.message = message;
+        this.messageKey = messageKey;
+        this.negatedMessageKey = negatedMessageKey;
     }
     
     @Override
@@ -46,12 +58,17 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
-        if (test(value, this.bound)) {
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        builder.add(name(), this.bound);
+    }
+
+    @Override
+    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value, this.bound)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
-                    .withMessage(this.message)
+                    .withMessage(this.messageKey)
                     .withParameter("actual", value)
                     .withParameter("bound", this.bound)
                     .build();
@@ -61,9 +78,19 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), this.bound);
+    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value, this.bound)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage(this.negatedMessageKey)
+                    .withParameter("actual", value)
+                    .withParameter("bound", this.bound)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
     }
-    
-    protected abstract boolean test(BigDecimal actual, BigDecimal bound);
+
+    protected abstract boolean testValue(BigDecimal actual, BigDecimal bound);
 }

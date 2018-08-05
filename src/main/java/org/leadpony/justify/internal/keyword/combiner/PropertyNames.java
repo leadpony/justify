@@ -22,16 +22,19 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
+ * Combiner representing "propertyNames" keyword.
+ * 
  * @author leadpony
  */
-class PropertyNames extends UnaryCombiner implements Evaluator {
+class PropertyNames extends UnaryCombiner {
 
     PropertyNames(JsonSchema subschema) {
         super(subschema);
@@ -43,26 +46,27 @@ class PropertyNames extends UnaryCombiner implements Evaluator {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
-            appender.append(this);
+            appender.append(new SubschemaEvaluator(affirmative, this, getSubschema()));
         }
     }
 
-    @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        if (depth == 0 && event == Event.END_OBJECT) {
-            return Result.TRUE;
-        } else if (depth == 1 && event == Event.KEY_NAME) {
-            evaluateName(event, parser, depth, reporter);
+    private static class SubschemaEvaluator extends DynamicChildrenEvaluator {
+
+        private final JsonSchema subschema;
+        
+        SubschemaEvaluator(boolean affirmative, ProblemBuilderFactory problemFactory, JsonSchema subschema) {
+            super(affirmative, Event.END_OBJECT, problemFactory);
+            this.subschema = subschema;
         }
-        return Result.PENDING;
-    }
-    
-    private void evaluateName(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        Evaluator evaluator = getSubschema().createEvaluator(InstanceType.STRING, getEvaluatorFactory());
-        if (evaluator != null) {
-            evaluator.evaluate(event, parser, depth, reporter);
+
+        @Override
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+            if (event == Event.KEY_NAME) {
+                append(subschema, InstanceType.STRING);
+            }
         }
     }
 }

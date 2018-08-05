@@ -23,7 +23,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  *  
  * @author leadpony
  */
-class SingleType extends AbstractAssertion implements Evaluator {
+class SingleType extends AbstractAssertion {
     
     protected final InstanceType type;
     
@@ -49,12 +49,12 @@ class SingleType extends AbstractAssertion implements Evaluator {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        appender.append(this);
+        appender.append(this::evaluate);
     }
     
     @Override
-    public Assertion negate() {
-        return new Negated(this.type);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        appender.append(this::evaluateNegated);
     }
 
     @Override
@@ -62,8 +62,7 @@ class SingleType extends AbstractAssertion implements Evaluator {
         builder.add("type", type.name().toLowerCase());
     }
 
-    @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type == null || testType(type)) {
             return Result.TRUE;
@@ -78,45 +77,27 @@ class SingleType extends AbstractAssertion implements Evaluator {
         }
     }
     
-    protected boolean testType(InstanceType type) {
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
+        if (type == null || !testType(type)) {
+            return Result.TRUE; 
+        } else {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.type.single")
+                    .withParameter("expected", this.type)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        }
+    }
+
+    private boolean testType(InstanceType type) {
         if (type == this.type) {
             return true;
         } else if (type == InstanceType.INTEGER) {
             return this.type == InstanceType.NUMBER;
         } else {
             return false;
-        }
-    }
-    
-    /**
-     * Negated version of containing class.
-     * 
-     * @author leadpony
-     */
-    private class Negated extends SingleType {
-
-        private Negated(InstanceType type) {
-            super(type);
-        }
-
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
-            if (type == null || !testType(type)) {
-                return Result.TRUE; 
-            } else {
-                Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.not.type.single")
-                        .withParameter("expected", this.type)
-                        .build();
-                reporter.accept(p);
-                return Result.FALSE;
-            }
-        }
-
-        @Override
-        public Assertion negate() {
-            return new SingleType(type);
         }
     }
 }

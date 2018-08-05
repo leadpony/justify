@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMinimum(BigDecimal bound) {
-        super(bound, "exclusiveMinimum", "instance.problem.exclusiveMinimum");
+        super(bound, "exclusiveMinimum", "instance.problem.exclusiveMinimum", "instance.problem.maximum");
     }
 
     @Override
@@ -35,12 +35,7 @@ class ExclusiveMinimum extends AbstractNumericBoundAssertion {
     }
 
     @Override
-    public Assertion negate() {
-        return new Maximum(this.bound);
-    }
-
-    @Override
-    protected boolean test(BigDecimal actual, BigDecimal bound) {
+    protected boolean testValue(BigDecimal actual, BigDecimal bound) {
         return actual.compareTo(bound) > 0;
     }
 }

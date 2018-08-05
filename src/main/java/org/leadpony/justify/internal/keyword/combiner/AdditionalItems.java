@@ -16,11 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.JsonBuilderFactory;
-
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * "additionalItems" keyword.
@@ -43,23 +39,5 @@ class AdditionalItems extends UnaryCombiner {
     @Override
     public boolean canEvaluate() {
         return false;
-    }
-   
-    @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public AdditionalItems negate() {
-        return new AdditionalItems(getSubschema().negate());
-    }
-  
-    JsonSchema getSubschemaAt(int itemIndex) {
-        JsonSchema subschema = getSubschema();
-        if (subschema == JsonSchema.FALSE) {
-            subschema = new RedundantItemSchema(itemIndex, this);
-        }
-        return subschema;
     }
 }

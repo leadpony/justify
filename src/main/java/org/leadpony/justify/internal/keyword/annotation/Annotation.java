@@ -32,11 +32,6 @@ public abstract class Annotation<T> extends AbstractKeyword {
         return false;
     }
     
-    @Override
-    public Annotation<T> negate() {
-        return this;
-    }
-
     /**
      * Returns the value of this annotation.
      * 

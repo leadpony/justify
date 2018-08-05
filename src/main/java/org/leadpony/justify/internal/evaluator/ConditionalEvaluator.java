@@ -43,9 +43,9 @@ public class ConditionalEvaluator implements Evaluator {
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         this.ifEvaluator = ifEvaluator;
         this.thenEvaluator = (thenEvaluator != null) ? 
-                new StoringEvaluator(thenEvaluator) : DefaultEvaluatorFactory.SINGLETON.alwaysIgnored();
+                new StoringEvaluator(thenEvaluator) : Evaluators.ALWAYS_IGNORED;
         this.elseEvaluator = (elseEvaluator != null) ?
-                new StoringEvaluator(elseEvaluator) : DefaultEvaluatorFactory.SINGLETON.alwaysIgnored();
+                new StoringEvaluator(elseEvaluator) : Evaluators.ALWAYS_IGNORED;
         this.ifResult = Result.PENDING;
         this.thenResult = Result.PENDING;
         this.elseResult = Result.PENDING;

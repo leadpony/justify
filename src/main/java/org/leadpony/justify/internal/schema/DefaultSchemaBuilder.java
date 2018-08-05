@@ -50,7 +50,7 @@ import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
 
 /**
- * Default implementation of {@link JsonSchemaBuilder}.
+ * The default implementation of {@link EnhancedSchemaBuilder}.
  * 
  * @author leadpony
  */
@@ -101,14 +101,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withId(URI id) {
         requireNonNull(id, "id");
         this.id = id;
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withSchema(URI schema) {
         requireNonNull(schema, "schema");
         this.schema = schema;
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -124,7 +124,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(types, "types");
         requireNonEmpty(types, "types");
         addKeyword(Assertions.type(types));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -140,14 +140,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(values, "values");
         requireNonEmpty(values, "values");
         addKeyword(Assertions.enum_(values));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withConst(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.const_(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
  
     @Override
@@ -167,49 +167,49 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(value, "value");
         requirePositive(value, "value");
         addKeyword(Assertions.multipleOf(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.maximum(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMaximum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.exclusiveMaximum(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMinimum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.minimum(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMinimum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.exclusiveMinimum(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMaxLength(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxLength(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMinLength(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minLength(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -217,7 +217,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(pattern, "pattern");
         Pattern compiled = Pattern.compile(pattern);
         addKeyword(Assertions.pattern(compiled));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     /* Validation Keywords for Arrays */
@@ -226,7 +226,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withItem(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.items(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -234,55 +234,55 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.items(subschemas));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
   
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.additionalItems(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     } 
 
     @Override
     public JsonSchemaBuilder withMaxItems(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxItems(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMinItems(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minItems(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withUniqueItems(boolean unique) {
         addKeyword(Assertions.uniqueItems(unique));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.contains(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withMaxContains(int value) {
         requireNonNegative(value, "value");
-        addKeyword(Combiners.maxContains(value));
-        return builderNonempty();
+        addKeyword(Assertions.maxContains(value));
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMinContains(int value) {
         requireNonNegative(value, "value");
-        addKeyword(Combiners.minContains(value));
-        return builderNonempty();
+        addKeyword(Assertions.minContains(value));
+        return nonemptyBuilder();
     }
 
     /* Validation Keywords for Objects */
@@ -291,14 +291,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withMaxProperties(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxProperties(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withMinProperties(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minProperties(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -312,7 +312,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withRequired(Set<String> names) {
         requireNonNull(names, "names");
         addKeyword(Assertions.required(names));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -321,7 +321,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschema, "subschema");
         Properties properties = requireKeyword("properties", Combiners::properties);
         properties.addProperty(name, subschema);
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -331,14 +331,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         Pattern compiled = Pattern.compile(pattern);
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
         properties.addProperty(compiled, subschema);
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.additionalProperties(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
    
     @Override
@@ -347,7 +347,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschema, "subschema");
         Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
         keyword.addDependency(name, subschema);
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -356,14 +356,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(requiredProperties, "requiredProperties");
         Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
         keyword.addDependency(name, requiredProperties);
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.propertyNames(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
   
     /* Keywords for Applying Subschemas Conditionally */
@@ -372,21 +372,21 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.if_(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.then_(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.else_(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -401,7 +401,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.allOf(subschemas));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -416,7 +416,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.anyOf(subschemas));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
@@ -431,14 +431,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.oneOf(subschemas));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.not(subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
   
     @Override
@@ -447,35 +447,35 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(schema, "schema");
         Definitions definitions = requireKeyword("definitions", Combiners::definitions);
         definitions.addDefinition(name, schema);
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withTitle(String title) {
         requireNonNull(title, "title");
         addKeyword(new Title(title));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
 
     @Override
     public JsonSchemaBuilder withDescription(String description) {
         requireNonNull(description, "description");
         addKeyword(new Description(description));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withDefault(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(new Default(value));
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
     public JsonSchemaBuilder withRef(URI ref) {
         requireNonNull(ref, "ref");
         this.ref = ref;
-        return builderNonempty();
+        return nonemptyBuilder();
     }
     
     @Override
@@ -483,7 +483,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(name, "name");
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.unknown(name, subschema));
-        return builderWithSubschema();
+        return nonemptyBuilder();
     }
 
     private void addKeyword(Keyword keyword) {
@@ -516,17 +516,8 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
      * 
      * @return this builder.
      */
-    private JsonSchemaBuilder builderNonempty() {
+    private JsonSchemaBuilder nonemptyBuilder() {
         this.empty = false;
         return this;
-    }
-    
-    /**
-     * Marks this builder as having subschema.
-     * 
-     * @return this builder.
-     */
-    private JsonSchemaBuilder builderWithSubschema() {
-        return builderNonempty();
     }
 }

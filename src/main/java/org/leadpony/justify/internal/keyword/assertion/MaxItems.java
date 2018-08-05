@@ -26,6 +26,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -50,13 +51,15 @@ class MaxItems extends AbstractAssertion {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.ARRAY) {
-            appender.append(new AssertionEvaluator());
+            appender.append(new AssertionEvaluator(bound, this));
         }
     }
 
     @Override
-    public Assertion negate() {
-        return new MinItems(bound + 1);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.ARRAY) {
+            appender.append(new MinItems.AssertionEvaluator(bound + 1, this));
+        }
     }
 
     @Override
@@ -64,9 +67,16 @@ class MaxItems extends AbstractAssertion {
         builder.add(name(), bound);
     }
     
-    private class AssertionEvaluator implements ShallowEvaluator { 
+    static class AssertionEvaluator implements ShallowEvaluator { 
 
+        private final int maxItems;
+        private final ProblemBuilderFactory factory;
         private int currentCount;
+        
+        AssertionEvaluator(int maxItems, ProblemBuilderFactory factory) {
+            this.maxItems = maxItems;
+            this.factory = factory;
+        }
 
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
@@ -75,13 +85,13 @@ class MaxItems extends AbstractAssertion {
                     ++currentCount;
                 }
             } else if (depth == 0 && event == Event.END_ARRAY) {
-                if (currentCount <= bound) {
+                if (currentCount <= maxItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = createProblemBuilder(parser)
+                    Problem p = factory.createProblemBuilder(parser)
                             .withMessage("instance.problem.maxItems")
                             .withParameter("actual", currentCount)
-                            .withParameter("bound", bound)
+                            .withParameter("bound", maxItems)
                             .build();
                     reporter.accept(p);
                     return Result.FALSE;

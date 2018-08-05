@@ -19,8 +19,6 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -28,10 +26,9 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -57,19 +54,6 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
         this.schema = builder.getSchema();
     }
     
-    /**
-     * Copy constructor.
-     * 
-     * @param original the original schema.
-     * @param keywordMap the keywords of this schema.
-     */
-    BasicSchema(BasicSchema original, Map<String, Keyword> keywordMap) {
-        super(original, keywordMap);
-        this.id = original.id;
-        this.originalId = original.originalId;
-        this.schema = original.schema;
-    }
-    
     @Override
     public boolean hasId() {
         return id != null;
@@ -84,33 +68,22 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     public URI schemaId() {
         return schema;
     }
-    
-    @Override
-    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
-        requireNonNull(type, "type");
-        requireNonNull(factory, "factory");
-        LogicalEvaluator.Builder builder = createLogicalEvaluator(type);
-        appendEvaluatorsTo(builder, type);
-        return builder.build();
-    }
 
     @Override
-    public JsonSchema negate() {
-        BasicSchema original = this;
-        Map<String, Keyword> newMap = new LinkedHashMap<>(getKeywordMap());
-        newMap.replaceAll((k, v)->v.negate());
-        return new BasicSchema(original, newMap) {
-            @Override
-            public JsonSchema negate() {
-                return original;
+    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+        requireNonNull(type, "type");
+        requireNonNull(factory, "factory");
+        LogicalEvaluator.Builder builder = (affirmative ?
+                Evaluators.newConjunctionEvaluatorBuilder(type) :
+                Evaluators.newDisjunctionEvaluatorBuilder(type))
+                .withProblemBuilderFactory(this);
+        JsonBuilderFactory builderFactory = getBuilderFactory();
+        for (Keyword keyword : getKeywordMap().values()) {
+            if (keyword.canEvaluate()) {
+                keyword.createEvaluator(type, builder, builderFactory, affirmative);
             }
-            
-            @Override
-            protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-                return DefaultEvaluatorFactory.SINGLETON.createDisjunctionEvaluatorBuilder(type)
-                        .withProblemBuilderFactory(this);
-            } 
-        };
+        }
+        return builder.build();
     }
 
     @Override
@@ -132,18 +105,5 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
 
     public void setAbsoluteId(URI id) {
         this.id = id;
-    }
- 
-    protected LogicalEvaluator.Builder createLogicalEvaluator(InstanceType type) {
-        return DefaultEvaluatorFactory.SINGLETON.createConjunctionEvaluatorBuilder(type);
-    } 
-
-    private void appendEvaluatorsTo(LogicalEvaluator.Builder builder, InstanceType type) {
-        JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : getKeywordMap().values()) {
-            if (keyword.canEvaluate()) {
-                keyword.createEvaluator(type, builder, builderFactory);
-            }
-        }
     }
 }

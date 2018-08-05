@@ -54,18 +54,41 @@ class Enum extends AbstractEqualityAssertion {
     }
     
     @Override
-    protected Result testValue(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+        if (contains(actual)) {
+            return Result.TRUE;
+        } else {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.enum")
+                    .withParameter("actual", actual)
+                    .withParameter("expected", this.expected)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        }
+    }
+
+    @Override
+    protected Result assertNotEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+        if (contains(actual)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.enum")
+                    .withParameter("actual", actual)
+                    .withParameter("expected", this.expected)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
+    }
+    
+    private boolean contains(JsonValue value) {
         for (JsonValue expected : this.expected) {
-            if (actual.equals(expected)) {
-                return Result.TRUE;
+            if (value.equals(expected)) {
+                return true;
             }
         }
-        Problem p = createProblemBuilder(parser)
-                .withMessage("instance.problem.enum")
-                .withParameter("actual", actual)
-                .withParameter("expected", this.expected)
-                .build();
-        reporter.accept(p);
-        return Result.FALSE;
+        return false;
     }
 }

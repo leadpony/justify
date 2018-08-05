@@ -40,7 +40,7 @@ import javax.json.JsonValue;
  *
  * <p>
  * Alternatively, a JSON schema can be built programmatically 
- * with {@link JsonSchemaBuilder}.
+ * with {@link JsonSchemaBuilder} as follows.
  * </p>
  * <pre><code>
  * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
@@ -103,8 +103,8 @@ public interface JsonSchema {
      * @param jsonPointer the valid escaped JSON Pointer string.
      *                    It must be an empty string or a sequence of '/' prefixed tokens.
      * @return the subschema found or {@code null} if the subschema does not exist.
-     * @throws NullPointerException if {@code jsonPointer} is {@code null}.
-     * @throws JsonException {@code jsonPointer} is not a valid JSON Pointer.
+     * @throws NullPointerException if the specified {@code jsonPointer} is {@code null}.
+     * @throws JsonException if the specified {@code jsonPointer} is not a valid JSON Pointer.
      */
     default JsonSchema subschemaAt(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
@@ -116,17 +116,14 @@ public interface JsonSchema {
      * 
      * @param type the type of the instance to which this schema will be applied.
      * @param factory the factory of basic evaluators.
+     * @param affirmative {@code true} to create a normal evaluator, or
+     *                    {@code false} to create a negating evaluator.
      * @return the evaluator of this schema. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} or {@code factory} is {@code null}.
      */
-    Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory);
+    Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative);
 
-    /**
-     * Returns the negation of this schema.
-     * 
-     * @return the negation of this schema, never be {@code null}.
-     */
-    JsonSchema negate();
+    //Evaluator createNegatedEvaluator(InstanceType type, EvaluatorFactory factory);
     
     /**
      * Returns the JSON representation of this schema.
@@ -143,6 +140,17 @@ public interface JsonSchema {
      */
     @Override
     String toString();
+    
+    /**
+     * Returns a boolean schema instance representing the specified boolean value. 
+     * 
+     * @param value the boolean value.
+     * @return {@link JsonSchema#TRUE} if the specified {@code value} is {@code true},
+     *         or {@link JsonSchema#FALSE} if the specified {@code value} is {@code false}.
+     */
+    static JsonSchema valueOf(boolean value) {
+        return value ? JsonSchema.TRUE : JsonSchema.FALSE;
+    }
     
     /**
      * Factory for producing the predefined basic evaluators.
@@ -174,13 +182,8 @@ public interface JsonSchema {
     JsonSchema EMPTY = new JsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
-            return factory.alwaysTrue();
-        }
-
-        @Override
-        public JsonSchema negate() {
-            return FALSE;
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+            return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
         }
 
         @Override
@@ -206,13 +209,8 @@ public interface JsonSchema {
         }
         
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
-            return factory.alwaysTrue();
-        }
-        
-        @Override
-        public JsonSchema negate() {
-            return FALSE;
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+            return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
         }
         
         @Override
@@ -238,13 +236,8 @@ public interface JsonSchema {
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory) {
-            return factory.alwaysFalse(this);
-        }
-
-        @Override
-        public JsonSchema negate() {
-            return TRUE;
+        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+            return affirmative ? factory.alwaysFalse(this) : factory.alwaysTrue();
         }
 
         @Override

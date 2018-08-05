@@ -25,6 +25,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -49,13 +50,15 @@ class MaxProperties extends AbstractAssertion {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new AssertionEvaluator());
+            appender.append(new AssertionEvaluator(bound, this));
         }
     }
 
     @Override
-    public Assertion negate() {
-        return new MinProperties(bound + 1);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.OBJECT) {
+            appender.append(new MinProperties.AssertionEvaluator(bound + 1, this));
+        }
     }
     
     @Override
@@ -63,9 +66,16 @@ class MaxProperties extends AbstractAssertion {
         builder.add(name(), bound);
     }
     
-    private class AssertionEvaluator implements ShallowEvaluator {
+    static class AssertionEvaluator implements ShallowEvaluator {
 
+        private final int maxProperties;
+        private final ProblemBuilderFactory factory;
         private int currentCount;
+        
+        AssertionEvaluator(int maxProperties, ProblemBuilderFactory factory) {
+            this.maxProperties = maxProperties;
+            this.factory = factory;
+        }
         
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
@@ -74,13 +84,13 @@ class MaxProperties extends AbstractAssertion {
                     ++currentCount;
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                if (currentCount <= bound) {
+                if (currentCount <= maxProperties) {
                     return Result.TRUE;
                 } else {
-                    Problem p = createProblemBuilder(parser)
+                    Problem p = factory.createProblemBuilder(parser)
                             .withMessage("instance.problem.maxProperties")
                             .withParameter("actual", currentCount)
-                            .withParameter("bound", bound)
+                            .withParameter("bound", maxProperties)
                             .build();
                     reporter.accept(p);
                     return Result.FALSE;

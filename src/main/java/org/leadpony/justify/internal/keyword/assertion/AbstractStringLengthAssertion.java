@@ -23,6 +23,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -30,14 +31,17 @@ import org.leadpony.justify.core.Problem;
  */
 abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     
-    protected final int bound;
+    private final int bound;
     private final String name;
-    private final String message;
+    private final String messageKey;
+    private final String negatedMessageKey;
     
-    protected AbstractStringLengthAssertion(int bound, String name, String message) {
+    protected AbstractStringLengthAssertion(
+            int bound, String name, String messageKey, String negatedMessageKey) {
         this.bound = bound;
         this.name = name;
-        this.message = message;
+        this.messageKey = messageKey;
+        this.negatedMessageKey = negatedMessageKey;
     }
 
     @Override
@@ -46,13 +50,13 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstString(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result evaluateAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         int length = value.codePointCount(0, value.length());
-        if (test(length, this.bound)) {
+        if (testLength(length, this.bound)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
-                    .withMessage(this.message)
+                    .withMessage(this.messageKey)
                     .withParameter("actual", length)
                     .withParameter("bound", this.bound)
                     .withParameter("context", getContextName(event))
@@ -63,9 +67,26 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
 
     @Override
+    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+        int length = value.codePointCount(0, value.length());
+        if (testLength(length, this.bound)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage(this.negatedMessageKey)
+                    .withParameter("actual", length)
+                    .withParameter("bound", this.bound)
+                    .withParameter("context", getContextName(event))
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
+    }
+
+    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), this.bound);
     }
     
-    protected abstract boolean test(int actualLength, int bound);
+    protected abstract boolean testLength(int actualLength, int bound);
 }

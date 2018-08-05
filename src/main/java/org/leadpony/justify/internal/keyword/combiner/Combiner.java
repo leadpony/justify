@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
@@ -49,6 +49,6 @@ public abstract class Combiner extends AbstractKeyword {
     }
     
     protected JsonSchema.EvaluatorFactory getEvaluatorFactory() {
-        return DefaultEvaluatorFactory.SINGLETON;
+        return Evaluators.asFactory();
     }
 }

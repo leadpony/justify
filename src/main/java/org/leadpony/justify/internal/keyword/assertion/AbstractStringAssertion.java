@@ -22,7 +22,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -32,21 +32,32 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
+abstract class AbstractStringAssertion extends AbstractAssertion {
     
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.STRING) {
-            appender.append(this);
+            appender.append(this::evaluate);
         }
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.STRING) {
+            appender.append(this::evaluateNegated);
+        }
+    }
+
+    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
-        return evaluateAgainstString(parser.getString(), event, parser, reporter);
+        return evaluateAgainst(parser.getString(), event, parser, reporter);
     }
     
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
+        return evaluateNegatedAgainst(parser.getString(), event, parser, reporter);
+    }
+
     protected static String getContextName(Event event) {
         return event == Event.KEY_NAME ? "key" : "value";
     }
@@ -60,5 +71,16 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Eval
      * @param reporter the reporter to which detected problems will be reported.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateAgainstString(String value, Event event, JsonParser parser, Consumer<Problem> reporter);
+    protected abstract Result evaluateAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter);
+
+    /**
+     * Evaluates the negated assertion on a string value.
+     * 
+     * @param value the value to apply this assertion.
+     * @param event the event which produced the string value.
+     * @param parser the JSON parser.
+     * @param reporter the reporter to which detected problems will be reported.
+     * @return the result of the evaluation.
+     */
+    protected abstract Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter);
 }

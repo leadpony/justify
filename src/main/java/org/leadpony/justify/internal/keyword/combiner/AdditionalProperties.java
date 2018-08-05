@@ -28,9 +28,9 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
-import org.leadpony.justify.internal.evaluator.DynamicLogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -63,45 +63,38 @@ class AdditionalProperties extends UnaryCombiner {
     }
    
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         assert enabled;
         if (type == InstanceType.OBJECT) {
-            appender.append(new ProperySchemaEvaluator(createDynamicEvaluator()));
+            appender.append(new ProperySchemaEvaluator(affirmative, this));
         }
     }
     
-    @Override
-    public AdditionalProperties negate() {
-        return new Negated(this);
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * If there are neither "properties" nor "patternProperties",
+     * make this keyword to be evaluated.
+     * </p>
+     */
     @Override
     public void link(Map<String, Keyword> siblings) {
         enabled = !siblings.containsKey("properties") &&
                   !siblings.containsKey("patternProperties");
     }
     
-    JsonSchema findSubshcmeas(String keyName, Collection<JsonSchema> subschemas) {
+    void findSubshcmeas(String keyName, Collection<JsonSchema> subschemas) {
         assert subschemas.isEmpty();
-        JsonSchema subschema = getSubschema();
-        if (subschema == JsonSchema.FALSE) {
-            return new RedundantPropertySchema(keyName, this);
-        } else {
-            subschemas.add(subschema);
-            return null;
-        }
-    }
-
-    protected DynamicLogicalEvaluator createDynamicEvaluator() {
-        return DefaultEvaluatorFactory.SINGLETON.createDynamicConjunctionEvaluator(InstanceType.OBJECT);
+        subschemas.add(getSubschema());
     }
     
-    class ProperySchemaEvaluator extends AbstractChildSchemaEvaluator {
+    class ProperySchemaEvaluator extends DynamicChildrenEvaluator {
 
         private JsonSchema nextSubschema;
         
-        ProperySchemaEvaluator(DynamicLogicalEvaluator dynamicEvaluator) {
-            super(dynamicEvaluator);
+        ProperySchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
+            super(affirmative, Event.END_OBJECT, problemBuilderFactory);
         }
 
         @Override
@@ -111,7 +104,7 @@ class AdditionalProperties extends UnaryCombiner {
             } else if (ParserEvents.isValue(event)) {
                 if (nextSubschema != null) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    appendChild(nextSubschema.createEvaluator(type, getEvaluatorFactory()));
+                    append(nextSubschema, type);
                     nextSubschema = null;
                 }
             }
@@ -119,23 +112,11 @@ class AdditionalProperties extends UnaryCombiner {
         
         private void findSubschema(String keyName) {
             JsonSchema subschema = getSubschema();
-            if (subschema == JsonSchema.FALSE) {
-                subschema = new RedundantPropertySchema(keyName, AdditionalProperties.this);
-                appendChild(subschema.createEvaluator(InstanceType.OBJECT, getEvaluatorFactory()));
+            if (subschema == getSchemaToFail()) {
+                append(new RedundantPropertyEvaluator(keyName, subschema));
             } else {
                 nextSubschema = subschema;
             }
-        }
-    }
-    
-    private static class Negated extends AdditionalProperties {
-
-        Negated(AdditionalProperties original) {
-            super(original.getSubschema().negate(), original.enabled);
-        }
-
-        protected DynamicLogicalEvaluator createDynamicEvaluator() {
-            return DefaultEvaluatorFactory.SINGLETON.createDynamicDisjunctionEvaluator(InstanceType.OBJECT, this);
         }
     }
 }

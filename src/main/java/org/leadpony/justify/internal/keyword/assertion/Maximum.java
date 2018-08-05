@@ -26,16 +26,11 @@ import java.math.BigDecimal;
 class Maximum extends AbstractNumericBoundAssertion {
 
     Maximum(BigDecimal bound) {
-        super(bound, "maximum", "instance.problem.maximum");
+        super(bound, "maximum", "instance.problem.maximum", "instance.problem.exclusiveMinimum");
     }
     
     @Override
-    public Assertion negate() {
-        return new ExclusiveMinimum(this.bound);
-    }
-
-    @Override
-    protected boolean test(BigDecimal actual, BigDecimal bound) {
+    protected boolean testValue(BigDecimal actual, BigDecimal bound) {
         return actual.compareTo(bound) <= 0;
     }
 }

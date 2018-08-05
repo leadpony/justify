@@ -34,6 +34,8 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.assertion.MaxContains;
+import org.leadpony.justify.internal.keyword.assertion.MinContains;
 
 /**
  * @author leadpony
@@ -106,7 +108,7 @@ class Contains extends UnaryCombiner {
         private Evaluator createSubschemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return getSubschema().createEvaluator(type, getEvaluatorFactory());
+                return getSubschema().createEvaluator(type, getEvaluatorFactory(), true);
             } else {
                 return null;
             }

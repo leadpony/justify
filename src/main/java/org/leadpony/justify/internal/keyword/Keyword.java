@@ -54,7 +54,25 @@ public interface Keyword {
     boolean canEvaluate();
     
     /**
-     * Creates a new evaluator for this keyword.
+     * Creates an evaluator for this keyword.
+     * 
+     * @param type the type of the instance, cannot be {@code null}.
+     * @param appender the type for appending evaluators, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
+     * @param affirmative {@code true} to create normal evaluators,
+     *                    {@code false} to create negated evaluators. 
+     */
+    default void createEvaluator(InstanceType type, EvaluatorAppender appender,
+            JsonBuilderFactory builderFactory, boolean affirmative) {
+        if (affirmative) {
+            createEvaluator(type, appender, builderFactory);
+        } else {
+            createNegatedEvaluator(type, appender, builderFactory);
+        }
+    }
+    
+    /**
+     * Creates an evaluator for this keyword.
      * 
      * @param type the type of the instance, cannot be {@code null}.
      * @param appender the type for appending evaluators, cannot be {@code null}.
@@ -64,17 +82,19 @@ public interface Keyword {
         throw new UnsupportedOperationException(
                 name() + " does not support evaluation.");
     }
-
-    /**
-     * Returns the negated version of this keyword.
-     * 
-     * @return the negated version of this keyword.
-     */
-    default Keyword negate() {
-        throw new UnsupportedOperationException(
-                name() + " does not support negation.");
-    }
     
+    /**
+     * Creates a negated evaluator for this keyword.
+     * 
+     * @param type the type of the instance, cannot be {@code null}.
+     * @param appender the type for appending evaluators, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
+     */
+    default void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        throw new UnsupportedOperationException(
+                name() + " does not support negated evaluation.");
+    }
+
     /**
      * Adds this keyword to the specified JSON object.
      * 

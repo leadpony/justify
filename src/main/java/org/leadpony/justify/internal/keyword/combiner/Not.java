@@ -22,7 +22,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Boolean logic specified with "not" validation keyword.
@@ -31,33 +30,21 @@ import org.leadpony.justify.internal.keyword.Keyword;
  */
 class Not extends UnaryCombiner {
     
-    private final JsonSchema negatedSubschema;
-    
     Not(JsonSchema subschema) {
-        this(subschema, subschema.negate());
+        super(subschema);
     }
 
-    private Not(JsonSchema subschema, JsonSchema negatedSubschema) {
-        super(subschema);
-        this.negatedSubschema = negatedSubschema;
-    }
-    
     @Override
     public String name() {
         return "not";
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        Evaluator evaluator = negatedSubschema.createEvaluator(type, getEvaluatorFactory());
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
+        Evaluator evaluator = getSubschema().createEvaluator(type, getEvaluatorFactory(), !affirmative);
         if (evaluator != null) {
             appender.append(evaluator);
         }
-    }
-
-    @Override
-    public Keyword negate() {
-        // Swaps affirmation and negation.
-        return new Not(negatedSubschema, getSubschema());
     }
 }

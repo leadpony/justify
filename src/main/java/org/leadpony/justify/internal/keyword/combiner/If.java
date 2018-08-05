@@ -23,8 +23,10 @@ import javax.json.JsonBuilderFactory;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.JsonSchema.EvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -48,19 +50,18 @@ class If extends UnaryCombiner {
 
     @Override
     public boolean canEvaluate() {
-        return true;
+        return thenSchema != null || elseSchema != null;
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (thenSchema == null && elseSchema == null) {
-            return;
-        }
-        Evaluator ifEvaluator = getSubschema().createEvaluator(type, getEvaluatorFactory());
-        Evaluator thenEvaluator = thenSchema != null ?
-                thenSchema.createEvaluator(type, getEvaluatorFactory()) : null;
-        Evaluator elseEvaluator = elseSchema != null ?
-                elseSchema.createEvaluator(type, getEvaluatorFactory()) : null;
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
+        EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
+        Evaluator ifEvaluator = getSubschema().createEvaluator(type, evaluatorFactory, true);
+        Evaluator thenEvaluator = getThenSchema()
+                .createEvaluator(type, evaluatorFactory, affirmative);
+        Evaluator elseEvaluator = getElseSchema()
+                .createEvaluator(type, evaluatorFactory, affirmative);
         appender.append(new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator));
     }
 
@@ -72,5 +73,13 @@ class If extends UnaryCombiner {
         if (siblings.containsKey("else")) {
             elseSchema = ((UnaryCombiner)siblings.get("else")).getSubschema();
         }
+    }
+    
+    private JsonSchema getThenSchema() {
+        return (thenSchema != null) ? thenSchema : JsonSchema.TRUE;
+    }
+
+    private JsonSchema getElseSchema() {
+        return (elseSchema != null) ? elseSchema : JsonSchema.TRUE;
     }
 }

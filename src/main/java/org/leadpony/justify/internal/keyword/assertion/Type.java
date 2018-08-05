@@ -26,7 +26,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
@@ -37,7 +37,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-class Type extends AbstractAssertion implements Evaluator {
+class Type extends AbstractAssertion {
     
     protected final Set<InstanceType> typeSet;
     
@@ -52,12 +52,12 @@ class Type extends AbstractAssertion implements Evaluator {
     
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        appender.append(this);
+        appender.append(this::evaluate);
     }
 
     @Override
-    public Assertion negate() {
-        return new Negated(this.typeSet);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        appender.append(this::evaluateNegated);
     }
 
     @Override
@@ -70,59 +70,54 @@ class Type extends AbstractAssertion implements Evaluator {
         builder.add("type", arrayBuilder);
     }
     
-    @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
-            return testType(type, parser, reporter);
+            return assertTypeMatches(type, parser, reporter);
+        } else {
+            return Result.TRUE;
+        }
+    }
+    
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
+        if (type != null) {
+            return assertTypeNotMatches(type, parser, reporter);
         } else {
             return Result.TRUE;
         }
     }
 
-    protected boolean contains(InstanceType type) {
+    private boolean contains(InstanceType type) {
         return typeSet.contains(type) ||
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
-    
-    protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
+
+    private Result assertTypeMatches(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.type")
                     .withParameter("actual", type)
-                    .withParameter("expected", this.typeSet)
+                    .withParameter("expected", typeSet)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
         }
     }
     
-    private class Negated extends Type {
-
-        Negated(Set<InstanceType> types) {
-            super(types);
-        }
-        
-        @Override
-        public Assertion negate() {
-            return new Type(this.typeSet);
-        }
-        
-        @Override
-        protected Result testType(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
-            if (contains(type)) {
-                Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.not.type")
-                        .withParameter("actual", type)
-                        .withParameter("expected", this.typeSet)
-                        .build();
-                reporter.accept(p);
-                return Result.FALSE;
-            } else {
-                return Result.TRUE;
-            }
+    private Result assertTypeNotMatches(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
+        if (contains(type)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.type")
+                    .withParameter("actual", type)
+                    .withParameter("expected", typeSet)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
         }
     }
 }

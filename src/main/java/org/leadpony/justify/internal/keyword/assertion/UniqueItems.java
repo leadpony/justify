@@ -56,6 +56,13 @@ class UniqueItems extends AbstractAssertion {
             appender.append(new AssertionEvaluator(builderFactory));
         }
     }
+    
+    @Override
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.ARRAY && unique) {
+            appender.append(new NegatedAssertionEvaluator(builderFactory));
+        }
+    }
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
@@ -76,8 +83,11 @@ class UniqueItems extends AbstractAssertion {
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (depth == 0) { 
-                return event == Event.END_ARRAY ? 
-                        Result.TRUE : Result.PENDING;
+                if (event == Event.END_ARRAY) {
+                    return getFinalResult(parser, reporter);
+                } else {
+                    return Result.PENDING;
+                }
             }
             if (builder == null) {
                 builder = new JsonInstanceBuilder(builderFactory);
@@ -87,12 +97,18 @@ class UniqueItems extends AbstractAssertion {
             } else {
                 JsonValue value = builder.build();
                 builder = null;
-                return testValue(value, index++, parser, reporter);
+                Result result = testItemValue(value, index++, parser, reporter);
+                values.put(value, index);
+                return result;
             }
         }
         
-        private Result testValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
-            if (values.containsKey(value)) {
+        protected boolean hasItemAlready(JsonValue value) {
+            return values.containsKey(value);
+        }
+        
+        protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
+            if (hasItemAlready(value)) {
                 int lastIndex = values.get(value);
                 Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.uniqueItems")
@@ -102,8 +118,42 @@ class UniqueItems extends AbstractAssertion {
                 reporter.accept(p);
                 return Result.FALSE;
             }
-            values.put(value, index);
             return Result.PENDING;
+        }
+
+        protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
+            return Result.TRUE;
+        }
+    }
+    
+    private class NegatedAssertionEvaluator extends AssertionEvaluator {
+        
+        private boolean duplicated;
+        
+        private NegatedAssertionEvaluator(JsonBuilderFactory builderFactory) {
+            super(builderFactory);
+            duplicated = false;
+        }
+
+        @Override
+        protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
+            if (hasItemAlready(value)) {
+                duplicated = true;
+            }
+            return Result.PENDING;
+        }
+
+        @Override
+        protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
+            if (duplicated) {
+                return Result.TRUE;
+            } else {
+                Problem p = createProblemBuilder(parser)
+                        .withMessage("instance.problem.not.uniqueItems")
+                        .build();
+                reporter.accept(p);
+                return Result.FALSE;
+            }
         }
     }
 }

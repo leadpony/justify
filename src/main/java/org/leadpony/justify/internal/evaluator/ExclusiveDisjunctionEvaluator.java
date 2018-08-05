@@ -50,11 +50,11 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
     }
 
     @Override
-    protected Result conclude(JsonParser parser, Consumer<Problem> reporter) {
+    protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
         if (this.trueEvaluations > 1) {
             return reportTooManyTrueEvaluations(parser, reporter);
         } else {
-            return super.conclude(parser, reporter);
+            return super.getFinalResult(parser, reporter);
         }
     }
     

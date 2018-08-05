@@ -23,6 +23,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -44,19 +45,13 @@ class MultipleOf extends AbstractNumericAssertion {
     }
     
     @Override
-    public Assertion negate() {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), divisor);
     }
     
     @Override
-    protected Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
-        BigDecimal remainder = value.remainder(divisor);
-        if (remainder.compareTo(BigDecimal.ZERO) == 0) {
+    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
@@ -67,5 +62,25 @@ class MultipleOf extends AbstractNumericAssertion {
             reporter.accept(p);
             return Result.FALSE;
         }
+    }
+
+    @Override
+    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.multipleOf")
+                    .withParameter("actual", value)
+                    .withParameter("divisor", divisor)
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
+    }
+    
+    private boolean testValue(BigDecimal value) {
+        BigDecimal remainder = value.remainder(divisor);
+        return remainder.compareTo(BigDecimal.ZERO) == 0;
     }
 }

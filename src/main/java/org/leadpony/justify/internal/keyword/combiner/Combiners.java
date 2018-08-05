@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Facade class for creating combiners.
@@ -61,11 +60,11 @@ public final class Combiners {
     }
     
     public static Combiner items(JsonSchema subschema) {
-        return new BroadcastItems(subschema);
+        return new Items.BroadcastItems(subschema);
     }
 
     public static Combiner items(List<JsonSchema> subschemas) {
-        return new SeparateItems(subschemas);
+        return new Items.SeparateItems(subschemas);
     }
     
     public static Combiner additionalItems(JsonSchema subschema) {
@@ -74,14 +73,6 @@ public final class Combiners {
 
     public static Combiner contains(JsonSchema subschema) {
         return new Contains(subschema);
-    }
-    
-    public static Keyword maxContains(int value) {
-        return new MaxContains(value);
-    }
-
-    public static Keyword minContains(int value) {
-        return new MinContains(value);
     }
     
     public static Properties properties() {

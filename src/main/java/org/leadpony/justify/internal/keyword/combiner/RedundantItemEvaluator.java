@@ -18,57 +18,34 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.function.Consumer;
 
-import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
- * Schema for redundant array items.
- * 
  * @author leadpony
  */
-class RedundantItemSchema implements JsonSchema, Evaluator {
+class RedundantItemEvaluator implements Evaluator {
     
     private final int itemIndex;
-    private final ProblemBuilderFactory problemBuilderFactory;
-
-    /**
-     * Constructs this schema.
-     * 
-     * @param itemIndex the index of the item.
-     * @param problemBuilderFactory the factory producing problem builders.
-     */
-    RedundantItemSchema(int itemIndex, ProblemBuilderFactory problemBuilderFactory) {
+    private final JsonSchema schema;
+    
+    RedundantItemEvaluator(int itemIndex, JsonSchema schema) {
+        assert schema.isBoolean();
         this.itemIndex = itemIndex;
-        this.problemBuilderFactory = problemBuilderFactory;
-    }
-
-    @Override
-    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory evaluatorFactory) {
-        return this;
-    }
-
-    @Override
-    public JsonSchema negate() {
-        return JsonSchema.TRUE;
-    }
-
-    @Override
-    public JsonValue toJson() {
-        return JsonValue.FALSE;
+        this.schema = schema;
     }
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        Problem p = problemBuilderFactory.createProblemBuilder(parser)
-                .withMessage("instance.problem.additionalItems")
+        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+                .withMessage("instance.problem.unexpected.item")
                 .withParameter("index", itemIndex)
+                .withSchema(schema)
                 .build();
         reporter.accept(p);
         return Result.FALSE;

@@ -37,7 +37,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemReporter;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -137,7 +137,8 @@ public class Dependencies extends Combiner {
         Evaluator createEvaluator() {
             Evaluator evaluator = subschema.createEvaluator(
                     InstanceType.OBJECT,
-                    DefaultEvaluatorFactory.SINGLETON);
+                    Evaluators.asFactory(),
+                    true);
             if (evaluator != null) {
                 return new SubschemaEvaluator(getProperty(), evaluator);
             } else {

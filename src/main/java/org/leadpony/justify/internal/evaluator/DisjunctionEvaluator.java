@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -65,18 +66,26 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    protected Result conclude(JsonParser parser, Consumer<Problem> reporter) {
-        if (trueEvaluations > 0 || falseEvaluators == null || falseEvaluators.isEmpty()) {
+    protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
+        if (trueEvaluations > 0) {
             return Result.TRUE;
+        } else if (falseEvaluators == null || falseEvaluators.isEmpty()) {
+            Problem p = problemBuilderFactory.createProblemBuilder(parser)
+                    .withMessage("instance.problem.unknown")
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            ProblemBuilder builder = problemBuilderFactory.createProblemBuilder(parser);
+            builder.withMessage(getMessageKey())
+                   .withParameter("invalid", falseEvaluators.size());
+            falseEvaluators.stream()
+                    .map(StoringEvaluator::problems)
+                    .filter(Objects::nonNull)
+                    .forEach(builder::withSubproblems);
+            reporter.accept(builder.build());
+            return Result.FALSE;
         }
-        ProblemBuilder builder = problemBuilderFactory.createProblemBuilder(parser);
-        builder.withMessage(getMessageKey())
-               .withParameter("invalid", falseEvaluators.size());
-        falseEvaluators.stream()
-                .map(StoringEvaluator::problems)
-                .forEach(builder::withSubproblems);
-        reporter.accept(builder.build());
-        return Result.FALSE;
     }
     
     protected String getMessageKey() {

@@ -26,8 +26,10 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -51,14 +53,19 @@ class Required extends AbstractAssertion {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.OBJECT) {
+        if (type == InstanceType.OBJECT && !names.isEmpty()) {
             appender.append(new AssertionEvaluator(names));
         }
     }
 
     @Override
-    public Assertion negate() {
-        return new NotRequired(names);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.OBJECT) {
+            Evaluator evaluator = names.isEmpty() ?
+                    Evaluators.alwaysFalse(getEnclosingSchema()) :
+                    new NegatedAssertionEvaluator(names);    
+            appender.append(evaluator);
+        }
     }
 
     @Override
@@ -68,11 +75,11 @@ class Required extends AbstractAssertion {
         builder.add(name(), arrayBuilder);
     }
 
-    class AssertionEvaluator implements ShallowEvaluator {
+    private class AssertionEvaluator implements ShallowEvaluator {
         
-        protected final Set<String> missing;
+        private final Set<String> missing;
         
-        AssertionEvaluator(Set<String> required) {
+        private AssertionEvaluator(Set<String> required) {
             this.missing = new LinkedHashSet<>(required);
         }
 
@@ -88,7 +95,7 @@ class Required extends AbstractAssertion {
             }
         }
         
-        protected Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
+        private Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
@@ -98,6 +105,51 @@ class Required extends AbstractAssertion {
                         .build();
                 reporter.accept(p);
                 return Result.FALSE;
+            } else {
+                return Result.PENDING;
+            }
+        }
+    }
+
+    private class NegatedAssertionEvaluator implements ShallowEvaluator {
+        
+        private final Set<String> missing;
+
+        private NegatedAssertionEvaluator(Set<String> names) {
+            this.missing = new LinkedHashSet<>(names);
+        }
+
+        @Override
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+            if (event == Event.KEY_NAME) {
+                missing.remove(parser.getString());
+                return test(parser, reporter, false);
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                return test(parser, reporter, true);
+            } else {
+                return Result.PENDING;
+            }
+        }
+
+        private Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
+            if (missing.isEmpty()) {
+                Problem p = null;
+                if (names.size() == 1) {
+                    String name = names.iterator().next();
+                    p = createProblemBuilder(parser)
+                            .withMessage("instance.problem.not.required.single")
+                            .withParameter("expected", name)
+                            .build();
+                } else {
+                    p = createProblemBuilder(parser)
+                        .withMessage("instance.problem.not.required")
+                        .withParameter("expected", names)
+                        .build();
+                }
+                reporter.accept(p);
+                return Result.FALSE;
+            } else if (last) {
+                return Result.TRUE;
             } else {
                 return Result.PENDING;
             }

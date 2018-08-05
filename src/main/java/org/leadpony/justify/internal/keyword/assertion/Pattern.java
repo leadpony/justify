@@ -17,13 +17,13 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -50,9 +50,8 @@ class Pattern extends AbstractStringAssertion {
     }
     
     @Override
-    protected Result evaluateAgainstString(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
-        Matcher m = pattern.matcher(value);
-        if (m.find()) {
+    protected Result evaluateAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
@@ -63,5 +62,24 @@ class Pattern extends AbstractStringAssertion {
             reporter.accept(p);
             return Result.FALSE;
         }
+    }
+
+    @Override
+    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+        if (testValue(value)) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.not.pattern")
+                    .withParameter("pattern", pattern.toString())
+                    .withParameter("context", getContextName(event))
+                    .build();
+            reporter.accept(p);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
+    }
+    
+    private boolean testValue(String value) {
+        return pattern.matcher(value).find();
     }
 }

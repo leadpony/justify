@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
@@ -32,6 +30,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -48,12 +47,13 @@ abstract class NaryBooleanLogic extends Combiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type)
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
+        JsonSchema.EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
+        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type, affirmative)
                 .withProblemBuilderFactory(this);
         this.subschemas.stream()
-                .map(s->s.createEvaluator(type, getEvaluatorFactory()))
-                .filter(Objects::nonNull)
+                .map(s->s.createEvaluator(type, evaluatorFactory, affirmative))
                 .forEach(builder::append);
         Evaluator evaluator = builder.build();
         if (evaluator != null) {
@@ -94,9 +94,5 @@ abstract class NaryBooleanLogic extends Combiner {
         return null;
     }
    
-    protected List<JsonSchema> negateSubschemas() {
-        return subschemas.stream().map(JsonSchema::negate).collect(Collectors.toList());
-    }
-
-    protected abstract LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type);
+    protected abstract LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type, boolean affirmative);
 }

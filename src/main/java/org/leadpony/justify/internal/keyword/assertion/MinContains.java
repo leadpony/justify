@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  * 
  * @author leadpony
  */
-class MinContains extends AbstractKeyword {
+public class MinContains extends AbstractKeyword {
     
     private final int value;
     
@@ -34,7 +34,7 @@ class MinContains extends AbstractKeyword {
         this.value = value;
     }
     
-    int value() {
+    public int value() {
         return value;
     }
 

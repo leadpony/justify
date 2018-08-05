@@ -23,9 +23,12 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -50,40 +53,55 @@ class MinItems extends AbstractAssertion {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type == InstanceType.ARRAY) {
-            appender.append(new AssertionEvaluator());
+            appender.append(new AssertionEvaluator(bound, this));
         }
     }
     
     @Override
-    public Assertion negate() {
-        return new MaxItems(bound - 1);
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type == InstanceType.ARRAY) {
+            Evaluator evaluator = null;
+            if (bound > 0) {
+                evaluator = new MaxItems.AssertionEvaluator(bound - 1, this);
+            } else {
+                evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
+            }
+            appender.append(evaluator);
+        }
     }
-    
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), bound);
     }
     
-    private class AssertionEvaluator implements ShallowEvaluator { 
+    static class AssertionEvaluator implements ShallowEvaluator { 
     
+        private final int minItems;
+        private final ProblemBuilderFactory factory;
         private int currentCount;
+        
+        AssertionEvaluator(int minItems, ProblemBuilderFactory factory) {
+            this.minItems = minItems;
+            this.factory = factory;
+        }
 
         @Override
         public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
-                    if (++currentCount >= bound) { 
+                    if (++currentCount >= minItems) { 
                         return Result.TRUE;
                     }
                 }
             } else if (depth == 0 && event == Event.END_ARRAY) {
-                if (currentCount >= bound) {
+                if (currentCount >= minItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = createProblemBuilder(parser)
+                    Problem p = factory.createProblemBuilder(parser)
                             .withMessage("instance.problem.minItems")
                             .withParameter("actual", currentCount)
-                            .withParameter("bound", bound)
+                            .withParameter("bound", minItems)
                             .build();
                     reporter.accept(p);
                     return Result.FALSE;

@@ -23,7 +23,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -33,21 +33,32 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-abstract class AbstractNumericAssertion extends AbstractAssertion implements Evaluator {
+abstract class AbstractNumericAssertion extends AbstractAssertion {
 
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         if (type.isNumeric()) {
-            appender.append(this);
+            appender.append(this::evaluate);
         }
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+        if (type.isNumeric()) {
+            appender.append(this::evaluateNegated);
+        }
+    }
+
+    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         assert event == Event.VALUE_NUMBER;
-        return evaluateAgainstNumber(parser.getBigDecimal(), parser, reporter);
+        return evaluateAgainst(parser.getBigDecimal(), parser, reporter);
     }
     
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        assert event == Event.VALUE_NUMBER;
+        return evaluateNegatedAgainst(parser.getBigDecimal(), parser, reporter);
+    }
+
     /**
      * Evaluates this assertion on a numeric value.
      * 
@@ -56,5 +67,15 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Eva
      * @param reporter the reporter to which detected problems will be reported.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateAgainstNumber(BigDecimal value, JsonParser parser, Consumer<Problem> reporter);
+    protected abstract Result evaluateAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter);
+
+    /**
+     * Evaluates the negated assertion on a numeric value.
+     * 
+     * @param value the value to apply this assertion.
+     * @param parser the JSON parser.
+     * @param reporter the reporter to which detected problems will be reported.
+     * @return the result of the evaluation.
+     */
+    protected abstract Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter);
 }

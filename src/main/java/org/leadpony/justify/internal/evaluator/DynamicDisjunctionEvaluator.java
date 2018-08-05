@@ -54,7 +54,7 @@ class DynamicDisjunctionEvaluator extends DisjunctionEvaluator implements Dynami
     protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         if (depth == 0 && event == stopEvent) {
             assert isEmpty();
-            return conclude(parser, reporter);
+            return getFinalResult(parser, reporter);
         } else {
             return Result.PENDING;
         }

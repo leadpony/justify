@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
-import static org.leadpony.justify.internal.base.ParserEvents.lastEventOf;
 
 import java.util.function.Consumer;
 
@@ -29,73 +28,72 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-public final class DefaultEvaluatorFactory implements JsonSchema.EvaluatorFactory {
-    
-    public static final DefaultEvaluatorFactory SINGLETON = new DefaultEvaluatorFactory();
-   
+public final class Evaluators {
+     
     /**
      * The evaluator which evaluates any JSON schema as true ("valid").
      */
-    private static final Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
+    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
 
     /**
      * The evaluator whose result should be ignored.
      */
-    private static final Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
+    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
     
-    private DefaultEvaluatorFactory() {
+    private Evaluators() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Evaluator alwaysTrue() {
-        return ALWAYS_TRUE;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Evaluator alwaysFalse(JsonSchema schema) {
+    public static Evaluator alwaysFalse(JsonSchema schema) {
         requireNonNull(schema, "schema");
         return new NegativeEvaluator(schema);
     }
     
-    /**
-     * Returns the evaluator whose result should be ignored.
-     * 
-     * @return the evaluator.
-     */
-    public Evaluator alwaysIgnored() {
-        return ALWAYS_IGNORED;
-    }
-    
-    public LogicalEvaluator.Builder createConjunctionEvaluatorBuilder(InstanceType type) {
+    public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type) {
         return ConjunctionEvaluator.builder(type);
     }
     
-    public LogicalEvaluator.Builder createDisjunctionEvaluatorBuilder(InstanceType type) {
+    public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type) {
         return DisjunctionEvaluator.builder(type);
     }
 
-    public LogicalEvaluator.Builder createExclusiveDisjunctionEvaluatorBuilder(InstanceType type) {
+    public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type) {
         return ExclusiveDisjunctionEvaluator.builder(type);
     }
 
-    public DynamicLogicalEvaluator createDynamicConjunctionEvaluator(InstanceType type) {
-        return new DynamicConjunctionEvaluator(lastEventOf(type));
+    private static final DefaultFactory DEFAULT_FACTORY = new DefaultFactory();
+
+    /**
+     * Returns the implementation of {@link JsonSchema.EvaluatorFactory}.
+     * 
+     * @return the evaluator factory.
+     */
+    public static JsonSchema.EvaluatorFactory asFactory() {
+        return DEFAULT_FACTORY;
     }
-    
-    public DynamicLogicalEvaluator createDynamicDisjunctionEvaluator(
-            InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
-        return new DynamicDisjunctionEvaluator(lastEventOf(type), problemBuilderFactory);
+
+    /**
+     * The implementation of {@link JsonSchema.EvaluatorFactory}.
+     * 
+     * @author leadpony
+     */
+    private static class DefaultFactory implements JsonSchema.EvaluatorFactory {
+
+        @Override
+        public Evaluator alwaysTrue() {
+            return ALWAYS_TRUE;
+        }
+
+        @Override
+        public Evaluator alwaysFalse(JsonSchema schema) {
+            return new NegativeEvaluator(schema);
+        }
+        
     }
     
     private static class NegativeEvaluator implements Evaluator {
@@ -108,11 +106,10 @@ public final class DefaultEvaluatorFactory implements JsonSchema.EvaluatorFactor
 
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-            Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+            ProblemBuilder builder = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
                     .withMessage("instance.problem.unknown")
-                    .withSchema(schema)
-                    .build();
-            reporter.accept(p);
+                    .withSchema(schema);
+            reporter.accept(builder.build());
             return Result.FALSE;
         }
     }
