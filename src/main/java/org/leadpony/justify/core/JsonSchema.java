@@ -43,7 +43,7 @@ import javax.json.JsonValue;
  * with {@link JsonSchemaBuilder} as follows.
  * </p>
  * <pre><code>
- * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
+ * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * JsonSchema schema = builder.withType(InstanceType.INTEGER).build();
  * </code></pre>

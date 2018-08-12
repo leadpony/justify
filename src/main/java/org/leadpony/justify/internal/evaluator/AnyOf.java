@@ -20,36 +20,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
- * Disjunction evaluator used for "oneOf" and "anyOf" boolean logic schemas.
+ * Evaluator for "anyOf" boolean logic.
  * 
  * @author leadpony
  */
-class DisjunctionEvaluator extends AbstractLogicalEvaluator {
+class AnyOf extends AbstractLogicalEvaluator {
 
-    protected final ProblemBuilderFactory problemBuilderFactory;
     protected int trueEvaluations;
     protected List<StoringEvaluator> falseEvaluators;
    
-    static LogicalEvaluator.Builder builder(InstanceType type) {
-        return new Builder(type);
+    AnyOf() {
     }
-    
-    protected DisjunctionEvaluator(
-            List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
-        super(wrapChildren(children), stopEvent);
-        this.problemBuilderFactory = problemBuilderFactory;
+
+    @Override
+    public void append(Evaluator evaluator) {
+        super.append(new StoringEvaluator(evaluator));
     }
     
     @Override
@@ -90,24 +83,5 @@ class DisjunctionEvaluator extends AbstractLogicalEvaluator {
     
     protected String getMessageKey() {
         return "instance.problem.anyOf";
-    }
-    
-    private static List<Evaluator> wrapChildren(List<Evaluator> children) {
-        return children.stream()
-            .map(StoringEvaluator::new)
-            .collect(Collectors.toList());
-    }
-
-    private static class Builder extends AbstractLogicalEvaluator.Builder {
-
-        private Builder(InstanceType type) {
-            super(type);
-        }
-
-        @Override
-        protected LogicalEvaluator createEvaluator(
-                List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
-            return new DisjunctionEvaluator(children, stopEvent, problemBuilderFactory);
-        }
     }
 }

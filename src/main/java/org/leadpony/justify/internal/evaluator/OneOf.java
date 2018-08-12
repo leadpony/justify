@@ -16,31 +16,21 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
- * Exclusive disjunction evaluator used for "oneOf" boolean logic schema.
+ * Evaluator for "oneOf" boolean logic.
  * 
  * @author leadpony
  */
-class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
+class OneOf extends AnyOf {
  
-    static LogicalEvaluator.Builder builder(InstanceType type) {
-        return new Builder(type);
-    }
-    
-    protected ExclusiveDisjunctionEvaluator(
-            List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
-        super(children, stopEvent, problemBuilderFactory);
+    OneOf() {
     }
     
     @Override
@@ -70,18 +60,5 @@ class ExclusiveDisjunctionEvaluator extends DisjunctionEvaluator {
                 .build();
         reporter.accept(p);
         return Result.FALSE;
-    }
-
-    private static class Builder extends AbstractLogicalEvaluator.Builder {
-
-        private Builder(InstanceType type) {
-            super(type);
-        }
-
-        @Override
-        protected LogicalEvaluator createEvaluator(
-                List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory) {
-            return new ExclusiveDisjunctionEvaluator(children, stopEvent, problemBuilderFactory);
-        }
     }
 }

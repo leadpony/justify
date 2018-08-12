@@ -17,35 +17,17 @@
 package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
- * Evaluator to be instantiated by boolean logic.
+ * Logical connective evaluator.
  * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
+public interface LogicalEvaluator extends Evaluator, EvaluatorAppender {
     
-    /**
-     * The type for building an instance of {@link LogicalEvaluator}.
-     * 
-     * @author leadpony
-     */
-    interface Builder extends EvaluatorAppender {
-        
-        /**
-         * Specifies the instance of {@link ProblemBuilderFactory}.
-         * 
-         * @param problemBuilderFactory the problem builder factory to be used by the evaluator.
-         * @return this builder.
-         */
-        Builder withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory);
-        
-        /**
-         * Builds an evaluator.
-         * 
-         * @return the built evaluator, may be {@code null}. 
-         */
-        Evaluator build();
-    }
+    LogicalEvaluator withType(InstanceType type); 
+
+    LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory); 
 }

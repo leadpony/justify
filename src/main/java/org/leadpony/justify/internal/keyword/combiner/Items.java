@@ -94,7 +94,7 @@ abstract class Items extends Combiner {
         protected int currentItemIndex;
         
         protected DynamicItemsEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-            super(affirmative, Event.END_ARRAY, problemBuilderFactory);
+            super(affirmative, InstanceType.ARRAY, problemBuilderFactory);
         }
         
         @Override

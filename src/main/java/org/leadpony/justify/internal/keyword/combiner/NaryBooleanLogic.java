@@ -50,15 +50,14 @@ abstract class NaryBooleanLogic extends Combiner {
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
             JsonBuilderFactory builderFactory, boolean affirmative) {
         JsonSchema.EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
-        LogicalEvaluator.Builder builder = createEvaluatorBuilder(type, affirmative)
+        LogicalEvaluator evaluator = createLogicalEvaluator(affirmative)
+                .withType(type)
                 .withProblemBuilderFactory(this);
-        this.subschemas.stream()
-                .map(s->s.createEvaluator(type, evaluatorFactory, affirmative))
-                .forEach(builder::append);
-        Evaluator evaluator = builder.build();
-        if (evaluator != null) {
-            appender.append(evaluator);
+        for (JsonSchema subschema : this.subschemas) {
+            Evaluator child = subschema.createEvaluator(type, evaluatorFactory, affirmative); 
+            evaluator.append(child);
         }
+        appender.append(evaluator);
     }
 
     @Override
@@ -93,6 +92,6 @@ abstract class NaryBooleanLogic extends Combiner {
         }
         return null;
     }
-   
-    protected abstract LogicalEvaluator.Builder createEvaluatorBuilder(InstanceType type, boolean affirmative);
+    
+    protected abstract LogicalEvaluator createLogicalEvaluator(boolean affirmative);
 }

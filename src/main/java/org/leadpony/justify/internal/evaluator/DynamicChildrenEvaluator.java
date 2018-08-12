@@ -33,15 +33,15 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 public abstract class DynamicChildrenEvaluator implements Evaluator {
     
     private final boolean affirmative;
-    private final DynamicLogicalEvaluator childrenEvaluator;
+    private final LogicalEvaluator childrenEvaluator;
     
-    protected DynamicChildrenEvaluator(boolean affirmative, Event stopEvent, ProblemBuilderFactory problemFactory) {
+    protected DynamicChildrenEvaluator(boolean affirmative, InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
         this.affirmative = affirmative;
-        if (affirmative) {
-            childrenEvaluator = new DynamicConjunctionEvaluator(stopEvent);
-        } else {
-            childrenEvaluator = new DynamicDisjunctionEvaluator(stopEvent, problemFactory);
-        }
+        childrenEvaluator = affirmative ? 
+                new ConjunctionChildrenEvaluator() : new DisjunctionChildrenEvaluator();
+        childrenEvaluator
+            .withType(type)
+            .withProblemBuilderFactory(problemBuilderFactory);
     }
 
     @Override
@@ -72,4 +72,50 @@ public abstract class DynamicChildrenEvaluator implements Evaluator {
     }
     
     protected abstract void update(Event event, JsonParser parser, Consumer<Problem> reporter);
+
+    /**
+     * @author leadpony
+     */
+    private static class ConjunctionChildrenEvaluator extends AllOf {
+
+        @Override
+        protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
+                Consumer<Problem> reporter) {
+            assert depth > 0;
+            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
+        }
+
+        @Override
+        protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+            if (depth == 0 && event == stopEvent) {
+                assert isEmpty();
+                return getFinalResult(parser, reporter);
+            } else {
+                return Result.PENDING;
+            }
+        }
+    }
+
+    /**
+     * @author leadpony
+     */
+    private static class DisjunctionChildrenEvaluator extends AnyOf {
+
+        @Override
+        protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
+                Consumer<Problem> reporter) {
+            assert depth > 0;
+            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
+        }
+        
+        @Override
+        protected Result tryToMakeDecision(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+            if (depth == 0 && event == stopEvent) {
+                assert isEmpty();
+                return getFinalResult(parser, reporter);
+            } else {
+                return Result.PENDING;
+            }
+        }
+    }
 }

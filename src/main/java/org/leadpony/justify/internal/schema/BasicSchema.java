@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -42,6 +44,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     private URI id;
     private final URI originalId;
     private final URI schema;
+    private final List<Keyword> evaluatables;
     
     /**
      * Constructs this schema.
@@ -52,6 +55,9 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
         super(builder.getKeywordMap(), builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
+        this.evaluatables = builder.getKeywordMap().values().stream()
+                .filter(Keyword::canEvaluate)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -73,17 +79,13 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
         requireNonNull(type, "type");
         requireNonNull(factory, "factory");
-        LogicalEvaluator.Builder builder = (affirmative ?
-                Evaluators.newConjunctionEvaluatorBuilder(type) :
-                Evaluators.newDisjunctionEvaluatorBuilder(type))
-                .withProblemBuilderFactory(this);
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : getKeywordMap().values()) {
-            if (keyword.canEvaluate()) {
-                keyword.createEvaluator(type, builder, builderFactory, affirmative);
-            }
+        LogicalEvaluator evaluator = affirmative ? 
+                Evaluators.allOf() : Evaluators.anyOf();
+        for (Keyword keyword : evaluatables) {
+            keyword.createEvaluator(type, evaluator, builderFactory, affirmative);
         }
-        return builder.build();
+        return evaluator.withType(type).withProblemBuilderFactory(this);
     }
 
     @Override

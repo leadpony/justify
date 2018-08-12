@@ -18,10 +18,9 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator.Builder;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * Boolean logic specified with "allOf" validation keyword.
@@ -38,13 +37,9 @@ class AllOf extends NaryBooleanLogic {
     public String name() {
         return "allOf";
     }
-    
+  
     @Override
-    protected Builder createEvaluatorBuilder(InstanceType type, boolean affirmative) {
-        if (affirmative) {
-            return Evaluators.newConjunctionEvaluatorBuilder(type);
-        } else {
-            return Evaluators.newDisjunctionEvaluatorBuilder(type);
-        }
+    protected LogicalEvaluator createLogicalEvaluator(boolean affirmative) {
+        return affirmative ? Evaluators.allOf() : Evaluators.anyOf();
     }
 }

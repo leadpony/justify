@@ -31,6 +31,7 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,6 +51,13 @@ public abstract class BaseValidationTest {
     private static JsonSchema lastSchema;
     
     private List<Problem> problems;
+
+    private static JsonSchemaBuilderFactory schemaBuilderFactory;
+    
+    @BeforeAll
+    public static void setUpOnce() throws Exception {
+        schemaBuilderFactory = Jsonv.createSchemaBuilderFactory();
+    }
     
     @BeforeEach
     public void setUp() {
@@ -78,7 +86,7 @@ public abstract class BaseValidationTest {
     @MethodSource("provideFixtures")
     @Disabled
     public void testValidationWithNegatedSchema(ValidationFixture fixture) {
-        JsonSchema schema = getSchema(negate(fixture.schema()));
+        JsonSchema schema = negate(getSchema(fixture.schema()));
         JsonValue data = fixture.data();
         JsonParser parser = createValidatingParser(data, schema);
         while (parser.hasNext()) {
@@ -117,10 +125,10 @@ public abstract class BaseValidationTest {
         return Jsonv.createParser(reader, schema, Jsonv.createProblemCollector(problems));
     }
     
-    private JsonObject negate(JsonValue value) {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("not", value);
-        return builder.build();
+    private static JsonSchema negate(JsonSchema original) {
+        return schemaBuilderFactory.createBuilder()
+                .withNot(original)
+                .build();
     }
     
     protected JsonSchemaReader createSchemaReader(Reader reader) {

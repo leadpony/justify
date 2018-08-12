@@ -18,20 +18,13 @@ package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import java.util.function.Consumer;
-
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
-
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
+ * Provides various kinds of evaluators.
+ * 
  * @author leadpony
  */
 public final class Evaluators {
@@ -51,19 +44,19 @@ public final class Evaluators {
 
     public static Evaluator alwaysFalse(JsonSchema schema) {
         requireNonNull(schema, "schema");
-        return new NegativeEvaluator(schema);
+        return new AlwaysFalseEvaluator(schema);
     }
     
-    public static LogicalEvaluator.Builder newConjunctionEvaluatorBuilder(InstanceType type) {
-        return ConjunctionEvaluator.builder(type);
+    public static LogicalEvaluator allOf() {
+        return new AllOf();
     }
     
-    public static LogicalEvaluator.Builder newDisjunctionEvaluatorBuilder(InstanceType type) {
-        return DisjunctionEvaluator.builder(type);
+    public static LogicalEvaluator anyOf() {
+        return new AnyOf();
     }
 
-    public static LogicalEvaluator.Builder newExclusiveDisjunctionEvaluatorBuilder(InstanceType type) {
-        return ExclusiveDisjunctionEvaluator.builder(type);
+    public static LogicalEvaluator oneOf() {
+        return new OneOf();
     }
 
     private static final DefaultFactory DEFAULT_FACTORY = new DefaultFactory();
@@ -91,26 +84,8 @@ public final class Evaluators {
 
         @Override
         public Evaluator alwaysFalse(JsonSchema schema) {
-            return new NegativeEvaluator(schema);
+            return new AlwaysFalseEvaluator(schema);
         }
         
-    }
-    
-    private static class NegativeEvaluator implements Evaluator {
-        
-        private final JsonSchema schema;
-        
-        NegativeEvaluator(JsonSchema schema) {
-            this.schema = schema;
-        }
-
-        @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-            ProblemBuilder builder = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
-                    .withMessage("instance.problem.unknown")
-                    .withSchema(schema);
-            reporter.accept(builder.build());
-            return Result.FALSE;
-        }
     }
 }

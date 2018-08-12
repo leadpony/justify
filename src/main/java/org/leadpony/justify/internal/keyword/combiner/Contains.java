@@ -31,24 +31,23 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.ProblemReporter;
+import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
-import org.leadpony.justify.internal.keyword.assertion.MaxContains;
-import org.leadpony.justify.internal.keyword.assertion.MinContains;
 
 /**
  * @author leadpony
  */
 class Contains extends UnaryCombiner {
     
-    private int minContains;
-    private int maxContains;
+    private int min;
     
     Contains(JsonSchema subschema) {
         super(subschema);
-        this.minContains = 1;
-        this.maxContains = -1;
+        this.min = 1;
     }
 
     @Override
@@ -57,55 +56,49 @@ class Contains extends UnaryCombiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.ARRAY && (minContains > 0 || hasMaxContains())) {
-            appender.append(new RepeatingSubschemaEvaluator());
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory, boolean affrimative) {
+        if (type == InstanceType.ARRAY) {
+            Evaluator evaluator = affrimative ? 
+                    new ItemsSchemaEvaluator() : 
+                    new NegatedItemSchemaEvaluator(this, getSubschema());
+            appender.append(evaluator);
         }
     }
 
     @Override
     public void link(Map<String, Keyword> siblings) {
-        if (siblings.containsKey("maxContains")) {
-            maxContains = (((MaxContains)siblings.get("maxContains")).value());
-        }
-        if (siblings.containsKey("minContains")) {
-            minContains = ((MinContains)siblings.get("minContains")).value();
-        }
     }
     
-    private boolean hasMaxContains() {
-        return maxContains >= 0;
-    }
-    
-    private class RepeatingSubschemaEvaluator implements Evaluator, ProblemReporter {
-
-        private int trueEvaluations;
+    private class ItemsSchemaEvaluator implements Evaluator, ProblemReporter {
+        
+        private final List<Problem> problems = new ArrayList<>();
+        private final List<List<Problem>> accumulatedProblems = new ArrayList<>();
+        private int numberOfTruths;
         private Evaluator itemEvaluator;
-        private List<Problem> problems = new ArrayList<>();
-        private List<List<Problem>> accumulatedProblems = new ArrayList<>();
+        
+        ItemsSchemaEvaluator() {
+        }
         
         @Override
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             if (itemEvaluator == null) {
-                itemEvaluator = createSubschemaEvaluator(event, parser, depth);
+                itemEvaluator = createItemSchemaEvaluator(event, parser, depth);
             }
             if (itemEvaluator != null) {
-                evaluateSubschema(event, parser, depth);
+                evaluateItemschema(event, parser, depth);
             }
             if (depth == 0 && event == Event.END_ARRAY) {
-                if (trueEvaluations < minContains) {
-                    reportTooFewValid(parser, reporter);
-                    return Result.FALSE;
-                } else if (hasMaxContains() && trueEvaluations > maxContains) {
-                    reportTooManyValid(parser, reporter);
-                    return Result.FALSE;
-                }
-                return Result.TRUE;
+                return assertCountInRange(numberOfTruths, parser, reporter);
             }
             return Result.PENDING;
         }
         
-        private Evaluator createSubschemaEvaluator(Event event, JsonParser parser, int depth) {
+        @Override
+        public void accept(Problem problem) {
+            problems.add(problem);
+        }
+
+        private Evaluator createItemSchemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 return getSubschema().createEvaluator(type, getEvaluatorFactory(), true);
@@ -114,12 +107,12 @@ class Contains extends UnaryCombiner {
             }
         }
         
-        private void evaluateSubschema(Event event, JsonParser parser, int depth) {
+        private void evaluateItemschema(Event event, JsonParser parser, int depth) {
             Result result = itemEvaluator.evaluate(event, parser, depth - 1, this);
             if (result != Result.PENDING) {
                 itemEvaluator = null;
                 if (result == Result.TRUE) {
-                    ++trueEvaluations;
+                    ++numberOfTruths;
                 } else if (result == Result.FALSE) {
                     accumulatedProblems.add(new ArrayList<Problem>(problems));
                     problems.clear();
@@ -127,26 +120,39 @@ class Contains extends UnaryCombiner {
             }
         }
         
-        private void reportTooFewValid(JsonParser parser, Consumer<Problem> reporter) {
+        protected Result assertCountInRange(int numberOfTruths, JsonParser parser, Consumer<Problem> reporter) {
+            if (numberOfTruths < min) {
+                reportTooFewTruths(numberOfTruths, parser, reporter);
+                return Result.FALSE;
+            }
+            return Result.TRUE;
+        }
+
+        private void reportTooFewTruths(int numberOfTruths, JsonParser parser, Consumer<Problem> reporter) {
             ProblemBuilder builder = createProblemBuilder(parser);
-            builder.withMessage("instance.problem.minContains")
-                   .withParameter("expected", minContains)
-                   .withParameter("actual", trueEvaluations);
+            builder.withMessage("instance.problem.cotains")
+                   .withParameter("expected", min)
+                   .withParameter("actual", numberOfTruths);
             accumulatedProblems.forEach(builder::withSubproblems);
             reporter.accept(builder.build());
         }
+    }
+    
+    private static class NegatedItemSchemaEvaluator extends DynamicChildrenEvaluator {
 
-        private void reportTooManyValid(JsonParser parser, Consumer<Problem> reporter) {
-            ProblemBuilder builder = createProblemBuilder(parser);
-            builder.withMessage("instance.problem.maxContains")
-                   .withParameter("expected", maxContains)
-                   .withParameter("actual", trueEvaluations);
-            reporter.accept(builder.build());
+        private final JsonSchema subschema;
+        
+        NegatedItemSchemaEvaluator(ProblemBuilderFactory problemFactory, JsonSchema subschema) {
+            super(true,InstanceType.ARRAY, problemFactory);
+            this.subschema = subschema;
         }
 
         @Override
-        public void accept(Problem problem) {
-            problems.add(problem);
+        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+            if (ParserEvents.isValue(event)) {
+                InstanceType type = ParserEvents.toInstanceType(event, parser);
+                append(subschema.createEvaluator(type, Evaluators.asFactory(), false));
+            }
         }
     }
 }

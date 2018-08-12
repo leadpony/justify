@@ -58,7 +58,7 @@ class PropertyNames extends UnaryCombiner {
         private final JsonSchema subschema;
         
         SubschemaEvaluator(boolean affirmative, ProblemBuilderFactory problemFactory, JsonSchema subschema) {
-            super(affirmative, Event.END_OBJECT, problemFactory);
+            super(affirmative, InstanceType.OBJECT, problemFactory);
             this.subschema = subschema;
         }
 

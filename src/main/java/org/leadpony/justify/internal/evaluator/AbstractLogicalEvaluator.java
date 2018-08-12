@@ -38,8 +38,14 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
 
     protected final List<Evaluator> children;
-    protected final Event stopEvent;
+    protected Event stopEvent;
+    protected ProblemBuilderFactory problemBuilderFactory;
     
+    protected AbstractLogicalEvaluator() {
+        this.children = new ArrayList<>();
+        this.problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
+    }
+
     protected AbstractLogicalEvaluator(List<Evaluator> children) {
         this(children, null);
     }
@@ -47,6 +53,7 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     protected AbstractLogicalEvaluator(List<Evaluator> children, Event stopEvent) {
         this.children = children;
         this.stopEvent = stopEvent;
+        this.problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
     }
 
     @Override
@@ -64,7 +71,30 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
         }
         return tryToMakeDecision(event, parser, depth, reporter);
     }
-   
+    
+    @Override
+    public void append(Evaluator evaluator) {
+        requireNonNull(evaluator, "evaluator");
+        this.children.add(evaluator);
+    }
+
+    @Override
+    public LogicalEvaluator withType(InstanceType type) {
+        if (type == null) {
+            this.stopEvent = null;
+        } else {
+            this.stopEvent = ParserEvents.lastEventOf(type);
+        }
+        return this;
+    }
+    
+    @Override
+    public LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
+        requireNonNull(problemBuilderFactory, "problemBuilderFactory");
+        this.problemBuilderFactory = problemBuilderFactory;
+        return this;
+    } 
+    
     protected boolean isEmpty() {
         return children.isEmpty();
     }
@@ -90,40 +120,4 @@ abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
     protected abstract boolean accumulateResult(Evaluator evaluator, Result result);
     
     protected abstract Result getFinalResult(JsonParser parser, Consumer<Problem> reporter);
-    
-    protected static abstract class Builder implements LogicalEvaluator.Builder {
-        
-        private final InstanceType type;
-        private final List<Evaluator> children = new ArrayList<>();
-        private ProblemBuilderFactory problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
-        
-        protected Builder(InstanceType type) {
-            this.type = type;
-        }
-        
-        @Override
-        public void append(Evaluator evaluator) {
-            requireNonNull(evaluator, "evaluator");
-            this.children.add(evaluator);
-        }
-        
-        @Override
-        public Builder withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
-            this.problemBuilderFactory = problemBuilderFactory;
-            return this;
-        }
-        
-        @Override
-        public Evaluator build() {
-            Event stopEvent = ParserEvents.lastEventOf(type);
-            if (stopEvent == null && children.size() == 1) {
-                return children.get(0);
-            } else {
-                return createEvaluator(children, stopEvent, problemBuilderFactory);
-            }
-        }
-        
-        protected abstract LogicalEvaluator createEvaluator(
-                List<Evaluator> children, Event stopEvent, ProblemBuilderFactory problemBuilderFactory);
-    }
 }

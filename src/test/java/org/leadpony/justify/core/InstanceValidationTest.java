@@ -60,9 +60,6 @@ public class InstanceValidationTest extends BaseValidationTest {
             "/official/tests/draft7/required.json",
             "/official/tests/draft7/type.json",
             "/official/tests/draft7/uniqueItems.json",
-            // for draft 8
-            "/official/tests/draft8/maxContains.json",
-            "/official/tests/draft8/minContains.json"
     };
     
     public static Stream<ValidationFixture> provideFixtures() {

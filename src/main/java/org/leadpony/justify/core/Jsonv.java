@@ -51,7 +51,7 @@ import org.leadpony.justify.core.spi.JsonValidationProvider;
  * with {@link JsonSchemaBuilder}.
  * </p>
  * <pre><code>
- * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilder();
+ * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * JsonSchema schema = builder.withType(InstanceType.INTEGER).build();
  * </code></pre>
@@ -164,7 +164,7 @@ public final class Jsonv {
      * @return the newly created instance of JSON schema builder factory.
      * @see JsonSchemaBuilderFactory
      */
-    public static JsonSchemaBuilderFactory createSchemaBuilder() {
+    public static JsonSchemaBuilderFactory createSchemaBuilderFactory() {
         return JsonValidationProvider.provider().createSchemaBuilderFactory();
     }
 

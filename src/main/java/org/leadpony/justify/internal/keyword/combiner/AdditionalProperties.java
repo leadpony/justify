@@ -94,7 +94,7 @@ class AdditionalProperties extends UnaryCombiner {
         private JsonSchema nextSubschema;
         
         ProperySchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-            super(affirmative, Event.END_OBJECT, problemBuilderFactory);
+            super(affirmative, InstanceType.OBJECT, problemBuilderFactory);
         }
 
         @Override
