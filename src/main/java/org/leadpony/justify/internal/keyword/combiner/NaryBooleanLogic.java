@@ -26,11 +26,9 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
@@ -49,14 +47,8 @@ abstract class NaryBooleanLogic extends Combiner {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
             JsonBuilderFactory builderFactory, boolean affirmative) {
-        JsonSchema.EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
-        LogicalEvaluator evaluator = createLogicalEvaluator(affirmative)
-                .withType(type)
+        LogicalEvaluator evaluator = createLogicalEvaluator(type, affirmative)
                 .withProblemBuilderFactory(this);
-        for (JsonSchema subschema : this.subschemas) {
-            Evaluator child = subschema.createEvaluator(type, evaluatorFactory, affirmative); 
-            evaluator.append(child);
-        }
         appender.append(evaluator);
     }
 
@@ -93,5 +85,5 @@ abstract class NaryBooleanLogic extends Combiner {
         return null;
     }
     
-    protected abstract LogicalEvaluator createLogicalEvaluator(boolean affirmative);
+    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative);
 }

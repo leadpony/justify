@@ -50,17 +50,13 @@ class MinProperties extends AbstractAssertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new AssertionEvaluator(bound, this));
-        }
-    }
-
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.OBJECT) {
-            Evaluator evaluator = null;
-            if (bound > 0) {
+            Evaluator evaluator;
+            if (affirmative) {
+                evaluator = new AssertionEvaluator(bound, this);
+            } else if (bound > 0) {
                 evaluator = new MaxProperties.AssertionEvaluator(bound - 1, this);
             } else {
                 evaluator = Evaluators.alwaysFalse(getEnclosingSchema());

@@ -30,8 +30,8 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -76,16 +76,17 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+    public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
         requireNonNull(type, "type");
         requireNonNull(factory, "factory");
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        LogicalEvaluator evaluator = affirmative ? 
-                Evaluators.allOf() : Evaluators.anyOf();
+        AppendableLogicalEvaluator evaluator = affirmative ? 
+                Evaluators.conjunctive(type) : Evaluators.disjunctive(type);
+        evaluator.withProblemBuilderFactory(this);
         for (Keyword keyword : evaluatables) {
             keyword.createEvaluator(type, evaluator, builderFactory, affirmative);
         }
-        return evaluator.withType(type).withProblemBuilderFactory(this);
+        return evaluator;
     }
 
     @Override

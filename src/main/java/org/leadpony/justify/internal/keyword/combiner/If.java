@@ -20,10 +20,10 @@ import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 
+import org.leadpony.justify.core.JsonSchema.EvaluatorFactory;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonSchema.EvaluatorFactory;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -57,11 +57,11 @@ class If extends UnaryCombiner {
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
             JsonBuilderFactory builderFactory, boolean affirmative) {
         EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
-        Evaluator ifEvaluator = getSubschema().createEvaluator(type, evaluatorFactory, true);
+        Evaluator ifEvaluator = getSubschema().evaluator(type, evaluatorFactory, true);
         Evaluator thenEvaluator = getThenSchema()
-                .createEvaluator(type, evaluatorFactory, affirmative);
+                .evaluator(type, evaluatorFactory, affirmative);
         Evaluator elseEvaluator = getElseSchema()
-                .createEvaluator(type, evaluatorFactory, affirmative);
+                .evaluator(type, evaluatorFactory, affirmative);
         appender.append(new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator));
     }
 

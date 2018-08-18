@@ -68,6 +68,7 @@ public abstract class BaseValidationTest {
     @MethodSource("provideFixtures")
     //@Disabled
     public void testValidationWithSchema(ValidationFixture fixture) {
+        //Assumptions.assumeTrue(fixture.index() == 15);
         JsonSchema schema = getSchema(fixture.schema());
         JsonValue data = fixture.data();
         JsonParser parser = createValidatingParser(data, schema);
@@ -84,7 +85,7 @@ public abstract class BaseValidationTest {
     
     @ParameterizedTest
     @MethodSource("provideFixtures")
-    @Disabled
+    //@Disabled
     public void testValidationWithNegatedSchema(ValidationFixture fixture) {
         JsonSchema schema = negate(getSchema(fixture.schema()));
         JsonValue data = fixture.data();

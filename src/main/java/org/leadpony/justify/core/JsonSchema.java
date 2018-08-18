@@ -112,19 +112,17 @@ public interface JsonSchema {
     }
     
     /**
-     * Creates an evaluator of this schema.
+     * Creates an evaluator of this object.
      * 
-     * @param type the type of the instance to which this schema will be applied.
-     * @param factory the factory of basic evaluators.
+     * @param type the type of the JSON instance against which this object will be evaluated.
+     * @param factory the factory of predefined evaluators.
      * @param affirmative {@code true} to create a normal evaluator, or
      *                    {@code false} to create a negating evaluator.
-     * @return the evaluator of this schema. It must not be {@code null}.
+     * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} or {@code factory} is {@code null}.
      */
-    Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative);
+    Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative);
 
-    //Evaluator createNegatedEvaluator(InstanceType type, EvaluatorFactory factory);
-    
     /**
      * Returns the JSON representation of this schema.
      * 
@@ -151,30 +149,30 @@ public interface JsonSchema {
     static JsonSchema valueOf(boolean value) {
         return value ? JsonSchema.TRUE : JsonSchema.FALSE;
     }
-    
+  
     /**
      * Factory for producing the predefined basic evaluators.
      * 
      * @author leadpony
      */
-    public static interface EvaluatorFactory {
+    static public interface EvaluatorFactory {
 
         /**
-         * Returns the evaluator which evaluates any JSON schema as true ("valid").
+         * Returns the evaluator which evaluates anything as true ("valid").
          * 
          * @return the evaluator, never be {@code null}.
          */
         Evaluator alwaysTrue();
         
         /**
-         * Returns the evaluator which evaluates any JSON schema as false ("invalid").
+         * Returns the evaluator which evaluates anything as false ("invalid").
          * 
          * @param schema the JSON schema to be evaluated, cannot be {@code null}.
          * @return the evaluator, never be {@code null}.
          */
         Evaluator alwaysFalse(JsonSchema schema);
-    }
-
+    };
+    
     /**
      * JSON Schema represented by an empty JSON object.
      * This schema is always evaluated as true.  
@@ -182,7 +180,7 @@ public interface JsonSchema {
     JsonSchema EMPTY = new JsonSchema() {
         
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
             return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
         }
 
@@ -209,7 +207,7 @@ public interface JsonSchema {
         }
         
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
             return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
         }
         
@@ -236,7 +234,7 @@ public interface JsonSchema {
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
             return affirmative ? factory.alwaysFalse(this) : factory.alwaysTrue();
         }
 

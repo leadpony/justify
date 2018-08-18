@@ -18,9 +18,12 @@ package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
+import java.util.stream.Stream;
+
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.core.InstanceType;
 
 /**
  * Provides various kinds of evaluators.
@@ -47,16 +50,48 @@ public final class Evaluators {
         return new AlwaysFalseEvaluator(schema);
     }
     
-    public static LogicalEvaluator allOf() {
-        return new AllOf();
+    public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
+        if (type.isContainer()) {
+            return new LongConjunctiveEvaluator(type);
+        } else {
+            return new ConjunctiveEvaluator();
+        }
     }
     
-    public static LogicalEvaluator anyOf() {
-        return new AnyOf();
+    public static LogicalEvaluator conjunctive(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
+        if (type.isContainer()) {
+            return new LongConjunctiveEvaluator(children, type, affirmative);
+        } else {
+            return new ConjunctiveEvaluator(children, type, affirmative);
+        }
     }
 
-    public static LogicalEvaluator oneOf() {
-        return new OneOf();
+    public static AppendableLogicalEvaluator disjunctive(InstanceType type) {
+        if (type.isContainer()) {
+            return new LongDisjunctiveEvaluator(type);
+        } else {
+            return new DisjunctiveEvaluator();
+        }
+    }
+
+    public static LogicalEvaluator disjunctive(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
+        if (type.isContainer()) {
+            return new LongDisjunctiveEvaluator(children, type, affirmative);
+        } else {
+            return new DisjunctiveEvaluator(children, type, affirmative);
+        }
+    }
+
+    public static LogicalEvaluator exclusive(Stream<JsonSchema> children, InstanceType type) {
+        return new ExclusiveEvaluator(children, type);
+    }
+
+    public static LogicalEvaluator notExclusive(Stream<JsonSchema> children, InstanceType type) {
+        if (type.isContainer()) {
+            return new LongNotExclusiveEvaluator(children, type);
+        } else {
+            return new NotExclusiveEvaluator(children, type);
+        }
     }
 
     private static final DefaultFactory DEFAULT_FACTORY = new DefaultFactory();

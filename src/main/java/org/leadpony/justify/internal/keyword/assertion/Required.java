@@ -52,20 +52,20 @@ class Required extends AbstractAssertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.OBJECT && !names.isEmpty()) {
-            appender.append(new AssertionEvaluator(names));
-        }
-    }
-
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
-            Evaluator evaluator = names.isEmpty() ?
-                    Evaluators.alwaysFalse(getEnclosingSchema()) :
-                    new NegatedAssertionEvaluator(names);    
-            appender.append(evaluator);
-        }
+            if (affirmative) {
+                if (!names.isEmpty()) {
+                    appender.append(new AssertionEvaluator(names));
+                }
+            } else {
+                Evaluator evaluator = names.isEmpty() ?
+                        Evaluators.alwaysFalse(getEnclosingSchema()) :
+                        new NegatedAssertionEvaluator(names);    
+                appender.append(evaluator);
+            }
+        } 
     }
 
     @Override

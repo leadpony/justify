@@ -16,17 +16,8 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-
 /**
- * Logical connective evaluator.
- * 
  * @author leadpony
  */
-public interface LogicalEvaluator extends Evaluator {
-    
-    //LogicalEvaluator withType(InstanceType type); 
-
-    LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory); 
+public interface AppendableLogicalEvaluator extends LogicalEvaluator, EvaluatorAppender {
 }

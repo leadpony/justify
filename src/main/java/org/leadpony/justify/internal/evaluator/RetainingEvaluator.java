@@ -30,16 +30,21 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemReporter;
 
 /**
- * Evaluator which stores found problems internally.
+ * Evaluator which retains the found problems internally.
  * 
  * @author leadpony
  */
-class StoringEvaluator implements Evaluator, ProblemReporter, Comparable<StoringEvaluator> {
+class RetainingEvaluator implements Evaluator, ProblemReporter, Comparable<RetainingEvaluator> {
 
     private final Evaluator evaluator;
     private List<Problem> problems;
     
-    StoringEvaluator(Evaluator evaluator) {
+    /**
+     * Constructs this evaluator.
+     * 
+     * @param evaluator the actual evaluator, cannot be {@code null}.
+     */
+    RetainingEvaluator(Evaluator evaluator) {
         this.evaluator = evaluator;
     }
     
@@ -58,7 +63,7 @@ class StoringEvaluator implements Evaluator, ProblemReporter, Comparable<Storing
     }
 
     @Override
-    public int compareTo(StoringEvaluator other) {
+    public int compareTo(RetainingEvaluator other) {
         return countProblems() - other.countProblems();
     }
     

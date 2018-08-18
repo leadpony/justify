@@ -33,7 +33,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -89,7 +89,7 @@ abstract class Items extends Combiner {
         }
     }
     
-    private static abstract class DynamicItemsEvaluator extends DynamicChildrenEvaluator {
+    private static abstract class DynamicItemsEvaluator extends AbstractChildrenEvaluator {
         
         protected int currentItemIndex;
         

@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.ProblemReporter;
-import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
@@ -101,7 +101,7 @@ class Contains extends UnaryCombiner {
         private Evaluator createItemSchemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return getSubschema().createEvaluator(type, getEvaluatorFactory(), true);
+                return getSubschema().evaluator(type, getEvaluatorFactory(), true);
             } else {
                 return null;
             }
@@ -138,7 +138,7 @@ class Contains extends UnaryCombiner {
         }
     }
     
-    private static class NegatedItemSchemaEvaluator extends DynamicChildrenEvaluator {
+    private static class NegatedItemSchemaEvaluator extends AbstractChildrenEvaluator {
 
         private final JsonSchema subschema;
         
@@ -151,7 +151,7 @@ class Contains extends UnaryCombiner {
         protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
             if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                append(subschema.createEvaluator(type, Evaluators.asFactory(), false));
+                append(subschema.evaluator(type, Evaluators.asFactory(), false));
             }
         }
     }

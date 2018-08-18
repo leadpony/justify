@@ -35,7 +35,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -98,7 +98,7 @@ public abstract class BaseProperties<K> extends Combiner {
         additionalProperties.findSubshcmeas(keyName, subschemas);
     }
     
-    private class ProperySchemaEvaluator extends DynamicChildrenEvaluator {
+    private class ProperySchemaEvaluator extends AbstractChildrenEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         

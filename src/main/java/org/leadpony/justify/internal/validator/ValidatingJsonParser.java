@@ -104,7 +104,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        this.evaluator = rootSchema.createEvaluator(type, Evaluators.asFactory(), true);
+        this.evaluator = rootSchema.evaluator(type, Evaluators.asFactory(), true);
         if (this.evaluator != null) {
             handleEvent(event, parser);
         }

@@ -23,7 +23,6 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
 
 /**

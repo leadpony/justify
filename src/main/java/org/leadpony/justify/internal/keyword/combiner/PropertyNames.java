@@ -26,7 +26,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
@@ -53,7 +53,7 @@ class PropertyNames extends UnaryCombiner {
         }
     }
 
-    private static class SubschemaEvaluator extends DynamicChildrenEvaluator {
+    private static class SubschemaEvaluator extends AbstractChildrenEvaluator {
 
         private final JsonSchema subschema;
         

@@ -22,7 +22,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -32,23 +32,19 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-abstract class AbstractStringAssertion extends AbstractAssertion {
+abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.STRING) {
-            appender.append(this::evaluate);
+            Evaluator evaluator = affirmative ? this : this::evaluateNegated;
+            appender.append(evaluator);
         }
     }
 
     @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.STRING) {
-            appender.append(this::evaluateNegated);
-        }
-    }
-
-    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
         return evaluateAgainst(parser.getString(), event, parser, reporter);
     }

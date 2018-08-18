@@ -41,8 +41,17 @@ public interface Keyword {
      */
     String name();
     
+    /**
+     * Returns the JSON schema enclosing this keyword.
+     * 
+     * @return the enclosing schema of this keyword.
+     */
     JsonSchema getEnclosingSchema();
 
+    /**
+     * Assigns the JSON schema enclosing this keyword.
+     * @param schema the enclosing schema of this keyword.
+     */
     void setEnclosingSchema(JsonSchema schema);
     
     /**
@@ -64,37 +73,10 @@ public interface Keyword {
      */
     default void createEvaluator(InstanceType type, EvaluatorAppender appender,
             JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (affirmative) {
-            createEvaluator(type, appender, builderFactory);
-        } else {
-            createNegatedEvaluator(type, appender, builderFactory);
-        }
-    }
-    
-    /**
-     * Creates an evaluator for this keyword.
-     * 
-     * @param type the type of the instance, cannot be {@code null}.
-     * @param appender the type for appending evaluators, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
-     */
-    default void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
         throw new UnsupportedOperationException(
                 name() + " does not support evaluation.");
     }
     
-    /**
-     * Creates a negated evaluator for this keyword.
-     * 
-     * @param type the type of the instance, cannot be {@code null}.
-     * @param appender the type for appending evaluators, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
-     */
-    default void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        throw new UnsupportedOperationException(
-                name() + " does not support negated evaluation.");
-    }
-
     /**
      * Adds this keyword to the specified JSON object.
      * 

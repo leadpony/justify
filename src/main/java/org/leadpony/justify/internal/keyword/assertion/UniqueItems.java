@@ -51,19 +51,16 @@ class UniqueItems extends AbstractAssertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY && unique) {
-            appender.append(new AssertionEvaluator(builderFactory));
+            Evaluator evaluator = affirmative ?
+                    new AssertionEvaluator(builderFactory) :
+                    new NegatedAssertionEvaluator(builderFactory);    
+            appender.append(evaluator);
         }
     }
     
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.ARRAY && unique) {
-            appender.append(new NegatedAssertionEvaluator(builderFactory));
-        }
-    }
-
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), unique);

@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
@@ -39,7 +40,11 @@ class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(boolean affirmative) {
-        return affirmative ? Evaluators.oneOf() : Evaluators.oneOf();
+    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative) {
+        if (affirmative) {
+            return Evaluators.exclusive(subschemas(), type);
+        } else {
+            return Evaluators.notExclusive(subschemas(), type);
+        }
     }
 }

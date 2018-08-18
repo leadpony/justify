@@ -22,6 +22,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
@@ -34,25 +35,26 @@ import org.leadpony.justify.core.Problem;
 abstract class AbstractEqualityAssertion extends AbstractAssertion {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
-        appender.append((event, parser, depth, reporter)->{
-            if (builder.append(event, parser)) {
-                return Result.PENDING;
-            }
-            return assertEquals(builder.build(), parser, reporter);
-        });
-    }
-    
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
-        appender.append((event, parser, depth, reporter)->{
-            if (builder.append(event, parser)) {
-                return Result.PENDING;
-            }
-            return assertNotEquals(builder.build(), parser, reporter);
-        });
+        Evaluator evaluator;
+        if (affirmative) {
+            evaluator = (event, parser, depth, reporter)->{
+                if (builder.append(event, parser)) {
+                    return Result.PENDING;
+                }
+                return assertEquals(builder.build(), parser, reporter);
+            };
+        } else {
+            evaluator = (event, parser, depth, reporter)->{
+                if (builder.append(event, parser)) {
+                    return Result.PENDING;
+                }
+                return assertNotEquals(builder.build(), parser, reporter);
+            };
+        }
+        appender.append(evaluator);
     }
     
     protected abstract Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter);

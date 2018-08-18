@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -38,9 +37,12 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
+ * Combiner representing "dependencies" keyword.
+ * 
  * @author leadpony
  */
 public class Dependencies extends Combiner {
@@ -56,14 +58,17 @@ public class Dependencies extends Combiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type != InstanceType.OBJECT) {
             return;
         }
+        AppendableLogicalEvaluator evaluator = affirmative ?
+                Evaluators.conjunctive(type) : Evaluators.disjunctive(type);
         dependencyMap.values().stream()
-            .map(Dependency::createEvaluator)
-            .filter(Objects::nonNull)
-            .forEach(appender::append);
+            .map(d->d.createEvaluator(affirmative))
+            .forEach(evaluator::append);
+        appender.append(evaluator.withProblemBuilderFactory(this));
     }
 
     @Override
@@ -119,7 +124,7 @@ public class Dependencies extends Combiner {
             return false;
         }
 
-        abstract Evaluator createEvaluator();
+        abstract Evaluator createEvaluator(boolean affirmative);
         
         abstract void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
     }
@@ -134,16 +139,12 @@ public class Dependencies extends Combiner {
         }
         
         @Override
-        Evaluator createEvaluator() {
-            Evaluator evaluator = subschema.createEvaluator(
+        Evaluator createEvaluator(boolean affirmative) {
+            Evaluator evaluator = subschema.evaluator(
                     InstanceType.OBJECT,
                     Evaluators.asFactory(),
-                    true);
-            if (evaluator != null) {
-                return new SubschemaEvaluator(getProperty(), evaluator);
-            } else {
-                return null;
-            }
+                    affirmative);
+            return new SubschemaEvaluator(getProperty(), evaluator);
         }
 
         @Override
@@ -231,8 +232,8 @@ public class Dependencies extends Combiner {
         }
 
         @Override
-        Evaluator createEvaluator() {
-            return new PropertyEvaluator(getProperty(), requiredProperties);
+        Evaluator createEvaluator(boolean affirmative) {
+            return new PropertyEvaluator(getProperty(), requiredProperties, affirmative);
         }
 
         @Override
@@ -246,13 +247,17 @@ public class Dependencies extends Combiner {
     private class PropertyEvaluator implements Evaluator {
         
         private final String property;
-        private boolean active;
+        private final Set<String> required;
         private final Set<String> missing;
+        private final boolean affirmative;
+        private boolean active;
         
-        PropertyEvaluator(String property, Set<String> required) {
+        PropertyEvaluator(String property, Set<String> required, boolean affirmative) {
             this.property = property;
-            this.active = false;
+            this.required = required;
             this.missing = new LinkedHashSet<>(required);
+            this.affirmative = affirmative;
+            this.active = false;
         }
 
         @Override
@@ -265,7 +270,11 @@ public class Dependencies extends Combiner {
                 missing.remove(keyName);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
-                    return test(parser, reporter);
+                    if (affirmative) {
+                        return test(parser, reporter);
+                    } else {
+                        return testNegation(parser, reporter);
+                    }
                 } else {
                     return Result.IGNORED;
                 }
@@ -284,6 +293,20 @@ public class Dependencies extends Combiner {
                         .build();
                 reporter.accept(p);
                 return Result.FALSE;
+            }
+        }
+
+        private Result testNegation(JsonParser parser, Consumer<Problem> reporter) {
+            if (missing.isEmpty()) {
+                Problem p = createProblemBuilder(parser)
+                        .withMessage("instance.problem.not.dependencies")
+                        .withParameter("required", required)
+                        .withParameter("dependant", property)
+                        .build();
+                reporter.accept(p);
+                return Result.FALSE;
+            } else {
+                return Result.TRUE;
             }
         }
     }

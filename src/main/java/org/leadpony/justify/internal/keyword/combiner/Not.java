@@ -42,7 +42,7 @@ class Not extends UnaryCombiner {
     @Override
     public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
             JsonBuilderFactory builderFactory, boolean affirmative) {
-        Evaluator evaluator = getSubschema().createEvaluator(type, getEvaluatorFactory(), !affirmative);
+        Evaluator evaluator = getSubschema().evaluator(type, getEvaluatorFactory(), !affirmative);
         if (evaluator != null) {
             appender.append(evaluator);
         }

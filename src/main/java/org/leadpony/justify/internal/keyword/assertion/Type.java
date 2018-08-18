@@ -26,7 +26,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
@@ -37,7 +37,7 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
  * 
  * @author leadpony
  */
-class Type extends AbstractAssertion {
+class Type extends AbstractAssertion implements Evaluator {
     
     protected final Set<InstanceType> typeSet;
     
@@ -51,13 +51,10 @@ class Type extends AbstractAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        appender.append(this::evaluate);
-    }
-
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        appender.append(this::evaluateNegated);
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
+        Evaluator evaluator = affirmative ? this : this::evaluateNegated;
+        appender.append(evaluator);
     }
 
     @Override
@@ -70,7 +67,8 @@ class Type extends AbstractAssertion {
         builder.add("type", arrayBuilder);
     }
     
-    private Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
             return assertTypeMatches(type, parser, reporter);

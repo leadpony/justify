@@ -30,7 +30,7 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
-import org.leadpony.justify.internal.evaluator.DynamicChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -89,7 +89,7 @@ class AdditionalProperties extends UnaryCombiner {
         subschemas.add(getSubschema());
     }
     
-    class ProperySchemaEvaluator extends DynamicChildrenEvaluator {
+    class ProperySchemaEvaluator extends AbstractChildrenEvaluator {
 
         private JsonSchema nextSubschema;
         

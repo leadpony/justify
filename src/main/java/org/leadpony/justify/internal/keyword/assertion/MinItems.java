@@ -51,17 +51,13 @@ class MinItems extends AbstractAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY) {
-            appender.append(new AssertionEvaluator(bound, this));
-        }
-    }
-    
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.ARRAY) {
-            Evaluator evaluator = null;
-            if (bound > 0) {
+            Evaluator evaluator;
+            if (affirmative) {
+                evaluator = new AssertionEvaluator(bound, this);
+            } else if (bound > 0) {
                 evaluator = new MaxItems.AssertionEvaluator(bound - 1, this);
             } else {
                 evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
@@ -69,7 +65,7 @@ class MinItems extends AbstractAssertion {
             appender.append(evaluator);
         }
     }
-
+    
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), bound);

@@ -23,6 +23,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
@@ -49,16 +50,13 @@ class MaxItems extends AbstractAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
+    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
+            JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY) {
-            appender.append(new AssertionEvaluator(bound, this));
-        }
-    }
-
-    @Override
-    public void createNegatedEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory) {
-        if (type == InstanceType.ARRAY) {
-            appender.append(new MinItems.AssertionEvaluator(bound + 1, this));
+            Evaluator evaluator = affirmative ?
+                    new AssertionEvaluator(bound, this) :
+                    new MinItems.AssertionEvaluator(bound + 1, this);   
+            appender.append(evaluator);
         }
     }
 
