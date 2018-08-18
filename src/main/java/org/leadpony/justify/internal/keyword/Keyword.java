@@ -23,9 +23,9 @@ import java.util.stream.Stream;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * Super type of all keywords that can compose a JSON schema.
@@ -66,13 +66,11 @@ public interface Keyword {
      * Creates an evaluator for this keyword.
      * 
      * @param type the type of the instance, cannot be {@code null}.
-     * @param appender the type for appending evaluators, cannot be {@code null}.
      * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
      * @param affirmative {@code true} to create normal evaluators,
      *                    {@code false} to create negated evaluators. 
      */
-    default void createEvaluator(InstanceType type, EvaluatorAppender appender,
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    default Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         throw new UnsupportedOperationException(
                 name() + " does not support evaluation.");
     }

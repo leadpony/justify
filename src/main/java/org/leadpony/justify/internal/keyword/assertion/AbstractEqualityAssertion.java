@@ -25,7 +25,6 @@ import javax.json.stream.JsonParser;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 
@@ -35,8 +34,7 @@ import org.leadpony.justify.core.Problem;
 abstract class AbstractEqualityAssertion extends AbstractAssertion {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
         Evaluator evaluator;
         if (affirmative) {
@@ -54,7 +52,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
                 return assertNotEquals(builder.build(), parser, reporter);
             };
         }
-        appender.append(evaluator);
+        return evaluator;
     }
     
     protected abstract Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter);

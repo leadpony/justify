@@ -38,7 +38,7 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
     protected AbstractChildrenEvaluator(boolean affirmative, InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
         this.affirmative = affirmative;
         childrenEvaluator = affirmative ? 
-                new ConjunctiiveChildrenEvaluator(type) : 
+                new ConjunctiveChildrenEvaluator(type) : 
                 new DisjunctiveChildrenEvaluator(type);
         childrenEvaluator
             .withProblemBuilderFactory(problemBuilderFactory);
@@ -76,9 +76,9 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
     /**
      * @author leadpony
      */
-    private static class ConjunctiiveChildrenEvaluator extends LongConjunctiveEvaluator {
+    private static class ConjunctiveChildrenEvaluator extends LongConjunctiveEvaluator {
         
-        ConjunctiiveChildrenEvaluator(InstanceType type) {
+        ConjunctiveChildrenEvaluator(InstanceType type) {
             super(type);
         }
 

@@ -30,7 +30,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
@@ -52,20 +51,23 @@ class Required extends AbstractAssertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.OBJECT) {
-            if (affirmative) {
-                if (!names.isEmpty()) {
-                    appender.append(new AssertionEvaluator(names));
-                }
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
+        if (type != InstanceType.OBJECT) {
+            return Evaluators.ALWAYS_IGNORED;
+        }
+        if (affirmative) {
+            if (names.isEmpty()) {
+                return Evaluators.ALWAYS_TRUE; 
             } else {
-                Evaluator evaluator = names.isEmpty() ?
-                        Evaluators.alwaysFalse(getEnclosingSchema()) :
-                        new NegatedAssertionEvaluator(names);    
-                appender.append(evaluator);
+                return new AssertionEvaluator(names);
             }
-        } 
+        } else {
+            if (names.isEmpty()) {
+                return Evaluators.alwaysFalse(getEnclosingSchema());
+            } else {
+                return new NegatedAssertionEvaluator(names);    
+            }
+        }
     }
 
     @Override

@@ -28,7 +28,6 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
@@ -50,8 +49,7 @@ class MinProperties extends AbstractAssertion {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
             Evaluator evaluator;
             if (affirmative) {
@@ -61,7 +59,9 @@ class MinProperties extends AbstractAssertion {
             } else {
                 evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
             }
-            appender.append(evaluator);
+            return evaluator;
+        } else {
+            return Evaluators.ALWAYS_IGNORED;
         }
     }
 

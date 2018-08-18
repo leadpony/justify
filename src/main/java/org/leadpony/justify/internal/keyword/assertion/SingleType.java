@@ -27,7 +27,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * "type" assertion specialized for single type.
@@ -48,10 +47,8 @@ class SingleType extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
-        Evaluator evaluator = affirmative ? this : this::evaluateNegated;
-        appender.append(evaluator);
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
+        return affirmative ? this : this::evaluateNegated;
     }
     
     @Override

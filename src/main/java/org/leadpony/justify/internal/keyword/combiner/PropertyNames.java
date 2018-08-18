@@ -22,12 +22,13 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Combiner representing "propertyNames" keyword.
@@ -46,10 +47,11 @@ class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.OBJECT) {
-            appender.append(new SubschemaEvaluator(affirmative, this, getSubschema()));
+            return new SubschemaEvaluator(affirmative, this, getSubschema());
+        } else {
+            return Evaluators.ALWAYS_IGNORED;
         }
     }
 

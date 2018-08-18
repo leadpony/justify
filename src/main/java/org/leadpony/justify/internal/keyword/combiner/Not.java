@@ -21,10 +21,9 @@ import javax.json.JsonBuilderFactory;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
- * Boolean logic specified with "not" validation keyword.
+ * Type representing "not" boolean logic.
  * 
  * @author leadpony
  */
@@ -40,11 +39,7 @@ class Not extends UnaryCombiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
-        Evaluator evaluator = getSubschema().evaluator(type, getEvaluatorFactory(), !affirmative);
-        if (evaluator != null) {
-            appender.append(evaluator);
-        }
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
+        return getSubschema().evaluator(type, getEvaluatorFactory(), !affirmative);
     }
 }

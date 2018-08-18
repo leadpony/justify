@@ -28,13 +28,14 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -61,10 +62,11 @@ abstract class Items extends Combiner {
         }
 
         @Override
-        public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-                JsonBuilderFactory builderFactory, boolean affirmative) {
+        public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
             if (type == InstanceType.ARRAY) {
-                appender.append(new SingleSchemaEvaluator(affirmative, this, this.subschema));
+                return new SingleSchemaEvaluator(affirmative, this, this.subschema);
+            } else {
+                return Evaluators.ALWAYS_IGNORED;
             }
         }
 
@@ -140,10 +142,11 @@ abstract class Items extends Combiner {
         }
 
         @Override
-        public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-                JsonBuilderFactory builderFactory, boolean affirmative) {
+        public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
             if (type == InstanceType.ARRAY) {
-                appender.append(new SeparateSchemaEvaluator(affirmative, this));
+                return new SeparateSchemaEvaluator(affirmative, this);
+            } else {
+                return Evaluators.ALWAYS_IGNORED;
             }
         }
         

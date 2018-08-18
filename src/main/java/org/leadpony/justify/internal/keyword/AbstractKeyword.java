@@ -28,7 +28,8 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
  * @author leadpony
  */
 public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory {
-    
+
+    // the schema enclosing this keyword.
     private JsonSchema schema;
 
     @Override
@@ -41,6 +42,12 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
         this.schema = schema;
     }
     
+    /**
+     * Creates a new instance of problem builder for this keyword.
+     * 
+     * @param parser the JSON parser, cannot be {@code null}.
+     * @return newly created instance of {@link ProblemBuilder}.
+     */
     @Override
     public ProblemBuilder createProblemBuilder(JsonParser parser) {
         return ProblemBuilderFactory.super.createProblemBuilder(parser)

@@ -34,7 +34,6 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -56,12 +55,13 @@ class Contains extends UnaryCombiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, JsonBuilderFactory builderFactory, boolean affrimative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY) {
-            Evaluator evaluator = affrimative ? 
+            return affirmative ? 
                     new ItemsSchemaEvaluator() : 
                     new NegatedItemSchemaEvaluator(this, getSubschema());
-            appender.append(evaluator);
+        } else {
+            return Evaluators.ALWAYS_IGNORED;
         }
     }
 

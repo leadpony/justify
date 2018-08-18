@@ -26,7 +26,11 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
  */
 public interface LogicalEvaluator extends Evaluator {
     
-    //LogicalEvaluator withType(InstanceType type); 
-
+    /**
+     * Assigns the factory for producing problem builders.
+     * 
+     * @param problemBuilderFactory the factory for producing problem builders, cannot be {@code null}.
+     * @return this evaluator.
+     */
     LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory); 
 }

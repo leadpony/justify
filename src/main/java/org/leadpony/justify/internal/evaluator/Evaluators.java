@@ -44,6 +44,10 @@ public final class Evaluators {
     
     private Evaluators() {
     }
+    
+    public static Evaluator always(boolean result, JsonSchema schema) {
+        return result ? ALWAYS_TRUE : alwaysFalse(schema);
+    }
 
     public static Evaluator alwaysFalse(JsonSchema schema) {
         requireNonNull(schema, "schema");

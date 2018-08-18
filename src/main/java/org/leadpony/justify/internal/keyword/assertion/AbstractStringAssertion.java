@@ -25,7 +25,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Assertion on values of string type.
@@ -35,11 +35,11 @@ import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.STRING) {
-            Evaluator evaluator = affirmative ? this : this::evaluateNegated;
-            appender.append(evaluator);
+            return affirmative ? this : this::evaluateNegated;
+        } else {
+            return Evaluators.ALWAYS_IGNORED;
         }
     }
 

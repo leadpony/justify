@@ -28,7 +28,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
 /**
@@ -50,13 +50,13 @@ class MaxItems extends AbstractAssertion {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY) {
-            Evaluator evaluator = affirmative ?
+            return affirmative ?
                     new AssertionEvaluator(bound, this) :
                     new MinItems.AssertionEvaluator(bound + 1, this);   
-            appender.append(evaluator);
+        } else {
+            return Evaluators.ALWAYS_IGNORED;
         }
     }
 

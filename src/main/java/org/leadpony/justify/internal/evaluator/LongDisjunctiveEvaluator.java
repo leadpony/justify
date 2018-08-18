@@ -53,8 +53,10 @@ class LongDisjunctiveEvaluator extends DisjunctiveEvaluator {
             Result result = invokeChildEvaluator(current, event, parser, depth, reporter);
             if (result == Result.TRUE) {
                 return Result.TRUE;
-            } else if (result == Result.FALSE) {
-                addBadEvaluator(current);
+            } else if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    addBadEvaluator(current);
+                }
                 it.remove();
             }
         }

@@ -64,6 +64,9 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
 
     @Override
     public void append(Evaluator evaluator) {
+        if (evaluator == Evaluators.ALWAYS_IGNORED) {
+            return;
+        }
         this.children.add(new RetainingEvaluator(evaluator));
     }
     

@@ -79,14 +79,13 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
         requireNonNull(type, "type");
         requireNonNull(factory, "factory");
-        JsonBuilderFactory builderFactory = getBuilderFactory();
-        AppendableLogicalEvaluator evaluator = affirmative ? 
-                Evaluators.conjunctive(type) : Evaluators.disjunctive(type);
-        evaluator.withProblemBuilderFactory(this);
-        for (Keyword keyword : evaluatables) {
-            keyword.createEvaluator(type, evaluator, builderFactory, affirmative);
+        if (this.evaluatables.isEmpty()) {
+            return createDefaultEvaluator(affirmative);
+        } else if (this.evaluatables.size() == 1) {
+            return createFirstEvaluator(type, affirmative);
+        } else {
+            return createCombinedEvaluator(type, affirmative);
         }
-        return evaluator;
     }
 
     @Override
@@ -108,5 +107,31 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
 
     public void setAbsoluteId(URI id) {
         this.id = id;
+    }
+    
+    private Evaluator createDefaultEvaluator(boolean affirmative) {
+        return Evaluators.always(affirmative, this);
+    }
+    
+    private Evaluator createFirstEvaluator(InstanceType type, boolean affirmative) {
+        Evaluator evaluator = this.evaluatables.get(0)
+                .createEvaluator(type, getBuilderFactory(), affirmative);
+        if (evaluator != Evaluators.ALWAYS_IGNORED) {
+            return evaluator;
+        } else {
+            return createDefaultEvaluator(affirmative);
+        }
+    }
+
+    private Evaluator createCombinedEvaluator(InstanceType type, boolean affirmative) {
+        JsonBuilderFactory builderFactory = getBuilderFactory();
+        AppendableLogicalEvaluator evaluator = affirmative ? 
+                Evaluators.conjunctive(type) : Evaluators.disjunctive(type);
+        evaluator.withProblemBuilderFactory(this);
+        for (Keyword keyword : this.evaluatables) {
+            Evaluator child = keyword.createEvaluator(type, builderFactory, affirmative);
+            evaluator.append(child);
+        }
+        return evaluator;
     }
 }

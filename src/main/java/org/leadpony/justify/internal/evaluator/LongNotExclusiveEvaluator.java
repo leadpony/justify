@@ -46,10 +46,10 @@ public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, reporter);
-            if (result == Result.TRUE) {
-                it.remove();
-            } else if (result == Result.FALSE) {
-                addBadEvaluator(current);
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    addBadEvaluator(current);
+                }
                 it.remove();
             }
         }

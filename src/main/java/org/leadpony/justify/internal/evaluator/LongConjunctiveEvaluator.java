@@ -50,10 +50,10 @@ class LongConjunctiveEvaluator extends ConjunctiveEvaluator {
         Iterator<Evaluator> it = children.iterator();
         while (it.hasNext()) {
             Result result = invokeChildEvaluator(it.next(), event, parser, depth, reporter);
-            if (result == Result.TRUE) {
-                it.remove();
-            } else if (result == Result.FALSE) {
-                evaluationsAsInvalid++;
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    evaluationsAsInvalid++;
+                }
                 it.remove();
             }
         }

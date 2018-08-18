@@ -79,11 +79,12 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, reporter);
-            if (result == Result.TRUE) {
-                evaluationsAsTrue++;
-                it.remove();
-            } else if (result == Result.FALSE) {
-                addBad(current);
+            if (result != Result.PENDING) {
+                if (result == Result.TRUE) {
+                    evaluationsAsTrue++;
+                } else if (result == Result.FALSE) {
+                    addBad(current);
+                }
                 it.remove();
             }
         }
@@ -94,10 +95,10 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, reporter);
-            if (result == Result.TRUE) {
-                it.remove();
-            } else if (result == Result.FALSE) {
-                addGood(current);
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    addGood(current);
+                }
                 it.remove();
             }
         }

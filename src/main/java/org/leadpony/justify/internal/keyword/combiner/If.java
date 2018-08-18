@@ -25,7 +25,6 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -54,15 +53,14 @@ class If extends UnaryCombiner {
     }
     
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         EvaluatorFactory evaluatorFactory = Evaluators.asFactory();
         Evaluator ifEvaluator = getSubschema().evaluator(type, evaluatorFactory, true);
         Evaluator thenEvaluator = getThenSchema()
                 .evaluator(type, evaluatorFactory, affirmative);
         Evaluator elseEvaluator = getElseSchema()
                 .evaluator(type, evaluatorFactory, affirmative);
-        appender.append(new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator));
+        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override

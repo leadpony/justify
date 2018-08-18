@@ -38,7 +38,6 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
-import org.leadpony.justify.internal.evaluator.EvaluatorAppender;
 
 /**
  * Combiner representing "dependencies" keyword.
@@ -58,17 +57,16 @@ public class Dependencies extends Combiner {
     }
 
     @Override
-    public void createEvaluator(InstanceType type, EvaluatorAppender appender, 
-            JsonBuilderFactory builderFactory, boolean affirmative) {
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type != InstanceType.OBJECT) {
-            return;
+            return Evaluators.ALWAYS_IGNORED;
         }
         AppendableLogicalEvaluator evaluator = affirmative ?
                 Evaluators.conjunctive(type) : Evaluators.disjunctive(type);
         dependencyMap.values().stream()
             .map(d->d.createEvaluator(affirmative))
             .forEach(evaluator::append);
-        appender.append(evaluator.withProblemBuilderFactory(this));
+        return evaluator.withProblemBuilderFactory(this);
     }
 
     @Override
