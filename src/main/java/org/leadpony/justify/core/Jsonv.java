@@ -115,6 +115,7 @@ public final class Jsonv {
      * The character encoding of the stream is determined as described in RFC 7159.
      * 
      * @param in the byte stream from which a JSON schema is to be read.
+     *           The specified stream will be closed in this method.
      * @return the JSON schema.
      * @throws NullPointerException if the specified {@code in} was {@code null}.
      * @throws JsonException if an I/O error occurs while reading.
@@ -131,6 +132,7 @@ public final class Jsonv {
      * The bytes of the stream are decoded to characters using the specified charset.
      * 
      * @param in the byte stream from which a JSON schema is to be read.
+     *           The specified stream will be closed in this method.
      * @param charset the character set.
      * @return the JSON schema.
      * @throws NullPointerException if the specified {@code in} or {@code charset} was {@code null}.
@@ -147,6 +149,7 @@ public final class Jsonv {
      * Reads a JSON schema reader from a reader. 
      * 
      * @param reader the reader from which a JSON schema is to be read.
+     *           The specified reader will be closed in this method.
      * @return the JSON schema.
      * @throws NullPointerException if the specified {@code reader} was {@code null}.
      * @throws JsonException if an I/O error occurs while reading.

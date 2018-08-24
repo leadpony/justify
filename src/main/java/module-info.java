@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Defines the API for JSON validation.
+ */
 module org.leadpony.justify {
     exports org.leadpony.justify.core;
     exports org.leadpony.justify.core.spi;

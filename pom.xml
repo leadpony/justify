@@ -24,6 +24,7 @@
         <junit.jupiter.version>5.2.0</junit.jupiter.version>
         <junit.platform.version>1.2.0</junit.platform.version>
         <test.log.level>OFF</test.log.level>
+        <javadoc.link>http://docs.oracle.com/javase/8/docs/api/</javadoc.link>
     </properties>
 
     <dependencies>
@@ -107,6 +108,24 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.0.1</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <docencoding>UTF-8</docencoding>
+                        <charset>UTF-8</charset>
+                        <locale>en_US</locale>
+                        <additionalJOption>-html5</additionalJOption>
+                        <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
+                        <detectJavaApiLink>false</detectJavaApiLink>
+                        <links>
+                            <link>${javadoc.link}</link>
+                        </links>
+                        <offlineLinks>
+                            <offlineLink>
+                                <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.2</url>
+                                <location>${basedir}/src/main/javadoc/javax/json/</location>
+                            </offlineLink>
+                        </offlineLinks>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -171,7 +190,7 @@
         <profile>
             <id>jdk8</id>
             <activation>
-                <jdk>8</jdk>
+                <jdk>1.8</jdk>
             </activation>
             <build>
                 <pluginManagement>
@@ -194,6 +213,9 @@
             <activation>
                 <jdk>[9,]</jdk>
             </activation>
+            <properties>
+                <javadoc.link>http://docs.oracle.com/javase/9/docs/api/</javadoc.link>
+            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -203,7 +225,7 @@
                             <configuration>
                                 <source>9</source>
                                 <target>9</target>
-                                <releease>9</releease>
+                                <release>9</release>
                             </configuration>
                         </plugin>
                     </plugins>
@@ -248,20 +270,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <docencoding>UTF-8</docencoding>
-                            <charset>UTF-8</charset>
-                            <locale>en_US</locale>
-                            <additionalJOption>-html5</additionalJOption>
-                            <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
-                            <offlineLinks>
-                                <offlineLink>
-                                    <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.2</url>
-                                    <location>${basedir}/src/main/javadoc/javax/json/</location>
-                                </offlineLink>
-                            </offlineLinks>
-                        </configuration>
                         <executions>
                             <execution>
                                 <phase>package</phase>
@@ -275,6 +283,8 @@
             </build>
         </profile>
     </profiles>
+
+    <inceptionYear>2018</inceptionYear>
 
     <licenses>
         <license>
