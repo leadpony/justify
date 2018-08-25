@@ -22,18 +22,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.Loggers;
@@ -47,17 +42,12 @@ public abstract class BaseValidationTest {
     
     private static final Logger log = Loggers.getLogger(BaseValidationTest.class);
     
+    public static final Jsonv jsonv = Jsonv.newInstance();
+
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
     
     private List<Problem> problems;
-
-    private static JsonSchemaBuilderFactory schemaBuilderFactory;
-    
-    @BeforeAll
-    public static void setUpOnce() throws Exception {
-        schemaBuilderFactory = Jsonv.createSchemaBuilderFactory();
-    }
     
     @BeforeEach
     public void setUp() {
@@ -123,24 +113,25 @@ public abstract class BaseValidationTest {
   
     private JsonParser createValidatingParser(JsonValue data, JsonSchema schema) {
         StringReader reader = new StringReader(data.toString());
-        return Jsonv.createParser(reader, schema, Jsonv.createProblemCollector(problems));
+        return jsonv.createParser(reader, schema, problems::addAll);
     }
     
     private static JsonSchema negate(JsonSchema original) {
+        JsonSchemaBuilderFactory schemaBuilderFactory = jsonv.createSchemaBuilderFactory();
         return schemaBuilderFactory.createBuilder()
                 .withNot(original)
                 .build();
     }
     
     protected JsonSchemaReader createSchemaReader(Reader reader) {
-        return Jsonv.createSchemaReader(reader);
+        return jsonv.createSchemaReader(reader);
     }
 
     protected void printProblems(Fixture fixture, List<Problem> problems) {
-        if (problems.isEmpty()) {
+        if (problems.isEmpty() || !log.isLoggable(Level.INFO)) {
             return;
         }
         log.info(">>>" + fixture.displayName());
-        Jsonv.createProblemPrinter(log::info).accept(problems);
+        problems.forEach(p->p.printAll(log::info));
     }
 }

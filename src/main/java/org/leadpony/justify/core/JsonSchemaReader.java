@@ -28,8 +28,9 @@ import javax.json.stream.JsonParsingException;
  * The following example shows how to read a JSON schema from a string: 
  * </p>
  * <pre><code>
+ * Jsonv jsonv = Jsonv.newInstance();
  * StringReader reader = new StringReader("{\"type\": \"integer\"}");
- * JsonSchemaReader schemaReader = Jsonv.createSchemaReader(reader);
+ * JsonSchemaReader schemaReader = jsonv.createSchemaReader(reader);
  * JsonSchema schema = schemaReader.read();
  * schemaReader.close();
  * </code></pre>

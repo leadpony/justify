@@ -26,44 +26,30 @@ import org.leadpony.justify.core.Problem;
  * 
  * @author leadpony
  */
-public class ProblemPrinter implements Consumer<List<Problem>> {
+class ProblemPrinter {
 
     private static final String INDENT = "  ";
-    private final Consumer<String> lineConsumer;
     
-    public ProblemPrinter(Consumer<String> lineConsumer) {
-        this.lineConsumer = lineConsumer;
-    }
-    
-    @Override
-    public void accept(List<Problem> problems) {
-        problems.forEach(this::printProblem);
-    }
-    
-    private void printProblem(Problem problem) {
-        printLine(problem.toString());
+    static void printProblem(Problem problem, Consumer<String> lineConsumer) {
+        lineConsumer.accept(problem.toString());
         if (problem.hasSubproblem()) {
-            printSubproblemsOf(problem, INDENT);
+            printSubproblemsOf(problem, INDENT, lineConsumer);
         }
     }
     
-    private void printSubproblemsOf(Problem problem, String indent) {
+    private static void printSubproblemsOf(Problem problem, String indent, Consumer<String> lineConsumer) {
         final String firstPrefix = indent + "- ";
         final String laterPrefix = indent + "  ";
         for (List<Problem> list : problem.getSubproblems()) {
             boolean isFirst = true;
             for (Problem subproblem : list) {
                 String prefix = isFirst ? firstPrefix : laterPrefix;
-                printLine(prefix + subproblem.toString());
+                lineConsumer.accept(prefix + subproblem.toString());
                 isFirst = false;
                 if (subproblem.hasSubproblem()) {
-                    printSubproblemsOf(subproblem, indent + INDENT);
+                    printSubproblemsOf(subproblem, indent + INDENT, lineConsumer);
                 }
             }
         }
-    }
-    
-    private void printLine(String line) {
-        lineConsumer.accept(line);
     }
 }

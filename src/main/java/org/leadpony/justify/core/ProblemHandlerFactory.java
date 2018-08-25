@@ -16,26 +16,22 @@
 
 package org.leadpony.justify.core;
 
+import javax.json.stream.JsonParser;
+
 /**
- * JSON schema samples.
+ * Factory for producing problem handlers for validating JSON parsers.
  * 
  * @author leadpony
  */
-interface JsonSchemas {
+@FunctionalInterface
+public interface ProblemHandlerFactory {
 
-    String PERSON_SCHEMA =
-            "{" +
-            "\"type\":\"object\"," +
-            "\"properties\":{" +
-            "\"name\": {\"type\":\"string\"}," +
-            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
-            "}," + 
-            "\"required\":[\"name\"]" +
-            "}";        
- 
-    String INTEGER_ARRAY_SCHEMA =
-            "{" +
-            "\"type\":\"array\"," +
-            "\"items\":{\"type\":\"integer\"}" +
-            "}";
+    /**
+     * Returns a problem handler for a JSON parser.
+     * 
+     * @param parser the JSON parser for which problem handler will be returned.
+     *               This cannot be {@code null}. 
+     * @return the problem handler for the specified JSON parser, cannot be {@code null}.
+     */
+    ProblemHandler createProblemHandler(JsonParser parser);
 }

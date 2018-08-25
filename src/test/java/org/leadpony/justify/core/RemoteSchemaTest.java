@@ -76,7 +76,7 @@ public class RemoteSchemaTest extends BaseValidationTest {
     
     private static JsonSchema resolveSchema(URI id) {
         try (InputStream in = id.toURL().openStream()) {
-            return Jsonv.readSchema(in);
+            return jsonv.readSchema(in);
         } catch (Exception e) {
             log.severe(e.toString());
             return null;

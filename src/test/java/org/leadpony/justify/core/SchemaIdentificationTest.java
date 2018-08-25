@@ -34,6 +34,8 @@ public class SchemaIdentificationTest {
 
     private static final String JSON_NAME = "/unofficial/other/identification.json";
     
+    private static final Jsonv jsonv = Jsonv.newInstance();
+    
     @Test
     public void testSchemaIdentification() throws IOException {
         JsonSchema schema = loadSchema();
@@ -57,7 +59,7 @@ public class SchemaIdentificationTest {
     
     private static JsonSchema loadSchema() throws IOException {
         try (InputStream in = TestResources.newInputStream(JSON_NAME)) {
-            return Jsonv.readSchema(in);
+            return jsonv.readSchema(in);
         }
     }
     

@@ -34,7 +34,8 @@ import javax.json.JsonValue;
  * The following example shows how to build a JSON schema with this builder.
  * </p>
  * <pre><code>
- * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilderFactory();
+ * Jsonv jsonv = Jsonv.newInstance();
+ * JsonSchemaBuilderFactory factory = jsonv.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * JsonSchema schema = builder
  *         .withType(InstanceType.OBJECT)

@@ -40,15 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JsonbTest {
   
     private static final Logger log = Loggers.getLogger(JsonbTest.class);
+    private static final Jsonv jsonv = Jsonv.newInstance();
     
     @Test
     public void fromJson_deserializes() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
-        JsonSchema s = Jsonv.readSchema(new StringReader(schema));
+        JsonSchema s = jsonv.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = Jsonv.createJsonProvider(s, parser->problems::addAll); 
+        JsonProvider provider = jsonv.createJsonProvider(s, parser->problems::addAll); 
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
         
@@ -62,9 +63,9 @@ public class JsonbTest {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": \"46\"}";
 
-        JsonSchema s = Jsonv.readSchema(new StringReader(schema));
+        JsonSchema s = jsonv.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = Jsonv.createJsonProvider(s, parser->problems::addAll); 
+        JsonProvider provider = jsonv.createJsonProvider(s, parser->problems::addAll); 
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 

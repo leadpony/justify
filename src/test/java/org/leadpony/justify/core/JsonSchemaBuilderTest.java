@@ -35,11 +35,12 @@ import javax.json.JsonObject;
  */
 public class JsonSchemaBuilderTest {
 
+    private static final Jsonv jsonv = Jsonv.newInstance();
     private JsonSchemaBuilderFactory factory;
     
     @BeforeEach
     public void setUp() {
-        this.factory = Jsonv.createSchemaBuilderFactory();
+        this.factory = jsonv.createSchemaBuilderFactory();
     }
     
     @AfterEach

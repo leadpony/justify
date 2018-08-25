@@ -113,7 +113,9 @@
                         <docencoding>UTF-8</docencoding>
                         <charset>UTF-8</charset>
                         <locale>en_US</locale>
-                        <additionalJOption>-html5</additionalJOption>
+                        <additionalJOptions>
+                            <additionalJOption>-html5</additionalJOption>
+                        </additionalJOptions>
                         <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
                         <detectJavaApiLink>false</detectJavaApiLink>
                         <links>

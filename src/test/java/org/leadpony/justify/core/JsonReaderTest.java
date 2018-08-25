@@ -18,11 +18,13 @@ package org.leadpony.justify.core;
 
 import static org.leadpony.justify.core.JsonSchemas.*;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -45,6 +47,16 @@ import org.leadpony.justify.Loggers;
 public class JsonReaderTest {
    
     private static final Logger log = Loggers.getLogger(JsonReaderTest.class);
+    private static final Jsonv jsonv = Jsonv.newInstance();
+    
+    private static JsonReader newReader(String instance) {
+        return Json.createReader(new StringReader(instance));
+    }
+    
+    private static JsonReader newReader(String instance, String schema, ProblemHandler handler) {
+        JsonSchema s = jsonv.readSchema(new StringReader(schema));
+        return jsonv.createReader(new StringReader(instance), s, handler);
+    }
     
     @Test
     public void read_readsArray() {
@@ -184,7 +196,7 @@ public class JsonReaderTest {
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            Jsonv.createProblemPrinter(log::info).accept(problems);
+            problems.forEach(p->p.printAll(log::info));
         }
     }
 }

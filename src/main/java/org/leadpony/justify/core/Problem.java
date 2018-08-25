@@ -19,6 +19,7 @@ package org.leadpony.justify.core;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
@@ -112,6 +113,14 @@ public interface Problem {
      * @return the list of subproblem list. It may be empty but never be {@code null}.
      */
     List<List<Problem>> getSubproblems();
+    
+    /**
+     * Prints this problem and subproblems with the aid of the specified line consumer.
+     * 
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
+     */
+    void printAll(Consumer<String> lineConsumer);
     
     /**
      * Returns the same string as {@link #getContextualMessage()} for the default locale.

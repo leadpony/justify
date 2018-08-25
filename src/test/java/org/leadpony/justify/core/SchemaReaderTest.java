@@ -36,6 +36,7 @@ import org.leadpony.justify.Loggers;
 public class SchemaReaderTest {
   
     private static final Logger log = Loggers.getLogger(SchemaReaderTest.class);
+    private static final Jsonv jsonv = Jsonv.newInstance();
     
     public static Stream<Arguments> provideSchemas() {
         return Stream.of(
@@ -50,7 +51,7 @@ public class SchemaReaderTest {
     @ParameterizedTest(name = "{index}")
     @MethodSource("provideSchemas")
     public void testInvalidSchema(String schemaJson, Class<?> exceptionClass) {
-        JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(schemaJson));
+        JsonSchemaReader reader = jsonv.createSchemaReader(new StringReader(schemaJson));
         Throwable thrown = catchThrowable(()->reader.read());
         if (exceptionClass != null) {
             assertThat(thrown).isInstanceOf(exceptionClass);

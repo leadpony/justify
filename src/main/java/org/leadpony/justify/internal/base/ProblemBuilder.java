@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
@@ -218,6 +219,15 @@ public class ProblemBuilder {
             return Collections.emptyList();
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void printAll(Consumer<String> lineConsumer) {
+            requireNonNull(lineConsumer, "lineConsumer");
+            ProblemPrinter.printProblem(this, lineConsumer);
+        }
+
         /**
          * {@inheritDoc}
          */

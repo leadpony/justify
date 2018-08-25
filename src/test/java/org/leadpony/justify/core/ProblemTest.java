@@ -34,7 +34,6 @@ import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
- *
  */
 public class ProblemTest {
 
@@ -42,16 +41,18 @@ public class ProblemTest {
     
     private static final String RESOURCE_NAME = "/unofficial/other/problem.tml";
   
+    private static final Jsonv jsonv = Jsonv.newInstance();
+    
     public static Stream<ProblemFixture> fixtureProvider() {
         return ProblemFixture.newStream(RESOURCE_NAME);
     }
-
+    
     @ParameterizedTest
     @MethodSource("fixtureProvider")
     public void testProblem(ProblemFixture fixture) {
         JsonSchema schema = readSchema(fixture.schema());
         List<Problem> problems = new ArrayList<>();
-        JsonReader reader = Jsonv.createReader(new StringReader(fixture.data()), schema, problems::addAll);
+        JsonReader reader = jsonv.createReader(new StringReader(fixture.data()), schema, problems::addAll);
         reader.readValue();
         assertThat(problems).hasSameSizeAs(fixture.problems());
         Iterator<Problem> it = problems.iterator();
@@ -68,14 +69,14 @@ public class ProblemTest {
     }
     
     private JsonSchema readSchema(String schema) {
-        JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(schema));
+        JsonSchemaReader reader = jsonv.createSchemaReader(new StringReader(schema));
         return reader.read();
     }
     
     private void printProblems(List<Problem> problems, ProblemFixture fixture) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());
-            Jsonv.createProblemPrinter(log::info).accept(problems);
+            problems.forEach(p->p.printAll(log::info));
         }
     }
 }

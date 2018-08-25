@@ -21,6 +21,7 @@ import static org.leadpony.justify.core.JsonSchemas.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,16 @@ import org.leadpony.justify.Loggers;
 public class JsonParserTest {
     
     private static final Logger log = Loggers.getLogger(JsonParserTest.class);
+    private static final Jsonv jsonv = Jsonv.newInstance();
+    
+    private static JsonParser newParser(String instance) {
+        return Json.createParser(new StringReader(instance));
+    }
+    
+    private static JsonParser newParser(String instance, String schema, ProblemHandler handler) {
+        JsonSchema s = jsonv.readSchema(new StringReader(schema));
+        return jsonv.createParser(new StringReader(instance), s, handler);
+    }
     
     @Test
     public void hasNext_returnsTrueAtFirst() {
@@ -147,11 +158,11 @@ public class JsonParserTest {
                 actual.add(event);
             } catch (JsonValidatingException e) {
                 problems.addAll(e.getProblems());
+                break;
             }
         }
         sut.close();
         
-        assertThat(actual).containsExactlyElementsOf(expected);
         assertThat(problems).isNotEmpty();
     }
 
@@ -521,7 +532,7 @@ public class JsonParserTest {
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            Jsonv.createProblemPrinter(log::info).accept(problems);
+            problems.forEach(p->p.printAll(log::info));
         }
     }
 }

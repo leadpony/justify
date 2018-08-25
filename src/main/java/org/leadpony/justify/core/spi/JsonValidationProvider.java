@@ -15,32 +15,19 @@
  */
 package org.leadpony.justify.core.spi;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParserFactory;
-
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonvException;
-import org.leadpony.justify.core.JsonSchemaReader;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.Jsonv;
 
 /**
  * Service provider for JSON validation objects. 
  * 
- * <p>All the public methods in this class are safe for use by multiple concurrent threads.</p>
+ * <p>
+ * All the public methods in this class are safe for use by multiple concurrent threads.
+ * This type is not intended to be used directly by end users.
+ * </p>
  * 
  * @author leadpony
  * @see ServiceLoader
@@ -50,7 +37,7 @@ public abstract class JsonValidationProvider {
     /**
      * Returns an instance of this provider class.
      * 
-     * @return the instance of this provider class.
+     * @return the instance of this provider class.     
      * @throws JsonvException if there is no provider found.
      */
     public static JsonValidationProvider provider() {
@@ -70,69 +57,10 @@ public abstract class JsonValidationProvider {
     }
     
     /**
-     * Creates a JSON schema reader from a byte stream. 
-     * The character encoding of the stream is determined as described in RFC 7159.
+     * Creates a new instance of {@link Jsonv}.
      * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if {@code in} is {@code null}.
+     * @return newly created instance of {@link Jsonv}.
+     * @throws JsonvException if an error was encountered while creating the instance.
      */
-    public abstract JsonSchemaReader createSchemaReader(InputStream in);
-    
-    /**
-     * Creates a JSON schema reader from a byte stream. 
-     * The bytes of the stream are decoded to characters using the specified charset.
-     * 
-     * @param in the byte stream from which a JSON schema is to be read.
-     * @param charset the character set.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if specified {@code in} or {@code charset} is {@code null}.
-     */
-    public abstract JsonSchemaReader createSchemaReader(InputStream in, Charset charset);
-
-    /**
-     * Creates a JSON schema reader from a reader. 
-     * 
-     * @param reader the reader from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     * @throws NullPointerException if {@code reader} is {@code null}.
-     */
-    public abstract JsonSchemaReader createSchemaReader(Reader reader);
-
-    /**
-     * Creates a factory for producing JSON schema builders.
-     *  
-     * @return newly created instance of JSON schema builder factory.
-     */
-    public abstract JsonSchemaBuilderFactory createSchemaBuilderFactory();
-    
-    public abstract JsonParserFactory createParserFactory(Map<String,?> config, JsonSchema schema, 
-            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
-   
-    public abstract JsonParser createParser(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler);
-  
-    public abstract JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler);
-
-    public abstract JsonParser createParser(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler);
- 
-    public abstract JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
-            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
-
-    public abstract JsonReader createReader(InputStream in, JsonSchema schema, Consumer<? super List<Problem>> handler);
-
-    public abstract JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, Consumer<? super List<Problem>> handler);
-  
-    public abstract JsonReader createReader(Reader reader, JsonSchema schema, Consumer<? super List<Problem>> handler);
-    
-    public abstract JsonProvider createJsonProvider(JsonSchema schema,
-            Function<JsonParser, Consumer<? super List<Problem>>> handlerSupplier);
-    
-    /**
-     * Creates a new instance of problem printer.
-     * 
-     * @param lineConsumer the object which will consume the line to print.
-     * @return the newly created instance of problem printer.
-     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
-     */
-    public abstract Consumer<List<Problem>> createProblemPrinter(Consumer<String> lineConsumer);
+    public abstract Jsonv createJsonv();
 }

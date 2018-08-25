@@ -34,8 +34,9 @@ import javax.json.JsonValue;
  * The following example shows how to read a JSON schema from a {@link StringReader}: 
  * </p>
  * <pre><code>
+ * Jsonv jsonv = Jsonv.newInstance();
  * StringReader reader = new StringReader("{\"type\": \"integer\"}");
- * JsonSchema schema = Jsonv.readSchema(reader);
+ * JsonSchema schema = jsonv.readSchema(reader);
  * </code></pre>
  *
  * <p>
@@ -43,7 +44,7 @@ import javax.json.JsonValue;
  * with {@link JsonSchemaBuilder} as follows.
  * </p>
  * <pre><code>
- * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilderFactory();
+ * JsonSchemaBuilderFactory factory = jsonv.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * JsonSchema schema = builder.withType(InstanceType.INTEGER).build();
  * </code></pre>

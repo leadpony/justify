@@ -23,7 +23,8 @@ package org.leadpony.justify.core;
  * The following example shows how to create an instance of {@link JsonSchemaBuilder}.
  * </p>
  * <pre><code>
- * JsonSchemaBuilderFactory factory = Jsonv.createSchemaBuilderFactory();
+ * Jsonv jsonv = Jsonv.newInstance();
+ * JsonSchemaBuilderFactory factory = jsonv.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * </code></pre>
  * 

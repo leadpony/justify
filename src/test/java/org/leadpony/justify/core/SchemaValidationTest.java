@@ -74,6 +74,8 @@ public class SchemaValidationTest {
             "/unofficial/schema/keyword/default.json",
         };
     
+    private static final Jsonv jsonv = Jsonv.newInstance();
+    
     public static Stream<SchemaFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(SchemaFixture::newStream);
     }
@@ -82,7 +84,7 @@ public class SchemaValidationTest {
     @MethodSource("provideFixtures")
     public void testInvalidSchema(SchemaFixture fixture) {
         String value = fixture.schema().toString();
-        JsonSchemaReader reader = Jsonv.createSchemaReader(new StringReader(value));
+        JsonSchemaReader reader = jsonv.createSchemaReader(new StringReader(value));
         try {
             reader.read();
             assertThat(true).isEqualTo(fixture.getSchemaValidity());
@@ -95,7 +97,7 @@ public class SchemaValidationTest {
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());
-            Jsonv.createProblemPrinter(log::info).accept(problems);
+            problems.forEach(p->p.printAll(log::info));
         }
     }
 }
