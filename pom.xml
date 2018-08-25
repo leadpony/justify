@@ -112,8 +112,9 @@
                         <encoding>UTF-8</encoding>
                         <docencoding>UTF-8</docencoding>
                         <charset>UTF-8</charset>
-                        <locale>en_US</locale>
                         <additionalJOptions>
+                            <!-- -locale option does not work -->
+                            <additionalJOption>-J-Duser.language=en</additionalJOption>
                             <additionalJOption>-html5</additionalJOption>
                         </additionalJOptions>
                         <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
