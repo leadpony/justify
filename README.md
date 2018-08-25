@@ -91,7 +91,7 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 * title
 * description
 
-### Schema keywords not impelemted yet
+### Schema keywords not implemented yet
 
 * format
 * default
