@@ -95,6 +95,8 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 
 * format
 * default
+* contentMediaType
+* contentEncoding
 
 ## Building from Source
 

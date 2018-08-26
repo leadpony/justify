@@ -11,7 +11,7 @@
     },
     {
         "description": "value is a number",
-        "schema": { "maxProperties": 3.0 },
+        "schema": { "maxProperties": 3.5 },
         "valid": false
     },
     {

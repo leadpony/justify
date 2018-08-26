@@ -11,7 +11,7 @@
     },
     {
         "description": "value is a number",
-        "schema": { "minItems": 3.0 },
+        "schema": { "minItems": 3.5 },
         "valid": false
     },
     {

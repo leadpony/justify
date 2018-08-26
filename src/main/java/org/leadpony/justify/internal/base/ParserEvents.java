@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.base;
 
+import java.math.BigDecimal;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -54,14 +55,26 @@ public final class ParserEvents {
     /**
      * Converts given parser event to {@link InstanceType}.
      * 
+     * <p>
+     * According to the JSON Schema Test Suite, 1.0 must be treated as an integer
+     * rather than a number.
+     * </p>
+     * 
      * @param event the event to convert.
      * @param parser the parser which produced the event.
      * @return the instance of {@link InstanceType} or {@code null}.
      */
     public static InstanceType toInstanceType(Event event, JsonParser parser) {
         InstanceType type = eventToTypeMap.get(event);
-        if (type == InstanceType.NUMBER && parser.isIntegralNumber()) {
-            type = InstanceType.INTEGER;
+        if (type == InstanceType.NUMBER) {
+            if (parser.isIntegralNumber()) {
+                type = InstanceType.INTEGER;
+            } else {
+                BigDecimal value = parser.getBigDecimal().stripTrailingZeros();
+                if (value.scale() == 0) {
+                    type = InstanceType.INTEGER;
+                }
+            }
         }
         return type;
     }
