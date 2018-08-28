@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import java.util.HashMap;
+import java.util.ServiceLoader;
+
+import org.leadpony.justify.core.spi.FormatAttribute;
 
 /**
- * Skeletal implementation of {@link Assertion}.
+ * Registry of format attributes.
  * 
  * @author leadpony
  */
-public abstract class AbstractAssertion extends AbstractKeyword implements Assertion {
+@SuppressWarnings("serial")
+public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
+    
+    public FormatAttributeRegistry() {
+        registerAttributes();
+    }
+    
+    private void registerAttributes() {
+        ServiceLoader<FormatAttribute> loader = ServiceLoader.load(FormatAttribute.class);
+        for (FormatAttribute matcher : loader) {
+            put(matcher.name(), matcher);
+        }
+    }
 }

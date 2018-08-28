@@ -43,6 +43,8 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
+import org.leadpony.justify.internal.keyword.assertion.format.Format;
+import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
 import org.leadpony.justify.internal.keyword.combiner.Definitions;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
@@ -57,6 +59,7 @@ import org.leadpony.justify.internal.keyword.combiner.Properties;
 class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     
     private final JsonBuilderFactory builderFactory;
+    private final FormatAttributeRegistry formatRegistry;
     
     private boolean empty;
     private URI id;
@@ -64,8 +67,15 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI ref;
     
-    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory) {
+    /**
+     * Constructs this builder.
+     * 
+     * @param builderFactory the factory for producing builders of JSON values.
+     * @param formatRegistry the registry containing format matchers.
+     */
+    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry) {
         this.builderFactory = builderFactory;
+        this.formatRegistry = formatRegistry;
         this.empty = true;
     }
     
@@ -438,6 +448,18 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.not(subschema));
+        return nonemptyBuilder();
+    }
+    
+    @Override
+    public JsonSchemaBuilder withFormat(String attribute) {
+        requireNonNull(attribute, "attribute");
+        if (formatRegistry.containsKey(attribute)) {
+            addKeyword(new Format(formatRegistry.get(attribute)));
+        } else {
+            throw new IllegalArgumentException(
+                    "\"" + attribute + "\" is an uknown format attribute.");
+        }
         return nonemptyBuilder();
     }
   

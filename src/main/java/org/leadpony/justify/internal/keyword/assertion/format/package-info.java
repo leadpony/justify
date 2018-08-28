@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
-
 /**
- * Skeletal implementation of {@link Assertion}.
+ * Provides the format keyword and built-in format attributes.
  * 
  * @author leadpony
  */
-public abstract class AbstractAssertion extends AbstractKeyword implements Assertion {
-}
+package org.leadpony.justify.internal.keyword.assertion.format;

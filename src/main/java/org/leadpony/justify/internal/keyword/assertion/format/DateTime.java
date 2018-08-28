@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Skeletal implementation of {@link Assertion}.
+ * Format attribute representing "dateTime" attribute.
  * 
  * @author leadpony
  */
-public abstract class AbstractAssertion extends AbstractKeyword implements Assertion {
+public class DateTime implements StringFormatAttribute {
+
+    private final Date date = new Date();
+    private final Time time = new Time();
+    
+    @Override
+    public String name() {
+        return "date-time";
+    }
+
+    @Override
+    public boolean test(String value) {
+        String[] parts = value.split("T|t", 3);
+        if (parts.length != 2) {
+            return false;
+        }
+        return date.test(parts[0]) && time.test(parts[1]);
+    }
 }

@@ -243,6 +243,9 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         case "exclusiveMinimum":
             addExclusiveMinimum(builder);
             break;
+        case "format":
+            addFormat(builder);
+            break;
         case "if":
             addIf(builder);
             break;
@@ -705,6 +708,33 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
     }
    
+    private void addIf(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (canStartSchema(event) ) {
+            builder.withIf(subschema(event));
+        } else {
+            skipValue(event);
+        }
+    }
+    
+    private void addThen(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (canStartSchema(event) ) {
+            builder.withThen(subschema(event));
+        } else {
+            skipValue(event);
+        }
+    }
+    
+    private void addElse(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (canStartSchema(event) ) {
+            builder.withElse(subschema(event));
+        } else {
+            skipValue(event);
+        }
+    }
+    
     private void addAllOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -743,40 +773,27 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
 
     private void addNot(JsonSchemaBuilder builder) {
         Event event = parser.next();
-        if (canStartSchema(event) ) {
+        if (canStartSchema(event)) {
             builder.withNot(subschema(event));
         } else {
             skipValue(event);
         }
     }
     
-    private void addIf(JsonSchemaBuilder builder) {
+    private void addFormat(JsonSchemaBuilder builder) {
         Event event = parser.next();
-        if (canStartSchema(event) ) {
-            builder.withIf(subschema(event));
+        if (event == Event.VALUE_STRING) {
+            String attribute = parser.getString();
+            try {
+                builder.withFormat(attribute);
+            } catch (IllegalArgumentException e) {
+                // TODO:
+            }
         } else {
             skipValue(event);
         }
     }
-    
-    private void addThen(JsonSchemaBuilder builder) {
-        Event event = parser.next();
-        if (canStartSchema(event) ) {
-            builder.withThen(subschema(event));
-        } else {
-            skipValue(event);
-        }
-    }
-    
-    private void addElse(JsonSchemaBuilder builder) {
-        Event event = parser.next();
-        if (canStartSchema(event) ) {
-            builder.withElse(subschema(event));
-        } else {
-            skipValue(event);
-        }
-    }
-    
+
     private void addDefinitions(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {

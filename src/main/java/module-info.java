@@ -23,9 +23,11 @@ module org.leadpony.justify {
     
     requires transitive java.json;
     requires java.logging;
+    requires commons.validator;
     
     uses javax.json.spi.JsonProvider;
     uses org.leadpony.justify.core.spi.JsonValidationProvider; 
+    uses org.leadpony.justify.core.spi.FormatAttribute; 
     
     provides org.leadpony.justify.core.spi.JsonValidationProvider 
         with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;

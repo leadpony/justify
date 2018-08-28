@@ -696,6 +696,16 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withNot(JsonSchema subschema);
     
     /**
+     * Adds the "format" keyword to the schema.
+     * 
+     * @param attribute the format attribute such as "date-time".
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code attribute} is {@code null}.
+     * @throws IllegalArgumentException if the specified {@code attribute} is unknown.
+     */
+    JsonSchemaBuilder withFormat(String attribute);
+
+    /**
      * Adds an entry of "definitions" keyword to the schema.
      * 
      * @param name the name of the definition to be added.

@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.schema;
 import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
@@ -28,18 +29,23 @@ import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
     
     private final JsonBuilderFactory builderFactory;
+    private final FormatAttributeRegistry formatRegistry;
     
     /**
      * Constructs this factory.
      * 
      * @param builderFactory the factory for producing builders of JSON values.
      */
-    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory) {
+    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry) {
         this.builderFactory = builderFactory;
+        this.formatRegistry = formatRegistry;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DefaultSchemaBuilder createBuilder() {
-        return new DefaultSchemaBuilder(builderFactory);
+        return new DefaultSchemaBuilder(builderFactory, formatRegistry);
     }
 }

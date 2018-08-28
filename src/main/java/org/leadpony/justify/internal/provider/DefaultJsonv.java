@@ -45,6 +45,7 @@ import org.leadpony.justify.core.JsonvException;
 import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.core.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
+import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.BasicSchemaReader;
 import org.leadpony.justify.internal.schema.io.ValidatingSchemaReader;
@@ -60,6 +61,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonReaderFactory;
 class DefaultJsonv implements Jsonv, JsonSchemaResolver {
 
     private final JsonProvider jsonProvider;
+    private final FormatAttributeRegistry formatRegistry;
     private final JsonSchema metaschema;
   
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
@@ -70,9 +72,11 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
      * Constructs this object.
      * 
      * @param jsonProvider the JSON provider.
+     * @throws JsonvException if an error was encountered while constructing this object.
      */
     DefaultJsonv(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
+        this.formatRegistry = new FormatAttributeRegistry();
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
     }
 
@@ -294,7 +298,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     }
     
     private BasicSchemaBuilderFactory createBasicSchemaBuilderFactory() {
-        return new BasicSchemaBuilderFactory(createJsonBuilderFactory());
+        return new BasicSchemaBuilderFactory(createJsonBuilderFactory(), formatRegistry);
     }
 
     @SuppressWarnings("resource")
