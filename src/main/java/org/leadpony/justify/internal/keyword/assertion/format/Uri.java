@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
  * @see <a href="https://tools.ietf.org/html/rfc3986">
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
-public class Uri implements StringFormatAttribute {
+class Uri implements StringFormatAttribute {
 
     @Override
     public String name() {

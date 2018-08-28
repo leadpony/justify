@@ -24,7 +24,7 @@ import java.time.format.DateTimeParseException;
  *
  * @author leadpony
  */
-public class Date implements StringFormatAttribute {
+class Date implements StringFormatAttribute {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
     

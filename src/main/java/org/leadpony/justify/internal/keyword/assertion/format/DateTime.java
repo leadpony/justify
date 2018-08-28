@@ -21,7 +21,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @author leadpony
  */
-public class DateTime implements StringFormatAttribute {
+class DateTime implements StringFormatAttribute {
 
     private final Date date = new Date();
     private final Time time = new Time();

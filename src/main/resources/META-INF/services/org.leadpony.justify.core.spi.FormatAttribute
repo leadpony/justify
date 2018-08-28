@@ -1,9 +1,0 @@
-org.leadpony.justify.internal.keyword.assertion.format.Date
-org.leadpony.justify.internal.keyword.assertion.format.DateTime
-org.leadpony.justify.internal.keyword.assertion.format.Ipv4
-org.leadpony.justify.internal.keyword.assertion.format.Iri
-org.leadpony.justify.internal.keyword.assertion.format.IriReference
-org.leadpony.justify.internal.keyword.assertion.format.JsonPointer
-org.leadpony.justify.internal.keyword.assertion.format.Time
-org.leadpony.justify.internal.keyword.assertion.format.Uri
-org.leadpony.justify.internal.keyword.assertion.format.UriReference

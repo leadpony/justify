@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * 
  * @author leadpony
  */
-public class Ipv4 implements StringFormatAttribute {
+class Ipv4 implements StringFormatAttribute {
     
     private static final Pattern IPV4_PATTERN = 
             Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");

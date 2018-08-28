@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * 
  * @author leadpony
  */
-public class Time implements StringFormatAttribute {
+class Time implements StringFormatAttribute {
     
     private static final Pattern LOCAL_TIME_PATTERN =
             Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");

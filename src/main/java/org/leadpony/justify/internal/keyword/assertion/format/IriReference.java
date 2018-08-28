@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
  * @see <a href="https://tools.ietf.org/html/rfc3987">
  * "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
-public class IriReference implements StringFormatAttribute {
+class IriReference implements StringFormatAttribute {
 
     @Override
     public String name() {

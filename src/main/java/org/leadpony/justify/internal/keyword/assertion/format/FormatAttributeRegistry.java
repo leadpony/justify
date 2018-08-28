@@ -31,12 +31,35 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
     
     public FormatAttributeRegistry() {
         registerAttributes();
+        registerDefaultAttributes();
     }
     
     private void registerAttributes() {
         ServiceLoader<FormatAttribute> loader = ServiceLoader.load(FormatAttribute.class);
-        for (FormatAttribute matcher : loader) {
-            put(matcher.name(), matcher);
+        for (FormatAttribute attribute : loader) {
+            register(attribute);
         }
+    }
+    
+    private void registerDefaultAttributes() {
+        registerIfNotExist(new Date());
+        registerIfNotExist(new DateTime());
+        registerIfNotExist(new Ipv4());
+        registerIfNotExist(new Iri());
+        registerIfNotExist(new IriReference());
+        registerIfNotExist(new JsonPointer());
+        registerIfNotExist(new Time());
+        registerIfNotExist(new Uri());
+        registerIfNotExist(new UriReference());
+    }
+    
+    private void registerIfNotExist(FormatAttribute attribute) {
+        if (!containsKey(attribute.name())) {
+            register(attribute);
+        }
+    }
+    
+    private void register(FormatAttribute attribute) {
+        put(attribute.name(), attribute);
     }
 }
