@@ -67,7 +67,8 @@ class ProblemFixture extends Fixture {
     }
     
     static Stream<ProblemFixture> newStream(String name) {
-        try (FixtureReader reader = new FixtureReader(name, TestResources.newInputStream(name))) {
+        InputStream in = ProblemFixture.class.getResourceAsStream(name);
+        try (FixtureReader reader = new FixtureReader(name, in)) {
             return reader.read().stream();
         }
     }

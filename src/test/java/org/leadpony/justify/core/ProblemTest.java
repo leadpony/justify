@@ -39,7 +39,7 @@ public class ProblemTest {
 
     private static final Logger log = Loggers.getLogger(ProblemTest.class);
     
-    private static final String RESOURCE_NAME = "/unofficial/other/problem.tml";
+    private static final String RESOURCE_NAME = "problem.tml";
   
     private static final Jsonv jsonv = Jsonv.newInstance();
     

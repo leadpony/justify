@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  */
 public class SchemaIdentificationTest {
 
-    private static final String JSON_NAME = "/unofficial/other/identification.json";
+    private static final String RESOURCE_NAME = "identification.json";
     
     private static final Jsonv jsonv = Jsonv.newInstance();
     
@@ -58,7 +58,7 @@ public class SchemaIdentificationTest {
     }
     
     private static JsonSchema loadSchema() throws IOException {
-        try (InputStream in = TestResources.newInputStream(JSON_NAME)) {
+        try (InputStream in = SchemaIdentificationTest.class.getResourceAsStream(RESOURCE_NAME)) {
             return jsonv.readSchema(in);
         }
     }

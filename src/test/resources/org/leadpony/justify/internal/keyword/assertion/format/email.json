@@ -1,0 +1,162 @@
+[
+    {
+        "value": "simple@example.com",
+        "valid": true
+    },
+    {
+        "value": "very.common@example.com",
+        "valid": true
+    },
+    {
+        "value": "disposable.style.email.with+symbol@example.com",
+        "valid": true
+    },
+    {
+        "value": "other.email-with-hyphen@example.com",
+        "valid": true
+    },
+    {
+        "value": "fully-qualified-domain@example.com",
+        "valid": true
+    },
+    {
+        "value": "user.name+tag+sorting@example.com",
+        "valid": true
+    },
+    {
+        "value": "x@example.com",
+        "valid": true
+    },
+    {
+        "value": "\"very.(),:;<>[]\\\".VERY.\\\"very@\\\\ \\\"very\\\".unusual\"@strange.example.com",
+        "valid": true
+    },
+    {
+        "value": "example-indeed@strange-example.com",
+        "valid": true
+    },
+    {
+        "value": "admin@mailserver1",
+        "valid": true
+    },
+    {
+        "value": "#!$%&'*+-/=?^_`{}|~@example.org",
+        "valid": true
+    },
+    {
+        "value": "\"()<>[]:,;@\\\\\\\"!#$%&'-/=?^_`{}| ~.a\"@example.org",
+        "valid": true
+    },
+    {
+        "value": "example@s.example",
+        "valid": true
+    },
+    {
+        "value": "jsmith@[192.168.2.1]",
+        "valid": true
+    },
+    {
+        "value": "user@[2001:DB8::1]",
+        "valid": true
+    },
+    {
+        "value": "\" \"@example.org",
+        "valid": true
+    },
+    {
+        "value": "\"john..doe\"@example.com",
+        "valid": true
+    },
+    {
+        "value": "john.doe(comment)@example.com",
+        "valid": true
+    },
+    {
+        "value": "(comment)john.doe@example.com",
+        "valid": true
+    },
+    {
+        "value": "john.doe@(comment)example.com",
+        "valid": true
+    },
+    {
+        "value": "john.doe@example.com(comment)",
+        "valid": true
+    },
+    {
+        "value": "Abc.example.com",
+        "valid": false
+    },
+    {
+        "value": "@example.org",
+        "valid": false
+    },
+    {
+        "value": "abc@",
+        "valid": false
+    },
+    {
+        "value": "A@b@c@example.com",
+        "valid": false
+    },
+    {
+        "value": "a\"b(c)d,e:f;g<h>i[j\\k]l@example.com",
+        "valid": false
+    },
+    {
+        "value": "just\"not\"right@example.com",
+        "valid": false
+    },
+    {
+        "value": "this is\"not\\allowed@example.com",
+        "valid": false
+    },
+    {
+        "value": "this\\ still\\\"not\\\\allowed@example.com",
+        "valid": false
+    },
+    {
+        "value": "1234567890123456789012345678901234567890123456789012345678901234+x@example.com",
+        "valid": false
+    },
+    {
+        "value": "john..doe@example.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@example..com",
+        "valid": false
+    },
+    {
+        "value": ".john.doe@example.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe.@example.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@.example.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@example.com.",
+        "valid": false
+    },
+    {
+        "value": "john.doe@-example.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@example-.com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@example.-com",
+        "valid": false
+    },
+    {
+        "value": "john.doe@example.com-",
+        "valid": false
+    }
+]

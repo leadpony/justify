@@ -1,0 +1,22 @@
+[
+    {
+        "value": "Pelé@example.com",
+        "valid": true
+    },
+    {
+        "value": "δοκιμή@παράδειγμα.δοκιμή",
+        "valid": true
+    },
+    {
+        "value": "我買@屋企.香港",
+        "valid": true
+    },
+    {
+        "value": "二ノ宮@黒川.日本",
+        "valid": true
+    },
+    {
+        "value": "чебурашка@ящик-с-апельсинами.рф",
+        "valid": true
+    }
+]

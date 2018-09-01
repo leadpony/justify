@@ -26,17 +26,18 @@ import java.util.stream.Stream;
 public class FormatValidationTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
-            "/official/tests/draft7/optional/format/date.json",
-            "/official/tests/draft7/optional/format/date-time.json",
-            //"/official/tests/draft7/optional/format/email.json",
-            //"/official/tests/draft7/optional/format/idn-email.json",
-            "/official/tests/draft7/optional/format/ipv4.json",
-            //"/official/tests/draft7/optional/format/iri.json",
-            "/official/tests/draft7/optional/format/iri-reference.json",
-            "/official/tests/draft7/optional/format/json-pointer.json",
-            "/official/tests/draft7/optional/format/time.json",
-            "/official/tests/draft7/optional/format/uri.json",
-            "/official/tests/draft7/optional/format/uri-reference.json",
+            "/org/json_schema/tests/draft7/optional/format/date.json",
+            "/org/json_schema/tests/draft7/optional/format/date-time.json",
+            "/org/json_schema/tests/draft7/optional/format/email.json",
+            "/org/json_schema/tests/draft7/optional/format/idn-email.json",
+            "/org/json_schema/tests/draft7/optional/format/ipv4.json",
+            "/org/json_schema/tests/draft7/optional/format/ipv6.json",
+            //"/org/json_schema/tests/draft7/optional/format/iri.json",
+            "/org/json_schema/tests/draft7/optional/format/iri-reference.json",
+            "/org/json_schema/tests/draft7/optional/format/json-pointer.json",
+            "/org/json_schema/tests/draft7/optional/format/time.json",
+            "/org/json_schema/tests/draft7/optional/format/uri.json",
+            "/org/json_schema/tests/draft7/optional/format/uri-reference.json",
     };
     
     public static Stream<ValidationFixture> provideFixtures() {

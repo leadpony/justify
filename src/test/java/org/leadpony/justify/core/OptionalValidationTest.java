@@ -26,10 +26,10 @@ import java.util.stream.Stream;
 public class OptionalValidationTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
-            "/official/tests/draft7/optional/bignum.json",
-            //"/official/tests/draft7/optional/content.json",
-            //"/official/tests/draft7/optional/ecmascript-regex.json",
-            "/official/tests/draft7/optional/zeroTerminatedFloats.json",
+            "/org/json_schema/tests/draft7/optional/bignum.json",
+            //"/org/json_schema/tests/draft7/optional/content.json",
+            //"/org/json_schema/tests/draft7/optional/ecmascript-regex.json",
+            "/org/json_schema/tests/draft7/optional/zeroTerminatedFloats.json",
     };
     
     public static Stream<ValidationFixture> provideFixtures() {

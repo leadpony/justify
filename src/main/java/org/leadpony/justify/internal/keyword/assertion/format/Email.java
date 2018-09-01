@@ -17,21 +17,21 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Format attribute representing "ipv4" attribute.
+ * Format attribute representing "email" attribute.
  * 
  * @author leadpony
  * 
- * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
+ * @see <a href="https://tools.ietf.org/html/rfc5322">RFC 5322, section 3.4.1</a>
  */
-class Ipv4 implements StringFormatAttribute {
-    
+class Email implements StringFormatAttribute {
+
     @Override
     public String name() {
-        return "ipv4";
+        return "email";
     }
 
     @Override
     public boolean test(String value) {
-        return new Ipv4Matcher(value).matches();
+        return new EmailMatcher(value, false).matches();
     }
 }

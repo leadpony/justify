@@ -38,7 +38,7 @@ public class RemoteSchemaTest extends BaseValidationTest {
     private static final Logger log = Logger.getLogger(RemoteSchemaTest.class.getName());
 
     private static final String[] TESTS = {
-            "/official/tests/draft7/refRemote.json",
+            "/org/json_schema/tests/draft7/refRemote.json",
         };
     
     private static Server server;
@@ -53,7 +53,7 @@ public class RemoteSchemaTest extends BaseValidationTest {
         
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
-        Path basePath = TestResources.pathToResource("/official/remotes");
+        Path basePath = TestResources.pathToResource("/org/json_schema/remotes");
         resourceHandler.setResourceBase(basePath.toString());
         HandlerList handlers = new HandlerList();
         handlers.addHandler(resourceHandler);

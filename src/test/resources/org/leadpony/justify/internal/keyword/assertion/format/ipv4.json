@@ -1,0 +1,92 @@
+[
+    {
+        "value": "192.30.253.112",
+        "valid": true
+    },
+    {
+        "value": "192.0.2.0",
+        "valid": true
+    },
+    {
+        "value": "0.0.0.0",
+        "valid": true
+    },
+    {
+        "value": "127.0.0.1",
+        "valid": true
+    },
+    {
+        "value": "255.255.255.255",
+        "valid": true
+    },
+    {
+        "description": "RFC 1166 gives this as the same as 128.9.0.32.",
+        "value": "128.009.000.032",
+        "valid": true
+    },
+    
+    {
+        "value": "",
+        "valid": false
+    },
+    {
+        "value": "12.34.56",
+        "valid": false
+    },
+    {
+        "value": "12.34.56.78.90",
+        "valid": false
+    },
+    {
+        "value": "12.34.56.abc",
+        "valid": false
+    },
+    {
+        "value": "abc.12.34.56",
+        "valid": false
+    },
+    {
+        "value": ".12.34.56",
+        "valid": false
+    },
+    {
+        "value": "12.34.56.",
+        "valid": false
+    },
+    {
+        "value": ".12.34.56.78",
+        "valid": false
+    },
+    {
+        "value": "12.34.56.78.",
+        "valid": false
+    },
+    {
+        "value": "12.34..56.78",
+        "valid": false
+    },
+    {
+        "value": "256.0.0.0",
+        "valid": false
+    },
+    {
+        "value": "0.0.0.256",
+        "valid": false
+    },
+    {
+        "value": "1234.0.0.0",
+        "valid": false
+    },
+    {
+        "value": "0.0.0.1234",
+        "valid": false
+    },
+    {
+        "value": "0123.0.0.0",
+        "valid": false
+    },
+    {
+        "value": "0.0.0.0123",
+        "valid": false
+    }
+]

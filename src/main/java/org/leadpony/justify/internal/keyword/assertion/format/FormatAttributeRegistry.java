@@ -44,7 +44,10 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
     private void registerDefaultAttributes() {
         registerIfNotExist(new Date());
         registerIfNotExist(new DateTime());
+        registerIfNotExist(new Email());
         registerIfNotExist(new Ipv4());
+        registerIfNotExist(new Ipv6());
+        registerIfNotExist(new IdnEmail());
         registerIfNotExist(new Iri());
         registerIfNotExist(new IriReference());
         registerIfNotExist(new JsonPointer());

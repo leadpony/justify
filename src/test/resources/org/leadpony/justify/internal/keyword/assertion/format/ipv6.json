@@ -1,0 +1,198 @@
+[
+    {
+        "value": "ABCD:EF01:2345:6789:ABCD:EF01:2345:6789",
+        "valid": true
+    },
+    {
+        "value": "2001:DB8:0:0:8:800:200C:417A",
+        "valid": true
+    },
+    {
+        "value": "FF01:0:0:0:0:0:0:101",
+        "valid": true
+    },
+    {
+        "value": "0:0:0:0:0:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "0:0:0:0:0:0:0:0",
+        "valid": true
+    },
+    {
+        "value": "2001:DB8::8:800:200C:417A",
+        "valid": true
+    },
+    {
+        "value": "FF01::101",
+        "valid": true
+    },
+    {
+        "value": "::1",
+        "valid": true
+    },
+    {
+        "value": "FF00::",
+        "valid": true
+    },
+    {
+        "value": "2001:db8::",
+        "valid": true
+    },
+    {
+        "value": "::",
+        "valid": true
+    },
+    {
+        "value": "0:0:0:0:0:0:13.1.68.3",
+        "valid": true
+    },
+    {
+        "description": "IPv4-Compatible IPv6 Address",
+        "value": "::13.1.68.3",
+        "valid": true
+    },
+    {
+        "description": "IPv4-Mapped IPv6 Address",
+        "value": "0:0:0:0:0:FFFF:129.144.52.38",
+        "valid": true
+    },
+    {
+        "value": "::FFFF:129.144.52.38",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0:0:1:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:0db8:0:0:1:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8::1:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8::0:1:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:0db8::1:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0:0:1::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0000:0:1::1",
+        "valid": true
+    },
+    {
+        "value": "2001:DB8:0:0:1::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:0001",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:001",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:01",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0:0:0::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0:0::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8::aaaa:0:0:1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:0:0:aaaa::1",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:aaaa",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:AAAA",
+        "valid": true
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:AaAa",
+        "valid": true
+    },
+    
+    {
+        "value": "",
+        "valid": false
+    },
+    {
+        "value": ":",
+        "valid": false
+    },
+    {
+        "value": ":::",
+        "valid": false
+    },
+    {
+        "value": ":::1",
+        "valid": false
+    },
+    {
+        "description": "multiple ::",
+        "value": "2001:db8::1::1",
+        "valid": false
+    },
+    {
+        "value": "2001:db8:::1",
+        "valid": false
+    },
+    {
+        "value": "2001:db8:::",
+        "valid": false
+    },
+    {
+        "value": ":2001:db8:aaaa:bbbb:cccc:dddd:eeee",
+        "valid": false
+    },
+    {
+        "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:",
+        "valid": false
+    },
+    {
+        "value": "2001:db8:00000::",
+        "valid": false
+    }
+]

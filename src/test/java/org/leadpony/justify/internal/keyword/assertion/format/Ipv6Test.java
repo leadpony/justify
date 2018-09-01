@@ -16,22 +16,33 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 /**
- * Format attribute representing "ipv4" attribute.
- * 
  * @author leadpony
- * 
- * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
  */
-class Ipv4 implements StringFormatAttribute {
+public class Ipv6Test {
+
+    private static Ipv6 sut;
     
-    @Override
-    public String name() {
-        return "ipv4";
+    @BeforeAll
+    public static void setUpOnce() {
+        sut = new Ipv6();
+    }
+    
+    public static Stream<Fixture> provideFixtures() {
+        return Fixture.load("ipv6.json");
     }
 
-    @Override
-    public boolean test(String value) {
-        return new Ipv4Matcher(value).matches();
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("provideFixtures")
+    public void test(Fixture fixture) {
+        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
     }
 }

@@ -1,0 +1,30 @@
+[
+    {
+        "value": "\"Abc@def\"@example.com",
+        "valid": true
+    },
+    {
+        "value": "\"Fred Bloggs\"@example.com",
+        "valid": true
+    },
+    {
+        "value": "user+mailbox@example.com",
+        "valid": true
+    },
+    {
+        "value": "customer/department=shipping@example.com",
+        "valid": true
+    },
+    {
+        "value": "$A12345@example.com",
+        "valid": true
+    },
+    {
+        "value": "!def!xyz%abc@example.com",
+        "valid": true
+    },
+    {
+        "value": "_somename@example.com",
+        "valid": true
+    }
+]
