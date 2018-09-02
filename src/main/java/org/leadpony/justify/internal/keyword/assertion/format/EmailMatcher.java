@@ -16,22 +16,22 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import static org.leadpony.justify.internal.keyword.assertion.format.Characters.isAsciiAlphanumeric;
+
 import java.util.BitSet;
 
 /**
+ * Matcher for email addresses.
+ * 
  * @author leadpony
  */
 class EmailMatcher extends AbstractMatcher {
     
     private static final int MAX_LOCAL_PART_CHARS = 64;
-    private static final int MAX_DOMAIN_CHARS = 255;
-    private static final int MAX_LABEL_CHARS = 63;
 
     private static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
  
     private static final BitSet atomTextCharset;
-    
-    private final boolean internationalized;
     
     static {
         atomTextCharset = new BitSet(128);
@@ -41,33 +41,10 @@ class EmailMatcher extends AbstractMatcher {
         }
     }
     
-    EmailMatcher(String value, boolean internationalized) {
+    EmailMatcher(CharSequence value) {
         super(value);
-        this.internationalized = internationalized;
     }
 
-    private static boolean isLatinOrDigit(char c) {
-        return (c >= '0' && c <= '9') ||
-               (c >= 'A' &&  c <= 'Z') ||
-               (c >= 'a' &&  c <= 'z');
-    }
-    
-    private static boolean isNonWhiteSpaceControl(char c) {
-        return (c >= 1 && c <= 9) ||
-               (c == 11) ||
-               (c == 12) ||
-               (c >= 14 && c <= 31) ||
-               (c == 127);
-    }
-    
-    private boolean isQuotedPair(char c) {
-        return (c >= 32 && c < 127) || isUnicodeNonAscii(c);
-    }
-    
-    private boolean isUnicodeNonAscii(char c) {
-        return c >= 128 && internationalized;
-    }
-    
     @Override
     protected void all() {
         localPart();
@@ -109,9 +86,7 @@ class EmailMatcher extends AbstractMatcher {
                 break;
             }
             next();
-            if (isLatinOrDigit(c) || 
-                atomTextCharset.get(c) ||
-                isUnicodeNonAscii(c)) {
+            if (checkAtomLetter(c)) {
                 length++;
             } else {
                 fail();
@@ -127,11 +102,10 @@ class EmailMatcher extends AbstractMatcher {
         char c = next();
         while ((c = next()) != '\"') {
             if (c == '\\') {
-                if (isQuotedPair(next())) {
-                } else {
+                if (!checkQuotedLetter(next())) {
                     fail();
                 }
-            } else if ((c >= 32 && c < 127) || isUnicodeNonAscii(c)) {
+            } else if (checkQuotedLetter(c)) {
                 // good
             } else {
                 fail();
@@ -149,7 +123,7 @@ class EmailMatcher extends AbstractMatcher {
         }
         comments();
         int length = pos() - start;
-        if (length > MAX_DOMAIN_CHARS) {
+        if (length > HostnameMatcher.MAX_DOMAIN_CHARS) {
             fail();
         }
     }
@@ -158,49 +132,14 @@ class EmailMatcher extends AbstractMatcher {
         // Opening bracket.
         char c = next();
         while ((c = next()) != ']') {
-            if (isUnicodeNonAscii(c)) {
-                // good
-            } else if (c < 32 || c == '[' || c == '\\' || c == 127) {
+            if (!checkDomainLiteralLetter(c)) {
                 fail();
             }
         }
     }
     
     private void hostname() {
-        domainLabel();
-        while (hasNext() && peek() == '.') {
-            next();
-            domainLabel();
-        }
-    }
-    
-    private void domainLabel() {
-        char c = peek();
-        if (c == '-' || c == '.') {
-            fail();
-        }
-        final int start = pos();
-        while (hasNext()) {
-            c = peek();
-            if (c == '.' || c == '(') {
-                break;
-            } else {
-                next();
-                if (isLatinOrDigit(c) || isUnicodeNonAscii(c)) {
-                    // good
-                } else if (c == '-') {
-                    if (peek() == '.') {
-                        fail();
-                    }
-                } else {
-                    fail();
-                }
-            }
-        }
-        int length = pos() - start;
-        if (length == 0 || length > MAX_LABEL_CHARS) {
-            fail();
-        }
+        createHostnameMatcher().all();
     }
     
     private void comments() {
@@ -224,19 +163,50 @@ class EmailMatcher extends AbstractMatcher {
                 if (c == ')') {
                     break;
                 } else if (c == '\\') {
-                    if (!isQuotedPair(next())) {
+                    if (!checkQuotedLetter(next())) {
                         fail();
                     }
-                } else if (isNonWhiteSpaceControl(c) ||
-                   (c >= 33 && c <= 39) ||
-                   (c >= 42 && c <= 91) ||
-                   (c >= 93 && c <= 126) ||
-                   isUnicodeNonAscii(c)) {
-                    // good
-                } else {
+                } else if (!checkCommentLetter(c)) {
                     fail();
                 }
             }
         }
+    }
+    
+    protected boolean checkQuotedLetter(char c) {
+        return c >= 32 && c < 127;
+    }
+    
+    protected boolean checkAtomLetter(char c) {
+        return isAsciiAlphanumeric(c) || atomTextCharset.get(c);
+    }
+    
+    protected boolean checkDomainLiteralLetter(char c) {
+        return c >= 32 && c < 127 &&
+               c != '[' && c != '\\';
+    }
+    
+    protected boolean checkCommentLetter(char c) {
+        return isNonWhiteSpaceControl(c) ||
+                (c >= 33 && c <= 39) ||
+                (c >= 42 && c <= 91) ||
+                (c >= 93 && c <= 126);
+    }
+    
+    protected HostnameMatcher createHostnameMatcher() {
+        return new HostnameMatcher(subSequence()) {
+            @Override
+            protected boolean checkLabelEnd(char c) {
+                return c == '.' || c == '(';
+            }
+        };
+    }
+
+    private static boolean isNonWhiteSpaceControl(char c) {
+        return (c >= 1 && c <= 9) ||
+               (c == 11) ||
+               (c == 12) ||
+               (c >= 14 && c <= 31) ||
+               (c == 127);
     }
 }

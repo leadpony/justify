@@ -16,22 +16,33 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-/**
- * Format attribute representing "email" attribute.
- * 
- * @author leadpony
- * 
- * @see <a href="https://tools.ietf.org/html/rfc5322">RFC 5322, section 3.4.1</a>
- */
-class Email implements StringFormatAttribute {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Override
-    public String name() {
-        return "email";
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+/**
+ * @author leadpony
+ */
+public class HostnameTest {
+
+    private static Hostname sut;
+    
+    @BeforeAll
+    public static void setUpOnce() {
+        sut = new Hostname();
+    }
+    
+    public static Stream<Fixture> provideFixtures() {
+        return Fixture.load("hostname.json");
     }
 
-    @Override
-    public boolean test(String value) {
-        return new EmailMatcher(value).matches();
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("provideFixtures")
+    public void test(Fixture fixture) {
+        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
     }
 }

@@ -1,0 +1,39 @@
+[
+    {
+        "value": "www.example.com",
+        "valid": true
+    },
+    {
+        "value": "www.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+        "valid": true
+    },
+    {
+        "value": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+        "valid": true
+    },
+
+    {
+        "value": " ",
+        "valid": false
+    },
+    {
+        "value": ".example.com",
+        "valid": false
+    },
+    {
+        "value": "example..com",
+        "valid": false
+    },
+    {
+        "value": "example.com.",
+        "valid": false
+    },
+    {
+        "value": "www.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
+        "valid": false
+    },
+    {
+        "value": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
+        "valid": false
+    }
+]

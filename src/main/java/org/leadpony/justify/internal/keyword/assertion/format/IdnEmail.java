@@ -32,6 +32,6 @@ class IdnEmail extends Email {
     
     @Override
     public boolean test(String value) {
-        return new EmailMatcher(value, true).matches();
+        return new IdnEmailMatcher(value).matches();
     }
 }

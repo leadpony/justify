@@ -17,21 +17,22 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Format attribute representing "email" attribute.
+ * Format attribute representing "idn-hostname" attribute.
  * 
  * @author leadpony
  * 
- * @see <a href="https://tools.ietf.org/html/rfc5322">RFC 5322, section 3.4.1</a>
+ * @see <a href="https://tools.ietf.org/html/rfc5890">RFC 5890</a>
+ * @see <a href="https://tools.ietf.org/html/rfc5892">RFC 5892</a>
  */
-class Email implements StringFormatAttribute {
+public class IdnHostname implements StringFormatAttribute {
 
     @Override
     public String name() {
-        return "email";
+        return "idn-hostname";
     }
 
     @Override
     public boolean test(String value) {
-        return new EmailMatcher(value).matches();
+        return new IdnHostnameMatcher(value).matches();
     }
 }

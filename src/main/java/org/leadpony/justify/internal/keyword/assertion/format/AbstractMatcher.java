@@ -19,15 +19,17 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.util.NoSuchElementException;
 
 /**
+ * Base type for matchers.
+ * 
  * @author leadpony
  */
 abstract class AbstractMatcher {
     
-    private final String value;
+    private final CharSequence value;
     private final int length;
     private int index;
     
-    protected AbstractMatcher(String value) {
+    protected AbstractMatcher(CharSequence value) {
         this.value = value;
         this.length = value.length();
     }
@@ -67,6 +69,10 @@ abstract class AbstractMatcher {
     
     protected static void fail() {
         throw new MismatchException();
+    }
+    
+    protected CharSequence subSequence() {
+        return value.subSequence(index, length);
     }
     
     @SuppressWarnings("serial")

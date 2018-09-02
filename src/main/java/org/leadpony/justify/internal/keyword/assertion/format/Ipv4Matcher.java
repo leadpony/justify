@@ -17,11 +17,13 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
+ * Matcher for IPv4 addresses.
+ * 
  * @author leadpony
  */
 class Ipv4Matcher extends AbstractMatcher {
 
-    Ipv4Matcher(String value) {
+    Ipv4Matcher(CharSequence value) {
         super(value);
     }
 
