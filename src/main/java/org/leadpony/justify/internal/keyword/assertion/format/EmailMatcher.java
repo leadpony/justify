@@ -25,28 +25,24 @@ import java.util.BitSet;
  * 
  * @author leadpony
  */
-class EmailMatcher extends AbstractMatcher {
+class EmailMatcher extends AbstractFormatMatcher {
     
-    private static final int MAX_LOCAL_PART_CHARS = 64;
-
-    private static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
- 
-    private static final BitSet atomTextCharset;
-    
-    static {
-        atomTextCharset = new BitSet(128);
+    static final int MAX_LOCAL_PART_CHARS = 64;
+    static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
+  
+    @SuppressWarnings("serial")
+    static final BitSet atomTextCharset = new BitSet(128) {{
         for (int i = 0; i < ATOM_TEXT_CHARS.length(); i++) {
-            char c = ATOM_TEXT_CHARS.charAt(i);
-            atomTextCharset.set(c);
+            set(ATOM_TEXT_CHARS.charAt(i));
         }
+    }};
+    
+    EmailMatcher(CharSequence input) {
+        super(input);
     }
     
-    EmailMatcher(CharSequence value) {
-        super(value);
-    }
-
     @Override
-    protected void all() {
+    public void all() {
         localPart();
         if (next() == '@') {
             domainPart();
@@ -139,7 +135,11 @@ class EmailMatcher extends AbstractMatcher {
     }
     
     private void hostname() {
-        createHostnameMatcher().all();
+        final int start = pos();
+        while (hasNext() && peek() != '(') {
+            next();
+        }
+        createHostnameMatcher(start, pos()).all();
     }
     
     private void comments() {
@@ -193,15 +193,10 @@ class EmailMatcher extends AbstractMatcher {
                 (c >= 93 && c <= 126);
     }
     
-    protected HostnameMatcher createHostnameMatcher() {
-        return new HostnameMatcher(subSequence()) {
-            @Override
-            protected boolean checkLabelEnd(char c) {
-                return c == '.' || c == '(';
-            }
-        };
+    protected FormatMatcher createHostnameMatcher(int start, int end) {
+        return new HostnameMatcher(input(), start, end);
     }
-
+    
     private static boolean isNonWhiteSpaceControl(char c) {
         return (c >= 1 && c <= 9) ||
                (c == 11) ||

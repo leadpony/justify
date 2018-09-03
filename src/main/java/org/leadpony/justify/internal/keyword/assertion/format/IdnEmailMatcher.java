@@ -21,10 +21,10 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @author leadpony
  */
-class IdnEmailMatcher extends EmailMatcher {
-
-    IdnEmailMatcher(CharSequence value) {
-        super(value);
+class IdnEmailMatcher extends EmailMatcher  {
+    
+    IdnEmailMatcher(CharSequence input) {
+        super(input);
     }
 
     @Override
@@ -64,12 +64,7 @@ class IdnEmailMatcher extends EmailMatcher {
     }
 
     @Override
-    protected HostnameMatcher createHostnameMatcher() {
-        return new IdnHostnameMatcher(subSequence()) {
-            @Override
-            protected boolean checkLabelEnd(char c) {
-                return c == '.' || c == '(';
-            }
-        };
+    protected FormatMatcher createHostnameMatcher(int start, int end) {
+        return new IdnHostnameMatcher(input(), start, end);
     }
 }

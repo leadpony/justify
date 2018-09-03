@@ -60,7 +60,7 @@ public enum IdnProperty {
      * @return the IDN property calculated.
      */
     public static IdnProperty of(int codePoint) {
-        IdnProperty property = exceptions(codePoint);
+        IdnProperty property = asExceptional(codePoint);
         if (property != null) {
             return property;
         } else if (isUnassigned(codePoint)) {
@@ -84,7 +84,7 @@ public enum IdnProperty {
         }
     }
     
-    private static IdnProperty exceptions(int codePoint) {
+    private static IdnProperty asExceptional(int codePoint) {
         switch (codePoint) {
         case 0x00DF:    // LATIN SMALL LETTER SHARP S
         case 0x03C2:    // GREEK SMALL LETTER FINAL SIGMA
@@ -149,7 +149,7 @@ public enum IdnProperty {
     
     private static boolean isUnassigned(int codePoint) {
         return Character.getType(codePoint) == Character.UNASSIGNED &&
-               !Characters.isNoncharacter(codePoint); 
+               !isNoncharacter(codePoint); 
     }
     
     private static boolean isLDH(int codePoint) {
@@ -174,7 +174,7 @@ public enum IdnProperty {
     private static boolean isIgnorableProperties(int codePoint) {
         return isDefaultIgnorable(codePoint) ||
                Character.isWhitespace(codePoint) ||
-               Characters.isNoncharacter(codePoint);
+               isNoncharacter(codePoint);
     }
     
     private static boolean isDefaultIgnorable(int codePoint) {
@@ -207,6 +207,21 @@ public enum IdnProperty {
     private static boolean isOldHangulJamo(int codePoint) {
         // TODO:
         return false;
+    }
+    
+    /**
+     * Checks if the specified character is a noncharacter or not.
+     * There are 66 noncharacters defined in the Unicode specification.
+     * 
+     * @param codePoint the code point of the character.
+     * @return {@code true} if the specified character is a noncharacter.
+     */
+    private static boolean isNoncharacter(int codePoint) {
+        if (codePoint >= 0xfdd0 && codePoint <= 0xfdef) {
+            return true;
+        }
+        int lower = codePoint & 0x0ffff;
+        return (lower == 0xfffe || lower == 0xffff);
     }
     
     /**

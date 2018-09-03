@@ -21,14 +21,14 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @author leadpony
  */
-class Ipv4Matcher extends AbstractMatcher {
+class Ipv4Matcher extends AbstractFormatMatcher {
 
-    Ipv4Matcher(CharSequence value) {
-        super(value);
+    Ipv4Matcher(CharSequence input) {
+        super(input);
     }
 
     @Override
-    protected void all() {
+    public void all() {
         int number;
         for (int i = 0; i < 3; i++) {
             number = requireNumber(next());

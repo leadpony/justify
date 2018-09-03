@@ -24,17 +24,21 @@ import static org.leadpony.justify.internal.keyword.assertion.format.Characters.
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc1123">RFC 1123</a>
  */
-class HostnameMatcher extends AbstractMatcher {
+class HostnameMatcher extends AbstractFormatMatcher {
     
-    public static int MAX_LABEL_CHARS = 63;
-    public static final int MAX_DOMAIN_CHARS = 253;
+    static int MAX_LABEL_CHARS = 63;
+    static final int MAX_DOMAIN_CHARS = 253;
+    
+    HostnameMatcher(CharSequence input) {
+        super(input);
+    }
 
-    HostnameMatcher(CharSequence value) {
-        super(value);
+    HostnameMatcher(CharSequence input, int start, int end) {
+        super(input, start, end);
     }
 
     @Override
-    protected void all() {
+    public void all() {
         final int start = pos();
         subdomain();
         int length = pos() - start;
@@ -49,8 +53,7 @@ class HostnameMatcher extends AbstractMatcher {
             if (next() == '.') {
                 label();
             } else {
-                // For email matcher.
-                break;
+                fail();
             };
         }
     }
@@ -69,7 +72,7 @@ class HostnameMatcher extends AbstractMatcher {
             fail();
         }
         while (hasNext()) {
-            if (checkLabelEnd(peek())) {
+            if (peek() == '.') {
                 break;
             }
             c = next();
@@ -86,15 +89,11 @@ class HostnameMatcher extends AbstractMatcher {
         }
     }
     
-    protected boolean checkLabelLetter(char c) {
-        return isAsciiAlphanumeric(c) || c == '-';
-    }
-
     protected boolean checkFirstLabelLetter(char c) {
         return isAsciiAlphanumeric(c);
     }
-    
-    protected boolean checkLabelEnd(char c) {
-        return c == '.';
+
+    protected boolean checkLabelLetter(char c) {
+        return isAsciiAlphanumeric(c) || c == '-';
     }
 }

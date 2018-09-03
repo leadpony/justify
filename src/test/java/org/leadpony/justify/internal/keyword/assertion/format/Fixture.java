@@ -26,6 +26,8 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
+ * Test fixture.
+ * 
  * @author leadpony
  */
 class Fixture {

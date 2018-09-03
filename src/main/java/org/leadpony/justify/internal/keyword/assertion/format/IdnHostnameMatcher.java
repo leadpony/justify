@@ -22,20 +22,15 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @author leadpony
  */
 class IdnHostnameMatcher extends HostnameMatcher {
-
-    IdnHostnameMatcher(CharSequence value) {
-        super(value);
+    
+    IdnHostnameMatcher(CharSequence input) {
+        super(input);
     }
-
-    @Override
-    protected boolean checkLabelLetter(char c) {
-        if (c < 128) {
-            return super.checkLabelLetter(c);
-        } else {
-            return checkCodePointAllowed(c);
-        }
+ 
+    IdnHostnameMatcher(CharSequence input, int start, int end) {
+        super(input, start, end);
     }
-
+    
     @Override
     protected boolean checkFirstLabelLetter(char c) {
         if (c < 128) {
@@ -45,6 +40,15 @@ class IdnHostnameMatcher extends HostnameMatcher {
         }
     }
     
+    @Override
+    protected boolean checkLabelLetter(char c) {
+        if (c < 128) {
+            return super.checkLabelLetter(c);
+        } else {
+            return checkCodePointAllowed(c);
+        }
+    }
+
     private static boolean checkCodePointAllowed(char c) {
         IdnProperty property = IdnProperty.of(c);
         return property != IdnProperty.DISALLOWED && property != IdnProperty.UNASSIGNED;

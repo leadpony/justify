@@ -51,19 +51,4 @@ final class Characters {
     public static boolean isAsciiAlphanumeric(char c) {
         return isAsciiAlphabetic(c) || isAsciiDigit(c);
     }
-    
-    /**
-     * Checks if the specified character is a noncharacter or not.
-     * There are 66 noncharacters defined in the Unicode specification.
-     * 
-     * @param codePoint the code point of the character.
-     * @return {@code true} if the specified character is a noncharacter.
-     */
-    public static boolean isNoncharacter(int codePoint) {
-        if (codePoint >= 0xfdd0 && codePoint <= 0xfdef) {
-            return true;
-        }
-        int lower = codePoint & 0x0ffff;
-        return (lower == 0xfffe || lower == 0xffff);
-    }
 }

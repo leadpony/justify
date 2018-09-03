@@ -83,6 +83,7 @@
         "value": "john.doe@example.com(comment)",
         "valid": true
     },
+
     {
         "value": "Abc.example.com",
         "valid": false
@@ -157,6 +158,26 @@
     },
     {
         "value": "john.doe@example.com-",
+        "valid": false
+    },
+    {
+        "description": "comment is not closed.",
+        "value": "john.doe(comment@example.com",
+        "valid": false
+    },
+    {
+        "description": "comment is not closed.",
+        "value": "comment)john.doe@example.com",
+        "valid": false
+    },
+    {
+        "description": "comment is not closed.",
+        "value": "john.doe@comment)example.com",
+        "valid": false
+    },
+    {
+        "description": "comment is not closed.",
+        "value": "john.doe@example.com(comment",
         "valid": false
     }
 ]
