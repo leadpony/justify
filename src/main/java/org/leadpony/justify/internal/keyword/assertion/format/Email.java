@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
  * Format attribute representing "email" attribute.
+ * As defined by RFC 5322, section 3.4.1. 
  * 
  * @author leadpony
  * 

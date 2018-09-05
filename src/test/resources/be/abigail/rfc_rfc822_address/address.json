@@ -1,0 +1,139 @@
+[
+    {
+        "value": "abigail@example.com",
+        "valid": true
+    },
+    {
+        "value": "abigail@example.com", 
+        "valid": true
+    },
+    {
+        "value": " abigail@example.com", 
+        "valid": true
+    },
+    {
+        "value": "abigail @example.com", 
+        "valid": true
+    },
+    {
+        "value": "*@example.net", 
+        "valid": true
+    },
+    {
+        "value": "\"\\\"\"@foo.bar", 
+        "valid": true
+    },
+    {
+        "value": "fred&barny@example.com", 
+        "valid": true
+    },
+    {
+        "value": "---@example.com", 
+        "valid": true
+    },
+    {
+        "value": "foo-bar@example.net", 
+        "valid": true
+    },
+    {
+        "value": "\"127.0.0.1\"@[127.0.0.1]",
+        "valid": true
+    },
+    {
+        "value": "Abigail(the bitch)@example.com", 
+        "valid": true
+    },
+    {
+        "value": "(foo) abigail@example.com", 
+        "valid": true
+    },
+    {
+        "value": "abigail@example.com (foo)", 
+        "valid": true
+    },
+    {
+        "value": "abigail@[example.com]", 
+        "valid": true
+    },
+    {
+        "value": "mailbox.sub1.sub2@this-domain", 
+        "valid": true
+    },
+    {
+        "value": "sub-net.mailbox@sub-domain.domain", 
+        "valid": true
+    },
+    {
+        "value": "Neuman@BBN-TENEXA", 
+        "valid": true
+    },
+    {
+        "value": "$@[]", 
+        "valid": true
+    },
+    {
+        "value": "*()@[]", 
+        "valid": true
+    },
+  
+    {
+        "value": "Just a string",
+        "valid": false
+    },
+    {
+        "value": "string",
+        "valid": false
+    },
+    {
+        "value": "(comment)",
+        "valid": false
+    },
+    {
+        "value": "()@example.com",
+        "valid": false
+    },
+    {
+        "value": "fred(&)barny@example.com",
+        "valid": false
+    },
+    {
+        "value": "fred\\ barny@example.com",
+        "valid": false
+    },
+    {
+        "value": "Abigail <abi gail @ example.com>",
+        "valid": false
+    },
+    {
+        "value": "Abigail <abigail(fo(o)@example.com>",
+        "valid": false
+    },
+    {
+        "value": "Abigail <abigail(fo)o)@example.com>",
+        "valid": false
+    },
+    {
+        "value": "\"Abi\"gail\" <abigail@example.com>",
+        "valid": false
+    },
+    {
+        "value": "abigail@[exa]ple.com]",
+        "valid": false
+    },
+    {
+        "value": "abigail@[exa[ple.com]",
+        "valid": false
+    },
+    {
+        "value": "abigail@[exaple].com]",
+        "valid": false
+    },
+    {
+        "value": "abigail@",
+        "valid": false
+    },
+    {
+        "value": "@example.com",
+        "valid": false
+    }
+]

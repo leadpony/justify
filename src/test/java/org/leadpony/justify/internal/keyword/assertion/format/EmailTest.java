@@ -40,7 +40,8 @@ public class EmailTest {
     
     private static final List<String> emails = Arrays.asList(
             "email.json",
-            "email-rfc3696.json"
+            "email-rfc3696.json",
+            "/be/abigail/rfc_rfc822_address/address.json"
             );
     
     private static final List<String> idnEmails = Arrays.asList(
