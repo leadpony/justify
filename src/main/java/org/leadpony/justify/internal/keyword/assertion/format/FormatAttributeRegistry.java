@@ -53,6 +53,7 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
         registerIfNotExist(new Iri());
         registerIfNotExist(new IriReference());
         registerIfNotExist(new JsonPointer());
+        registerIfNotExist(new RelativeJsonPointer());
         registerIfNotExist(new Time());
         registerIfNotExist(new Uri());
         registerIfNotExist(new UriReference());

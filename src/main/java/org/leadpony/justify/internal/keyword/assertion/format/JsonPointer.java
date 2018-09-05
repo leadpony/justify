@@ -40,10 +40,11 @@ class JsonPointer implements StringFormatAttribute {
         if (c != '/') {
             return false;
         }
-        for (int i = 1; i < value.length(); i++) {
+        final int length = value.length();
+        for (int i = 1; i < length; i++) {
             c = value.charAt(i);
             if (c == '~') {
-                if (i + 1 >= value.length()) {
+                if (i + 1 >= length) {
                     return false;
                 }
                 c = value.charAt(++i);
@@ -54,5 +55,4 @@ class JsonPointer implements StringFormatAttribute {
         }
         return true;
     }
-
 }

@@ -37,6 +37,7 @@ public class FormatValidationTest extends BaseValidationTest {
             //"/org/json_schema/tests/draft7/optional/format/iri.json",
             "/org/json_schema/tests/draft7/optional/format/iri-reference.json",
             "/org/json_schema/tests/draft7/optional/format/json-pointer.json",
+            "/org/json_schema/tests/draft7/optional/format/relative-json-pointer.json",
             "/org/json_schema/tests/draft7/optional/format/time.json",
             "/org/json_schema/tests/draft7/optional/format/uri.json",
             "/org/json_schema/tests/draft7/optional/format/uri-reference.json",

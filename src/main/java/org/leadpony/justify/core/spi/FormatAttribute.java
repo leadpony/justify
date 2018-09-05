@@ -16,30 +16,45 @@
 
 package org.leadpony.justify.core.spi;
 
+import java.util.Locale;
+
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
 
 /**
- * Format attribute.
+ * Service provider interface for providing a format attribute.
  * 
  * @author leadpony
  * 
- * @see <a href="https://json-schema.org/">JSON Schema Specification</a>
+ * @see <a href="https://json-schema.org/latest/json-schema-validation.html#rfc.section.7">
+ *      JSON Schema Validation: A Vocabulary for Structural Validation of JSON, Section 7
+ *      </a>
  */
 public interface FormatAttribute {
     
     /**
      * Returns the name of this attribute.
      * 
-     * @return the name of this attribute, never be {@code null}.
+     * @return the name of this attribute, cannot be {@code null}.
      */
     String name();
     
     /**
+     * Returns the name of this attribute for presentation purposes.
+     * 
+     * @param locale the language in which the name will be rendered.
+     * @return the name of this attribute, cannot be {@code null}.
+     * @throws NullPointerException if the specified {@code locale} was {@code null}.
+     */
+    default String displayName(Locale locale) {
+        return name();
+    }
+    
+    /**
      * Returns the expected type of the value.
      * 
-     * @return the expected type of the value.
+     * @return the expected type of the value, cannot be {@code null}.
      */
     InstanceType valueType();
     
@@ -47,7 +62,8 @@ public interface FormatAttribute {
      * Checks if the value matches the expected format.
      * 
      * @param value the value to test, never be {@code null}.
-     * @return {@code true} if the value matches, or {@core false}.
+     * @return {@code true} if the value matches, or {@code false}.
+     * @throws NullPointerException if the specified {@code value} was {@code null}.
      */
     boolean test(JsonValue value);
 }

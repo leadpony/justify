@@ -1,0 +1,59 @@
+[
+    {
+        "value": "0",
+        "valid": true
+    },
+    {
+        "value": "1/0",
+        "valid": true
+    },
+    {
+        "value": "2/highly/nested/objects",
+        "valid": true
+    },
+    {
+        "value": "0#",
+        "valid": true
+    },
+    {
+        "value": "1#",
+        "valid": true
+    },
+    {
+        "value": "0/objects",
+        "valid": true
+    },
+    {
+        "value": "1/nested/objects",
+        "valid": true
+    },
+    {
+        "value": "2/foo/0",
+        "valid": true
+    },
+    
+    {
+        "value": "",
+        "valid": false
+    },
+    {
+        "value": "just a string",
+        "valid": false
+    },
+    {
+        "value": "/foo",
+        "valid": false
+    },
+    {
+        "value": "#",
+        "valid": false
+    },
+    {
+        "value": "#/foo",
+        "valid": false
+    },
+    {
+        "value": "-1/objects",
+        "valid": false
+    }
+]

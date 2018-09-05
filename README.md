@@ -7,11 +7,11 @@ Justify is a JSON validator based on [JSON Schema Specification] and [JSON Proce
 ## Features
 
 * Compliant with [JSON Schema Specification] Draft 7.
-* Can be transparently used with the Streaming API and the Object Model API, both are defined in [JSON Processing API].
-* Can be used with [JSON Binding API] via custom JsonProvider.
-* Reports problems with exact location including line and column number.
+* Reinforces [JSON Processing API] (JSR 374) transparently with the validation functionality.
+* Can be used with [JSON Binding API] (JSR 367) via custom JsonProvider.
+* Reports problems with exact locations including line and column number.
 * Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
-* Can be used as a Java module in Java 9 and 10, also supports Java 8.
+* Can be used as a Java module in Java 9 and 10, with additional support of legacy Java 8.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ Path pathToInstance = Paths.get("fake-news.json");
 try (JsonParser parser = jsonv.createParser(pathToInstance, schema, handler)) {
     while (parser.hasNext()) {
         JsonParser.Event event = parser.next();
-        System.out.println(event);
+        // Do something useful here
     }
 }
 ```
@@ -51,7 +51,7 @@ ProblemHandler handler = ProblemHandler.printingWith(System.out::println);
 Path pathToInstance = Paths.get("fake-news.json");
 try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
     JsonValue value = reader.readValue();
-    System.out.println(value);
+    // Do something useful here
 }
 ```
 
@@ -90,10 +90,19 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 * definitions
 * title
 * description
+* format
+  * date-time/date/time
+  * email/idn-email
+  * hostname/idn-hostname
+  * ipv4/ipv6
+  * json-pointer/relative-json-pointer
 
 ### Schema keywords not implemented yet
 
 * format
+  * uri/uri-reference/iri/iri-reference
+  * uri-template
+  * regex
 * default
 * contentMediaType
 * contentEncoding
