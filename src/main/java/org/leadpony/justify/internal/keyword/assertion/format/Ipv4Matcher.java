@@ -21,7 +21,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @author leadpony
  */
-class Ipv4Matcher extends AbstractFormatMatcher {
+class Ipv4Matcher extends FormatMatcher {
 
     Ipv4Matcher(CharSequence input) {
         super(input);

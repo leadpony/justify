@@ -25,10 +25,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
+ * Test cases for {@link RelativeJsonPointer} class.
+ * 
  * @author leadpony
  */
 public class RelativeJsonPointerTest {
 
+    // System under test
     private static RelativeJsonPointer sut;
     
     @BeforeAll

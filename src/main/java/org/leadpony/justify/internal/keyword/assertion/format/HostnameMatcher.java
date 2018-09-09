@@ -24,7 +24,7 @@ import static org.leadpony.justify.internal.keyword.assertion.format.Characters.
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc1123">RFC 1123</a>
  */
-class HostnameMatcher extends AbstractFormatMatcher {
+class HostnameMatcher extends FormatMatcher {
     
     static int MAX_LABEL_CHARS = 63;
     static final int MAX_DOMAIN_CHARS = 253;

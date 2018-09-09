@@ -25,10 +25,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
+ * Test cases for {@link Ipv6} class.
+ * 
  * @author leadpony
  */
 public class Ipv6Test {
 
+    // System under test
     private static Ipv6 sut;
     
     @BeforeAll

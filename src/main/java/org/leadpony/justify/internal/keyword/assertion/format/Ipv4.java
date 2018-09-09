@@ -20,7 +20,6 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * Format attribute representing "ipv4" attribute.
  * 
  * @author leadpony
- * 
  * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
  */
 class Ipv4 implements StringFormatAttribute {

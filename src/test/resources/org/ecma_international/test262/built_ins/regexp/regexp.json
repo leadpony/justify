@@ -1,0 +1,257 @@
+[
+    {
+        "file": "15.10.2.5-3-1.js",
+        "value": "0{2,1}",
+        "valid": false
+    },
+    {
+        "file": "15.10.2.15-6-1.js",
+        "value": "^[z-a]$",
+        "valid": false
+    },
+    {
+        "file": "15.10.4.1-2.js",
+        "value": "\\",
+        "valid": false
+    },
+    {
+        "file": "call_with_regexp_match_falsy.js",
+        "value": "(?:)",
+        "valid": true
+    },
+    {
+        "file": "character-class-escape-non-whitespace-u180e.js",
+        "value": "\\S+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.1_A1_T1.js",
+        "value": "a**",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T2.js",
+        "value": "a***",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T3.js",
+        "value": "a++",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T4.js",
+        "value": "a+++",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T5.js",
+        "value": "a???",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T6.js",
+        "value": "a????",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T7.js",
+        "value": "*a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T8.js",
+        "value": "**a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T9.js",
+        "value": "+a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T10.js",
+        "value": "++a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T11.js",
+        "value": "?a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T12.js",
+        "value": "??a",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T13.js",
+        "value": "x{1}{1,}",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T14.js",
+        "value": "x{1,2}{1}",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T15.js",
+        "value": "x{1,}{1}",
+        "valid": false
+    },
+    {
+        "file": "S15.10.1_A1_T16.js",
+        "value": "x{0,1}{1,}",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.3_A1_T1.js",
+        "value": "a|ab",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T2.js",
+        "value": "((a)|(ab))((c)|(bc))",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T3.js",
+        "value": "\\d{3}|[a-z]{4}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T6.js",
+        "value": "ab|cd|ef",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T8.js",
+        "value": "(?:ab|cd)+|ef",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T11.js",
+        "value": "11111|111",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T12.js",
+        "value": "xyz|...",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T13.js",
+        "value": "(.)..|abc",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T14.js",
+        "value": ".+: gr(a|e)y",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T15.js",
+        "value": "(Rob)|(Bob)|(Robert)|(Bobby)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T16.js",
+        "value": "()|",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.3_A1_T17.js",
+        "value": "|()",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.5_A1_T1.js",
+        "value": "a[a-z]{2,4}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.5_A1_T2.js",
+        "value": "a[a-z]{2,4}?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.5_A1_T3.js",
+        "value": "(aa|aabaac|ba|b|c)*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.5_A1_T4.js",
+        "value": "(z)((a+)?(b+)?(c))*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.5_A1_T5.js",
+        "value": "(a*)b\\1+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A1_T1.js",
+        "value": "s$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A1_T2.js",
+        "value": "e$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A1_T4.js",
+        "value": "[^e]$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A1_T5.js",
+        "value": "es$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T1.js",
+        "value": "^m",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T3.js",
+        "value": "^p[a-z]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T4.js",
+        "value": "^p[b-z]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T5.js",
+        "value": "^[^p]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T6.js",
+        "value": "^ab",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T7.js",
+        "value": "^..^e",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T8.js",
+        "value": "^xxx",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T9.js",
+        "value": "^\\^+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A2_T10.js",
+        "value": "^\\d+",
+        "valid": true
+    }
+]

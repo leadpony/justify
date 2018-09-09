@@ -17,11 +17,21 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Exception thrown when matching failed.
+ * Format attribute representing "regex" attribute.
  * 
  * @author leadpony
+ * @see <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
+ *      ECMA 262 specification</a>
  */
-class FormatMismatchException extends RuntimeException {
+public class Regex implements StringFormatAttribute {
 
-    private static final long serialVersionUID = 1L;
+    @Override
+    public String name() {
+        return "regex";
+    }
+
+    @Override
+    public boolean test(String value) {
+        return new Ecma262RegexMatcher(value).matches();
+    }
 }

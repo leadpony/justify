@@ -18,29 +18,45 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Ipv4} class.
+ * Test cases for {@link Regex} class.
  * 
  * @author leadpony
  */
-public class Ipv4Test {
+public class RegexTest {
 
     // System under test
-    private static Ipv4 sut;
+    private static Regex sut;
+    
+    private static int index;
     
     @BeforeAll
     public static void setUpOnce() {
-        sut = new Ipv4();
+        sut = new Regex();
     }
     
+    @BeforeEach
+    public void setUp() {
+        Assumptions.assumeTrue(++index > 0);
+    }
+    
+    private static final List<String> files = Arrays.asList(
+            //"regex.json"
+            "/org/ecma_international/test262/built_ins/regexp/regexp.json"
+            );
+    
     public static Stream<Fixture> provideFixtures() {
-        return Fixture.load("ipv4.json");
+        return files.stream().flatMap(Fixture::load);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

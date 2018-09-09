@@ -25,7 +25,7 @@ import java.util.BitSet;
  * 
  * @author leadpony
  */
-class EmailMatcher extends AbstractFormatMatcher {
+class EmailMatcher extends FormatMatcher {
     
     static final int MAX_LOCAL_PART_CHARS = 64;
     static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";

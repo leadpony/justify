@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 public class FormatValidationTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
+            "/org/json_schema/tests/draft7/optional/format/regex.json",
+            /*
             "/org/json_schema/tests/draft7/optional/format/date.json",
             "/org/json_schema/tests/draft7/optional/format/date-time.json",
             "/org/json_schema/tests/draft7/optional/format/email.json",
@@ -41,6 +43,7 @@ public class FormatValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/optional/format/time.json",
             "/org/json_schema/tests/draft7/optional/format/uri.json",
             "/org/json_schema/tests/draft7/optional/format/uri-reference.json",
+            */
     };
     
     public static Stream<ValidationFixture> provideFixtures() {
