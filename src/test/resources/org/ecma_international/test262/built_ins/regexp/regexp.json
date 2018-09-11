@@ -253,5 +253,1960 @@
         "file": "S15.10.2.6_A2_T10.js",
         "value": "^\\d+",
         "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T1.js",
+        "value": "\\bp",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T2.js",
+        "value": "ot\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T3.js",
+        "value": "\\bot",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T4.js",
+        "value": "\\bso",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T5.js",
+        "value": "so\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T6.js",
+        "value": "[^o]t\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T7.js",
+        "value": "[^o]t\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T8.js",
+        "value": "\\bro",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T9.js",
+        "value": "r\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T10.js",
+        "value": "\\brobot\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T11.js",
+        "value": "\\b\\w{5}\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T12.js",
+        "value": "\\bop",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T13.js",
+        "value": "op\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T14.js",
+        "value": "e\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A3_T15.js",
+        "value": "\\be",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T1.js",
+        "value": "\\Bevil\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T2.js",
+        "value": "[f-z]e\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T3.js",
+        "value": "\\Bo\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T4.js",
+        "value": "\\B\\w\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T5.js",
+        "value": "\\w\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T6.js",
+        "value": "\\B\\w",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T7.js",
+        "value": "\\B[^z]{4}\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A4_T8.js",
+        "value": "\\B\\w{4}\\B",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A5_T1.js",
+        "value": "^^^^^^^robot$$$$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A5_T2.js",
+        "value": "\\B\\B\\B\\B\\B\\Bbot\\b\\b\\b\\b\\b\\b\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A6_T1.js",
+        "value": "^.*?$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A6_T2.js",
+        "value": "^.*?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A6_T3.js",
+        "value": "^.*?(:|$)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.6_A6_T4.js",
+        "value": "^.*(:|$)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T1.js",
+        "value": "\\d{2,4}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T8.js",
+        "value": "b{2,3}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T9.js",
+        "value": "b{42,93}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T10.js",
+        "value": "b{0,93}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T11.js",
+        "value": "bx{0,93}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A1_T12.js",
+        "value": ".{0,93}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A2_T1.js",
+        "value": "\\w{3}\\d?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A2_T3.js",
+        "value": "b{2}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A2_T4.js",
+        "value": "b{8}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T1.js",
+        "value": "\\s+java\\s+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T5.js",
+        "value": "[a-z]+\\d+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T7.js",
+        "value": "[a-z]+(\\d+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T9.js",
+        "value": "d+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T10.js",
+        "value": "o+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T12.js",
+        "value": "(b+)(b+)(b+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T13.js",
+        "value": "(b+)(b*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A3_T14.js",
+        "value": "b*b+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T1.js",
+        "value": "[^\"]*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T6.js",
+        "value": "[\"'][^\"']*[\"']",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T10.js",
+        "value": "d*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T11.js",
+        "value": "cd*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T12.js",
+        "value": "cx*d",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T13.js",
+        "value": "(x*)(x+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T14.js",
+        "value": "(\\d*)(\\d+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T15.js",
+        "value": "(\\d*)\\d(\\d+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T16.js",
+        "value": "(x+)(x*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T17.js",
+        "value": "x*y+$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T18.js",
+        "value": "[\\d]*[\\s]*bc.",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T19.js",
+        "value": "bc..[\\d]*[\\s]*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T20.js",
+        "value": ".*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A4_T21.js",
+        "value": "[xyz]*1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T1.js",
+        "value": "java(script)?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T4.js",
+        "value": "cd?e",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T5.js",
+        "value": "cdx?e",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T6.js",
+        "value": "o?pqrst",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T7.js",
+        "value": "x?y?z?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T8.js",
+        "value": "x?ay?bz?c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T9.js",
+        "value": "b?b?b?b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T10.js",
+        "value": "ab?c?d?x?y?z",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T11.js",
+        "value": "\\??\\??\\??\\??\\??",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A5_T12.js",
+        "value": ".?.?.?.?.?.?.?",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T1.js",
+        "value": "b{2,}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T2.js",
+        "value": "b{8,}c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T3.js",
+        "value": "\\d{1,}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T4.js",
+        "value": "(123){1,}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T5.js",
+        "value": "(123){1,}x\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.7_A6_T6.js",
+        "value": "x{1,2}x{1,}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A1_T1.js",
+        "value": "(?=(a+))",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A1_T2.js",
+        "value": "(?=(a+))a*b\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A1_T3.js",
+        "value": "[Jj]ava([Ss]cript)?(?=\\:)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A2_T1.js",
+        "value": "(.*?)a(?!(a+)b\\2c)\\2(.*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A2_T2.js",
+        "value": "Java(?!Script)([A-Z]\\w*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A2_T6.js",
+        "value": "(\\.(?!com|org)|\\/)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A2_T9.js",
+        "value": "(?!a|b)|c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T1.js",
+        "value": "([Jj]ava([Ss]cript)?)\\sis\\s(fun\\w*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T4.js",
+        "value": "(abc)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T5.js",
+        "value": "a(bc)d(ef)g",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T6.js",
+        "value": "(.{3})(.{4})",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T7.js",
+        "value": "(aa)bcd\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T8.js",
+        "value": "(aa).+\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T9.js",
+        "value": "(.{2}).+\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T10.js",
+        "value": "(\\d{3})(\\d{3})\\1\\2",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T11.js",
+        "value": "a(..(..)..)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T12.js",
+        "value": "(a(b(c)))(d(e(f)))",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T13.js",
+        "value": "(a(b(c)))(d(e(f)))\\2\\5",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T14.js",
+        "value": "a(.?)b\\1c\\1d\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T17.js",
+        "value": "<body.*>((.*\\n?)*?)<\\/body>",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T18.js",
+        "value": "(\\|)([\\w\\x81-\\xff ]*)(\\|)([\\/a-z][\\w:\\/\\.]*\\.[a-z]{3,4})(\\|)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T19.js",
+        "value": "([\\S]+([ \\t]+[\\S]+)*)[ \\t]*=[ \\t]*[\\S]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T20.js",
+        "value": "^(A)?(A.*)$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T23.js",
+        "value": "(A)?(A.*)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T26.js",
+        "value": "(a)?a",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T27.js",
+        "value": "a|(b)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T28.js",
+        "value": "(a)?(a)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T29.js",
+        "value": "^([a-z]+)*[a-z]$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T32.js",
+        "value": "^(([a-z]+)*[a-z]\\.)+[a-z]{2,}$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A3_T33.js",
+        "value": "^(([a-z]+)*([a-z])\\.)+[a-z]{2,}$",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A4_T1.js",
+        "value": "ab.de",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A4_T2.js",
+        "value": ".+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A4_T3.js",
+        "value": ".*a.*",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.8_A5_T1.js",
+        "value": "[a-z]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.9_A1_T1.js",
+        "value": "\\b(\\w+) \\1\\b",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.9_A1_T2.js",
+        "value": "([xu]\\d{2}([A-H]{2})?)\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.9_A1_T5.js",
+        "value": "(a*)b\\1+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.1_T1.js",
+        "value": "\\t",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.1_T1.js",
+        "value": "\\t\\t",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.2_T1.js",
+        "value": "\\n",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.2_T1.js",
+        "value": "\\n\\n",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.3_T1.js",
+        "value": "\\v",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.3_T1.js",
+        "value": "\\v\\v",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.4_T1.js",
+        "value": "\\f",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.4_T1.js",
+        "value": "\\f\\f",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.5_T1.js",
+        "value": "\\r",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A1.5_T1.js",
+        "value": "\\r\\r",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A2.1_T1.js",
+        "value": "\\cA",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A2.1_T1.js",
+        "value": "\\cZ",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A2.1_T2.js",
+        "value": "\\ca",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A2.1_T2.js",
+        "value": "\\cz",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T1.js",
+        "value": "\\x00",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T1.js",
+        "value": "\\x01",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T1.js",
+        "value": "\\x0A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T1.js",
+        "value": "\\xFF",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T2.js",
+        "value": "\\x41",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T2.js",
+        "value": "\\x5A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T2.js",
+        "value": "\\x61",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A3.1_T2.js",
+        "value": "\\x7A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\u0000",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\u0001",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\u000A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\u00FF",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\u0FFF",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T1.js",
+        "value": "\\uFFFF",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T2.js",
+        "value": "\\u0041",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T2.js",
+        "value": "\\u005A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T2.js",
+        "value": "\\u0061",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.10_A4.1_T2.js",
+        "value": "\\u007A",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T1.js",
+        "value": "\\0",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T4.js",
+        "value": "(A)\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T5.js",
+        "value": "\\1(A)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T6.js",
+        "value": "(A)\\1(B)\\2",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T7.js",
+        "value": "\\1(A)(B)\\2",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T8.js",
+        "value": "((((((((((A))))))))))\\1\\2\\3\\4\\5\\6\\7\\8\\9\\10",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.11_A1_T9.js",
+        "value": "((((((((((A))))))))))\\10\\9\\8\\7\\6\\5\\4\\3\\2\\1",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.12_A3_T5.js",
+        "value": "\\w",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.12_A4_T5.js",
+        "value": "\\W",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T1.js",
+        "value": "[]a",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T2.js",
+        "value": "a[]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T3.js",
+        "value": "q[ax-zb](?=\\s+)",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T6.js",
+        "value": "ab[ercst]de",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T7.js",
+        "value": "ab[erst]de",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T8.js",
+        "value": "[d-h]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T9.js",
+        "value": "[1234567].{2}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T10.js",
+        "value": "[a-c\\d]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T11.js",
+        "value": "ab[.]?c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T12.js",
+        "value": "a[b]c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T13.js",
+        "value": "[a-z][^1-9][a-z]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T14.js",
+        "value": "[*&$]{3}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T15.js",
+        "value": "[\\d][\\n][^\\d]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A1_T17.js",
+        "value": "[]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T1.js",
+        "value": "[^]a",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T2.js",
+        "value": "a[^]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T3.js",
+        "value": "a[^b-z]\\s+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T4.js",
+        "value": "[^\\b]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T5.js",
+        "value": "a[^1-9]c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T6.js",
+        "value": "a[^b]c",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T7.js",
+        "value": "[^a-z]{4}",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A2_T8.js",
+        "value": "[^]",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A3_T1.js",
+        "value": ".[\\b].",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A3_T2.js",
+        "value": "c[\\b]{3}d",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.13_A3_T3.js",
+        "value": "[^\\[\\b\\]]+",
+        "valid": true
+    },
+    {
+        "file": "S15.10.2.15_A1_T1.js",
+        "value": "[b-ac-e]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T2.js",
+        "value": "[a-dc-b]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T3.js",
+        "value": "[\\db-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T4.js",
+        "value": "[\\Db-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T5.js",
+        "value": "[\\sb-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T6.js",
+        "value": "[\\Sb-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T7.js",
+        "value": "[\\wb-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T8.js",
+        "value": "[\\Wb-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T9.js",
+        "value": "[\\0b-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T10.js",
+        "value": "[\\10b-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T11.js",
+        "value": "[\\bd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T12.js",
+        "value": "[\\Bd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T13.js",
+        "value": "[\\td-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T14.js",
+        "value": "[\\nd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T15.js",
+        "value": "[\\vd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T16.js",
+        "value": "[\\fd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T17.js",
+        "value": "[\\rd-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T18.js",
+        "value": "[\\c0001d-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T19.js",
+        "value": "[\\x0061d-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T20.js",
+        "value": "[\\u0061d-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T21.js",
+        "value": "[\\ad-G]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T22.js",
+        "value": "[c-eb-a]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T23.js",
+        "value": "[b-G\\d]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T24.js",
+        "value": "[b-G\\D]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T25.js",
+        "value": "[b-G\\s]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T26.js",
+        "value": "[b-G\\S]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T27.js",
+        "value": "[b-G\\w]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T28.js",
+        "value": "[b-G\\W]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T29.js",
+        "value": "[b-G\\0]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T30.js",
+        "value": "[b-G\\10]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T31.js",
+        "value": "[d-G\\b]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T32.js",
+        "value": "[d-G\\B]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T33.js",
+        "value": "[d-G\\t]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T34.js",
+        "value": "[d-G\\n]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T35.js",
+        "value": "[d-G\\v]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T36.js",
+        "value": "[d-G\\f]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T37.js",
+        "value": "[d-G\\r]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T38.js",
+        "value": "[d-G\\c0001]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T39.js",
+        "value": "[d-G\\x0061]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T40.js",
+        "value": "[d-G\\u0061]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.2.15_A1_T41.js",
+        "value": "[d-G\\a]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.4.1_A2_T1.js",
+        "value": "\\u0042",
+        "valid": true
+    },
+    {
+        "file": "S15.10.4.1_A9_T1.js",
+        "value": "??",
+        "valid": false
+    },
+    {
+        "file": "S15.10.4.1_A9_T2.js",
+        "value": "[{-z]",
+        "valid": false
+    },
+    {
+        "file": "S15.10.4.1_A9_T3.js",
+        "value": "[a--z]",
+        "valid": false
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\^",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\$",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\\\",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\.",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\*",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\+",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\?",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\(",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\)",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\[",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\{",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\}",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\|",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "\\/",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\^]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\$]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\\\]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\.]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\*]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\+]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\?]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\(]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\)]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\[]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\]]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\{]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\}]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\|]",
+        "valid": true
+    },
+    {
+        "file": "unicode_identity_escape.js",
+        "value": "[\\/]",
+        "valid": true
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": "(",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": ")",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": "[",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": "]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": "{",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_brackets.js",
+        "value": "}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\d-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\D-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\s-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\S-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\w-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\W-a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\d]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\D]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\s]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\S]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\w]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[a-\\W]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\d-\\d]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\D-\\D]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\s-\\s]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\S-\\S]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\w-\\w]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_character_class_escape.js",
+        "value": "[\\W-\\W]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "\\A",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "\\Z",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "\\a",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "\\z",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "[\\A]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "[\\Z]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "[\\a]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_alpha.js",
+        "value": "[\\z]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_c.js",
+        "value": "\\c@",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_c.js",
+        "value": "\\c[",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_c.js",
+        "value": "\\c`",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_c.js",
+        "value": "\\c{",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u1",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u12",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u123",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u{",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u{}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u{1",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u{12",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "\\u{123",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u1]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u12]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u123]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u{]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u{}]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u{1]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u{12]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_u.js",
+        "value": "[\\u{123]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_x.js",
+        "value": "\\x",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_x.js",
+        "value": "[\\x]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_identity_escape_x.js",
+        "value": "[\\x1]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "a{",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "a{1",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "a{1,",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "a{1,2",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "{",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "{1",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "{1,",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_incomple_quantifier.js",
+        "value": "{1,2",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\1",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\2",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\3",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\4",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\5",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\6",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\7",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\8",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\9",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\1]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\2]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\3]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\4]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\5]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\6]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\7]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\8]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\9]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\01",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\02",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\03",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\04",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\05",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\06",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\07",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\08",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "\\09",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\01]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\02]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\03]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\04]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\05]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\06]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\07]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\08]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_octal_escape.js",
+        "value": "[\\09]",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)*",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)+",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1,}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1,2}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)*?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)+?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.)??",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1,}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?=.){1,2}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)*",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)+",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1,}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1,2}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)*?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)+?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.)??",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1,}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifiable_assertion.js",
+        "value": "(?!.){1,2}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "*",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "+",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1,}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1,2}",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "*?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "+?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "??",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1,}?",
+        "valid": false
+    },
+    {
+        "file": "unicode_restricted_quantifier_without_atom.js",
+        "value": "{1,2}?",
+        "valid": false
     }
 ]

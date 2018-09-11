@@ -18,8 +18,6 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assumptions;
@@ -50,13 +48,8 @@ public class RegexTest {
         Assumptions.assumeTrue(++index > 0);
     }
     
-    private static final List<String> files = Arrays.asList(
-            //"regex.json"
-            "/org/ecma_international/test262/built_ins/regexp/regexp.json"
-            );
-    
     public static Stream<Fixture> provideFixtures() {
-        return files.stream().flatMap(Fixture::load);
+        return Fixture.load("regex.json");
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

@@ -45,6 +45,9 @@ class Ecma262RegexMatcher extends FormatMatcher {
     
     private static final ClassAtom classAtomDiscarded = new ClassAtom();
     
+    private int maxCapturingGroupNumber;
+    private int leftCapturingParentheses;
+    
     /**
      * Constructs this matcher.
      * 
@@ -60,6 +63,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         if (hasNext()) {
             fail();
         }
+        checkCapturingNumber();
     }
     
     private void disjunction() {
@@ -84,8 +88,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     private boolean term() {
         if (assertion()) {
             return true;
-        } else if (atom()) {
-            quantifier();
+        } else if (atom() && optional(quantifier())) {
             return true;
         }
         return false;
@@ -109,11 +112,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
                     c = next();
                 }
                 if (c == '=' || c == '!') {
-                    disjunction();
-                    if (next() != ')') {
-                        fail();
-                    }
-                    return true;
+                    return capturingGroup();
                 }
             }
         }
@@ -139,14 +138,19 @@ class Ecma262RegexMatcher extends FormatMatcher {
             if (peek() == '?') {
                 next();
             }
-            disjunction();
-            if (next() == ')') {
-                return true;
-            }
-            return fail();
+            return capturingGroup();
         }
         // no atom
         return false;
+    }
+    
+    private boolean capturingGroup() {
+        this.leftCapturingParentheses++;
+        disjunction();
+        if (next() != ')') {
+            return fail();
+        }
+        return true;
     }
    
     private boolean syntaxCharacter() {
@@ -167,12 +171,14 @@ class Ecma262RegexMatcher extends FormatMatcher {
         }
     }
 
-    private void quantifier() {
+    private boolean quantifier() {
         if (qualifierPrefix()) {
             if (hasNext() && peek() == '?') {
                 next();
             }
+            return true;
         }
+        return false;
     }
     
     private boolean qualifierPrefix() {
@@ -208,8 +214,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean characterClass() {
-        char c = peek();
-        if (c != '[') {
+        if (peek() != '[') {
             return false;
         }
         next();
@@ -217,10 +222,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
             next();
         }
         classRanges();
-        if (next() == ']') {
-            return true;
-        }
-        return fail();
+        return next() == ']' || fail();
     }
     
     /**
@@ -288,7 +290,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         } else if (c == ']' || c == '-') {
             return false;
         } else {
-            // SourceCharacterbut not one of \ or ] or -
+            // SourceCharacter but not one of \ or ] or -
             return atom.setValue(next());
         }
     }
@@ -297,7 +299,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         char c = peek();
         if (c == 'b') {
             next();
-            return atom.setValue('\u000b');
+            return atom.setValue('\u0008');
         } else if (c == '-') {
             return atom.setValue(next());
         }
@@ -307,12 +309,12 @@ class Ecma262RegexMatcher extends FormatMatcher {
     private long decimalDigits() {
         char c = next();
         if (Characters.isAsciiDigit(c)) {
-            long number = c - '0';
+            long value = c - '0';
             while (hasNext() && Characters.isAsciiDigit(peek())) {
                 c = next();
-                number = number * 10 + (c - '0');
+                value = (value * 10) + (c - '0');
             }
-            return number;
+            return value;
         } else {
             fail();
             return 0;
@@ -332,13 +334,17 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean decimalEscape() {
-        if (nonZeroDigit()) {
-            while (hasNext() && Characters.isAsciiDigit(peek())) {
-                next();
-            }
-            return true;
+        if (!isNonZeroDigit(peek())) {
+            return false;
         }
-        return false;
+        int number = digitToValue(next());
+        while (hasNext() && Characters.isAsciiDigit(peek())) {
+            number = number * 10  + digitToValue(next());
+        }
+        if (number > this.maxCapturingGroupNumber) {
+            this.maxCapturingGroupNumber = number;
+        }
+        return true;
     }
     
     private boolean characterClassEscape() {
@@ -365,10 +371,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         char c = peek();
         if (c == 'c') {
             next();
-            if (controlLetter(atom)) {
-                return true;
-            }
-            return fail();
+            return controlLetter(atom) || fail();
         } else if (c == '0') {
             next();
             if (hasNext() && Characters.isAsciiDigit(peek())) {
@@ -459,9 +462,13 @@ class Ecma262RegexMatcher extends FormatMatcher {
         char c = peek();
         if (syntaxCharacter()) {
             return atom.setValue(c);
-        } else if (c == '\\') {
+        } else if (c == '/') {
             next();
-            return atom.setValue('\\');
+            return atom.setValue(c);
+        } else if (!Character.isUnicodeIdentifierPart(c)) {
+            // SourceCharacter but not UnicodeIDContinue
+            next();
+            return atom.setValue(c);
         }
         return false;
     }
@@ -498,16 +505,6 @@ class Ecma262RegexMatcher extends FormatMatcher {
         return 0;
     }
 
-    private boolean nonZeroDigit() {
-        char c = peek();
-        if (c >= '1' && c < '9') {
-            next();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
     /**
      * It is a Syntax Error if the MV of the first DecimalDigits is 
      * larger than the MV of the second DecimalDigits.
@@ -532,14 +529,29 @@ class Ecma262RegexMatcher extends FormatMatcher {
         return true;
     }
     
+    private boolean checkCapturingNumber() {
+        if (this.maxCapturingGroupNumber > this.leftCapturingParentheses) {
+            return fail();
+        }
+        return true;
+    }
+    
     private static boolean isSyntaxCharacter(char c) {
         return syntaxCharSet.get(c);
+    }
+   
+    private static boolean isNonZeroDigit(char c) {
+        return c >= '1' && c <= '9';
     }
     
     private static boolean isHexDigit(char c) {
         return Characters.isAsciiDigit(c) ||
                (c >= 'a' && c <= 'f') ||
                (c >= 'A' && c <= 'F');
+    }
+    
+    private static int digitToValue(char c) {
+        return (c - '0');
     }
     
     private static int hexDigitToValue(char c) {
@@ -551,6 +563,10 @@ class Ecma262RegexMatcher extends FormatMatcher {
             return 10 + (c - 'A');
         }
         throw new IllegalArgumentException();
+    }
+    
+    private static boolean optional(boolean result) {
+        return true;
     }
     
     /**

@@ -18,18 +18,51 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
+ * Test cases for {@link Regex} class.
+ * 
  * @author leadpony
  */
-public class XmlRegexTest {
+public class Test262RegexTest {
+
+    // System under test
+    private static Regex sut;
+    
+    private static int index;
+    
+    @BeforeAll
+    public static void setUpOnce() {
+        sut = new Regex();
+    }
+    
+    private static final List<String> files = Arrays.asList(
+            "/org/ecma_international/test262/built_ins/regexp/regexp.json"
+            );
+    
+    public static Stream<Fixture> provideFixtures() {
+        return files.stream().flatMap(Fixture::load);
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("provideFixtures")
+    public void test(Fixture fixture) {
+        Assumptions.assumeTrue(++index > 0);
+        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
+    }
 
     /*
+     * The following regular expressions are copied from
+     * https://github.com/tc39/test262/blob/master/test/built-ins/RegExp/S15.10.2_A1_T1.js
+     * 
      * REX/Javascript 1.0 
      * Robert D. Cameron "REX: XML Shallow Parsing with Regular Expressions",
      * Technical Report TR 1998-17, School of Computing Science, Simon Fraser 
@@ -39,7 +72,7 @@ public class XmlRegexTest {
      * this copyright and citation notice remains intact and that modifications
      * or additions are clearly identified.
      */
-    public static Stream<String> provideRegex() {
+    public static Stream<String> provideXmlRegex() {
         final String TextSE = "[^<]+";
         final String UntilHyphen = "[^-]*-";
         final String Until2Hyphens = UntilHyphen + "([^-]" + UntilHyphen + ")*-";
@@ -72,17 +105,9 @@ public class XmlRegexTest {
                 );        
     }
 
-    // System under test
-    private static Regex sut;
-    
-    @BeforeAll
-    public static void setUpOnce() {
-        sut = new Regex();
-    }
-    
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideRegex")
-    public void test(String value) {
+    @MethodSource("provideXmlRegex")
+    public void testXmlRegex(String value) {
         assertThat(sut.test(value)).isEqualTo(true);
     }
 }
