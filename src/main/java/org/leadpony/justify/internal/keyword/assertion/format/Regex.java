@@ -36,7 +36,7 @@ public class Regex implements StringFormatAttribute {
     }
     
     public boolean test(String value, String flags) {
-        if (flags.contains("u")) {
+        if (flags.indexOf('u') >= 0) {
             return testUnicode(value);
         } else {
             return testNonUnicode(value);

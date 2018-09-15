@@ -46,5 +46,11 @@ public interface StringFormatAttribute extends FormatAttribute {
         return test(string);
     }
     
+    /**
+     * Checks if the string value conforms to the expected format.
+     * 
+     * @param value the string value to check, which cannot be {@code null}.
+     * @return {@code true} if the value conforms to the format, or {@code false}.
+     */
     boolean test(String value);
 }

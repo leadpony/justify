@@ -45,11 +45,13 @@ public class Test262RegexTest {
     }
     
     private static final List<String> files = Arrays.asList(
-            "/org/ecma_international/test262/built_ins/regexp/regexp.json",
-            "/org/ecma_international/test262/built_ins/regexp/named-group.json"
+            //"/org/ecma_international/test262/built_ins/regexp/regexp.json",
+            //"/org/ecma_international/test262/built_ins/regexp/named-group.json",
+            //"/org/ecma_international/test262/built_ins/regexp/property-escapes.json",
+            "/org/ecma_international/test262/built_ins/regexp/property-escapes-generated.json"
             );
     
-    public static Stream<Fixture> provideFixtures() {
+    public static Stream<RegexFixture> provideFixtures() {
         return files.stream().flatMap(RegexFixture::load);
     }
 
@@ -57,7 +59,7 @@ public class Test262RegexTest {
     @MethodSource("provideFixtures")
     public void test(RegexFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        assertThat(sut.test(fixture.value(), fixture.flags()))
+        assertThat(sut.test(fixture.pattern(), fixture.flags()))
             .isEqualTo(fixture.result());
     }
 

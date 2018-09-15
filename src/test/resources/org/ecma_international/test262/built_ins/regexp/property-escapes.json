@@ -1,0 +1,866 @@
+[
+    {
+        "file": "binary-property-with-value-ASCII_-_F.js",
+        "pattern": "\\p{ASCII=F}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_F-negated.js",
+        "pattern": "\\P{ASCII=F}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Invalid.js",
+        "pattern": "\\p{ASCII=Invalid}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Invalid-negated.js",
+        "pattern": "\\P{ASCII=Invalid}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_N.js",
+        "pattern": "\\p{ASCII=N}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_N-negated.js",
+        "pattern": "\\P{ASCII=N}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_No.js",
+        "pattern": "\\p{ASCII=No}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_No-negated.js",
+        "pattern": "\\P{ASCII=No}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_T.js",
+        "pattern": "\\p{ASCII=T}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_T-negated.js",
+        "pattern": "\\P{ASCII=T}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Y.js",
+        "pattern": "\\p{ASCII=Y}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Yes.js",
+        "pattern": "\\p{ASCII=Yes}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Yes-negated.js",
+        "pattern": "\\P{ASCII=Yes}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "binary-property-with-value-ASCII_-_Y-negated.js",
+        "pattern": "\\P{ASCII=Y}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "character-class.js",
+        "pattern": "[\\p{Hex}]",
+        "flags": "u",
+        "valid": true
+    },
+    {
+        "file": "character-class.js",
+        "pattern": "[\\p{Hex}\\P{Hex}]",
+        "flags": "u",
+        "valid": true
+    },
+    {
+        "file": "character-class-range-end.js",
+        "pattern": "[--\\p{Hex}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "character-class-range-no-dash-end.js",
+        "pattern": "[\\uFFFF-\\p{Hex}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "character-class-range-no-dash-start.js",
+        "pattern": "[\\p{Hex}-\\uFFFF]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "character-class-range-start.js",
+        "pattern": "[\\p{Hex}--]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-circumflex-negation.js",
+        "pattern": "\\p{^General_Category=Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-circumflex-negation-negated.js",
+        "pattern": "\\P{^General_Category=Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-empty.js",
+        "pattern": "[\\P{}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-empty-negated.js",
+        "pattern": "[\\p{}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Block-implicit.js",
+        "pattern": "\\p{InAdlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Block-implicit-negated.js",
+        "pattern": "\\P{InAdlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Script.js",
+        "pattern": "\\p{InScript=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Script-implicit.js",
+        "pattern": "\\p{InAdlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Script-implicit-negated.js",
+        "pattern": "\\P{InAdlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-In-prefix-Script-negated.js",
+        "pattern": "\\P{InScript=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-invalid.js",
+        "pattern": "[\\p{invalid}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-invalid-negated.js",
+        "pattern": "[\\P{invalid}]",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-Is-prefix-Script.js",
+        "pattern": "\\p{IsScript=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-Is-prefix-Script-negated.js",
+        "pattern": "\\P{IsScript=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-no-braces.js",
+        "pattern": "\\p",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-no-braces-negated.js",
+        "pattern": "\\P",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-no-braces-value.js",
+        "pattern": "\\pL",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-no-braces-value-negated.js",
+        "pattern": "\\PL",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator.js",
+        "pattern": "\\p{General_Category:Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator-and-value-only.js",
+        "pattern": "\\p{=Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator-and-value-only-negated.js",
+        "pattern": "\\P{=Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator-negated.js",
+        "pattern": "\\P{General_Category:Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator-only.js",
+        "pattern": "\\p{=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-separator-only-negated.js",
+        "pattern": "\\P{=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-unclosed.js",
+        "pattern": "\\p{",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-unclosed-negated.js",
+        "pattern": "\\P{",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-unopened.js",
+        "pattern": "\\p}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "grammar-extension-unopened-negated.js",
+        "pattern": "\\P}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-01.js",
+        "pattern": "\\p{ General_Category=Uppercase_Letter }",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-01-negated.js",
+        "pattern": "\\P{ General_Category=Uppercase_Letter }",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-02.js",
+        "pattern": "\\p{ Lowercase }",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-02-negated.js",
+        "pattern": "\\P{ Lowercase }",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-03.js",
+        "pattern": "\\p{ANY}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-03-negated.js",
+        "pattern": "\\P{ANY}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-04.js",
+        "pattern": "\\p{ASSIGNED}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-04-negated.js",
+        "pattern": "\\P{ASSIGNED}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-05.js",
+        "pattern": "\\p{Ascii}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-05-negated.js",
+        "pattern": "\\P{Ascii}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-06.js",
+        "pattern": "\\p{General_Category = Uppercase_Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-06-negated.js",
+        "pattern": "\\P{General_Category = Uppercase_Letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-07.js",
+        "pattern": "\\p{_-_lOwEr_C-A_S-E_-_}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-07-negated.js",
+        "pattern": "\\P{_-_lOwEr_C-A_S-E_-_}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-08.js",
+        "pattern": "\\p{any}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-08-negated.js",
+        "pattern": "\\P{any}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-09.js",
+        "pattern": "\\p{ascii}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-09-negated.js",
+        "pattern": "\\P{ascii}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-10.js",
+        "pattern": "\\p{assigned}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-10-negated.js",
+        "pattern": "\\P{assigned}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-11.js",
+        "pattern": "\\p{gC=uppercase_letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-11-negated.js",
+        "pattern": "\\P{gC=uppercase_letter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-12.js",
+        "pattern": "\\p{gc=uppercaseletter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-12-negated.js",
+        "pattern": "\\P{gc=uppercaseletter}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-13.js",
+        "pattern": "\\p{lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-13-negated.js",
+        "pattern": "\\P{lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-14.js",
+        "pattern": "\\p{lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "loose-matching-14-negated.js",
+        "pattern": "\\P{lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-General_Category.js",
+        "pattern": "\\p{General_Category}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-General_Category-equals.js",
+        "pattern": "\\p{General_Category=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-General_Category-equals-negated.js",
+        "pattern": "\\P{General_Category=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-General_Category-negated.js",
+        "pattern": "\\P{General_Category}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script.js",
+        "pattern": "\\p{Script}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script_Extensions.js",
+        "pattern": "\\p{Script_Extensions}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script_Extensions-equals.js",
+        "pattern": "\\p{Script_Extensions=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script_Extensions-equals-negated.js",
+        "pattern": "\\P{Script_Extensions=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script_Extensions-negated.js",
+        "pattern": "\\P{Script_Extensions}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script-equals.js",
+        "pattern": "\\p{Script=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script-equals-negated.js",
+        "pattern": "\\P{Script=}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-binary-property-without-value-Script-negated.js",
+        "pattern": "\\P{Script}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-binary-property.js",
+        "pattern": "\\p{UnknownBinaryProperty}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-binary-property-negated.js",
+        "pattern": "\\P{UnknownBinaryProperty}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-and-value.js",
+        "pattern": "\\p{Line_Breakz=WAT}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-and-value-negated.js",
+        "pattern": "\\P{Line_Breakz=WAT}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-existing-value.js",
+        "pattern": "\\p{Line_Breakz=Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-existing-value-negated.js",
+        "pattern": "\\P{Line_Breakz=Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-General_Category-negated.js",
+        "pattern": "\\\\P{General_Category=WAT}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-general-category.js",
+        "pattern": "\\\\p{General_Category=WAT}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-Script.js",
+        "pattern": "\\\\p{Script=FooBarBazInvalid}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-Script_Extensions.js",
+        "pattern": "\\\\p{Script_Extensions=H_e_h}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-Script_Extensions-negated.js",
+        "pattern": "\\\\P{Script_Extensions=H_e_h}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "non-existent-property-value-Script-negated.js",
+        "pattern": "\\\\P{Script=FooBarBazInvalid}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Composition_Exclusion.js",
+        "pattern": "\\p{Composition_Exclusion}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Composition_Exclusion-negated.js",
+        "pattern": "\\P{Composition_Exclusion}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFC.js",
+        "pattern": "\\p{Expands_On_NFC}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFC-negated.js",
+        "pattern": "\\P{Expands_On_NFC}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFD.js",
+        "pattern": "\\p{Expands_On_NFD}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFD-negated.js",
+        "pattern": "\\P{Expands_On_NFD}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFKC.js",
+        "pattern": "\\p{Expands_On_NFKC}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFKC-negated.js",
+        "pattern": "\\P{Expands_On_NFKC}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFKD.js",
+        "pattern": "\\p{Expands_On_NFKD}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Expands_On_NFKD-negated.js",
+        "pattern": "\\P{Expands_On_NFKD}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-FC_NFKC_Closure.js",
+        "pattern": "\\p{FC_NFKC_Closure}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-FC_NFKC_Closure-negated.js",
+        "pattern": "\\P{FC_NFKC_Closure}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Full_Composition_Exclusion.js",
+        "pattern": "\\p{Full_Composition_Exclusion}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Full_Composition_Exclusion-negated.js",
+        "pattern": "\\P{Full_Composition_Exclusion}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Grapheme_Link.js",
+        "pattern": "\\p{Grapheme_Link}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Grapheme_Link-negated.js",
+        "pattern": "\\P{Grapheme_Link}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Hyphen.js",
+        "pattern": "\\p{Hyphen}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Hyphen-negated.js",
+        "pattern": "\\P{Hyphen}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Alphabetic.js",
+        "pattern": "\\p{Other_Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Alphabetic-negated.js",
+        "pattern": "\\P{Other_Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Default_Ignorable_Code_Point.js",
+        "pattern": "\\p{Other_Default_Ignorable_Code_Point}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Default_Ignorable_Code_Point-negated.js",
+        "pattern": "\\P{Other_Default_Ignorable_Code_Point}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Grapheme_Extend.js",
+        "pattern": "\\p{Other_Grapheme_Extend}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Grapheme_Extend-negated.js",
+        "pattern": "\\P{Other_Grapheme_Extend}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_ID_Continue.js",
+        "pattern": "\\p{Other_ID_Continue}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_ID_Continue-negated.js",
+        "pattern": "\\P{Other_ID_Continue}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_ID_Start.js",
+        "pattern": "\\p{Other_ID_Start}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_ID_Start-negated.js",
+        "pattern": "\\P{Other_ID_Start}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Lowercase.js",
+        "pattern": "\\p{Other_Lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Lowercase-negated.js",
+        "pattern": "\\P{Other_Lowercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Math.js",
+        "pattern": "\\p{Other_Math}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Math-negated.js",
+        "pattern": "\\P{Other_Math}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Uppercase.js",
+        "pattern": "\\p{Other_Uppercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Other_Uppercase-negated.js",
+        "pattern": "\\P{Other_Uppercase}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Prepended_Concatenation_Mark.js",
+        "pattern": "\\p{Prepended_Concatenation_Mark}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-binary-property-Prepended_Concatenation_Mark-negated.js",
+        "pattern": "\\P{Prepended_Concatenation_Mark}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Block-with-value.js",
+        "pattern": "\\p{Block=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Block-with-value-negated.js",
+        "pattern": "\\P{Block=Adlam}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-FC_NFKC_Closure.js",
+        "pattern": "\\p{FC_NFKC_Closure}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-FC_NFKC_Closure-negated.js",
+        "pattern": "\\P{FC_NFKC_Closure}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Line_Break.js",
+        "pattern": "\\p{Line_Break}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Line_Break-negated.js",
+        "pattern": "\\P{Line_Break=Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Line_Break-with-value.js",
+        "pattern": "\\p{Line_Break=Alphabetic}",
+        "flags": "u",
+        "valid": false
+    },
+    {
+        "file": "unsupported-property-Line_Break-with-value-negated.js",
+        "pattern": "\\P{Line_Break=Alphabetic}",
+        "flags": "u",
+        "valid": false
+    }
+]

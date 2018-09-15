@@ -28,30 +28,49 @@ import javax.json.JsonValue;
 /**
  * @author leadpony
  */
-public class RegexFixture extends Fixture {
-    
-    private final String flags;
+public class RegexFixture {
 
-    static Stream<Fixture> load(String name) {
-        InputStream in = Fixture.class.getResourceAsStream(name);
+    private final String pattern;
+    private final boolean valid;
+    private final String flags;
+    private boolean skip;
+
+    static Stream<RegexFixture> load(String name) {
+        InputStream in = RegexFixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             JsonArray array = reader.readArray();
             return array.stream()
                     .map(JsonValue::asJsonObject)
-                    .map(RegexFixture::new);
+                    .map(RegexFixture::new)
+                    .filter(f->!f.skip)
+                    ;
         }
     }
     
     /**
-     * @param object
+     * Constructs this fixture.
+     * 
+     * @param object the JSON object containing the fixture.
      */
     private RegexFixture(JsonObject object) {
-        super(object);
+        this.pattern = object.getString("pattern");
+        this.valid = object.getBoolean("valid");
         if (object.containsKey("flags")) {
             this.flags = object.getString("flags");
         } else {
             this.flags = "";
         }
+        if (object.containsKey("skip")) {
+            this.skip = object.getBoolean("skip");
+        }
+    }
+  
+    String pattern() {
+        return pattern;
+    }
+    
+    boolean result() {
+        return valid;
     }
     
     String flags() {
@@ -60,6 +79,6 @@ public class RegexFixture extends Fixture {
 
     @Override
     public String toString() {
-        return "/" + value() + "/" + flags();
+        return "/" + pattern() + "/" + flags();
     }
 }

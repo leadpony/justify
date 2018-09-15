@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.util.NoSuchElementException;
+import java.util.function.IntPredicate;
 
 /**
  * Format matcher.
@@ -25,9 +26,9 @@ import java.util.NoSuchElementException;
  */
 abstract class FormatMatcher {
 
-    protected final CharSequence input;
-    protected final int length;
-    protected int index;
+    private final CharSequence input;
+    private final int length;
+    private int index;
    
     /**
      * Constructs this matcher.
@@ -109,14 +110,8 @@ abstract class FormatMatcher {
      * 
      * @return {@code true} if the input has more characters.
      */
-    boolean hasNext() {
-        if (index + 1 < length) {
-            return true;
-        } else if (index >= length) {
-            return false;
-        } else {
-            return !Character.isSurrogate(input.charAt(index));
-        }
+    final boolean hasNext() {
+        return index < length;
     }
     
     /**
@@ -126,24 +121,19 @@ abstract class FormatMatcher {
      * @param expected the code point of the expected character.
      * @return {@code true} if the next character is the expected one.
      */
-    boolean hasNext(int expected) {
-        int codePoint;
-        if (index < length) {
-            final char high = input.charAt(index);
-            if (Character.isHighSurrogate(high)) {
-                if (index + 1 < length) {
-                    final char low = input.charAt(index + 1);
-                    codePoint = Character.toCodePoint(high, low);
-                } else {
-                    return false;
-                }
-            } else {
-                codePoint = high;
-            }
-            return codePoint == expected;
-        } else {
-            return false;
-        }
+    final boolean hasNext(int expected) {
+        return hasNext() && peek() == expected;
+    }
+    
+    /**
+     * Checks if the input has next character and 
+     * the character passes the test by the specified predicate.
+     * 
+     * @param predicate the predicate to test the next character.
+     * @return {@code true} if the next character is the expected one.
+     */
+    final boolean hasNext(IntPredicate predicate) {
+        return hasNext() && predicate.test(peek());
     }
     
     /**
@@ -153,24 +143,14 @@ abstract class FormatMatcher {
      * @return the code point of the next character.
      * @throws NoSuchElementException if the input has no more characters.
      */
-    int next() {
-        int codePoint;
-        if (index < length) {
-            final char high = input.charAt(index++);
-            if (Character.isHighSurrogate(high)) {
-                if (index < length) {
-                    final char low = input.charAt(index++);
-                    codePoint = Character.toCodePoint(high, low);
-                } else {
-                    throw new NoSuchElementException();
-                }
-            } else {
-                codePoint = high;
-            }
+    final int next() {
+        if (hasNext()) {
+            int codePoint = codePointAt(input, index);
+            index = offsetByCodePoint(input, index);
+            return codePoint;
         } else {
             throw new NoSuchElementException();
         }
-        return codePoint;
     }
     
     /**
@@ -180,26 +160,29 @@ abstract class FormatMatcher {
      * @return the code point of the next character.
      * @throws NoSuchElementException if the input has no more characters.
      */
-    int peek() {
-        int codePoint;
-        if (index < length) {
-            final char high = input.charAt(index);
-            if (Character.isHighSurrogate(high)) {
-                if (index + 1 < length) {
-                    final char low = input.charAt(index + 1);
-                    codePoint = Character.toCodePoint(high, low);
-                } else {
-                    throw new NoSuchElementException();
-                }
-            } else {
-                codePoint = high;
-            }
+    final int peek() {
+        if (hasNext()) {
+            return codePointAt(input, index);
         } else {
             throw new NoSuchElementException();
         }
-        return codePoint;
+    }
+    
+    /**
+     * Extracts a substring.
+     * 
+     * @param start the start index of the substring. 
+     * @return the extracted substring.
+     */
+    final String extract(int start) {
+        return input.subSequence(start, pos()).toString();
     }
 
+    /**
+     * Returns the string representation of the currentinput.
+     * 
+     * @return the string representation of the current input.
+     */
     @Override
     public String toString() {
         return input.subSequence(index, length).toString();
@@ -211,8 +194,34 @@ abstract class FormatMatcher {
      * @returns never return.
      * @throws FormatMismatchException always thrown.
      */
-    protected static boolean fail() {
+    static boolean fail() {
         throw new FormatMismatchException();
+    }
+    
+    /**
+     * Returns the code point at the given index of the input. 
+     * 
+     * @param input the input character sequence.
+     * @param index the index to the character in the input.
+     *              This must be less than the length of the input.
+     * @return the code point at the given index.
+     * @throws IndexOutOfBoundsException 
+     *         if the {@code index} is not less than the input length.
+     */
+    protected int codePointAt(CharSequence input, int index) {
+        return Character.codePointAt(input, index);
+    }
+    
+    /**
+     * Returns the next index offset by a character.
+     *  
+     * @param input the input character sequence.
+     * @param index the index to be offset.
+     *              This must be less than the length of the input.
+     * @return the index within the input sequence.
+     */
+    protected int offsetByCodePoint(CharSequence input, int index) {
+        return Character.offsetByCodePoints(input, index, 1);
     }
 
     /**

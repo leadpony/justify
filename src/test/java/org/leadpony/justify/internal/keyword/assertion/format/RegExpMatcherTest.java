@@ -18,38 +18,33 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Regex} class.
- * 
  * @author leadpony
  */
-public class RegexTest {
-
-    // System under test
-    private static Regex sut;
+public class RegExpMatcherTest {
     
-    private static int index;
-    
-    @BeforeAll
-    public static void setUpOnce() {
-        sut = new Regex();
-    }
-    
-    public static Stream<RegexFixture> provideFixtures() {
-        return RegexFixture.load("regex.json");
+    public static Stream<Arguments> provideGroupFixtures() {
+        return Stream.of(
+            Arguments.of("(?<fst>.)(?<snd>.)", Arrays.asList("fst", "snd")),
+            Arguments.of("(?<fst>.)|(?<snd>.)", Arrays.asList("fst", "snd"))
+        );
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideFixtures")
-    public void test(RegexFixture fixture) {
-        Assumptions.assumeTrue(++index > 0);
-        assertThat(sut.test(fixture.pattern())).isEqualTo(fixture.result());
+    @MethodSource("provideGroupFixtures")
+    public void testGroups(String pattern, List<String> names) {
+        RegExpMatcher matcher = new UnicodeRegExpMatcher(pattern);
+        boolean result = matcher.matches();
+        
+        assertThat(result).isTrue();
+        assertThat(matcher.groupNames()).containsExactlyInAnyOrderElementsOf(names);
     }
 }

@@ -1,816 +1,816 @@
 [
     {
         "file": "functional-replace-global.js",
-        "value": "(?<fst>.)(?<snd>.)",
+        "pattern": "(?<fst>.)(?<snd>.)",
         "valid": true
     },
     {
         "file": "functional-replace-global.js",
-        "value": "(?<fst>.)|(?<snd>.)",
+        "pattern": "(?<fst>.)|(?<snd>.)",
         "valid": true
     },
     {
         "file": "groups-object-unmatched.js",
-        "value": "(?<a>a).|(?<x>x)",
+        "pattern": "(?<a>a).|(?<x>x)",
         "valid": true
     },
     {
         "file": "groups-object.js",
-        "value": "(?<x>.)",
+        "pattern": "(?<x>.)",
         "valid": true
     },
     {
         "file": "groups-object.js",
-        "value": "(?<__proto__>.)",
+        "pattern": "(?<__proto__>.)",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<=(?<a>\\w){3})f",
+        "pattern": "(?<=(?<a>\\w){3})f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<=(?<a>\\w){4})f",
+        "pattern": "(?<=(?<a>\\w){4})f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<=(?<a>\\w)+)f",
+        "pattern": "(?<=(?<a>\\w)+)f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<=(?<a>\\w){6})f",
+        "pattern": "(?<=(?<a>\\w){6})f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "((?<=\\w{3}))f",
+        "pattern": "((?<=\\w{3}))f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<a>(?<=\\w{3}))f",
+        "pattern": "(?<a>(?<=\\w{3}))f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<!(?<a>\\d){3})f",
+        "pattern": "(?<!(?<a>\\d){3})f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<!(?<a>\\D){3})f",
+        "pattern": "(?<!(?<a>\\D){3})f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<!(?<a>\\D){3})f|f",
+        "pattern": "(?<!(?<a>\\D){3})f|f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<a>(?<!\\D{3}))f|f",
+        "pattern": "(?<a>(?<!\\D{3}))f|f",
         "flags": "u",
         "valid": true
     },
     {
         "file": "lookbehind.js",
-        "value": "(?<=(?<fst>.)|(?<snd>.))",
+        "pattern": "(?<=(?<fst>.)|(?<snd>.))",
         "flags": "u",
         "valid": true
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<>a)",
+        "pattern": "(?<>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<aa)",
+        "pattern": "(?<aa)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<42a>a)",
+        "pattern": "(?<42a>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<:a>a)",
+        "pattern": "(?<:a>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a:>a)",
+        "pattern": "(?<a:>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>a)(?<a>a)",
+        "pattern": "(?<a>a)(?<a>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>a)(?<b>b)(?<a>a)",
+        "pattern": "(?<a>a)(?<b>b)(?<a>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>.)\\k",
+        "pattern": "(?<a>.)\\k",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>.)\\k<a",
+        "pattern": "(?<a>.)\\k<a",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>.)\\k<>",
+        "pattern": "(?<a>.)\\k<>",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>.)\\k<b>",
+        "pattern": "(?<a>.)\\k<b>",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<a>a)\\k<ab>",
+        "pattern": "(?<a>a)\\k<ab>",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "(?<ab>a)\\k<a>",
+        "pattern": "(?<ab>a)\\k<a>",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "\\k<a>(?<ab>a)",
+        "pattern": "\\k<a>(?<ab>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "\\k<a(?<a>a)",
+        "pattern": "\\k<a(?<a>a)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "\\k<a>(?<b>x)",
+        "pattern": "\\k<a>(?<b>x)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "\\k<a(?<a>.)",
+        "pattern": "\\k<a(?<a>.)",
         "valid": false
     },
     {
         "file": "non-unicode-malformed.js",
-        "value": "\\k(?<a>.)",
+        "pattern": "\\k(?<a>.)",
         "valid": false
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<a>a)",
+        "pattern": "(?<a>a)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<a42>a)",
+        "pattern": "(?<a42>a)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<_>a)",
+        "pattern": "(?<_>a)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<$>a)",
+        "pattern": "(?<$>a)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": ".(?<$>a).",
+        "pattern": ".(?<$>a).",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": ".(?<a>a)(.)",
+        "pattern": ".(?<a>a)(.)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": ".(?<a>a)(?<b>.)",
+        "pattern": ".(?<a>a)(?<b>.)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": ".(?<a>\\w\\w)",
+        "pattern": ".(?<a>\\w\\w)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<a>\\w\\w\\w)",
+        "pattern": "(?<a>\\w\\w\\w)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<a>\\w\\w)(?<b>\\w)",
+        "pattern": "(?<a>\\w\\w)(?<b>\\w)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<a>.)(?<b>.)(?<c>.)\\k<c>\\k<b>\\k<a>",
+        "pattern": "(?<a>.)(?<b>.)(?<c>.)\\k<c>\\k<b>\\k<a>",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<b>b).\\1",
+        "pattern": "(?<b>b).\\1",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(.)(?<a>a)\\1\\2",
+        "pattern": "(.)(?<a>a)\\1\\2",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(.)(?<a>a)(?<b>\\1)(\\2)",
+        "pattern": "(.)(?<a>a)(?<b>\\1)(\\2)",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<lt><)a",
+        "pattern": "(?<lt><)a",
         "valid": true
     },
     {
         "file": "non-unicode-match.js",
-        "value": "(?<gt>>)a",
+        "pattern": "(?<gt>>)a",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<π>a)",
+        "pattern": "(?<π>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<\\u{03C0}>a)",
+        "pattern": "(?<\\u{03C0}>a)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<$>a)",
+        "pattern": "(?<$>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<_>a)",
+        "pattern": "(?<_>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<$𐒤>a)",
+        "pattern": "(?<$𐒤>a)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<_\u200C>a)",
+        "pattern": "(?<_\u200C>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<_\u200D>a)",
+        "pattern": "(?<_\u200D>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<ಠ_ಠ>a)",
+        "pattern": "(?<ಠ_ಠ>a)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<❤>a)",
+        "pattern": "(?<❤>a)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<𐒤>a)",
+        "pattern": "(?<𐒤>a)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\uD801\uDCA4>.)",
+        "pattern": "(?<a\\uD801\uDCA4>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\uD801>.)",
+        "pattern": "(?<a\\uD801>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\uDCA4>.)",
+        "pattern": "(?<a\\uDCA4>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<\\u0041>.)",
+        "pattern": "(?<\\u0041>.)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\u{104A4}>.)",
+        "pattern": "(?<a\\u{104A4}>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\u{10FFFF}>.)",
+        "pattern": "(?<a\\u{10FFFF}>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\uD801>.)",
+        "pattern": "(?<a\uD801>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\uDCA4>.)",
+        "pattern": "(?<a\uDCA4>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\uD801>.)",
+        "pattern": "(?<a\\uD801>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\uDCA4>.)",
+        "pattern": "(?<a\\uDCA4>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<\\u{0041}>.)",
+        "pattern": "(?<\\u{0041}>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\u{104A4}>.)",
+        "pattern": "(?<a\\u{104A4}>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<\\u0041>.)",
+        "pattern": "(?<\\u0041>.)",
         "valid": true
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<\\>.)",
+        "pattern": "(?<\\>.)",
         "valid": false
     },
     {
         "file": "non-unicode-property-names.js",
-        "value": "(?<a\\>.)",
+        "pattern": "(?<a\\>.)",
         "valid": false
     },
     {
         "file": "non-unicode-references.js",
-        "value": "(?<b>.).\\k<b>",
+        "pattern": "(?<b>.).\\k<b>",
         "valid": true
     },
     {
         "file": "non-unicode-references.js",
-        "value": "(?<a>\\k<a>\\w)..",
+        "pattern": "(?<a>\\k<a>\\w)..",
         "valid": true
     },
     {
         "file": "non-unicode-references.js",
-        "value": "\\k<a>(?<a>b)\\w\\k<a>",
+        "pattern": "\\k<a>(?<a>b)\\w\\k<a>",
         "valid": true
     },
     {
         "file": "non-unicode-references.js",
-        "value": "(?<b>b)\\k<a>(?<a>a)\\k<b>",
+        "pattern": "(?<b>b)\\k<a>(?<a>a)\\k<b>",
         "valid": true
     },
     {
         "file": "non-unicode-references.js",
-        "value": "(?<a>a)(?<b>b)\\k<a>",
+        "pattern": "(?<a>a)(?<b>b)\\k<a>",
         "valid": true
     },
     {
         "file": "non-unicode-references.js",
-        "value": "(?<a>a)(?<b>b)\\k<a>|(?<c>c)",
+        "pattern": "(?<a>a)(?<b>b)\\k<a>|(?<c>c)",
         "valid": true
     },
     {
         "file": "string-replace-escaped.js",
-        "value": "(?<fst>.)",
+        "pattern": "(?<fst>.)",
         "valid": true
     },
     {
         "file": "string-replace-escaped.js",
-        "value": "(?<fst>.)",
+        "pattern": "(?<fst>.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "string-replace-get.js",
-        "value": "(?<fst>.)(?<snd>.)|(?<thd>x)",
+        "pattern": "(?<fst>.)(?<snd>.)|(?<thd>x)",
         "valid": true
     },
     {
         "file": "string-replace-get.js",
-        "value": "(?<fst>.)(?<snd>.)|(?<thd>x)",
+        "pattern": "(?<fst>.)(?<snd>.)|(?<thd>x)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "string-replace-nocaptures.js",
-        "value": "(.)(.)|(x)",
+        "pattern": "(.)(.)|(x)",
         "valid": true
     },
     {
         "file": "string-replace-nocaptures.js",
-        "value": "(.)(.)|(x)",
+        "pattern": "(.)(.)|(x)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "string-replace-nocaptures.js",
-        "value": "(.)(.)|(x)",
+        "pattern": "(.)(.)|(x)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<>a)",
+        "pattern": "(?<>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<aa)",
+        "pattern": "(?<aa)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<42a>a)",
+        "pattern": "(?<42a>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<:a>a)",
+        "pattern": "(?<:a>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a:>a)",
+        "pattern": "(?<a:>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>a)(?<a>a)",
+        "pattern": "(?<a>a)(?<a>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>a)(?<b>b)(?<a>a)",
+        "pattern": "(?<a>a)(?<b>b)(?<a>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "\\k<a>",
+        "pattern": "\\k<a>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "\\k<a",
+        "pattern": "\\k<a",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "\\k<>",
+        "pattern": "\\k<>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "\\k",
+        "pattern": "\\k",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>.)\\k",
+        "pattern": "(?<a>.)\\k",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>.)\\k<a",
+        "pattern": "(?<a>.)\\k<a",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>.)\\k<>",
+        "pattern": "(?<a>.)\\k<>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>.)\\k<b>",
+        "pattern": "(?<a>.)\\k<b>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>a)\\k<ab>",
+        "pattern": "(?<a>a)\\k<ab>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<ab>a)\\k<a>",
+        "pattern": "(?<ab>a)\\k<a>",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "\\k<a>(?<ab>a)",
+        "pattern": "\\k<a>(?<ab>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-malformed.js",
-        "value": "(?<a>\\a)",
+        "pattern": "(?<a>\\a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<a>a)",
+        "pattern": "(?<a>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<a42>a)",
+        "pattern": "(?<a42>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<_>a)",
+        "pattern": "(?<_>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<$>a)",
+        "pattern": "(?<$>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": ".(?<$>a).",
+        "pattern": ".(?<$>a).",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": ".(?<a>a)(.)",
+        "pattern": ".(?<a>a)(.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": ".(?<a>a)(?<b>.)",
+        "pattern": ".(?<a>a)(?<b>.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": ".(?<a>\\w\\w)",
+        "pattern": ".(?<a>\\w\\w)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<a>\\w\\w\\w)",
+        "pattern": "(?<a>\\w\\w\\w)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<a>\\w\\w)(?<b>\\w)",
+        "pattern": "(?<a>\\w\\w)(?<b>\\w)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-match.js",
-        "value": "(?<a>.)(?<b>.)(?<c>.)\\k<c>\\k<b>\\k<a>",
+        "pattern": "(?<a>.)(?<b>.)(?<c>.)\\k<c>\\k<b>\\k<a>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<π>a)",
+        "pattern": "(?<π>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<\\u{03C0}>a)",
+        "pattern": "(?<\\u{03C0}>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<$>a)",
+        "pattern": "(?<$>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<_>a)",
+        "pattern": "(?<_>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<$𐒤>a)",
+        "pattern": "(?<$𐒤>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<_\u200C>a)",
+        "pattern": "(?<_\u200C>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<_\u200D>a)",
+        "pattern": "(?<_\u200D>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<ಠ_ಠ>a)",
+        "pattern": "(?<ಠ_ಠ>a)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<❤>a)",
+        "pattern": "(?<❤>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<𐒤>a)",
+        "pattern": "(?<𐒤>a)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\uD801\uDCA4>.)",
+        "pattern": "(?<a\uD801\uDCA4>.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\uD801>.)",
+        "pattern": "(?<a\\uD801>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\uDCA4>.)",
+        "pattern": "(?<a\\uDCA4>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<\u0041>.)",
+        "pattern": "(?<\u0041>.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\u{110000}>.)",
+        "pattern": "(?<a\\u{110000}>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\uD801>.)",
+        "pattern": "(?<a\uD801>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\uDCA4>.)",
+        "pattern": "(?<a\uDCA4>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\uD801>.)",
+        "pattern": "(?<a\\uD801>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\uDCA4>.)",
+        "pattern": "(?<a\\uDCA4>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<\\u0041>.)",
+        "pattern": "(?<\\u0041>.)",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<\\>.)",
+        "pattern": "(?<\\>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-property-names.js",
-        "value": "(?<a\\>.)",
+        "pattern": "(?<a\\>.)",
         "flags": "u",
         "valid": false
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<b>.).\\k<b>",
+        "pattern": "(?<b>.).\\k<b>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<a>\\k<a>\\w)..",
+        "pattern": "(?<a>\\k<a>\\w)..",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "\\k<a>(?<a>b)\\w\\k<a>",
+        "pattern": "\\k<a>(?<a>b)\\w\\k<a>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<b>b)\\k<a>(?<a>a)\\k<b>",
+        "pattern": "(?<b>b)\\k<a>(?<a>a)\\k<b>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "\\k<a>(?<a>b)\\w\\k<a>",
+        "pattern": "\\k<a>(?<a>b)\\w\\k<a>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<a>a)(?<b>b)\\k<a>",
+        "pattern": "(?<a>a)(?<b>b)\\k<a>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<a>a)(?<b>b)\\k<a>",
+        "pattern": "(?<a>a)(?<b>b)\\k<a>",
         "flags": "u",
         "valid": true
     },
     {
         "file": "unicode-references.js",
-        "value": "(?<a>a)(?<b>b)\\k<a>|(?<c>c)",
+        "pattern": "(?<a>a)(?<b>b)\\k<a>|(?<c>c)",
         "flags": "u",
         "valid": true
     }

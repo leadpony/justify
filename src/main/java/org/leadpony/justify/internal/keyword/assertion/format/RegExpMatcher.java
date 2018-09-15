@@ -45,13 +45,14 @@ abstract class RegExpMatcher extends FormatMatcher {
         set('|');
     }};
     
-    private static final ClassAtom classAtomDiscarded = new ClassAtom();
-    
     private int maxCapturingGroupNumber;
     private int leftCapturingParentheses;
     
     private Set<String> groups;
     private Set<String> groupReferences;
+    
+    protected int lastNumericValue;
+    protected ClassAtom lastClassAtom;
     
     /**
      * Constructs this matcher.
@@ -70,6 +71,15 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         checkCapturingNumber();
         checkGroupReferences();
+    }
+    
+    /**
+     * Returns all group names.
+     * 
+     * @return all names of the found groups.
+     */
+    Set<String> groupNames() {
+        return groups;
     }
     
     private void disjunction() {
@@ -124,6 +134,50 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(start);
     }
+  
+    private boolean quantifier() {
+        if (quantifierPrefix()) {
+            if (hasNext('?')) {
+                next();
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean quantifierPrefix() {
+        if (!hasNext()) {
+            return false;
+        }
+        int c = peek();
+        if (c == '*' || c == '+' || c == '?') {
+            next();
+            return true;
+        } else if (c == '{') {
+            next();
+            decimalDigits();
+            int first = this.lastNumericValue;
+            c = next();
+            if (c == '}') {
+                return true;
+            } else if (c == ',') {
+                if (hasNext('}')) {
+                    next();
+                    return true;
+                } else {
+                    decimalDigits();
+                    final int second = this.lastNumericValue;
+                    if (checkQuantifierRange(first, second) &&
+                        next() == '}') {
+                        return true;
+                    }
+                      
+                }
+            }
+            return fail();
+        }
+        return false;
+    }
     
     private boolean atom() {
         if (patternCharacter() || characterClass()) {
@@ -151,18 +205,9 @@ abstract class RegExpMatcher extends FormatMatcher {
         // no atom
         return false;
     }
-    
-    private boolean capturingGroup() {
-        this.leftCapturingParentheses++;
-        disjunction();
-        if (next() != ')') {
-            return fail();
-        }
-        return true;
-    }
-   
-    private boolean syntaxCharacter() {
-        if (isSyntaxCharacter(peek())) {
+ 
+    protected boolean syntaxCharacter() {
+        if (hasNext() && isSyntaxCharacter(peek())) {
             next();
             return true;
         } else {
@@ -171,7 +216,7 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     private boolean patternCharacter() {
-        if (!isSyntaxCharacter(peek())) {
+        if (hasNext() && !isSyntaxCharacter(peek())) {
             next();
             return true;
         } else {
@@ -179,46 +224,208 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
     }
 
-    private boolean quantifier() {
-        if (qualifierPrefix()) {
-            if (hasNext('?')) {
-                next();
+    private boolean atomEscape() {
+        if (decimalEscape() || characterClassEscape()) {
+            return true;
+        } else if (characterEscape()) {
+            return true;
+        } if (hasNext('k')) {
+            next();
+            return groupName(true) || fail();
+        }
+        return fail();
+    }
+    
+    private boolean characterEscape() {
+        if (controlEscape() ||
+            hexEscapeSequence() ||
+            regExpUnicodeEscapeSequence() ||
+            identityEscape()) {
+            return true;
+        }
+        int c = peek();
+        if (c == 'c') {
+            next();
+            return controlLetter() || fail();
+        } else if (c == '0') {
+            next();
+            if (hasNext() && Characters.isAsciiDigit(peek())) {
+                return fail();
             }
+            this.lastClassAtom = ClassAtom.of('\u0000');
             return true;
         }
         return false;
     }
+   
+    private boolean controlEscape() {
+        char value;
+        switch (peek()) {
+        case 't':
+            value = 9;
+            break;
+        case 'n':
+            value = 10;
+            break;
+        case 'v':
+            value = 11;
+            break;
+        case 'f':
+            value = 12;
+            break;
+        case 'r':
+            value = 13;
+            break;
+        default:
+            return false;
+        }
+        this.lastClassAtom = ClassAtom.of(value);
+        return true;
+    }
     
-    private boolean qualifierPrefix() {
+    private boolean controlLetter() {
+        int c  = peek();
+        if (isControlLetter(c)) {
+            next();
+            this.lastClassAtom = ClassAtom.of(c % 32);
+           return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean groupSpecifier() {
+        final int start = pos();
+        if (hasNext('?')) {
+            next();
+            if (groupName(false)) {
+                return true;
+            } else {
+                return backtrack(start);
+            }
+        } else {
+            return true;
+        }
+    }
+    
+    private boolean groupName(boolean reference) {
+        final int start = pos();
+        if (!hasNext('<')) {
+            return false;
+        }
+        next();
+        final int nameStart = pos();
+        if (!regExpIdentifierName()) {
+            return false;
+        }
+        String name = extract(nameStart);
+        if (hasNext('>')) {
+            next();
+            if (reference) {
+                addGroupReference(name);
+            } else {
+                addGroup(name);
+            }
+            return true;
+        } else {
+            return backtrack(start);
+        }
+    }
+   
+    private boolean regExpIdentifierName() {
+        if (!regExpIdentifierStart()) {
+            return false;
+        }
+        while (regExpIdentifierPart()) {
+        }
+        return true;
+    }
+    
+    private boolean regExpIdentifierStart() {
         if (!hasNext()) {
             return false;
         }
+        final int start = pos(); 
         int c = peek();
-        if (c == '*' || c == '+' || c == '?') {
+        if (isRegExpIdentifierStart(c)) {
             next();
             return true;
-        } else if (c == '{') {
+        } else if (c == '\\') {
             next();
-            final long first = decimalDigits();
-            c = next();
-            if (c == '}') {
-                return true;
-            } else if (c == ',') {
-                if (hasNext('}')) {
-                    next();
+            if (regExpUnicodeEscapeSequence()) {
+                if (isRegExpIdentifierStart(this.lastNumericValue)) {
                     return true;
                 } else {
-                    final long second = decimalDigits();
-                    if (checkQuantifierRange(first, second) &&
-                        next() == '}') {
-                        return true;
-                    }
-                      
+                    return fail();
                 }
+            } else {
+                return backtrack(start);
             }
-            return fail();
         }
         return false;
+    }
+    
+    private boolean regExpIdentifierPart() {
+        if (!hasNext()) {
+            return false;
+        }
+        final int start = pos(); 
+        int c = peek();
+        if (isRegExpIdentifierPart(c)) {
+            next();
+            return true;
+        } else if (c == '\\') {
+            next();
+            if (regExpUnicodeEscapeSequence()) {
+                if (isRegExpIdentifierPart(this.lastNumericValue)) {
+                    return true;
+                } else {
+                    return fail();
+                }
+            } else {
+                return backtrack(start);
+            }
+        }
+        return false;
+    }
+  
+    protected boolean regExpUnicodeEscapeSequence() {
+        if (!hasNext('u')) {
+            return false;
+        }
+        final int start = pos();
+        next();
+        if (hex4Digits()) {
+            this.lastClassAtom = ClassAtom.of(this.lastNumericValue);
+            return true;
+        } else {
+            return backtrack(start);
+        }
+    }
+    
+    protected abstract boolean identityEscape();
+    
+    private boolean decimalEscape() {
+        if (!isNonZeroDigit(peek())) {
+            return false;
+        }
+        int number = digitToValue(next());
+        while (hasNext() && Characters.isAsciiDigit(peek())) {
+            number = number * 10  + digitToValue(next());
+        }
+        if (number > this.maxCapturingGroupNumber) {
+            this.maxCapturingGroupNumber = number;
+        }
+        return true;
+    }
+    
+    private boolean characterClassEscape() {
+        if (testCharacterClassEscape()) {
+            this.lastClassAtom = ClassAtom.CHARACTER_CLASS;
+            return true;
+        } else {
+            return false;
+        }
     }
     
     private boolean characterClass() {
@@ -245,13 +452,13 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     private boolean nonemptyClassRanges() {
-        ClassAtom first = new ClassAtom();
-        if (classAtom(first)) {
+        if (classAtom()) {
+            ClassAtom first = this.lastClassAtom;
             if (peek() == '-') {
                 final int start = pos();
                 next();
-                ClassAtom second = new ClassAtom();
-                if (classAtom(second)) {
+                if (classAtom()) {
+                    ClassAtom second = this.lastClassAtom;
                     return checkClassRange(first, second);
                 }
                 backtrack(start);
@@ -266,12 +473,12 @@ abstract class RegExpMatcher extends FormatMatcher {
     
     private boolean nonemptyClassRangesNoDash() {
         final int start = pos();
-        ClassAtom first = new ClassAtom();
-        if (classAtomNoDash(first)) {
+        if (classAtomNoDash()) {
+            ClassAtom first = this.lastClassAtom;
             if (peek() == '-') {
                 next();
-                ClassAtom second = new ClassAtom();
-                if (classAtom(second)) {
+                if (classAtom()) {
+                    ClassAtom second = this.lastClassAtom;
                     return checkClassRange(first, second);
                 }
             } else if (nonemptyClassRangesNoDash()) {
@@ -279,190 +486,61 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
         }
         backtrack(start);
-        return classAtom(first);
+        return classAtom();
     }
 
-    private boolean classAtom(ClassAtom atom) {
+    private boolean classAtom() {
         if (peek() == '-') {
-            return atom.setValue(next());
+            this.lastClassAtom = ClassAtom.of(next());
+            return true;
         } else {
-            return classAtomNoDash(atom);
+            return classAtomNoDash();
         }
     }
     
-    private boolean classAtomNoDash(ClassAtom atom) {
+    private boolean classAtomNoDash() {
         int c = peek();
         if (c == '\\') {
             next();
-            return classEscape(atom);
+            return classEscape();
         } else if (c == ']' || c == '-') {
             return false;
         } else {
             // SourceCharacter but not one of \ or ] or -
-            return atom.setValue(next());
+            this.lastClassAtom = ClassAtom.of(next());
+            return true;
         }
     }
     
-    private boolean classEscape(ClassAtom atom) {
+    private boolean classEscape() {
         int c = peek();
         if (c == 'b') {
             next();
-            return atom.setValue('\u0008');
+            this.lastClassAtom = ClassAtom.of('\u0008');
+            return true;
         } else if (c == '-') {
-            return atom.setValue(next());
+            this.lastClassAtom = ClassAtom.of(next());
+            return true;
         }
-        return characterClassEscape() || characterEscape(atom);
+        return characterClassEscape() || characterEscape();
     }
     
-    private long decimalDigits() {
+    private boolean decimalDigits() {
         int c = next();
         if (Characters.isAsciiDigit(c)) {
-            long value = c - '0';
+            int value = c - '0';
             while (hasNext() && Characters.isAsciiDigit(peek())) {
                 c = next();
                 value = (value * 10) + (c - '0');
             }
-            return value;
-        } else {
-            fail();
-            return 0;
-        }
-    }
-    
-    private boolean atomEscape() {
-        if (decimalEscape() || characterClassEscape()) {
-            return true;
-        } else if (characterEscape(classAtomDiscarded)) {
-            return true;
-        } if (hasNext('k')) {
-            next();
-            return groupName(true) || fail();
-        }
-        return fail();
-    }
-    
-    private boolean decimalEscape() {
-        if (!isNonZeroDigit(peek())) {
-            return false;
-        }
-        int number = digitToValue(next());
-        while (hasNext() && Characters.isAsciiDigit(peek())) {
-            number = number * 10  + digitToValue(next());
-        }
-        if (number > this.maxCapturingGroupNumber) {
-            this.maxCapturingGroupNumber = number;
-        }
-        return true;
-    }
-    
-    private boolean characterClassEscape() {
-        int c = peek();
-        if (c == 'd' || c == 'D' ||
-            c == 's' || c == 'S' ||
-            c == 'w' || c == 'W') {
-            next();
-            return true;
-        } else if (c == 'p' || c == 'P') {
-            // TODO:
-            return false;
-        }
-        return false;
-    }
-    
-    private boolean characterEscape(ClassAtom atom) {
-        if (controlEscape(atom) ||
-            hexEscapeSequence(atom) ||
-            regExpUnicodeEscapeSequence(atom) ||
-            identityEscape(atom)) {
-            return true;
-        }
-        int c = peek();
-        if (c == 'c') {
-            next();
-            return controlLetter(atom) || fail();
-        } else if (c == '0') {
-            next();
-            if (hasNext() && Characters.isAsciiDigit(peek())) {
-                return fail();
-            }
-            return atom.setValue('\u0000');
-        }
-        return false;
-    }
-    
-    private boolean controlEscape(ClassAtom atom) {
-        char value;
-        switch (peek()) {
-        case 't':
-            value = 9;
-            break;
-        case 'n':
-            value = 10;
-            break;
-        case 'v':
-            value = 11;
-            break;
-        case 'f':
-            value = 12;
-            break;
-        case 'r':
-            value = 13;
-            break;
-        default:
-            return false;
-        }
-        return atom.setValue(value);
-    }
-    
-    private boolean controlLetter(ClassAtom atom) {
-        int c  = peek();
-        if (Characters.isAsciiAlphabetic(c)) {
-            next();
-            return atom.setValue((char)(c % 32));
-        } else {
-            return false;
-        }
-    }
-    
-    private boolean groupSpecifier() {
-        final int start = pos();
-        if (hasNext('?')) {
-            next();
-            if (groupName(false)) {
-                return true;
-            } else {
-                return backtrack(start);
-            }
-        } else {
-            return true;
-        }
-    }
-    
-    private boolean groupName(boolean reference) {
-        final int start = pos();
-        if (!hasNext('<')) {
-            return false;
-        }
-        next();
-        final int nameStart = pos();
-        if (!regExpIdentifierName()) {
-            return false;
-        }
-        String name = input().subSequence(nameStart, pos()).toString();
-        if (hasNext('>')) {
-            next();
-            if (reference) {
-                addGroupReference(name);
-            } else {
-                addGroup(name);
-            }
+            lastNumericValue = value;
             return true;
         } else {
-            return backtrack(start);
+            return fail();
         }
     }
     
-    private boolean hexEscapeSequence(ClassAtom atom) {
+    private boolean hexEscapeSequence() {
         if (!hasNext('x')) {
             return false;
         }
@@ -472,95 +550,14 @@ abstract class RegExpMatcher extends FormatMatcher {
             int second = next();
             if (isHexDigit(second)) {
                 int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
-                return atom.setValue((char)value);
+                this.lastClassAtom = ClassAtom.of(value);
+                return true;
             }
         }
         return fail();
     }
-    
-    private boolean regExpIdentifierName() {
-        if (!regExpIdentifierStart()) {
-            return false;
-        }
-        while (regExpIdentifierPart()) {
-        }
-        return true;
-    }
-    
-    private boolean regExpIdentifierStart() {
-        final int start = pos(); 
-        int c = peek();
-        if (isRegExpIdentifierStart(c)) {
-            next();
-            return true;
-        } else if (c == '\\') {
-            next();
-            ClassAtom atom = new ClassAtom();
-            if (regExpUnicodeEscapeSequence(atom)) {
-                if (isRegExpIdentifierStart(atom.getValue())) {
-                    return true;
-                } else {
-                    return fail();
-                }
-            } else {
-                return backtrack(start);
-            }
-        }
-        return false;
-    }
-    
-    private boolean regExpIdentifierPart() {
-        final int start = pos(); 
-        int c = peek();
-        if (isRegExpIdentifierPart(c)) {
-            next();
-            return true;
-        } else if (c == '\\') {
-            next();
-            ClassAtom atom = new ClassAtom();
-            if (regExpUnicodeEscapeSequence(atom)) {
-                if (isRegExpIdentifierPart(atom.getValue())) {
-                    return true;
-                } else {
-                    return fail();
-                }
-            } else {
-                return backtrack(start);
-            }
-        }
-        return false;
-    }
 
-    protected boolean regExpUnicodeEscapeSequence(ClassAtom atom) {
-        if (!hasNext('u')) {
-            return false;
-        }
-        final int start = pos();
-        next();
-        final int value = hex4Digits();
-        if (value >= 0) {
-            return atom.setValue(value);
-        } else {
-            return backtrack(start);
-        }
-    }
-    
-    protected boolean identityEscape(ClassAtom atom) {
-        int c = peek();
-        if (syntaxCharacter()) {
-            return atom.setValue(c);
-        } else if (c == '/') {
-            next();
-            return atom.setValue(c);
-        } else if (!Character.isUnicodeIdentifierPart(c)) {
-            // SourceCharacter but not UnicodeIDContinue
-            next();
-            return atom.setValue(c);
-        }
-        return false;
-    }
-    
-    protected int hex4Digits() {
+    protected boolean hex4Digits() {
         final int start = pos();
         int value = 0;
         int digits = 0;
@@ -571,13 +568,33 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
             value = value * 16 + hexDigitToValue(c);
             if (++digits >= 4) {
-                return value;
+                this.lastNumericValue = value;
+                return true;
             }
         }
-        backtrack(start);
-        return -1;
+        return backtrack(start);
+    }
+   
+    protected boolean testCharacterClassEscape() {
+        int c = peek();
+        if (c == 'd' || c == 'D' ||
+            c == 's' || c == 'S' ||
+            c == 'w' || c == 'W') {
+            next();
+            return true;
+        }
+        return false;
     }
     
+    private boolean capturingGroup() {
+        this.leftCapturingParentheses++;
+        disjunction();
+        if (next() != ')') {
+            return fail();
+        }
+        return true;
+    }
+   
     private void addGroup(String name) {
         if (this.groups == null) {
             this.groups = new HashSet<>();
@@ -611,17 +628,18 @@ abstract class RegExpMatcher extends FormatMatcher {
      * @param second the second  decimal digits.
      * @return {@code true} if the test passed.
      */
-    private static boolean checkQuantifierRange(long first, long second) {
-        if (first > second) {
+    private static boolean checkQuantifierRange(int first, int second) {
+        if (first <= second) {
+            return true;
+        } else {
             return fail();
         }
-        return true;
     }
     
     private static boolean checkClassRange(ClassAtom lower, ClassAtom upper) {
         if (lower.isCharacterClass() || upper.isCharacterClass()) {
             return fail();
-        } else if (lower.getValue() > upper.getValue()) {
+        } else if (lower.codePoint() > upper.codePoint()) {
             return fail();
         }
         return true;
@@ -646,11 +664,11 @@ abstract class RegExpMatcher extends FormatMatcher {
         return true;
     }
     
-    private static boolean isSyntaxCharacter(int c) {
+    protected static boolean isSyntaxCharacter(int c) {
         return syntaxCharSet.get(c);
     }
    
-    private static boolean isNonZeroDigit(int c) {
+    protected static boolean isNonZeroDigit(int c) {
         return c >= '1' && c <= '9';
     }
     
@@ -660,20 +678,24 @@ abstract class RegExpMatcher extends FormatMatcher {
                (c >= 'A' && c <= 'F');
     }
     
-    private static boolean isRegExpIdentifierStart(int c) {
+    protected static boolean isRegExpIdentifierStart(int c) {
         return Character.isUnicodeIdentifierStart(c) || 
                c == '$' || 
                c == '_';
     }
     
-    private static boolean isRegExpIdentifierPart(int c) {
+    protected static boolean isRegExpIdentifierPart(int c) {
         return Character.isUnicodeIdentifierPart(c) || 
                c == '$' ||
                c == '\u200c' || 
                c == '\u200d';
     }
+    
+    protected static boolean isControlLetter(int c) {
+        return Characters.isAsciiAlphabetic(c);
+    }
 
-    private static int digitToValue(int c) {
+    protected static int digitToValue(int c) {
         return (c - '0');
     }
     
@@ -688,33 +710,55 @@ abstract class RegExpMatcher extends FormatMatcher {
         throw new IllegalArgumentException();
     }
     
-    private static boolean optional(boolean result) {
+    protected static boolean optional(boolean result) {
         return true;
     }
     
+    static interface ClassAtom {
+        
+        boolean isCharacterClass();
+
+        int codePoint();
+        
+        static ClassAtom of(int c) {
+            return new DefaultClassAtom(c);
+        }
+
+        static ClassAtom CHARACTER_CLASS = new ClassAtom() {
+            
+            @Override
+            public boolean isCharacterClass() {
+                return true;
+            }
+
+            @Override
+            public int codePoint() {
+                throw new IllegalStateException();
+            }
+        };
+    }
+    
     /**
-     * Instance of class atom.
+     * Class atom with a code point.
      * 
      * @author leadpony
      */
-    static class ClassAtom {
+    private static class DefaultClassAtom implements ClassAtom {
 
-        private int codePoint;
-        private boolean isCharacterClass = true;
+        private final int codePoint;
         
-        int getValue() {
-            assert !isCharacterClass;
-            return codePoint;
-        }
-        
-        boolean setValue(int codePoint) {
+        DefaultClassAtom(int codePoint) {
             this.codePoint = codePoint;
-            this.isCharacterClass = false;
-            return true;
         }
         
-        boolean isCharacterClass() {
-            return isCharacterClass;
+        @Override
+        public boolean isCharacterClass() {
+            return false;
+        }
+
+        @Override
+        public int codePoint() {
+            return codePoint;
         }
     }
 }

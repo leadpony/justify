@@ -1,2212 +1,2212 @@
 [
     {
         "file": "15.10.2.5-3-1.js",
-        "value": "0{2,1}",
+        "pattern": "0{2,1}",
         "valid": false
     },
     {
         "file": "15.10.2.15-6-1.js",
-        "value": "^[z-a]$",
+        "pattern": "^[z-a]$",
         "valid": false
     },
     {
         "file": "15.10.4.1-2.js",
-        "value": "\\",
+        "pattern": "\\",
         "valid": false
     },
     {
         "file": "call_with_regexp_match_falsy.js",
-        "value": "(?:)",
+        "pattern": "(?:)",
         "valid": true
     },
     {
         "file": "character-class-escape-non-whitespace-u180e.js",
-        "value": "\\S+",
+        "pattern": "\\S+",
         "valid": true
     },
     {
         "file": "S15.10.1_A1_T1.js",
-        "value": "a**",
+        "pattern": "a**",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T2.js",
-        "value": "a***",
+        "pattern": "a***",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T3.js",
-        "value": "a++",
+        "pattern": "a++",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T4.js",
-        "value": "a+++",
+        "pattern": "a+++",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T5.js",
-        "value": "a???",
+        "pattern": "a???",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T6.js",
-        "value": "a????",
+        "pattern": "a????",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T7.js",
-        "value": "*a",
+        "pattern": "*a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T8.js",
-        "value": "**a",
+        "pattern": "**a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T9.js",
-        "value": "+a",
+        "pattern": "+a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T10.js",
-        "value": "++a",
+        "pattern": "++a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T11.js",
-        "value": "?a",
+        "pattern": "?a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T12.js",
-        "value": "??a",
+        "pattern": "??a",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T13.js",
-        "value": "x{1}{1,}",
+        "pattern": "x{1}{1,}",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T14.js",
-        "value": "x{1,2}{1}",
+        "pattern": "x{1,2}{1}",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T15.js",
-        "value": "x{1,}{1}",
+        "pattern": "x{1,}{1}",
         "valid": false
     },
     {
         "file": "S15.10.1_A1_T16.js",
-        "value": "x{0,1}{1,}",
+        "pattern": "x{0,1}{1,}",
         "valid": false
     },
     {
         "file": "S15.10.2.3_A1_T1.js",
-        "value": "a|ab",
+        "pattern": "a|ab",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T2.js",
-        "value": "((a)|(ab))((c)|(bc))",
+        "pattern": "((a)|(ab))((c)|(bc))",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T3.js",
-        "value": "\\d{3}|[a-z]{4}",
+        "pattern": "\\d{3}|[a-z]{4}",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T6.js",
-        "value": "ab|cd|ef",
+        "pattern": "ab|cd|ef",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T8.js",
-        "value": "(?:ab|cd)+|ef",
+        "pattern": "(?:ab|cd)+|ef",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T11.js",
-        "value": "11111|111",
+        "pattern": "11111|111",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T12.js",
-        "value": "xyz|...",
+        "pattern": "xyz|...",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T13.js",
-        "value": "(.)..|abc",
+        "pattern": "(.)..|abc",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T14.js",
-        "value": ".+: gr(a|e)y",
+        "pattern": ".+: gr(a|e)y",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T15.js",
-        "value": "(Rob)|(Bob)|(Robert)|(Bobby)",
+        "pattern": "(Rob)|(Bob)|(Robert)|(Bobby)",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T16.js",
-        "value": "()|",
+        "pattern": "()|",
         "valid": true
     },
     {
         "file": "S15.10.2.3_A1_T17.js",
-        "value": "|()",
+        "pattern": "|()",
         "valid": true
     },
     {
         "file": "S15.10.2.5_A1_T1.js",
-        "value": "a[a-z]{2,4}",
+        "pattern": "a[a-z]{2,4}",
         "valid": true
     },
     {
         "file": "S15.10.2.5_A1_T2.js",
-        "value": "a[a-z]{2,4}?",
+        "pattern": "a[a-z]{2,4}?",
         "valid": true
     },
     {
         "file": "S15.10.2.5_A1_T3.js",
-        "value": "(aa|aabaac|ba|b|c)*",
+        "pattern": "(aa|aabaac|ba|b|c)*",
         "valid": true
     },
     {
         "file": "S15.10.2.5_A1_T4.js",
-        "value": "(z)((a+)?(b+)?(c))*",
+        "pattern": "(z)((a+)?(b+)?(c))*",
         "valid": true
     },
     {
         "file": "S15.10.2.5_A1_T5.js",
-        "value": "(a*)b\\1+",
+        "pattern": "(a*)b\\1+",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A1_T1.js",
-        "value": "s$",
+        "pattern": "s$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A1_T2.js",
-        "value": "e$",
+        "pattern": "e$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A1_T4.js",
-        "value": "[^e]$",
+        "pattern": "[^e]$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A1_T5.js",
-        "value": "es$",
+        "pattern": "es$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T1.js",
-        "value": "^m",
+        "pattern": "^m",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T3.js",
-        "value": "^p[a-z]",
+        "pattern": "^p[a-z]",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T4.js",
-        "value": "^p[b-z]",
+        "pattern": "^p[b-z]",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T5.js",
-        "value": "^[^p]",
+        "pattern": "^[^p]",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T6.js",
-        "value": "^ab",
+        "pattern": "^ab",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T7.js",
-        "value": "^..^e",
+        "pattern": "^..^e",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T8.js",
-        "value": "^xxx",
+        "pattern": "^xxx",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T9.js",
-        "value": "^\\^+",
+        "pattern": "^\\^+",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A2_T10.js",
-        "value": "^\\d+",
+        "pattern": "^\\d+",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T1.js",
-        "value": "\\bp",
+        "pattern": "\\bp",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T2.js",
-        "value": "ot\\b",
+        "pattern": "ot\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T3.js",
-        "value": "\\bot",
+        "pattern": "\\bot",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T4.js",
-        "value": "\\bso",
+        "pattern": "\\bso",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T5.js",
-        "value": "so\\b",
+        "pattern": "so\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T6.js",
-        "value": "[^o]t\\b",
+        "pattern": "[^o]t\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T7.js",
-        "value": "[^o]t\\b",
+        "pattern": "[^o]t\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T8.js",
-        "value": "\\bro",
+        "pattern": "\\bro",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T9.js",
-        "value": "r\\b",
+        "pattern": "r\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T10.js",
-        "value": "\\brobot\\b",
+        "pattern": "\\brobot\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T11.js",
-        "value": "\\b\\w{5}\\b",
+        "pattern": "\\b\\w{5}\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T12.js",
-        "value": "\\bop",
+        "pattern": "\\bop",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T13.js",
-        "value": "op\\b",
+        "pattern": "op\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T14.js",
-        "value": "e\\b",
+        "pattern": "e\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A3_T15.js",
-        "value": "\\be",
+        "pattern": "\\be",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T1.js",
-        "value": "\\Bevil\\B",
+        "pattern": "\\Bevil\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T2.js",
-        "value": "[f-z]e\\B",
+        "pattern": "[f-z]e\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T3.js",
-        "value": "\\Bo\\B",
+        "pattern": "\\Bo\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T4.js",
-        "value": "\\B\\w\\B",
+        "pattern": "\\B\\w\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T5.js",
-        "value": "\\w\\B",
+        "pattern": "\\w\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T6.js",
-        "value": "\\B\\w",
+        "pattern": "\\B\\w",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T7.js",
-        "value": "\\B[^z]{4}\\B",
+        "pattern": "\\B[^z]{4}\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A4_T8.js",
-        "value": "\\B\\w{4}\\B",
+        "pattern": "\\B\\w{4}\\B",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A5_T1.js",
-        "value": "^^^^^^^robot$$$$",
+        "pattern": "^^^^^^^robot$$$$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A5_T2.js",
-        "value": "\\B\\B\\B\\B\\B\\Bbot\\b\\b\\b\\b\\b\\b\\b",
+        "pattern": "\\B\\B\\B\\B\\B\\Bbot\\b\\b\\b\\b\\b\\b\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A6_T1.js",
-        "value": "^.*?$",
+        "pattern": "^.*?$",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A6_T2.js",
-        "value": "^.*?",
+        "pattern": "^.*?",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A6_T3.js",
-        "value": "^.*?(:|$)",
+        "pattern": "^.*?(:|$)",
         "valid": true
     },
     {
         "file": "S15.10.2.6_A6_T4.js",
-        "value": "^.*(:|$)",
+        "pattern": "^.*(:|$)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T1.js",
-        "value": "\\d{2,4}",
+        "pattern": "\\d{2,4}",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T8.js",
-        "value": "b{2,3}c",
+        "pattern": "b{2,3}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T9.js",
-        "value": "b{42,93}c",
+        "pattern": "b{42,93}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T10.js",
-        "value": "b{0,93}c",
+        "pattern": "b{0,93}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T11.js",
-        "value": "bx{0,93}c",
+        "pattern": "bx{0,93}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A1_T12.js",
-        "value": ".{0,93}",
+        "pattern": ".{0,93}",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A2_T1.js",
-        "value": "\\w{3}\\d?",
+        "pattern": "\\w{3}\\d?",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A2_T3.js",
-        "value": "b{2}c",
+        "pattern": "b{2}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A2_T4.js",
-        "value": "b{8}",
+        "pattern": "b{8}",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T1.js",
-        "value": "\\s+java\\s+",
+        "pattern": "\\s+java\\s+",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T5.js",
-        "value": "[a-z]+\\d+",
+        "pattern": "[a-z]+\\d+",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T7.js",
-        "value": "[a-z]+(\\d+)",
+        "pattern": "[a-z]+(\\d+)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T9.js",
-        "value": "d+",
+        "pattern": "d+",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T10.js",
-        "value": "o+",
+        "pattern": "o+",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T12.js",
-        "value": "(b+)(b+)(b+)",
+        "pattern": "(b+)(b+)(b+)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T13.js",
-        "value": "(b+)(b*)",
+        "pattern": "(b+)(b*)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A3_T14.js",
-        "value": "b*b+",
+        "pattern": "b*b+",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T1.js",
-        "value": "[^\"]*",
+        "pattern": "[^\"]*",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T6.js",
-        "value": "[\"'][^\"']*[\"']",
+        "pattern": "[\"'][^\"']*[\"']",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T10.js",
-        "value": "d*",
+        "pattern": "d*",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T11.js",
-        "value": "cd*",
+        "pattern": "cd*",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T12.js",
-        "value": "cx*d",
+        "pattern": "cx*d",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T13.js",
-        "value": "(x*)(x+)",
+        "pattern": "(x*)(x+)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T14.js",
-        "value": "(\\d*)(\\d+)",
+        "pattern": "(\\d*)(\\d+)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T15.js",
-        "value": "(\\d*)\\d(\\d+)",
+        "pattern": "(\\d*)\\d(\\d+)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T16.js",
-        "value": "(x+)(x*)",
+        "pattern": "(x+)(x*)",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T17.js",
-        "value": "x*y+$",
+        "pattern": "x*y+$",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T18.js",
-        "value": "[\\d]*[\\s]*bc.",
+        "pattern": "[\\d]*[\\s]*bc.",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T19.js",
-        "value": "bc..[\\d]*[\\s]*",
+        "pattern": "bc..[\\d]*[\\s]*",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T20.js",
-        "value": ".*",
+        "pattern": ".*",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A4_T21.js",
-        "value": "[xyz]*1",
+        "pattern": "[xyz]*1",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T1.js",
-        "value": "java(script)?",
+        "pattern": "java(script)?",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T4.js",
-        "value": "cd?e",
+        "pattern": "cd?e",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T5.js",
-        "value": "cdx?e",
+        "pattern": "cdx?e",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T6.js",
-        "value": "o?pqrst",
+        "pattern": "o?pqrst",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T7.js",
-        "value": "x?y?z?",
+        "pattern": "x?y?z?",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T8.js",
-        "value": "x?ay?bz?c",
+        "pattern": "x?ay?bz?c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T9.js",
-        "value": "b?b?b?b",
+        "pattern": "b?b?b?b",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T10.js",
-        "value": "ab?c?d?x?y?z",
+        "pattern": "ab?c?d?x?y?z",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T11.js",
-        "value": "\\??\\??\\??\\??\\??",
+        "pattern": "\\??\\??\\??\\??\\??",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A5_T12.js",
-        "value": ".?.?.?.?.?.?.?",
+        "pattern": ".?.?.?.?.?.?.?",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T1.js",
-        "value": "b{2,}c",
+        "pattern": "b{2,}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T2.js",
-        "value": "b{8,}c",
+        "pattern": "b{8,}c",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T3.js",
-        "value": "\\d{1,}",
+        "pattern": "\\d{1,}",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T4.js",
-        "value": "(123){1,}",
+        "pattern": "(123){1,}",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T5.js",
-        "value": "(123){1,}x\\1",
+        "pattern": "(123){1,}x\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.7_A6_T6.js",
-        "value": "x{1,2}x{1,}",
+        "pattern": "x{1,2}x{1,}",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A1_T1.js",
-        "value": "(?=(a+))",
+        "pattern": "(?=(a+))",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A1_T2.js",
-        "value": "(?=(a+))a*b\\1",
+        "pattern": "(?=(a+))a*b\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A1_T3.js",
-        "value": "[Jj]ava([Ss]cript)?(?=\\:)",
+        "pattern": "[Jj]ava([Ss]cript)?(?=\\:)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A2_T1.js",
-        "value": "(.*?)a(?!(a+)b\\2c)\\2(.*)",
+        "pattern": "(.*?)a(?!(a+)b\\2c)\\2(.*)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A2_T2.js",
-        "value": "Java(?!Script)([A-Z]\\w*)",
+        "pattern": "Java(?!Script)([A-Z]\\w*)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A2_T6.js",
-        "value": "(\\.(?!com|org)|\\/)",
+        "pattern": "(\\.(?!com|org)|\\/)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A2_T9.js",
-        "value": "(?!a|b)|c",
+        "pattern": "(?!a|b)|c",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T1.js",
-        "value": "([Jj]ava([Ss]cript)?)\\sis\\s(fun\\w*)",
+        "pattern": "([Jj]ava([Ss]cript)?)\\sis\\s(fun\\w*)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T4.js",
-        "value": "(abc)",
+        "pattern": "(abc)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T5.js",
-        "value": "a(bc)d(ef)g",
+        "pattern": "a(bc)d(ef)g",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T6.js",
-        "value": "(.{3})(.{4})",
+        "pattern": "(.{3})(.{4})",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T7.js",
-        "value": "(aa)bcd\\1",
+        "pattern": "(aa)bcd\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T8.js",
-        "value": "(aa).+\\1",
+        "pattern": "(aa).+\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T9.js",
-        "value": "(.{2}).+\\1",
+        "pattern": "(.{2}).+\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T10.js",
-        "value": "(\\d{3})(\\d{3})\\1\\2",
+        "pattern": "(\\d{3})(\\d{3})\\1\\2",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T11.js",
-        "value": "a(..(..)..)",
+        "pattern": "a(..(..)..)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T12.js",
-        "value": "(a(b(c)))(d(e(f)))",
+        "pattern": "(a(b(c)))(d(e(f)))",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T13.js",
-        "value": "(a(b(c)))(d(e(f)))\\2\\5",
+        "pattern": "(a(b(c)))(d(e(f)))\\2\\5",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T14.js",
-        "value": "a(.?)b\\1c\\1d\\1",
+        "pattern": "a(.?)b\\1c\\1d\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T17.js",
-        "value": "<body.*>((.*\\n?)*?)<\\/body>",
+        "pattern": "<body.*>((.*\\n?)*?)<\\/body>",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T18.js",
-        "value": "(\\|)([\\w\\x81-\\xff ]*)(\\|)([\\/a-z][\\w:\\/\\.]*\\.[a-z]{3,4})(\\|)",
+        "pattern": "(\\|)([\\w\\x81-\\xff ]*)(\\|)([\\/a-z][\\w:\\/\\.]*\\.[a-z]{3,4})(\\|)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T19.js",
-        "value": "([\\S]+([ \\t]+[\\S]+)*)[ \\t]*=[ \\t]*[\\S]+",
+        "pattern": "([\\S]+([ \\t]+[\\S]+)*)[ \\t]*=[ \\t]*[\\S]+",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T20.js",
-        "value": "^(A)?(A.*)$",
+        "pattern": "^(A)?(A.*)$",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T23.js",
-        "value": "(A)?(A.*)",
+        "pattern": "(A)?(A.*)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T26.js",
-        "value": "(a)?a",
+        "pattern": "(a)?a",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T27.js",
-        "value": "a|(b)",
+        "pattern": "a|(b)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T28.js",
-        "value": "(a)?(a)",
+        "pattern": "(a)?(a)",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T29.js",
-        "value": "^([a-z]+)*[a-z]$",
+        "pattern": "^([a-z]+)*[a-z]$",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T32.js",
-        "value": "^(([a-z]+)*[a-z]\\.)+[a-z]{2,}$",
+        "pattern": "^(([a-z]+)*[a-z]\\.)+[a-z]{2,}$",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A3_T33.js",
-        "value": "^(([a-z]+)*([a-z])\\.)+[a-z]{2,}$",
+        "pattern": "^(([a-z]+)*([a-z])\\.)+[a-z]{2,}$",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A4_T1.js",
-        "value": "ab.de",
+        "pattern": "ab.de",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A4_T2.js",
-        "value": ".+",
+        "pattern": ".+",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A4_T3.js",
-        "value": ".*a.*",
+        "pattern": ".*a.*",
         "valid": true
     },
     {
         "file": "S15.10.2.8_A5_T1.js",
-        "value": "[a-z]+",
+        "pattern": "[a-z]+",
         "valid": true
     },
     {
         "file": "S15.10.2.9_A1_T1.js",
-        "value": "\\b(\\w+) \\1\\b",
+        "pattern": "\\b(\\w+) \\1\\b",
         "valid": true
     },
     {
         "file": "S15.10.2.9_A1_T2.js",
-        "value": "([xu]\\d{2}([A-H]{2})?)\\1",
+        "pattern": "([xu]\\d{2}([A-H]{2})?)\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.9_A1_T5.js",
-        "value": "(a*)b\\1+",
+        "pattern": "(a*)b\\1+",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.1_T1.js",
-        "value": "\\t",
+        "pattern": "\\t",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.1_T1.js",
-        "value": "\\t\\t",
+        "pattern": "\\t\\t",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.2_T1.js",
-        "value": "\\n",
+        "pattern": "\\n",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.2_T1.js",
-        "value": "\\n\\n",
+        "pattern": "\\n\\n",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.3_T1.js",
-        "value": "\\v",
+        "pattern": "\\v",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.3_T1.js",
-        "value": "\\v\\v",
+        "pattern": "\\v\\v",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.4_T1.js",
-        "value": "\\f",
+        "pattern": "\\f",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.4_T1.js",
-        "value": "\\f\\f",
+        "pattern": "\\f\\f",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.5_T1.js",
-        "value": "\\r",
+        "pattern": "\\r",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A1.5_T1.js",
-        "value": "\\r\\r",
+        "pattern": "\\r\\r",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A2.1_T1.js",
-        "value": "\\cA",
+        "pattern": "\\cA",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A2.1_T1.js",
-        "value": "\\cZ",
+        "pattern": "\\cZ",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A2.1_T2.js",
-        "value": "\\ca",
+        "pattern": "\\ca",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A2.1_T2.js",
-        "value": "\\cz",
+        "pattern": "\\cz",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T1.js",
-        "value": "\\x00",
+        "pattern": "\\x00",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T1.js",
-        "value": "\\x01",
+        "pattern": "\\x01",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T1.js",
-        "value": "\\x0A",
+        "pattern": "\\x0A",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T1.js",
-        "value": "\\xFF",
+        "pattern": "\\xFF",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T2.js",
-        "value": "\\x41",
+        "pattern": "\\x41",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T2.js",
-        "value": "\\x5A",
+        "pattern": "\\x5A",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T2.js",
-        "value": "\\x61",
+        "pattern": "\\x61",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A3.1_T2.js",
-        "value": "\\x7A",
+        "pattern": "\\x7A",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\u0000",
+        "pattern": "\\u0000",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\u0001",
+        "pattern": "\\u0001",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\u000A",
+        "pattern": "\\u000A",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\u00FF",
+        "pattern": "\\u00FF",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\u0FFF",
+        "pattern": "\\u0FFF",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T1.js",
-        "value": "\\uFFFF",
+        "pattern": "\\uFFFF",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T2.js",
-        "value": "\\u0041",
+        "pattern": "\\u0041",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T2.js",
-        "value": "\\u005A",
+        "pattern": "\\u005A",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T2.js",
-        "value": "\\u0061",
+        "pattern": "\\u0061",
         "valid": true
     },
     {
         "file": "S15.10.2.10_A4.1_T2.js",
-        "value": "\\u007A",
+        "pattern": "\\u007A",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T1.js",
-        "value": "\\0",
+        "pattern": "\\0",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T4.js",
-        "value": "(A)\\1",
+        "pattern": "(A)\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T5.js",
-        "value": "\\1(A)",
+        "pattern": "\\1(A)",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T6.js",
-        "value": "(A)\\1(B)\\2",
+        "pattern": "(A)\\1(B)\\2",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T7.js",
-        "value": "\\1(A)(B)\\2",
+        "pattern": "\\1(A)(B)\\2",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T8.js",
-        "value": "((((((((((A))))))))))\\1\\2\\3\\4\\5\\6\\7\\8\\9\\10",
+        "pattern": "((((((((((A))))))))))\\1\\2\\3\\4\\5\\6\\7\\8\\9\\10",
         "valid": true
     },
     {
         "file": "S15.10.2.11_A1_T9.js",
-        "value": "((((((((((A))))))))))\\10\\9\\8\\7\\6\\5\\4\\3\\2\\1",
+        "pattern": "((((((((((A))))))))))\\10\\9\\8\\7\\6\\5\\4\\3\\2\\1",
         "valid": true
     },
     {
         "file": "S15.10.2.12_A3_T5.js",
-        "value": "\\w",
+        "pattern": "\\w",
         "valid": true
     },
     {
         "file": "S15.10.2.12_A4_T5.js",
-        "value": "\\W",
+        "pattern": "\\W",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T1.js",
-        "value": "[]a",
+        "pattern": "[]a",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T2.js",
-        "value": "a[]",
+        "pattern": "a[]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T3.js",
-        "value": "q[ax-zb](?=\\s+)",
+        "pattern": "q[ax-zb](?=\\s+)",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T6.js",
-        "value": "ab[ercst]de",
+        "pattern": "ab[ercst]de",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T7.js",
-        "value": "ab[erst]de",
+        "pattern": "ab[erst]de",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T8.js",
-        "value": "[d-h]+",
+        "pattern": "[d-h]+",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T9.js",
-        "value": "[1234567].{2}",
+        "pattern": "[1234567].{2}",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T10.js",
-        "value": "[a-c\\d]+",
+        "pattern": "[a-c\\d]+",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T11.js",
-        "value": "ab[.]?c",
+        "pattern": "ab[.]?c",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T12.js",
-        "value": "a[b]c",
+        "pattern": "a[b]c",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T13.js",
-        "value": "[a-z][^1-9][a-z]",
+        "pattern": "[a-z][^1-9][a-z]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T14.js",
-        "value": "[*&$]{3}",
+        "pattern": "[*&$]{3}",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T15.js",
-        "value": "[\\d][\\n][^\\d]",
+        "pattern": "[\\d][\\n][^\\d]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A1_T17.js",
-        "value": "[]",
+        "pattern": "[]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T1.js",
-        "value": "[^]a",
+        "pattern": "[^]a",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T2.js",
-        "value": "a[^]",
+        "pattern": "a[^]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T3.js",
-        "value": "a[^b-z]\\s+",
+        "pattern": "a[^b-z]\\s+",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T4.js",
-        "value": "[^\\b]+",
+        "pattern": "[^\\b]+",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T5.js",
-        "value": "a[^1-9]c",
+        "pattern": "a[^1-9]c",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T6.js",
-        "value": "a[^b]c",
+        "pattern": "a[^b]c",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T7.js",
-        "value": "[^a-z]{4}",
+        "pattern": "[^a-z]{4}",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A2_T8.js",
-        "value": "[^]",
+        "pattern": "[^]",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A3_T1.js",
-        "value": ".[\\b].",
+        "pattern": ".[\\b].",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A3_T2.js",
-        "value": "c[\\b]{3}d",
+        "pattern": "c[\\b]{3}d",
         "valid": true
     },
     {
         "file": "S15.10.2.13_A3_T3.js",
-        "value": "[^\\[\\b\\]]+",
+        "pattern": "[^\\[\\b\\]]+",
         "valid": true
     },
     {
         "file": "S15.10.2.15_A1_T1.js",
-        "value": "[b-ac-e]",
+        "pattern": "[b-ac-e]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T2.js",
-        "value": "[a-dc-b]",
+        "pattern": "[a-dc-b]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T3.js",
-        "value": "[\\db-G]",
+        "pattern": "[\\db-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T4.js",
-        "value": "[\\Db-G]",
+        "pattern": "[\\Db-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T5.js",
-        "value": "[\\sb-G]",
+        "pattern": "[\\sb-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T6.js",
-        "value": "[\\Sb-G]",
+        "pattern": "[\\Sb-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T7.js",
-        "value": "[\\wb-G]",
+        "pattern": "[\\wb-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T8.js",
-        "value": "[\\Wb-G]",
+        "pattern": "[\\Wb-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T9.js",
-        "value": "[\\0b-G]",
+        "pattern": "[\\0b-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T10.js",
-        "value": "[\\10b-G]",
+        "pattern": "[\\10b-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T11.js",
-        "value": "[\\bd-G]",
+        "pattern": "[\\bd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T12.js",
-        "value": "[\\Bd-G]",
+        "pattern": "[\\Bd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T13.js",
-        "value": "[\\td-G]",
+        "pattern": "[\\td-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T14.js",
-        "value": "[\\nd-G]",
+        "pattern": "[\\nd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T15.js",
-        "value": "[\\vd-G]",
+        "pattern": "[\\vd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T16.js",
-        "value": "[\\fd-G]",
+        "pattern": "[\\fd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T17.js",
-        "value": "[\\rd-G]",
+        "pattern": "[\\rd-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T18.js",
-        "value": "[\\c0001d-G]",
+        "pattern": "[\\c0001d-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T19.js",
-        "value": "[\\x0061d-G]",
+        "pattern": "[\\x0061d-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T20.js",
-        "value": "[\\u0061d-G]",
+        "pattern": "[\\u0061d-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T21.js",
-        "value": "[\\ad-G]",
+        "pattern": "[\\ad-G]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T22.js",
-        "value": "[c-eb-a]",
+        "pattern": "[c-eb-a]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T23.js",
-        "value": "[b-G\\d]",
+        "pattern": "[b-G\\d]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T24.js",
-        "value": "[b-G\\D]",
+        "pattern": "[b-G\\D]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T25.js",
-        "value": "[b-G\\s]",
+        "pattern": "[b-G\\s]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T26.js",
-        "value": "[b-G\\S]",
+        "pattern": "[b-G\\S]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T27.js",
-        "value": "[b-G\\w]",
+        "pattern": "[b-G\\w]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T28.js",
-        "value": "[b-G\\W]",
+        "pattern": "[b-G\\W]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T29.js",
-        "value": "[b-G\\0]",
+        "pattern": "[b-G\\0]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T30.js",
-        "value": "[b-G\\10]",
+        "pattern": "[b-G\\10]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T31.js",
-        "value": "[d-G\\b]",
+        "pattern": "[d-G\\b]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T32.js",
-        "value": "[d-G\\B]",
+        "pattern": "[d-G\\B]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T33.js",
-        "value": "[d-G\\t]",
+        "pattern": "[d-G\\t]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T34.js",
-        "value": "[d-G\\n]",
+        "pattern": "[d-G\\n]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T35.js",
-        "value": "[d-G\\v]",
+        "pattern": "[d-G\\v]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T36.js",
-        "value": "[d-G\\f]",
+        "pattern": "[d-G\\f]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T37.js",
-        "value": "[d-G\\r]",
+        "pattern": "[d-G\\r]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T38.js",
-        "value": "[d-G\\c0001]",
+        "pattern": "[d-G\\c0001]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T39.js",
-        "value": "[d-G\\x0061]",
+        "pattern": "[d-G\\x0061]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T40.js",
-        "value": "[d-G\\u0061]",
+        "pattern": "[d-G\\u0061]",
         "valid": false
     },
     {
         "file": "S15.10.2.15_A1_T41.js",
-        "value": "[d-G\\a]",
+        "pattern": "[d-G\\a]",
         "valid": false
     },
     {
         "file": "S15.10.4.1_A2_T1.js",
-        "value": "\\u0042",
+        "pattern": "\\u0042",
         "valid": true
     },
     {
         "file": "S15.10.4.1_A9_T1.js",
-        "value": "??",
+        "pattern": "??",
         "valid": false
     },
     {
         "file": "S15.10.4.1_A9_T2.js",
-        "value": "[{-z]",
+        "pattern": "[{-z]",
         "valid": false
     },
     {
         "file": "S15.10.4.1_A9_T3.js",
-        "value": "[a--z]",
+        "pattern": "[a--z]",
         "valid": false
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\^",
+        "pattern": "\\^",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\$",
+        "pattern": "\\$",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\\\",
+        "pattern": "\\\\",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\.",
+        "pattern": "\\.",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\*",
+        "pattern": "\\*",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\+",
+        "pattern": "\\+",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\?",
+        "pattern": "\\?",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\(",
+        "pattern": "\\(",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\)",
+        "pattern": "\\)",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\[",
+        "pattern": "\\[",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\]",
+        "pattern": "\\]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\{",
+        "pattern": "\\{",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\}",
+        "pattern": "\\}",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\|",
+        "pattern": "\\|",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "\\/",
+        "pattern": "\\/",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\^]",
+        "pattern": "[\\^]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\$]",
+        "pattern": "[\\$]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\\\]",
+        "pattern": "[\\\\]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\.]",
+        "pattern": "[\\.]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\*]",
+        "pattern": "[\\*]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\+]",
+        "pattern": "[\\+]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\?]",
+        "pattern": "[\\?]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\(]",
+        "pattern": "[\\(]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\)]",
+        "pattern": "[\\)]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\[]",
+        "pattern": "[\\[]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\]]",
+        "pattern": "[\\]]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\{]",
+        "pattern": "[\\{]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\}]",
+        "pattern": "[\\}]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\|]",
+        "pattern": "[\\|]",
         "valid": true
     },
     {
         "file": "unicode_identity_escape.js",
-        "value": "[\\/]",
+        "pattern": "[\\/]",
         "valid": true
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": "(",
+        "pattern": "(",
         "valid": false
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": ")",
+        "pattern": ")",
         "valid": false
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": "[",
+        "pattern": "[",
         "valid": false
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": "]",
+        "pattern": "]",
         "valid": false
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": "{",
+        "pattern": "{",
         "valid": false
     },
     {
         "file": "unicode_restricted_brackets.js",
-        "value": "}",
+        "pattern": "}",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\d-a]",
+        "pattern": "[\\d-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\D-a]",
+        "pattern": "[\\D-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\s-a]",
+        "pattern": "[\\s-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\S-a]",
+        "pattern": "[\\S-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\w-a]",
+        "pattern": "[\\w-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\W-a]",
+        "pattern": "[\\W-a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\d]",
+        "pattern": "[a-\\d]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\D]",
+        "pattern": "[a-\\D]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\s]",
+        "pattern": "[a-\\s]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\S]",
+        "pattern": "[a-\\S]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\w]",
+        "pattern": "[a-\\w]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[a-\\W]",
+        "pattern": "[a-\\W]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\d-\\d]",
+        "pattern": "[\\d-\\d]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\D-\\D]",
+        "pattern": "[\\D-\\D]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\s-\\s]",
+        "pattern": "[\\s-\\s]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\S-\\S]",
+        "pattern": "[\\S-\\S]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\w-\\w]",
+        "pattern": "[\\w-\\w]",
         "valid": false
     },
     {
         "file": "unicode_restricted_character_class_escape.js",
-        "value": "[\\W-\\W]",
+        "pattern": "[\\W-\\W]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "\\A",
+        "pattern": "\\A",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "\\Z",
+        "pattern": "\\Z",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "\\a",
+        "pattern": "\\a",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "\\z",
+        "pattern": "\\z",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "[\\A]",
+        "pattern": "[\\A]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "[\\Z]",
+        "pattern": "[\\Z]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "[\\a]",
+        "pattern": "[\\a]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_alpha.js",
-        "value": "[\\z]",
+        "pattern": "[\\z]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_c.js",
-        "value": "\\c@",
+        "pattern": "\\c@",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_c.js",
-        "value": "\\c[",
+        "pattern": "\\c[",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_c.js",
-        "value": "\\c`",
+        "pattern": "\\c`",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_c.js",
-        "value": "\\c{",
+        "pattern": "\\c{",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u",
+        "pattern": "\\u",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u1",
+        "pattern": "\\u1",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u12",
+        "pattern": "\\u12",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u123",
+        "pattern": "\\u123",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u{",
+        "pattern": "\\u{",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u{}",
+        "pattern": "\\u{}",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u{1",
+        "pattern": "\\u{1",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u{12",
+        "pattern": "\\u{12",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "\\u{123",
+        "pattern": "\\u{123",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u]",
+        "pattern": "[\\u]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u1]",
+        "pattern": "[\\u1]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u12]",
+        "pattern": "[\\u12]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u123]",
+        "pattern": "[\\u123]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u{]",
+        "pattern": "[\\u{]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u{}]",
+        "pattern": "[\\u{}]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u{1]",
+        "pattern": "[\\u{1]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u{12]",
+        "pattern": "[\\u{12]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_u.js",
-        "value": "[\\u{123]",
+        "pattern": "[\\u{123]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_x.js",
-        "value": "\\x",
+        "pattern": "\\x",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_x.js",
-        "value": "[\\x]",
+        "pattern": "[\\x]",
         "valid": false
     },
     {
         "file": "unicode_restricted_identity_escape_x.js",
-        "value": "[\\x1]",
+        "pattern": "[\\x1]",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "a{",
+        "pattern": "a{",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "a{1",
+        "pattern": "a{1",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "a{1,",
+        "pattern": "a{1,",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "a{1,2",
+        "pattern": "a{1,2",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "{",
+        "pattern": "{",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "{1",
+        "pattern": "{1",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "{1,",
+        "pattern": "{1,",
         "valid": false
     },
     {
         "file": "unicode_restricted_incomple_quantifier.js",
-        "value": "{1,2",
+        "pattern": "{1,2",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\1",
+        "pattern": "\\1",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\2",
+        "pattern": "\\2",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\3",
+        "pattern": "\\3",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\4",
+        "pattern": "\\4",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\5",
+        "pattern": "\\5",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\6",
+        "pattern": "\\6",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\7",
+        "pattern": "\\7",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\8",
+        "pattern": "\\8",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\9",
+        "pattern": "\\9",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\1]",
+        "pattern": "[\\1]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\2]",
+        "pattern": "[\\2]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\3]",
+        "pattern": "[\\3]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\4]",
+        "pattern": "[\\4]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\5]",
+        "pattern": "[\\5]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\6]",
+        "pattern": "[\\6]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\7]",
+        "pattern": "[\\7]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\8]",
+        "pattern": "[\\8]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\9]",
+        "pattern": "[\\9]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\01",
+        "pattern": "\\01",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\02",
+        "pattern": "\\02",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\03",
+        "pattern": "\\03",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\04",
+        "pattern": "\\04",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\05",
+        "pattern": "\\05",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\06",
+        "pattern": "\\06",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\07",
+        "pattern": "\\07",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\08",
+        "pattern": "\\08",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "\\09",
+        "pattern": "\\09",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\01]",
+        "pattern": "[\\01]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\02]",
+        "pattern": "[\\02]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\03]",
+        "pattern": "[\\03]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\04]",
+        "pattern": "[\\04]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\05]",
+        "pattern": "[\\05]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\06]",
+        "pattern": "[\\06]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\07]",
+        "pattern": "[\\07]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\08]",
+        "pattern": "[\\08]",
         "valid": false
     },
     {
         "file": "unicode_restricted_octal_escape.js",
-        "value": "[\\09]",
+        "pattern": "[\\09]",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)*",
+        "pattern": "(?=.)*",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)+",
+        "pattern": "(?=.)+",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)?",
+        "pattern": "(?=.)?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1}",
+        "pattern": "(?=.){1}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1,}",
+        "pattern": "(?=.){1,}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1,2}",
+        "pattern": "(?=.){1,2}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)*?",
+        "pattern": "(?=.)*?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)+?",
+        "pattern": "(?=.)+?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.)??",
+        "pattern": "(?=.)??",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1}?",
+        "pattern": "(?=.){1}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1,}?",
+        "pattern": "(?=.){1,}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?=.){1,2}?",
+        "pattern": "(?=.){1,2}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)*",
+        "pattern": "(?!.)*",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)+",
+        "pattern": "(?!.)+",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)?",
+        "pattern": "(?!.)?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1}",
+        "pattern": "(?!.){1}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1,}",
+        "pattern": "(?!.){1,}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1,2}",
+        "pattern": "(?!.){1,2}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)*?",
+        "pattern": "(?!.)*?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)+?",
+        "pattern": "(?!.)+?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.)??",
+        "pattern": "(?!.)??",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1}?",
+        "pattern": "(?!.){1}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1,}?",
+        "pattern": "(?!.){1,}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifiable_assertion.js",
-        "value": "(?!.){1,2}?",
+        "pattern": "(?!.){1,2}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "*",
+        "pattern": "*",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "+",
+        "pattern": "+",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "?",
+        "pattern": "?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1}",
+        "pattern": "{1}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1,}",
+        "pattern": "{1,}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1,2}",
+        "pattern": "{1,2}",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "*?",
+        "pattern": "*?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "+?",
+        "pattern": "+?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "??",
+        "pattern": "??",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1}?",
+        "pattern": "{1}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1,}?",
+        "pattern": "{1,}?",
         "valid": false
     },
     {
         "file": "unicode_restricted_quantifier_without_atom.js",
-        "value": "{1,2}?",
+        "pattern": "{1,2}?",
         "valid": false
     }
 ]

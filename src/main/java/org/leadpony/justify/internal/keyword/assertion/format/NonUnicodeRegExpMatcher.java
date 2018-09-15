@@ -16,9 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.NoSuchElementException;
-
 /**
+ * {@link RegExpMatcher} for non unicode mode. 
+ * <p>
+ * All characters in the input will be interpreted as BMP code points.
+ * </p>
+ * 
  * @author leadpony
  */
 class NonUnicodeRegExpMatcher extends RegExpMatcher {
@@ -33,34 +36,24 @@ class NonUnicodeRegExpMatcher extends RegExpMatcher {
     }
 
     @Override
-    boolean hasNext() {
-        return index < length;
+    protected boolean identityEscape() {
+        int c = peek();
+        if (!Character.isUnicodeIdentifierPart(c)) {
+            // SourceCharacter but not UnicodeIDContinue
+            next();
+            this.lastClassAtom = ClassAtom.of(c);
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    protected int codePointAt(CharSequence input, int index) {
+        return input.charAt(index);
     }
 
     @Override
-    boolean hasNext(int expected) {
-        if (index < length) {
-            return input.charAt(index) == expected;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    int next() {
-        if (index < length) {
-            return input.charAt(index++);
-        } else {
-            throw new NoSuchElementException();
-        }
-    }
-
-    @Override
-    int peek() {
-        if (index < length) {
-            return input.charAt(index);
-        } else {
-            throw new NoSuchElementException();
-        }
+    protected int offsetByCodePoint(CharSequence input, int index) {
+        return index + 1;
     }
 }
