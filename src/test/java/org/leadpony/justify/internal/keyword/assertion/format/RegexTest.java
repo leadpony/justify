@@ -49,12 +49,12 @@ public class RegexTest {
     }
     
     public static Stream<Fixture> provideFixtures() {
-        return Fixture.load("regex.json");
+        return RegexFixture.load("regex.json");
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideFixtures")
-    public void test(Fixture fixture) {
+    public void test(RegexFixture fixture) {
         assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
     }
 }

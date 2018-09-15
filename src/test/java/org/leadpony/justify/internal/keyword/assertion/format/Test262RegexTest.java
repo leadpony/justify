@@ -45,18 +45,20 @@ public class Test262RegexTest {
     }
     
     private static final List<String> files = Arrays.asList(
-            "/org/ecma_international/test262/built_ins/regexp/regexp.json"
+            "/org/ecma_international/test262/built_ins/regexp/regexp.json",
+            "/org/ecma_international/test262/built_ins/regexp/named-group.json"
             );
     
     public static Stream<Fixture> provideFixtures() {
-        return files.stream().flatMap(Fixture::load);
+        return files.stream().flatMap(RegexFixture::load);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideFixtures")
-    public void test(Fixture fixture) {
-        Assumptions.assumeTrue(++index > 0);
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
+    public void test(RegexFixture fixture) {
+        Assumptions.assumeTrue(++index >= 0);
+        assertThat(sut.test(fixture.value(), fixture.flags()))
+            .isEqualTo(fixture.result());
     }
 
     /*

@@ -33,7 +33,7 @@ final class Characters {
      * @param c the character to test.
      * @return {@code true} if the specified character is an alphabet.
      */
-    public static boolean isAsciiAlphabetic(char c) {
+    public static boolean isAsciiAlphabetic(int c) {
         return (c >= 'A' &&  c <= 'Z') ||  (c >= 'a' &&  c <= 'z');
     }
     
@@ -44,11 +44,11 @@ final class Characters {
      * @param c the character to test.
      * @return {@code true} if the specified character is a digit.
      */
-    public static boolean isAsciiDigit(char c) {
+    public static boolean isAsciiDigit(int c) {
         return c >= '0' && c <= '9';
     }
     
-    public static boolean isAsciiAlphanumeric(char c) {
+    public static boolean isAsciiAlphanumeric(int c) {
         return isAsciiAlphabetic(c) || isAsciiDigit(c);
     }
 }

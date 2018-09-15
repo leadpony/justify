@@ -77,7 +77,7 @@ class EmailMatcher extends FormatMatcher {
     private void atomText() {
         int length = 0;
         for (;;) {
-            char c = peek();
+            int c = peek();
             if (c == '@' || c == '.' || c == '(' || isWhiteSpace(c) || c == '\r') {
                 break;
             }
@@ -95,7 +95,7 @@ class EmailMatcher extends FormatMatcher {
     
     private void quotedString() {
         // Skips opening quote.
-        char c = next();
+        int c = next();
         while ((c = next()) != '\"') {
             if (c == '\\') {
                 if (!checkQuotedLetter(next())) {
@@ -131,7 +131,7 @@ class EmailMatcher extends FormatMatcher {
     
     private void domainLiteral() {
         // Skips opening bracket.
-        char c = next();
+        int c = next();
         while ((c = next()) != ']') {
             if (isWhiteSpace(c) || c == '\r') {
                 foldingWhiteSpace();
@@ -146,7 +146,7 @@ class EmailMatcher extends FormatMatcher {
     private void hostname() {
         final int start = pos();
         while (hasNext()) {
-            char c = peek();
+            int c = peek();
             if (c == '(' || isWhiteSpace(c) || c == '\r') {
                 break;
             } else {
@@ -175,7 +175,7 @@ class EmailMatcher extends FormatMatcher {
         // Skips opening parenthesis.
         next();
         for (;;) {
-            char c = peek();
+            int c = peek();
             if (c == '(') {
                 comment();
             } else if (isWhiteSpace(c) || c == '\r') {
@@ -219,20 +219,20 @@ class EmailMatcher extends FormatMatcher {
         }
     }
     
-    protected boolean checkQuotedLetter(char c) {
+    protected boolean checkQuotedLetter(int c) {
         return c >= 32 && c < 127;
     }
     
-    protected boolean checkAtomLetter(char c) {
+    protected boolean checkAtomLetter(int c) {
         return isAsciiAlphanumeric(c) || atomTextCharset.get(c);
     }
     
-    protected boolean checkDomainLiteralLetter(char c) {
+    protected boolean checkDomainLiteralLetter(int c) {
         return (c >= 33 && c <= 90) ||
                (c >= 94 && c <= 126);
     }
     
-    protected boolean checkCommentLetter(char c) {
+    protected boolean checkCommentLetter(int c) {
         return isNonWhiteSpaceControl(c) ||
                 (c >= 33 && c <= 39) ||
                 (c >= 42 && c <= 91) ||
@@ -243,11 +243,11 @@ class EmailMatcher extends FormatMatcher {
         return new HostnameMatcher(input(), start, end);
     }
     
-    private static boolean isWhiteSpace(char c) {
+    private static boolean isWhiteSpace(int c) {
         return c == ' ' || c == '\t';
     }
     
-    private static boolean isNonWhiteSpaceControl(char c) {
+    private static boolean isNonWhiteSpaceControl(int c) {
         return (c >= 1 && c <= 9) ||
                (c == 11) ||
                (c == 12) ||

@@ -17,13 +17,15 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * ECMA262 RegExp matcher.
+ * The base matcher for ECMA262 regular expression.
  * 
  * @author leadpony
  */
-class Ecma262RegexMatcher extends FormatMatcher {
+abstract class RegExpMatcher extends FormatMatcher {
     
     @SuppressWarnings("serial")
     private static final BitSet syntaxCharSet = new BitSet() {{
@@ -48,12 +50,15 @@ class Ecma262RegexMatcher extends FormatMatcher {
     private int maxCapturingGroupNumber;
     private int leftCapturingParentheses;
     
+    private Set<String> groups;
+    private Set<String> groupReferences;
+    
     /**
      * Constructs this matcher.
      * 
      * @param input the input string.
      */
-    Ecma262RegexMatcher(CharSequence input) {
+    RegExpMatcher(CharSequence input) {
         super(input);
     }
 
@@ -64,11 +69,12 @@ class Ecma262RegexMatcher extends FormatMatcher {
             fail();
         }
         checkCapturingNumber();
+        checkGroupReferences();
     }
     
     private void disjunction() {
         alternative();
-        while (hasNext() && peek() == '|') {
+        while (hasNext('|')) {
             next();
             alternative();
         }
@@ -96,7 +102,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     
     private boolean assertion() {
         final int start = pos();
-        char c = next();
+        int c = next();
         if (c == '^' || c == '$') {
             return true;
         } else if (c == '\\') {
@@ -123,7 +129,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         if (patternCharacter() || characterClass()) {
             return true;
         }
-        char c = peek();
+        int c = peek();
         if (c == '.' ) {
             next();
             return true;
@@ -135,10 +141,12 @@ class Ecma262RegexMatcher extends FormatMatcher {
             return fail();
         } else if (c == '(') {
             next();
-            if (peek() == '?') {
-                next();
+            if (groupSpecifier()) {
+                return capturingGroup();
+            } else if (next() == '?' && next() == ':') {
+                return capturingGroup();
             }
-            return capturingGroup();
+            return fail();
         }
         // no atom
         return false;
@@ -173,7 +181,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
 
     private boolean quantifier() {
         if (qualifierPrefix()) {
-            if (hasNext() && peek() == '?') {
+            if (hasNext('?')) {
                 next();
             }
             return true;
@@ -185,7 +193,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
         if (!hasNext()) {
             return false;
         }
-        char c = peek();
+        int c = peek();
         if (c == '*' || c == '+' || c == '?') {
             next();
             return true;
@@ -196,7 +204,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
             if (c == '}') {
                 return true;
             } else if (c == ',') {
-                if (peek() == '}') {
+                if (hasNext('}')) {
                     next();
                     return true;
                 } else {
@@ -283,7 +291,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean classAtomNoDash(ClassAtom atom) {
-        char c = peek();
+        int c = peek();
         if (c == '\\') {
             next();
             return classEscape(atom);
@@ -296,7 +304,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean classEscape(ClassAtom atom) {
-        char c = peek();
+        int c = peek();
         if (c == 'b') {
             next();
             return atom.setValue('\u0008');
@@ -307,7 +315,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private long decimalDigits() {
-        char c = next();
+        int c = next();
         if (Characters.isAsciiDigit(c)) {
             long value = c - '0';
             while (hasNext() && Characters.isAsciiDigit(peek())) {
@@ -326,9 +334,9 @@ class Ecma262RegexMatcher extends FormatMatcher {
             return true;
         } else if (characterEscape(classAtomDiscarded)) {
             return true;
-        } if (peek() == 'k') {
+        } if (hasNext('k')) {
             next();
-            return groupName() || fail();
+            return groupName(true) || fail();
         }
         return fail();
     }
@@ -348,7 +356,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean characterClassEscape() {
-        char c = peek();
+        int c = peek();
         if (c == 'd' || c == 'D' ||
             c == 's' || c == 'S' ||
             c == 'w' || c == 'W') {
@@ -368,7 +376,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
             identityEscape(atom)) {
             return true;
         }
-        char c = peek();
+        int c = peek();
         if (c == 'c') {
             next();
             return controlLetter(atom) || fail();
@@ -407,7 +415,7 @@ class Ecma262RegexMatcher extends FormatMatcher {
     }
     
     private boolean controlLetter(ClassAtom atom) {
-        char c  = peek();
+        int c  = peek();
         if (Characters.isAsciiAlphabetic(c)) {
             next();
             return atom.setValue((char)(c % 32));
@@ -416,22 +424,52 @@ class Ecma262RegexMatcher extends FormatMatcher {
         }
     }
     
-    private boolean groupName() {
-        if (peek() != '<') {
-            return false;
+    private boolean groupSpecifier() {
+        final int start = pos();
+        if (hasNext('?')) {
+            next();
+            if (groupName(false)) {
+                return true;
+            } else {
+                return backtrack(start);
+            }
+        } else {
+            return true;
         }
-        // TODO:
-        return next() == '>' || fail();
     }
     
-    private boolean hexEscapeSequence(ClassAtom atom) {
-        if (peek() != 'x') {
+    private boolean groupName(boolean reference) {
+        final int start = pos();
+        if (!hasNext('<')) {
             return false;
         }
         next();
-        char first = next();
+        final int nameStart = pos();
+        if (!regExpIdentifierName()) {
+            return false;
+        }
+        String name = input().subSequence(nameStart, pos()).toString();
+        if (hasNext('>')) {
+            next();
+            if (reference) {
+                addGroupReference(name);
+            } else {
+                addGroup(name);
+            }
+            return true;
+        } else {
+            return backtrack(start);
+        }
+    }
+    
+    private boolean hexEscapeSequence(ClassAtom atom) {
+        if (!hasNext('x')) {
+            return false;
+        }
+        next();
+        int first = next();
         if (isHexDigit(first)) {
-            char second = next();
+            int second = next();
             if (isHexDigit(second)) {
                 int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
                 return atom.setValue((char)value);
@@ -440,26 +478,75 @@ class Ecma262RegexMatcher extends FormatMatcher {
         return fail();
     }
     
-    private boolean regExpUnicodeEscapeSequence(ClassAtom atom) {
-        if (peek() != 'u') {
+    private boolean regExpIdentifierName() {
+        if (!regExpIdentifierStart()) {
             return false;
         }
-        next();
-        if (peek() == '{') {
-            next();
-            int value = codePoint();
-            if (next() == '}') {
-                return atom.setValue((char)value);
-            }
-        } else {
-            return atom.setValue((char)hex4Digits());
+        while (regExpIdentifierPart()) {
         }
-        // TODO:
-        return fail();
+        return true;
     }
     
-    private boolean identityEscape(ClassAtom atom) {
-        char c = peek();
+    private boolean regExpIdentifierStart() {
+        final int start = pos(); 
+        int c = peek();
+        if (isRegExpIdentifierStart(c)) {
+            next();
+            return true;
+        } else if (c == '\\') {
+            next();
+            ClassAtom atom = new ClassAtom();
+            if (regExpUnicodeEscapeSequence(atom)) {
+                if (isRegExpIdentifierStart(atom.getValue())) {
+                    return true;
+                } else {
+                    return fail();
+                }
+            } else {
+                return backtrack(start);
+            }
+        }
+        return false;
+    }
+    
+    private boolean regExpIdentifierPart() {
+        final int start = pos(); 
+        int c = peek();
+        if (isRegExpIdentifierPart(c)) {
+            next();
+            return true;
+        } else if (c == '\\') {
+            next();
+            ClassAtom atom = new ClassAtom();
+            if (regExpUnicodeEscapeSequence(atom)) {
+                if (isRegExpIdentifierPart(atom.getValue())) {
+                    return true;
+                } else {
+                    return fail();
+                }
+            } else {
+                return backtrack(start);
+            }
+        }
+        return false;
+    }
+
+    protected boolean regExpUnicodeEscapeSequence(ClassAtom atom) {
+        if (!hasNext('u')) {
+            return false;
+        }
+        final int start = pos();
+        next();
+        final int value = hex4Digits();
+        if (value >= 0) {
+            return atom.setValue(value);
+        } else {
+            return backtrack(start);
+        }
+    }
+    
+    protected boolean identityEscape(ClassAtom atom) {
+        int c = peek();
         if (syntaxCharacter()) {
             return atom.setValue(c);
         } else if (c == '/') {
@@ -473,11 +560,12 @@ class Ecma262RegexMatcher extends FormatMatcher {
         return false;
     }
     
-    private int hex4Digits() {
+    protected int hex4Digits() {
+        final int start = pos();
         int value = 0;
         int digits = 0;
         while (hasNext()) {
-            char c = next();
+            int c = next();
             if (!isHexDigit(c)) {
                 break;
             }
@@ -486,25 +574,35 @@ class Ecma262RegexMatcher extends FormatMatcher {
                 return value;
             }
         }
-        fail();
-        return 0;
+        backtrack(start);
+        return -1;
     }
     
-    private int codePoint() {
-        char c = next();
-        int value = hexDigitToValue(c);
-        while (hasNext()) {
-            c = next();
-            if (isHexDigit(c)) {
-                value = value * 16 + hexDigitToValue(c);
-            } else {
-                return value;
-            }
+    private void addGroup(String name) {
+        if (this.groups == null) {
+            this.groups = new HashSet<>();
         }
-        fail();
-        return 0;
+        if (this.groups.contains(name)) {
+            fail();
+        } else {
+            this.groups.add(name);
+        }
+    }
+    
+    private void addGroupReference(String name) {
+        if (this.groupReferences == null) {
+            this.groupReferences = new HashSet<>();
+        }
+        this.groupReferences.add(name);
     }
 
+    private boolean findGroup(String name) {
+        if (this.groups == null) {
+            return false;
+        }
+        return this.groups.contains(name);
+    }
+    
     /**
      * It is a Syntax Error if the MV of the first DecimalDigits is 
      * larger than the MV of the second DecimalDigits.
@@ -536,30 +634,55 @@ class Ecma262RegexMatcher extends FormatMatcher {
         return true;
     }
     
-    private static boolean isSyntaxCharacter(char c) {
+    private boolean checkGroupReferences() {
+        if (this.groupReferences == null) {
+            return true;
+        }
+        for (String ref : this.groupReferences) {
+            if (!findGroup(ref)) {
+                return fail();
+            }
+        }
+        return true;
+    }
+    
+    private static boolean isSyntaxCharacter(int c) {
         return syntaxCharSet.get(c);
     }
    
-    private static boolean isNonZeroDigit(char c) {
+    private static boolean isNonZeroDigit(int c) {
         return c >= '1' && c <= '9';
     }
     
-    private static boolean isHexDigit(char c) {
+    protected static boolean isHexDigit(int c) {
         return Characters.isAsciiDigit(c) ||
                (c >= 'a' && c <= 'f') ||
                (c >= 'A' && c <= 'F');
     }
     
-    private static int digitToValue(char c) {
+    private static boolean isRegExpIdentifierStart(int c) {
+        return Character.isUnicodeIdentifierStart(c) || 
+               c == '$' || 
+               c == '_';
+    }
+    
+    private static boolean isRegExpIdentifierPart(int c) {
+        return Character.isUnicodeIdentifierPart(c) || 
+               c == '$' ||
+               c == '\u200c' || 
+               c == '\u200d';
+    }
+
+    private static int digitToValue(int c) {
         return (c - '0');
     }
     
-    private static int hexDigitToValue(char c) {
+    protected static int hexDigitToValue(int c) {
         if (Characters.isAsciiDigit(c)) {
             return c - '0';
-        } else if (c >= 'a' || c <= 'f') {
+        } else if (c >= 'a' && c <= 'f') {
             return 10 + (c - 'a');
-        } else if (c >= 'A' || c <= 'F') {
+        } else if (c >= 'A' && c <= 'F') {
             return 10 + (c - 'A');
         }
         throw new IllegalArgumentException();
@@ -574,18 +697,18 @@ class Ecma262RegexMatcher extends FormatMatcher {
      * 
      * @author leadpony
      */
-    private static class ClassAtom {
+    static class ClassAtom {
 
-        private char value;
+        private int codePoint;
         private boolean isCharacterClass = true;
         
-        char getValue() {
+        int getValue() {
             assert !isCharacterClass;
-            return value;
+            return codePoint;
         }
         
-        boolean setValue(char value) {
-            this.value = value;
+        boolean setValue(int codePoint) {
+            this.codePoint = codePoint;
             this.isCharacterClass = false;
             return true;
         }

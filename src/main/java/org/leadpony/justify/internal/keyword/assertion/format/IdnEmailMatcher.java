@@ -28,7 +28,7 @@ class IdnEmailMatcher extends EmailMatcher  {
     }
 
     @Override
-    protected boolean checkQuotedLetter(char c) {
+    protected boolean checkQuotedLetter(int c) {
         if (c < 128) {
             return super.checkQuotedLetter(c);
         } else {
@@ -37,7 +37,7 @@ class IdnEmailMatcher extends EmailMatcher  {
     }
     
     @Override
-    protected boolean checkAtomLetter(char c) {
+    protected boolean checkAtomLetter(int c) {
         if (c < 128) {
             return super.checkAtomLetter(c);
         } else {
@@ -46,7 +46,7 @@ class IdnEmailMatcher extends EmailMatcher  {
     }
     
     @Override
-    protected boolean checkDomainLiteralLetter(char c) {
+    protected boolean checkDomainLiteralLetter(int c) {
         if (c < 128) {
             return super.checkDomainLiteralLetter(c);
         } else {
@@ -55,7 +55,7 @@ class IdnEmailMatcher extends EmailMatcher  {
     }
     
     @Override
-    protected boolean checkCommentLetter(char c) {
+    protected boolean checkCommentLetter(int c) {
         if (c < 128) {
             return super.checkCommentLetter(c);
         } else {

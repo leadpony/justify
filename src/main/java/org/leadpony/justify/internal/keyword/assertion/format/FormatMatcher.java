@@ -25,9 +25,9 @@ import java.util.NoSuchElementException;
  */
 abstract class FormatMatcher {
 
-    private final CharSequence input;
-    private final int length;
-    private int index;
+    protected final CharSequence input;
+    protected final int length;
+    protected int index;
    
     /**
      * Constructs this matcher.
@@ -94,43 +94,6 @@ abstract class FormatMatcher {
     }
 
     /**
-     * Returns {@code true} if the input has more characters. 
-     * 
-     * @return {@code true} if the input has more characters.
-     */
-    final boolean hasNext() {
-        return index < length;
-    }
-    
-    /**
-     * Returns the next character in the input.
-     * This method advances the current position.
-     * 
-     * @return the next character.
-     * @throws NoSuchElementException if the input has no more characters.
-     */
-    final char next() {
-        if (!hasNext()) {
-            throw new NoSuchElementException();
-        }
-        return input.charAt(index++);
-    }
-    
-    /**
-     * Peeks the next character in the input.
-     * This method does not advance the current position.
-     * 
-     * @return the next character.
-     * @throws NoSuchElementException if the input has no more characters.
-     */
-    final char peek() {
-        if (!hasNext()) {
-            throw new NoSuchElementException();
-        }
-        return input.charAt(index);
-    }
-
-    /**
      * Backtracks to the specified position.
      * 
      * @param pos the position at which the next read occurs.
@@ -139,6 +102,102 @@ abstract class FormatMatcher {
     final boolean backtrack(int pos) {
         this.index = pos;
         return false;
+    }
+
+    /**
+     * Returns {@code true} if the input has more characters. 
+     * 
+     * @return {@code true} if the input has more characters.
+     */
+    boolean hasNext() {
+        if (index + 1 < length) {
+            return true;
+        } else if (index >= length) {
+            return false;
+        } else {
+            return !Character.isSurrogate(input.charAt(index));
+        }
+    }
+    
+    /**
+     * Checks if the input has next character and 
+     * the character is the same as the expected.
+     * 
+     * @param expected the code point of the expected character.
+     * @return {@code true} if the next character is the expected one.
+     */
+    boolean hasNext(int expected) {
+        int codePoint;
+        if (index < length) {
+            final char high = input.charAt(index);
+            if (Character.isHighSurrogate(high)) {
+                if (index + 1 < length) {
+                    final char low = input.charAt(index + 1);
+                    codePoint = Character.toCodePoint(high, low);
+                } else {
+                    return false;
+                }
+            } else {
+                codePoint = high;
+            }
+            return codePoint == expected;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Returns the next character in the input.
+     * Calling this method advances the current position.
+     * 
+     * @return the code point of the next character.
+     * @throws NoSuchElementException if the input has no more characters.
+     */
+    int next() {
+        int codePoint;
+        if (index < length) {
+            final char high = input.charAt(index++);
+            if (Character.isHighSurrogate(high)) {
+                if (index < length) {
+                    final char low = input.charAt(index++);
+                    codePoint = Character.toCodePoint(high, low);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            } else {
+                codePoint = high;
+            }
+        } else {
+            throw new NoSuchElementException();
+        }
+        return codePoint;
+    }
+    
+    /**
+     * Peeks the next character in the input.
+     * Calling this method never change the current position.
+     * 
+     * @return the code point of the next character.
+     * @throws NoSuchElementException if the input has no more characters.
+     */
+    int peek() {
+        int codePoint;
+        if (index < length) {
+            final char high = input.charAt(index);
+            if (Character.isHighSurrogate(high)) {
+                if (index + 1 < length) {
+                    final char low = input.charAt(index + 1);
+                    codePoint = Character.toCodePoint(high, low);
+                } else {
+                    throw new NoSuchElementException();
+                }
+            } else {
+                codePoint = high;
+            }
+        } else {
+            throw new NoSuchElementException();
+        }
+        return codePoint;
     }
 
     @Override

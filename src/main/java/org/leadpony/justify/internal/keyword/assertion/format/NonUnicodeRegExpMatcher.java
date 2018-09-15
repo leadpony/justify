@@ -16,41 +16,51 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import java.util.NoSuchElementException;
+
 /**
- * Matcher for internationalized hostnames.
- * 
  * @author leadpony
  */
-class IdnHostnameMatcher extends HostnameMatcher {
-    
-    IdnHostnameMatcher(CharSequence input) {
+class NonUnicodeRegExpMatcher extends RegExpMatcher {
+
+    /**
+     * Constructs this matcher.
+     * 
+     * @param input the input string.
+     */
+    NonUnicodeRegExpMatcher(CharSequence input) {
         super(input);
     }
- 
-    IdnHostnameMatcher(CharSequence input, int start, int end) {
-        super(input, start, end);
-    }
-    
+
     @Override
-    protected boolean checkFirstLabelLetter(int c) {
-        if (c < 128) {
-            return super.checkFirstLabelLetter(c);
-        } else {
-            return checkCodePointAllowed(c);
-        }
+    boolean hasNext() {
+        return index < length;
     }
-    
+
     @Override
-    protected boolean checkLabelLetter(int c) {
-        if (c < 128) {
-            return super.checkLabelLetter(c);
+    boolean hasNext(int expected) {
+        if (index < length) {
+            return input.charAt(index) == expected;
         } else {
-            return checkCodePointAllowed(c);
+            return false;
         }
     }
 
-    private static boolean checkCodePointAllowed(int c) {
-        IdnProperty property = IdnProperty.of(c);
-        return property != IdnProperty.DISALLOWED && property != IdnProperty.UNASSIGNED;
+    @Override
+    int next() {
+        if (index < length) {
+            return input.charAt(index++);
+        } else {
+            throw new NoSuchElementException();
+        }
+    }
+
+    @Override
+    int peek() {
+        if (index < length) {
+            return input.charAt(index);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 }

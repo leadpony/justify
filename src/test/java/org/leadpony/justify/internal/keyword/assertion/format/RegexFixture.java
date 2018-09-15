@@ -26,40 +26,40 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * Test fixture.
- * 
  * @author leadpony
  */
-class Fixture {
+public class RegexFixture extends Fixture {
     
-    private final String value;
-    private final boolean valid;
-    
+    private final String flags;
+
     static Stream<Fixture> load(String name) {
         InputStream in = Fixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             JsonArray array = reader.readArray();
             return array.stream()
                     .map(JsonValue::asJsonObject)
-                    .map(Fixture::new);
+                    .map(RegexFixture::new);
         }
     }
     
-    protected Fixture(JsonObject object) {
-        this.value = object.getString("value");
-        this.valid = object.getBoolean("valid");
+    /**
+     * @param object
+     */
+    private RegexFixture(JsonObject object) {
+        super(object);
+        if (object.containsKey("flags")) {
+            this.flags = object.getString("flags");
+        } else {
+            this.flags = "";
+        }
     }
     
-    String value() {
-        return value;
+    String flags() {
+        return flags;
     }
-    
-    boolean result() {
-        return valid;
-    }
-    
+
     @Override
     public String toString() {
-        return value();
+        return "/" + value() + "/" + flags();
     }
 }

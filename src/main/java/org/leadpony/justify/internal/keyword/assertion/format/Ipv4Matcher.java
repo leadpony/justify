@@ -32,7 +32,7 @@ class Ipv4Matcher extends FormatMatcher {
         int number;
         for (int i = 0; i < 3; i++) {
             number = requireNumber(next());
-            char c = next();
+            int c = next();
             if (c != '.') {
                 number = number * 10 + requireNumber(c);
                 c = next();
@@ -63,7 +63,7 @@ class Ipv4Matcher extends FormatMatcher {
         }
     }
     
-    private static int requireNumber(char c) {
+    private static int requireNumber(int c) {
         if (c >= '0' && c <= '9') {
             return c - '0';
         } else {

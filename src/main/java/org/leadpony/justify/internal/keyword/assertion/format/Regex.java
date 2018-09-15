@@ -32,6 +32,22 @@ public class Regex implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return new Ecma262RegexMatcher(value).matches();
+        return testUnicode(value);
+    }
+    
+    public boolean test(String value, String flags) {
+        if (flags.contains("u")) {
+            return testUnicode(value);
+        } else {
+            return testNonUnicode(value);
+        }
+    }
+    
+    private boolean testUnicode(String value) {
+        return new UnicodeRegExpMatcher(value).matches();
+    }
+
+    private boolean testNonUnicode(String value) {
+        return new NonUnicodeRegExpMatcher(value).matches();
     }
 }

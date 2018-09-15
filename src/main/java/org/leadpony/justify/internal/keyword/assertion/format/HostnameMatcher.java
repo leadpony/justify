@@ -67,7 +67,7 @@ class HostnameMatcher extends FormatMatcher {
      */
     private void label() {
         final int start = pos();
-        char c = next();
+        int c = next();
         if (!checkFirstLabelLetter(c)) {
             fail();
         }
@@ -89,11 +89,11 @@ class HostnameMatcher extends FormatMatcher {
         }
     }
     
-    protected boolean checkFirstLabelLetter(char c) {
+    protected boolean checkFirstLabelLetter(int c) {
         return isAsciiAlphanumeric(c);
     }
 
-    protected boolean checkLabelLetter(char c) {
+    protected boolean checkLabelLetter(int c) {
         return isAsciiAlphanumeric(c) || c == '-';
     }
 }
