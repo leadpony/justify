@@ -49,7 +49,7 @@ public class RegexTest {
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideFixtures")
     public void test(RegexFixture fixture) {
-        Assumptions.assumeTrue(++index > 0);
+        Assumptions.assumeTrue(++index >= 0);
         assertThat(sut.test(fixture.pattern())).isEqualTo(fixture.result());
     }
 }

@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.util.NoSuchElementException;
-import java.util.function.IntPredicate;
 
 /**
  * Format matcher.
@@ -123,17 +122,6 @@ abstract class FormatMatcher {
      */
     final boolean hasNext(int expected) {
         return hasNext() && peek() == expected;
-    }
-    
-    /**
-     * Checks if the input has next character and 
-     * the character passes the test by the specified predicate.
-     * 
-     * @param predicate the predicate to test the next character.
-     * @return {@code true} if the next character is the expected one.
-     */
-    final boolean hasNext(IntPredicate predicate) {
-        return hasNext() && predicate.test(peek());
     }
     
     /**

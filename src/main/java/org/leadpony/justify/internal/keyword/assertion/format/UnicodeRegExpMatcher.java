@@ -43,52 +43,45 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         if (!hasNext('u')) {
             return false;
         }
-        int start = pos();
+        int mark = pos();
         next();
         if (hasNext('{')) {
             next();
-            if (codePoint()) {
-                if (hasNext('}')) {
-                    next();
-                    this.lastClassAtom = ClassAtom.of(this.lastNumericValue);
-                    return true;
-                }
+            if (codePoint() && hasNext('}')) {
+                next();
+                return withClassAtomOf(this.lastNumericValue);
             }
-        } else {
-            if (hex4Digits()) {
-                int high = this.lastNumericValue;
-                if (Character.isHighSurrogate((char)high)) {
-                    start = pos();
-                    if (isFollowedBy('\\', 'u')) {
-                        if (hex4Digits()) {
-                            int low = this.lastNumericValue;
-                            int codePoint = Character.toCodePoint((char)high, (char)low);
-                            this.lastClassAtom = ClassAtom.of(codePoint);
-                            return true;
-                        }
+        } else if (hex4Digits()) {
+            int high = this.lastNumericValue;
+            if (Character.isHighSurrogate((char)high)) {
+                mark = pos();
+                if (isFollowedBy('\\', 'u')) {
+                    if (hex4Digits()) {
+                        int low = this.lastNumericValue;
+                        int codePoint = Character.toCodePoint((char)high, (char)low);
+                        return withClassAtomOf(codePoint);
                     }
-                    backtrack(start);
                 }
-                this.lastClassAtom = ClassAtom.of(high);
-                return true;
+                backtrack(mark);
             }
+            return withClassAtomOf(high);
         }
-        return backtrack(start);
+        return backtrack(mark);
     }
 
     @Override
     protected boolean identityEscape() {
-        int c = peek();
-        if (syntaxCharacter()) {
-            this.lastClassAtom = ClassAtom.of(c);
-            return true;
-        } else if (c == '/') {
-            next();
-            this.lastClassAtom = ClassAtom.of(c);
-            return true;
-        } else {
+        if (!hasNext()) {
             return false;
         }
+        int c = peek();
+        if (syntaxCharacter()) {
+            return withClassAtomOf(c);
+        } else if (c == '/') {
+            next();
+            return withClassAtomOf(c);
+        }
+        return false;
     }
     
     @Override
@@ -96,17 +89,19 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         if (super.testCharacterClassEscape()) {
             return true;
         }
+        if (!hasNext()) {
+            return false;
+        }
         int c = peek();
         if (c == 'p' || c == 'P') {
             final int mark = pos();
             next();
             if (hasNext('{')) {
                 next();
-                if (unicodePropertyValueExpression()) {
-                    if (hasNext('}')) {
-                        next();
-                        return checkProperty(lastPropertyName, lastPropertyValue);
-                    }
+                if (unicodePropertyValueExpression() && hasNext('}')) {
+                    next();
+                    // This may throw early error.
+                    return checkProperty(lastPropertyName, lastPropertyValue);
                 }
             }
             backtrack(mark);
@@ -152,9 +147,9 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
     }
     
     private boolean loneUnicodePropertyNameOrValue() {
-        final int start = pos();
+        final int nameStart = pos();
         if (unicodePropertyValueCharacters()) {
-            this.lastPropertyName = extract(start);
+            this.lastPropertyName = extract(nameStart);
             this.lastPropertyValue = null;
             return true;
         }
@@ -174,7 +169,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
     private boolean unicodePropertyValueCharacter() {
         if (unicodePropertyNameCharacter()) {
             return true;
-        } else if (hasNext(Characters::isAsciiDigit)) {
+        } else if (hasNext() && Characters.isAsciiDigit(peek())) {
             next();
             return true;
         }
@@ -196,7 +191,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         if (!hasNext()) {
             return false;
         }
-        final int start = pos();
+        final int mark = pos();
         int value = hexDigitToValue(next());
         while (hasNext()) {
             if (isHexDigit(peek())) {
@@ -206,16 +201,16 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
                 return true;
             }
         }
-        return backtrack(start);
+        return backtrack(mark);
     }
     
     private boolean isFollowedBy(int... chars) {
-        final int start = pos();
+        final int mark = pos();
         for (int c : chars) {
             if (hasNext(c)) {
                 next();
             } else {
-                return backtrack(start);
+                return backtrack(mark);
             }
         }
         return true;
@@ -236,7 +231,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
                 return true;
             }
         }
-        return fail();
+        return earlyError();
     }
     
     private static boolean checkLoneProperty(String property) {
@@ -244,7 +239,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             generalCategoryValueSet.contains(property)) {
             return true;
         }
-        return fail();
+        return earlyError();
     }
 
     private static final String[] propertyValuesForGeneralCategory = {

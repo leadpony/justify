@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The base matcher for ECMA262 regular expression.
+ * The base matcher for ECMA262 regular expression pattern.
  * 
  * @author leadpony
  */
@@ -52,7 +52,7 @@ abstract class RegExpMatcher extends FormatMatcher {
     private Set<String> groupReferences;
     
     protected int lastNumericValue;
-    protected ClassAtom lastClassAtom;
+    private ClassAtom lastClassAtom;
     
     /**
      * Constructs this matcher.
@@ -82,6 +82,13 @@ abstract class RegExpMatcher extends FormatMatcher {
         return groups;
     }
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if Pattern contains multiple GroupSpecifiers 
+     * whose enclosed RegExpIdentifierNames have the same StringValue.</li>
+     * </ul>
+     */
     private void disjunction() {
         alternative();
         while (hasNext('|')) {
@@ -91,7 +98,7 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     /**
-     * Note that {@code alternative} can be empty.
+     * Alternative can be empty.
      */
     private void alternative() {
         while (hasNext()) {
@@ -111,28 +118,30 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     private boolean assertion() {
-        final int start = pos();
+        final int mark = pos();
         int c = next();
         if (c == '^' || c == '$') {
             return true;
         } else if (c == '\\') {
-            c = next();
-            if (c == 'b' || c == 'B') {
-                return true;
-            }
-        } else if (c == '(') {
-            c = next();
-            if (c == '?') {
+            if (hasNext()) {
                 c = next();
-                if (c == '<') {
-                    c = next();
+                if (c == 'b' || c == 'B') {
+                    return true;
                 }
+            }
+        } else if (c == '(' && hasNext('?')) {
+            next();
+            if (hasNext('<')) {
+                next();
+            }
+            if (hasNext()) {
+                c = next();
                 if (c == '=' || c == '!') {
                     return capturingGroup();
                 }
             }
         }
-        return backtrack(start);
+        return backtrack(mark);
     }
   
     private boolean quantifier() {
@@ -145,44 +154,52 @@ abstract class RegExpMatcher extends FormatMatcher {
         return false;
     }
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if the MV of the first DecimalDigits 
+     * is larger than the MV of the second DecimalDigits.</li>
+     * </ul>
+     */
     private boolean quantifierPrefix() {
         if (!hasNext()) {
             return false;
         }
+        final int mark = pos();
         int c = peek();
         if (c == '*' || c == '+' || c == '?') {
             next();
             return true;
         } else if (c == '{') {
             next();
-            decimalDigits();
-            int first = this.lastNumericValue;
-            c = next();
-            if (c == '}') {
-                return true;
-            } else if (c == ',') {
-                if (hasNext('}')) {
-                    next();
-                    return true;
-                } else {
-                    decimalDigits();
-                    final int second = this.lastNumericValue;
-                    if (checkQuantifierRange(first, second) &&
-                        next() == '}') {
+            if (decimalDigits()) {
+                final int first = this.lastNumericValue;
+                if (hasNext()) {
+                    c = next();
+                    if (c == '}') {
                         return true;
+                    } else if (c == ',') {
+                        if (hasNext('}')) {
+                            next();
+                            return true;
+                        } else if (decimalDigits()) {
+                            final int second = this.lastNumericValue;
+                            if (hasNext('}')) {
+                                return checkQuantifierRange(first, second);
+                            }
+                        }
                     }
-                      
                 }
             }
-            return fail();
         }
-        return false;
+        return backtrack(mark);
     }
     
     private boolean atom() {
         if (patternCharacter() || characterClass()) {
             return true;
         }
+        final int mark = pos();
         int c = peek();
         if (c == '.' ) {
             next();
@@ -192,38 +209,51 @@ abstract class RegExpMatcher extends FormatMatcher {
             if (atomEscape()) {
                 return true;
             }
-            return fail();
         } else if (c == '(') {
             next();
+            final int parenthesis = pos();
+            // We should test "?:" pattern before GroupSpecifier production.
+            if (hasNext('?')) {
+                next();
+                if (hasNext(':')) {
+                    return capturingGroup();
+                }
+                backtrack(parenthesis);
+            }
             if (groupSpecifier()) {
                 return capturingGroup();
-            } else if (next() == '?' && next() == ':') {
-                return capturingGroup();
             }
-            return fail();
         }
-        // no atom
-        return false;
+        return backtrack(mark);
     }
  
     protected boolean syntaxCharacter() {
         if (hasNext() && isSyntaxCharacter(peek())) {
             next();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
     
     private boolean patternCharacter() {
         if (hasNext() && !isSyntaxCharacter(peek())) {
             next();
             return true;
-        } else {
-            return false;
-        }
+        } 
+        return false;
     }
 
+    /**
+     * Early error:
+     * <ul>
+     * <li>
+     * It is a Syntax Error if the enclosing Pattern does not contain 
+     * a GroupSpecifier with an enclosed RegExpIdentifierName whose 
+     * StringValue equals the StringValue of the RegExpIdentifierName of 
+     * this production's GroupName.
+     * </li>
+     * </ul>
+     */
     private boolean atomEscape() {
         if (decimalEscape() || characterClassEscape()) {
             return true;
@@ -231,34 +261,43 @@ abstract class RegExpMatcher extends FormatMatcher {
             return true;
         } if (hasNext('k')) {
             next();
-            return groupName(true) || fail();
+            if (groupName(true)) {
+                return true;
+            }
         }
-        return fail();
+        return false;
     }
     
     private boolean characterEscape() {
+        if (!hasNext()) {
+            return false;
+        }
         if (controlEscape() ||
             hexEscapeSequence() ||
             regExpUnicodeEscapeSequence() ||
             identityEscape()) {
             return true;
         }
+        final int mark = pos();
         int c = peek();
         if (c == 'c') {
             next();
-            return controlLetter() || fail();
+            if (controlLetter()) {
+                return true;
+            }
         } else if (c == '0') {
             next();
-            if (hasNext() && Characters.isAsciiDigit(peek())) {
-                return fail();
+            if (!hasNext() || !Characters.isAsciiDigit(peek())) {
+                return withClassAtomOf('\u0000');
             }
-            this.lastClassAtom = ClassAtom.of('\u0000');
-            return true;
         }
-        return false;
+        return backtrack(mark);
     }
    
     private boolean controlEscape() {
+        if (!hasNext()) {
+            return false;
+        }
         char value;
         switch (peek()) {
         case 't':
@@ -279,57 +318,59 @@ abstract class RegExpMatcher extends FormatMatcher {
         default:
             return false;
         }
-        this.lastClassAtom = ClassAtom.of(value);
-        return true;
+        return withClassAtomOf(value);
     }
     
     private boolean controlLetter() {
+        if (!hasNext()) {
+            return false;
+        }
         int c  = peek();
         if (isControlLetter(c)) {
             next();
-            this.lastClassAtom = ClassAtom.of(c % 32);
-           return true;
-        } else {
-            return false;
-        }
+            return withClassAtomOf(c % 32);
+        } 
+        return false;
     }
 
+    /**
+     * group specifier can be empty.
+     * 
+     * @return always {@code true}
+     */
     private boolean groupSpecifier() {
-        final int start = pos();
         if (hasNext('?')) {
+            final int mark = pos();
             next();
             if (groupName(false)) {
                 return true;
-            } else {
-                return backtrack(start);
             }
-        } else {
-            return true;
+            backtrack(mark);
         }
+        // empty
+        return true;
     }
     
     private boolean groupName(boolean reference) {
-        final int start = pos();
         if (!hasNext('<')) {
             return false;
         }
+        final int mark = pos();
         next();
         final int nameStart = pos();
-        if (!regExpIdentifierName()) {
-            return false;
-        }
-        String name = extract(nameStart);
-        if (hasNext('>')) {
-            next();
-            if (reference) {
-                addGroupReference(name);
-            } else {
-                addGroup(name);
+        if (regExpIdentifierName()) {
+            String name = extract(nameStart);
+            if (hasNext('>')) {
+                next();
+                if (reference) {
+                    addGroupReference(name);
+                } else {
+                    addGroup(name);
+                }
+                return true;
             }
-            return true;
-        } else {
-            return backtrack(start);
         }
+        return backtrack(mark);
     }
    
     private boolean regExpIdentifierName() {
@@ -341,11 +382,19 @@ abstract class RegExpMatcher extends FormatMatcher {
         return true;
     }
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of 
+     * "$", or "_", or the UTF16Encoding of a code point matched by the UnicodeIDStart
+     * lexical grammar production. </li>
+     * </ul>
+     */
     private boolean regExpIdentifierStart() {
         if (!hasNext()) {
             return false;
         }
-        final int start = pos(); 
+        final int mark = pos(); 
         int c = peek();
         if (isRegExpIdentifierStart(c)) {
             next();
@@ -356,20 +405,27 @@ abstract class RegExpMatcher extends FormatMatcher {
                 if (isRegExpIdentifierStart(this.lastNumericValue)) {
                     return true;
                 } else {
-                    return fail();
+                    return earlyError();
                 }
-            } else {
-                return backtrack(start);
             }
         }
-        return false;
+        return backtrack(mark);
     }
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of 
+     * "$", or "_", or the UTF16Encoding of either <ZWNJ> or <ZWJ>, 
+     * or the UTF16Encoding of a Unicode code point that would be matched by 
+     * the UnicodeIDContinue lexical grammar production. </li>
+     * </ul>
+     */
     private boolean regExpIdentifierPart() {
         if (!hasNext()) {
             return false;
         }
-        final int start = pos(); 
+        final int mark = pos(); 
         int c = peek();
         if (isRegExpIdentifierPart(c)) {
             next();
@@ -380,33 +436,36 @@ abstract class RegExpMatcher extends FormatMatcher {
                 if (isRegExpIdentifierPart(this.lastNumericValue)) {
                     return true;
                 } else {
-                    return fail();
+                    earlyError();
                 }
-            } else {
-                return backtrack(start);
             }
         }
-        return false;
+        return backtrack(mark);
     }
   
     protected boolean regExpUnicodeEscapeSequence() {
         if (!hasNext('u')) {
             return false;
         }
-        final int start = pos();
+        final int mark = pos();
         next();
         if (hex4Digits()) {
-            this.lastClassAtom = ClassAtom.of(this.lastNumericValue);
-            return true;
-        } else {
-            return backtrack(start);
+            return withClassAtomOf(this.lastNumericValue);
         }
+        return backtrack(mark);
     }
     
     protected abstract boolean identityEscape();
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if the CapturingGroupNumber of DecimalEscape
+     * is larger than NcapturingParens.</li>
+     * </ul>
+     */
     private boolean decimalEscape() {
-        if (!isNonZeroDigit(peek())) {
+        if (!hasNext() || !isNonZeroDigit(peek())) {
             return false;
         }
         int number = digitToValue(next());
@@ -423,21 +482,25 @@ abstract class RegExpMatcher extends FormatMatcher {
         if (testCharacterClassEscape()) {
             this.lastClassAtom = ClassAtom.CHARACTER_CLASS;
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
     
     private boolean characterClass() {
-        if (peek() != '[') {
+        if (!hasNext('[')) {
             return false;
         }
+        final int mark = pos();
         next();
         if (peek() == '^') {
             next();
         }
         classRanges();
-        return next() == ']' || fail();
+        if (hasNext(']')) {
+            next();
+            return true;
+        }
+        return backtrack(mark);
     }
     
     /**
@@ -451,17 +514,30 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
     }
     
+    /**
+     * Early error:
+     * <ul>
+     * <li>It is a Syntax Error if IsCharacterClass of the first ClassAtom 
+     * is true or IsCharacterClass of the second ClassAtom is true. </li>
+     * <li>It is a Syntax Error if IsCharacterClass of the first ClassAtom is false
+     * and IsCharacterClass of the second ClassAtom is false and the CharacterValue 
+     * of the first ClassAtom is larger than the CharacterValue of the second 
+     * ClassAtom.</li>
+     * </ul>
+     * @return
+     */
     private boolean nonemptyClassRanges() {
         if (classAtom()) {
             ClassAtom first = this.lastClassAtom;
-            if (peek() == '-') {
-                final int start = pos();
+            if (hasNext('-')) {
+                final int mark = pos();
                 next();
                 if (classAtom()) {
                     ClassAtom second = this.lastClassAtom;
+                    // This may throw early error.
                     return checkClassRange(first, second);
                 }
-                backtrack(start);
+                backtrack(mark);
             } else if (nonemptyClassRangesNoDash()) {
                 return true;
             }
@@ -472,93 +548,107 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     private boolean nonemptyClassRangesNoDash() {
-        final int start = pos();
+        final int mark = pos();
         if (classAtomNoDash()) {
             ClassAtom first = this.lastClassAtom;
-            if (peek() == '-') {
+            if (hasNext('-')) {
                 next();
                 if (classAtom()) {
                     ClassAtom second = this.lastClassAtom;
+                    // This may throw early error.
                     return checkClassRange(first, second);
                 }
             } else if (nonemptyClassRangesNoDash()) {
                 return true;
             }
         }
-        backtrack(start);
+        backtrack(mark);
         return classAtom();
     }
 
     private boolean classAtom() {
-        if (peek() == '-') {
-            this.lastClassAtom = ClassAtom.of(next());
-            return true;
+        if (hasNext('-')) {
+            return withClassAtomOf(next());
         } else {
             return classAtomNoDash();
         }
     }
     
     private boolean classAtomNoDash() {
+        if (!hasNext()) {
+            return false;
+        }
         int c = peek();
         if (c == '\\') {
+            final int mark = pos();
             next();
-            return classEscape();
+            if (classEscape()) {
+                return true;
+            }
+            return backtrack(mark);
         } else if (c == ']' || c == '-') {
             return false;
         } else {
             // SourceCharacter but not one of \ or ] or -
-            this.lastClassAtom = ClassAtom.of(next());
-            return true;
+            return withClassAtomOf(next());
         }
     }
     
     private boolean classEscape() {
+        if (!hasNext()) {
+            return false;
+        }
         int c = peek();
         if (c == 'b') {
             next();
-            this.lastClassAtom = ClassAtom.of('\u0008');
-            return true;
+            return withClassAtomOf('\u0008');
         } else if (c == '-') {
-            this.lastClassAtom = ClassAtom.of(next());
-            return true;
+            return withClassAtomOf(next());
         }
         return characterClassEscape() || characterEscape();
     }
     
     private boolean decimalDigits() {
-        int c = next();
+        if (!hasNext()) {
+            return false;
+        }
+        int c = peek();
         if (Characters.isAsciiDigit(c)) {
+            next();
             int value = c - '0';
             while (hasNext() && Characters.isAsciiDigit(peek())) {
                 c = next();
                 value = (value * 10) + (c - '0');
             }
-            lastNumericValue = value;
+            this.lastNumericValue = value;
             return true;
-        } else {
-            return fail();
         }
+        return false;
     }
     
     private boolean hexEscapeSequence() {
         if (!hasNext('x')) {
             return false;
         }
+        final int mark = pos();
         next();
-        int first = next();
-        if (isHexDigit(first)) {
-            int second = next();
-            if (isHexDigit(second)) {
-                int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
-                this.lastClassAtom = ClassAtom.of(value);
-                return true;
+        if (hasNext()) {
+            int first = next();
+            if (isHexDigit(first)) {
+                if (hasNext()) {
+                    int second = next();
+                    if (isHexDigit(second)) {
+                        int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
+                        return withClassAtomOf(value);
+                    }
+                }
             }
         }
-        return fail();
+        return backtrack(mark);
     }
 
     protected boolean hex4Digits() {
-        final int start = pos();
+        final int mark = pos();
         int value = 0;
         int digits = 0;
         while (hasNext()) {
@@ -572,7 +662,7 @@ abstract class RegExpMatcher extends FormatMatcher {
                 return true;
             }
         }
-        return backtrack(start);
+        return backtrack(mark);
     }
    
     protected boolean testCharacterClassEscape() {
@@ -594,13 +684,24 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return true;
     }
+    
+    /**
+     * Assigns a new class atom and returns {@code true}.
+     * 
+     * @param codePoint the code point of the class atom.
+     * @return {@code true}.
+     */
+    protected boolean withClassAtomOf(int codePoint) {
+        this.lastClassAtom = ClassAtom.of(codePoint);
+        return true;
+    }
    
     private void addGroup(String name) {
         if (this.groups == null) {
             this.groups = new HashSet<>();
         }
         if (this.groups.contains(name)) {
-            fail();
+            earlyError();
         } else {
             this.groups.add(name);
         }
@@ -632,24 +733,25 @@ abstract class RegExpMatcher extends FormatMatcher {
         if (first <= second) {
             return true;
         } else {
-            return fail();
+            return earlyError();
         }
     }
     
     private static boolean checkClassRange(ClassAtom lower, ClassAtom upper) {
         if (lower.isCharacterClass() || upper.isCharacterClass()) {
-            return fail();
+            return earlyError();
         } else if (lower.codePoint() > upper.codePoint()) {
-            return fail();
+            return earlyError();
         }
         return true;
     }
     
     private boolean checkCapturingNumber() {
-        if (this.maxCapturingGroupNumber > this.leftCapturingParentheses) {
-            return fail();
+        if (this.maxCapturingGroupNumber <= this.leftCapturingParentheses) {
+            return true;
+        } else {
+            return earlyError();
         }
-        return true;
     }
     
     private boolean checkGroupReferences() {
@@ -658,7 +760,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         for (String ref : this.groupReferences) {
             if (!findGroup(ref)) {
-                return fail();
+                return earlyError();
             }
         }
         return true;
@@ -712,6 +814,15 @@ abstract class RegExpMatcher extends FormatMatcher {
     
     protected static boolean optional(boolean result) {
         return true;
+    }
+    
+    /**
+     * Throws early error defined in the specification.
+     * 
+     * @return always {@code false}.
+     */
+    protected static boolean earlyError() {
+        return fail();
     }
     
     static interface ClassAtom {

@@ -37,12 +37,9 @@ class NonUnicodeRegExpMatcher extends RegExpMatcher {
 
     @Override
     protected boolean identityEscape() {
-        int c = peek();
-        if (!Character.isUnicodeIdentifierPart(c)) {
+        if (hasNext() && !Character.isUnicodeIdentifierPart(peek())) {
             // SourceCharacter but not UnicodeIDContinue
-            next();
-            this.lastClassAtom = ClassAtom.of(c);
-            return true;
+            return withClassAtomOf(next());
         }
         return false;
     }
