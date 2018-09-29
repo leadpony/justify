@@ -25,14 +25,13 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
 public class SchemaValidationTest {
 
-    private static final Logger log = Loggers.getLogger(SchemaValidationTest.class);
+    private static final Logger log = Logger.getLogger(SchemaValidationTest.class.getName());
     
     private static final String[] TESTS = {
             "schema/schema.json",

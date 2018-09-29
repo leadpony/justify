@@ -51,4 +51,10 @@ final class Characters {
     public static boolean isAsciiAlphanumeric(int c) {
         return isAsciiAlphabetic(c) || isAsciiDigit(c);
     }
+    
+    public static boolean isAsciiHexDigit(int c) {
+        return isAsciiDigit(c) ||
+               (c >= 'A' && c <= 'F') ||
+               (c >= 'a' && c <= 'f');
+    }
 }

@@ -96,13 +96,13 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
   * hostname/idn-hostname
   * ipv4/ipv6
   * json-pointer/relative-json-pointer
+  * regex (ECMA 262 compliant)
 
 ### Schema keywords not implemented yet
 
 * format
   * uri/uri-reference/iri/iri-reference
   * uri-template
-  * regex
 * default
 * contentMediaType
 * contentEncoding
@@ -110,7 +110,7 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 ## Building from Source
 
 The following tools are required to build this library.
-* JDK 9 or [JDK 10]
+* [OpenJDK 11]
 * [Apache Maven] 3.5.4 or higher
 
 The commands below build the library and install it into your local Maven repository.
@@ -127,7 +127,7 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [JSON Schema Specification]: https://json-schema.org/
 [JSON Processing API]: https://javaee.github.io/jsonp/
 [JSON Binding API]: http://json-b.net/
-[JDK 10]: http://jdk.java.net/10/
+[OpenJDK 11]: https://jdk.java.net/11/
 [Apache Maven]: https://maven.apache.org/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0

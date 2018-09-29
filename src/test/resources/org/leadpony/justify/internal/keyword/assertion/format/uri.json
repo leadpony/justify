@@ -1,0 +1,74 @@
+[
+    {
+        "value": "ftp://ftp.is.co.za/rfc/rfc1808.txt",
+        "valid": true
+    },
+    {
+        "value": "http://www.ietf.org/rfc/rfc2396.txt",
+        "valid": true
+    },
+    {
+        "value": "ldap://[2001:db8::7]/c=GB?objectClass?one",
+        "valid": true
+    },
+    {
+        "value": "mailto:John.Doe@example.com",
+        "valid": true
+    },
+    {
+        "value": "news:comp.infosystems.www.servers.unix",
+        "valid": true
+    },
+    {
+        "value": "tel:+1-816-555-1212",
+        "valid": true
+    },
+    {
+        "value": "telnet://192.0.2.16:80/",
+        "valid": true
+    },
+    {
+        "value": "urn:oasis:names:specification:docbook:dtd:xml:4.1.2",
+        "valid": true
+    },
+    {
+        "value": "foo://example.com:8042/over/there?name=ferret#nose",
+        "valid": true
+    },
+    {
+        "value": "urn:example:animal:ferret:nose",
+        "valid": true
+    },
+    {
+        "value": "http://example.com",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com:/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com:80/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/data",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/data/",
+        "valid": true
+    },
+    {
+        "value": "ftp://cnn.example.com&story=breaking_news@10.0.0.1/top_story.htm",
+        "valid": true
+    },
+    {
+        "value": "http://www.ics.uci.edu/pub/ietf/uri/#Related",
+        "valid": true
+    }
+]

@@ -28,14 +28,13 @@ import javax.json.stream.JsonParsingException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
 public class SchemaReaderTest {
   
-    private static final Logger log = Loggers.getLogger(SchemaReaderTest.class);
+    private static final Logger log = Logger.getLogger(SchemaReaderTest.class.getName());
     private static final Jsonv jsonv = Jsonv.newInstance();
     
     public static Stream<Arguments> provideSchemas() {

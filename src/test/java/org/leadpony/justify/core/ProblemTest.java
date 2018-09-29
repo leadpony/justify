@@ -30,14 +30,13 @@ import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.Loggers;
 
 /**
  * @author leadpony
  */
 public class ProblemTest {
 
-    private static final Logger log = Loggers.getLogger(ProblemTest.class);
+    private static final Logger log = Logger.getLogger(ProblemTest.class.getName());
     
     private static final String RESOURCE_NAME = "problem.tml";
   

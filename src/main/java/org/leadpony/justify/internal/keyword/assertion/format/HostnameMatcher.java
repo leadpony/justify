@@ -38,13 +38,14 @@ class HostnameMatcher extends FormatMatcher {
     }
 
     @Override
-    public void all() {
+    public boolean all() {
         final int start = pos();
         subdomain();
         int length = pos() - start;
         if (length > MAX_DOMAIN_CHARS) {
-            fail();
+            return false;
         }
+        return true;
     }
     
     private void subdomain() {

@@ -28,7 +28,6 @@ import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.Loggers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonbTest {
   
-    private static final Logger log = Loggers.getLogger(JsonbTest.class);
+    private static final Logger log = Logger.getLogger(JsonbTest.class.getName());
     private static final Jsonv jsonv = Jsonv.newInstance();
     
     @Test

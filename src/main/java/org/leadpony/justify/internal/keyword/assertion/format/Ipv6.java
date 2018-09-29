@@ -25,11 +25,6 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  */
 class Ipv6 implements StringFormatAttribute {
     
-    private static final int MAX_GROUPS = 8;
-    private static final int MAX_GROUP_DIGITS = 4;
-    
-    private static final Ipv4 ipv4 = new Ipv4();
-    
     @Override
     public String name() {
         return "ipv6";
@@ -37,64 +32,6 @@ class Ipv6 implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        String[] groups = value.split(":", MAX_GROUPS + 1);
-        final int length = groups.length;
-        if (length < 3 || length > MAX_GROUPS) {
-            return false;
-        }
-
-        if (groups[0].isEmpty()) {
-            if (!groups[1].isEmpty()) {
-                return false;
-            }
-        } else if (!isHexadecimalGroup(groups[0])) {
-            return false;
-        }
-        
-        int i = 1;
-        boolean compressed = false;
-        while (i < length - 1) {
-            String group = groups[i++];
-            if (group.isEmpty()) {
-                if (compressed) {
-                    return false;
-                }
-                compressed = true;
-            } else if (!isHexadecimalGroup(group)) {
-                return false;
-            }
-        }
-
-        String lastGroup = groups[i];
-        if (lastGroup.isEmpty()) {
-            if (!groups[i - 1].isEmpty()) {
-                return false;
-            }
-        } else {
-            if (!isHexadecimalGroup(lastGroup)) {
-                return ipv4.test(lastGroup);
-            }
-        }
-        
-        return true;
-    }
-    
-    private static boolean isHexadecimalGroup(String group) {
-        final int length = group.length();
-        if (length == 0 || length > MAX_GROUP_DIGITS) {
-            return false;
-        }
-        for (int i = 0; i < length; i++) {
-            if (!isHexadecimalDigit(group.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isHexadecimalDigit(char c) {
-        return (c >= '0' && c <= '9') || 
-               (c >= 'A' && c <= 'F') || 
-               (c >= 'a' && c <= 'f');
+        return new Ipv6Matcher(value).matches();
     }
 }

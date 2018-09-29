@@ -45,9 +45,9 @@ public class Test262RegexTest {
     }
     
     private static final List<String> files = Arrays.asList(
-            //"/org/ecma_international/test262/built_ins/regexp/regexp.json",
-            //"/org/ecma_international/test262/built_ins/regexp/named-group.json",
-            //"/org/ecma_international/test262/built_ins/regexp/property-escapes.json",
+            "/org/ecma_international/test262/built_ins/regexp/regexp.json",
+            "/org/ecma_international/test262/built_ins/regexp/named-group.json",
+            "/org/ecma_international/test262/built_ins/regexp/property-escapes.json",
             "/org/ecma_international/test262/built_ins/regexp/property-escapes-generated.json"
             );
     

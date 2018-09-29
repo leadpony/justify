@@ -26,30 +26,31 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Ipv6} class.
+ * Test cases for {@link Uri} class.
  * 
  * @author leadpony
  */
-public class Ipv6Test {
-
+public class UriTest {
+    
     // System under test
-    private static Ipv6 sut;
-  
+    private static Uri sut;
+
     private static int index;
     
     @BeforeAll
     public static void setUpOnce() {
-        sut = new Ipv6();
+        sut = new Uri();
     }
     
     public static Stream<Fixture> provideFixtures() {
-        return Fixture.load("ipv6.json");
+        return Fixture.load("uri.json");
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideFixtures")
     public void test(Fixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
+        boolean valid = sut.test(fixture.value()); 
+        assertThat(valid).isEqualTo(fixture.result());
     }
 }

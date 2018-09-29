@@ -42,12 +42,13 @@ class EmailMatcher extends FormatMatcher {
     }
     
     @Override
-    public void all() {
+    public boolean all() {
         localPart();
         if (next() == '@') {
             domainPart();
+            return true;
         } else {
-            fail();
+            return false;
         }
     }
     

@@ -64,13 +64,14 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
 
     @Override
-    public void all() {
+    public boolean all() {
         disjunction();
         if (hasNext()) {
-            fail();
+            return false;
         }
         checkCapturingNumber();
         checkGroupReferences();
+        return true;
     }
     
     /**
@@ -185,6 +186,7 @@ abstract class RegExpMatcher extends FormatMatcher {
                         } else if (decimalDigits()) {
                             final int second = this.lastNumericValue;
                             if (hasNext('}')) {
+                                next();
                                 return checkQuantifierRange(first, second);
                             }
                         }
@@ -634,10 +636,10 @@ abstract class RegExpMatcher extends FormatMatcher {
         next();
         if (hasNext()) {
             int first = next();
-            if (isHexDigit(first)) {
+            if (Characters.isAsciiHexDigit(first)) {
                 if (hasNext()) {
                     int second = next();
-                    if (isHexDigit(second)) {
+                    if (Characters.isAsciiHexDigit(second)) {
                         int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
                         return withClassAtomOf(value);
                     }
@@ -653,7 +655,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         int digits = 0;
         while (hasNext()) {
             int c = next();
-            if (!isHexDigit(c)) {
+            if (!Characters.isAsciiHexDigit(c)) {
                 break;
             }
             value = value * 16 + hexDigitToValue(c);
@@ -772,12 +774,6 @@ abstract class RegExpMatcher extends FormatMatcher {
    
     protected static boolean isNonZeroDigit(int c) {
         return c >= '1' && c <= '9';
-    }
-    
-    protected static boolean isHexDigit(int c) {
-        return Characters.isAsciiDigit(c) ||
-               (c >= 'a' && c <= 'f') ||
-               (c >= 'A' && c <= 'F');
     }
     
     protected static boolean isRegExpIdentifierStart(int c) {

@@ -194,7 +194,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         final int mark = pos();
         int value = hexDigitToValue(next());
         while (hasNext()) {
-            if (isHexDigit(peek())) {
+            if (Characters.isAsciiHexDigit(peek())) {
                 value = value * 16 + hexDigitToValue(next());
             } else {
                 this.lastNumericValue = value;

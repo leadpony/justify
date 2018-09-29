@@ -28,10 +28,10 @@ import java.util.logging.Logger;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.Loggers;
 
 /**
  * Base type of validation test.
@@ -40,7 +40,7 @@ import org.leadpony.justify.Loggers;
  */
 public abstract class BaseValidationTest {
     
-    private static final Logger log = Loggers.getLogger(BaseValidationTest.class);
+    private static final Logger log = Logger.getLogger(BaseValidationTest.class.getName());
     
     public static final Jsonv jsonv = Jsonv.newInstance();
 
@@ -56,9 +56,8 @@ public abstract class BaseValidationTest {
     
     @ParameterizedTest
     @MethodSource("provideFixtures")
-    //@Disabled
     public void testValidationWithSchema(ValidationFixture fixture) {
-        //Assumptions.assumeTrue(fixture.index() == 15);
+        Assumptions.assumeTrue(fixture.index() >= 0);
         JsonSchema schema = getSchema(fixture.schema());
         JsonValue data = fixture.data();
         JsonParser parser = createValidatingParser(data, schema);
@@ -75,8 +74,8 @@ public abstract class BaseValidationTest {
     
     @ParameterizedTest
     @MethodSource("provideFixtures")
-    //@Disabled
     public void testValidationWithNegatedSchema(ValidationFixture fixture) {
+        Assumptions.assumeTrue(fixture.index() >= 0);
         JsonSchema schema = negate(getSchema(fixture.schema()));
         JsonValue data = fixture.data();
         JsonParser parser = createValidatingParser(data, schema);

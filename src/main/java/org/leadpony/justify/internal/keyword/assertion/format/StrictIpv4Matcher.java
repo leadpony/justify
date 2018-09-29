@@ -17,18 +17,18 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Matcher for IPv4 addresses.
+ * Matcher for IPv4 addresses based on RFC 2986.
  * 
  * @author leadpony
  */
-class Ipv4Matcher extends FormatMatcher {
+class StrictIpv4Matcher extends Ipv4Matcher {
 
     /**
      * Constructs this matcher.
      * 
      * @param input the input character sequence.
      */
-    Ipv4Matcher(CharSequence input) {
+    StrictIpv4Matcher(CharSequence input) {
         super(input);
     }
 
@@ -39,27 +39,11 @@ class Ipv4Matcher extends FormatMatcher {
      * @param start the start index, inclusive.
      * @param end the end index, exclusive.
      */
-    Ipv4Matcher(CharSequence input, int start, int end) {
+    StrictIpv4Matcher(CharSequence input, int start, int end) {
         super(input, start, end);
     }
 
     @Override
-    boolean all() {
-        return dottedQuad();
-    }
-    
-    boolean dottedQuad() {
-        final int mark = pos();
-        if (decbyte() && next() == '.' &&
-            decbyte() && next() == '.' &&
-            decbyte() && next() == '.' &&
-            decbyte() && !hasNext()) {
-            return true;
-        } else {
-            return backtrack(mark);
-        }
-    }
-    
     boolean decbyte() {
         if (!hasNext()) {
             return false;
@@ -70,7 +54,9 @@ class Ipv4Matcher extends FormatMatcher {
             return false;
         }
         int value = digitToValue(c);
-        
+        if (value == 0) {
+            return !hasNext() || peek() == '.';
+        }
         if (hasNext() && peek() != '.') {
             // 2nd digit
             c = next();
@@ -86,18 +72,14 @@ class Ipv4Matcher extends FormatMatcher {
                     return false;
                 }
                 value = value * 10 + digitToValue(c);
+                
+                if (hasNext() && peek() != '.') {
+                    return false;
+                }   
+                
+                return value <= 255;
             }
-
-            if (hasNext() && peek() != '.') {
-                return false;
-            }
-
-            return value <= 255;
         }
         return true;
-    }
-    
-    static int digitToValue(int codePoint) {
-        return codePoint - '0';
     }
 }

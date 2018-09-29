@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.Loggers;
 
 /**
  * Tests for {@link JsonReader} validating JSON instance. 
@@ -46,7 +45,7 @@ import org.leadpony.justify.Loggers;
  */
 public class JsonReaderTest {
    
-    private static final Logger log = Loggers.getLogger(JsonReaderTest.class);
+    private static final Logger log = Logger.getLogger(JsonReaderTest.class.getName());
     private static final Jsonv jsonv = Jsonv.newInstance();
     
     private static JsonReader newReader(String instance) {

@@ -32,7 +32,7 @@ abstract class FormatMatcher {
     /**
      * Constructs this matcher.
      * 
-     * @param input the input string.
+     * @param input the input character sequence.
      */
     protected FormatMatcher(CharSequence input) {
         this.input = input;
@@ -60,8 +60,7 @@ abstract class FormatMatcher {
      */
     boolean matches() {
         try {
-            all();
-            return true;
+            return all();
         } catch (FormatMismatchException | NoSuchElementException e) {
             return false;
         }
@@ -73,7 +72,7 @@ abstract class FormatMatcher {
      * @throws NoSuchElementException if unexpected end of input was detected.
      * @throws FormatMismatchException if the input did not match the format.
      */
-    abstract void all(); 
+    abstract boolean all(); 
     
     /**
      * Returns the input character sequence.
@@ -163,7 +162,18 @@ abstract class FormatMatcher {
      * @return the extracted substring.
      */
     final String extract(int start) {
-        return input.subSequence(start, pos()).toString();
+        return extract(start, pos());
+    }
+
+    /**
+     * Extracts a substring from the input character sequence.
+     * 
+     * @param start the start index of the substring. 
+     * @param end the end index of the substring. 
+     * @return the extracted substring.
+     */
+    final String extract(int start, int end) {
+        return input.subSequence(start, end).toString();
     }
 
     /**

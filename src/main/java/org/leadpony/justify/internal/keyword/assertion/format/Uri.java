@@ -16,9 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * Format attribute representing "uri" attribute.
  * 
@@ -36,11 +33,6 @@ class Uri implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        try {
-            URI uri = new URI(value);
-            return uri.isAbsolute() && uri.toASCIIString() == value;
-        } catch (URISyntaxException e) {
-            return false;
-        }
+        return new UriMatcher(value).matches();
     }
 }
