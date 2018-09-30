@@ -1,7 +1,10 @@
-The original contents in this directory and subdirectories can be obtained
-from [Addressable].
+The contents in this directory and subdirectories are authored by
+Bob Aman.
+The original files can be obtained from [Addressable].
 
 [Addressable]:https://github.com/sporkmonger/addressable
+
+# COPYRIGHT and LICENSE
 
 Copyright (C) Bob Aman
 

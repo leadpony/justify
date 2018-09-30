@@ -68,10 +68,10 @@ class UriMatcher extends FormatMatcher {
         final int mark = pos();
         if (hasNext()) {
             int c = next();
-            if (Characters.isAsciiAlphabetic(c)) {
+            if (AsciiCode.isAlphabetic(c)) {
                 while(hasNext() && peek() != ':') {
                     c = next();
-                    if (Characters.isAsciiAlphanumeric(c) || 
+                    if (AsciiCode.isAlphanumeric(c) || 
                         c == '+' || c == '-' || c == '.') {
                         continue;
                     } else {
@@ -125,7 +125,7 @@ class UriMatcher extends FormatMatcher {
             int c = peek();
             if (c == '@') {
                 return true;
-            } else if (isSubDelim(c) || c == ':') {
+            } else if (UriCode.isSubDelim(c) || c == ':') {
                 next();
                 continue;
             } else {
@@ -159,16 +159,16 @@ class UriMatcher extends FormatMatcher {
     boolean ipvFuture() {
         if (hasNext('v') || hasNext('V')) {
             next();
-            if (Characters.isAsciiHexDigit(next())) {
-                while (Characters.isAsciiHexDigit(peek())) {
+            if (AsciiCode.isHexDigit(next())) {
+                while (AsciiCode.isHexDigit(peek())) {
                     next();
                 }
                 if (next() == '.') {
                     int c = next();
-                    if (isUnreserved(c) || isSubDelim(c) || c == ':') {
+                    if (UriCode.isUnreserved(c) || UriCode.isSubDelim(c) || c == ':') {
                         while (hasNext()) {
                             c = peek();
-                            if (isUnreserved(c) || isSubDelim(c) || c == ':') {
+                            if (UriCode.isUnreserved(c) || UriCode.isSubDelim(c) || c == ':') {
                                 next();
                             } else {
                                 return true;
@@ -198,7 +198,7 @@ class UriMatcher extends FormatMatcher {
     boolean ipv4Address() {
         final int start = pos();
         while (hasNext()) {
-            if (isReserved(peek())) {
+            if (UriCode.isReserved(peek())) {
                 break;
             }
             next();
@@ -215,7 +215,7 @@ class UriMatcher extends FormatMatcher {
             if (unreserved() || pctEncoded()) {
                 continue;
             }
-            if (isSubDelim(peek())) {
+            if (UriCode.isSubDelim(peek())) {
                 next();
             } else {
                 break;
@@ -227,7 +227,7 @@ class UriMatcher extends FormatMatcher {
     void port() {
         // Skips digits
         while (hasNext()) {
-            if (Characters.isAsciiDigit(peek())) {
+            if (AsciiCode.isDigit(peek())) {
                 next();
             } else {
                 break;
@@ -315,7 +315,7 @@ class UriMatcher extends FormatMatcher {
                 length++;
             } else {
                 int c = peek();
-                if (isSubDelim(c) || c == '@') {
+                if (UriCode.isSubDelim(c) || c == '@') {
                     next();
                     length++;
                 } else {
@@ -332,7 +332,7 @@ class UriMatcher extends FormatMatcher {
                 return true;
             }
             int c = peek();
-            if (isSubDelim(c) || c == ':' || c == '@') {
+            if (UriCode.isSubDelim(c) || c == ':' || c == '@') {
                 next();
                 return true;
             }
@@ -388,7 +388,7 @@ class UriMatcher extends FormatMatcher {
     }
     
     boolean unreserved() {
-        if (hasNext() && isUnreserved(peek())) {
+        if (hasNext() && UriCode.isUnreserved(peek())) {
             next();
             return true;
         }
@@ -399,8 +399,8 @@ class UriMatcher extends FormatMatcher {
         if (hasNext('%')) {
             // Skips '%'
             next();
-            if (Characters.isAsciiHexDigit(next()) &&
-                Characters.isAsciiHexDigit(next())) {
+            if (AsciiCode.isHexDigit(next()) &&
+                AsciiCode.isHexDigit(next())) {
                 return true;
             }
             return fail();
@@ -443,19 +443,6 @@ class UriMatcher extends FormatMatcher {
         return pathNoscheme() || pathEmpty();
     }
     
-    static boolean isReserved(int c) {
-        return reserved.get(c);
-    }
-    
-    static boolean isSubDelim(int c) {
-        return subDelims.get(c);
-    }
-    
-    static boolean isUnreserved(int c) {
-        return Characters.isAsciiAlphanumeric(c) ||
-               c == '-' || c == '.' || c == '_' || c == '~'; 
-    }
-    
     private static CharSequence decodeAllUnreserved(CharSequence input) {
         StringBuilder b = new StringBuilder();
         final int length = input.length();
@@ -466,7 +453,7 @@ class UriMatcher extends FormatMatcher {
                 char high = input.charAt(index + 1);
                 char low = input.charAt(index + 2);
                 int codePoint = decodePercentEncoded(high, low);
-                if (codePoint >= 0 && isUnreserved(codePoint)) {
+                if (codePoint >= 0 && UriCode.isUnreserved(codePoint)) {
                     b.append(input, startIndex, index).appendCodePoint(codePoint);
                     startIndex = index + 3;
                 }
@@ -485,9 +472,9 @@ class UriMatcher extends FormatMatcher {
     
     private static int decodePercentEncoded(int high, int low) {
         int codePoint = -1;
-        if (Characters.isAsciiHexDigit(high) && Characters.isAsciiHexDigit(low)) {
-            codePoint = Characters.hexDigitToValue(high) * 16 +
-                        Characters.hexDigitToValue(low);
+        if (AsciiCode.isHexDigit(high) && AsciiCode.isHexDigit(low)) {
+            codePoint = AsciiCode.hexDigitToValue(high) * 16 +
+                        AsciiCode.hexDigitToValue(low);
         }
         return codePoint;
     }

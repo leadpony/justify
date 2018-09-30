@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.leadpony.justify.internal.keyword.assertion.format.Characters.isAsciiAlphanumeric;
+import static org.leadpony.justify.internal.keyword.assertion.format.AsciiCode.isAlphanumeric;
 
 /**
  * Matcher for hostnames.
@@ -91,10 +91,10 @@ class HostnameMatcher extends FormatMatcher {
     }
     
     protected boolean checkFirstLabelLetter(int c) {
-        return isAsciiAlphanumeric(c);
+        return isAlphanumeric(c);
     }
 
     protected boolean checkLabelLetter(int c) {
-        return isAsciiAlphanumeric(c) || c == '-';
+        return isAlphanumeric(c) || c == '-';
     }
 }

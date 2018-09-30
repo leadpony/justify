@@ -102,10 +102,10 @@ class Ipv6Matcher extends Ipv4Matcher {
     
     boolean h16() {
         final int mark = pos();
-        if (hasNext() && Characters.isAsciiHexDigit(peek())) {
+        if (hasNext() && AsciiCode.isHexDigit(peek())) {
             next();
             int digits = 1;
-            while (digits < 4 && hasNext() && Characters.isAsciiHexDigit(peek())) {
+            while (digits < 4 && hasNext() && AsciiCode.isHexDigit(peek())) {
                 next();
                 digits++;
             }

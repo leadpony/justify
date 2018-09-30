@@ -169,7 +169,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
     private boolean unicodePropertyValueCharacter() {
         if (unicodePropertyNameCharacter()) {
             return true;
-        } else if (hasNext() && Characters.isAsciiDigit(peek())) {
+        } else if (hasNext() && AsciiCode.isDigit(peek())) {
             next();
             return true;
         }
@@ -192,10 +192,10 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             return false;
         }
         final int mark = pos();
-        int value = Characters.hexDigitToValue(next());
+        int value = AsciiCode.hexDigitToValue(next());
         while (hasNext()) {
-            if (Characters.isAsciiHexDigit(peek())) {
-                value = value * 16 + Characters.hexDigitToValue(next());
+            if (AsciiCode.isHexDigit(peek())) {
+                value = value * 16 + AsciiCode.hexDigitToValue(next());
             } else {
                 this.lastNumericValue = value;
                 return true;

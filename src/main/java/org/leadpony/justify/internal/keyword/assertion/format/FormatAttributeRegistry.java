@@ -58,6 +58,7 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
         registerIfNotExist(new Time());
         registerIfNotExist(new Uri());
         registerIfNotExist(new UriReference());
+        registerIfNotExist(new UriTemplate());
     }
     
     private void registerIfNotExist(FormatAttribute attribute) {

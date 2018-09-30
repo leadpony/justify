@@ -17,13 +17,13 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Utility class operating on characters.
+ * Utility class operating on ASCII characters.
  * 
  * @author leadpony
  */
-final class Characters {
+final class AsciiCode {
 
-    private Characters() {
+    private AsciiCode() {
     }
 
     /**
@@ -33,7 +33,7 @@ final class Characters {
      * @param c the character to test.
      * @return {@code true} if the specified character is an alphabet.
      */
-    public static boolean isAsciiAlphabetic(int c) {
+    public static boolean isAlphabetic(int c) {
         return (c >= 'A' &&  c <= 'Z') ||  (c >= 'a' &&  c <= 'z');
     }
     
@@ -44,22 +44,22 @@ final class Characters {
      * @param c the character to test.
      * @return {@code true} if the specified character is a digit.
      */
-    public static boolean isAsciiDigit(int c) {
+    public static boolean isDigit(int c) {
         return c >= '0' && c <= '9';
     }
     
-    public static boolean isAsciiAlphanumeric(int c) {
-        return isAsciiAlphabetic(c) || isAsciiDigit(c);
+    public static boolean isAlphanumeric(int c) {
+        return isAlphabetic(c) || isDigit(c);
     }
     
-    public static boolean isAsciiHexDigit(int c) {
-        return isAsciiDigit(c) ||
+    public static boolean isHexDigit(int c) {
+        return isDigit(c) ||
                (c >= 'A' && c <= 'F') ||
                (c >= 'a' && c <= 'f');
     }
     
     public static int hexDigitToValue(int c) {
-        if (isAsciiDigit(c)) {
+        if (isDigit(c)) {
             return c - '0';
         } else if (c >= 'a' && c <= 'f') {
             return 10 + (c - 'a');

@@ -289,7 +289,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
         } else if (c == '0') {
             next();
-            if (!hasNext() || !Characters.isAsciiDigit(peek())) {
+            if (!hasNext() || !AsciiCode.isDigit(peek())) {
                 return withClassAtomOf('\u0000');
             }
         }
@@ -471,7 +471,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return false;
         }
         int number = digitToValue(next());
-        while (hasNext() && Characters.isAsciiDigit(peek())) {
+        while (hasNext() && AsciiCode.isDigit(peek())) {
             number = number * 10  + digitToValue(next());
         }
         if (number > this.maxCapturingGroupNumber) {
@@ -615,10 +615,10 @@ abstract class RegExpMatcher extends FormatMatcher {
             return false;
         }
         int c = peek();
-        if (Characters.isAsciiDigit(c)) {
+        if (AsciiCode.isDigit(c)) {
             next();
             int value = c - '0';
-            while (hasNext() && Characters.isAsciiDigit(peek())) {
+            while (hasNext() && AsciiCode.isDigit(peek())) {
                 c = next();
                 value = (value * 10) + (c - '0');
             }
@@ -636,12 +636,12 @@ abstract class RegExpMatcher extends FormatMatcher {
         next();
         if (hasNext()) {
             int first = next();
-            if (Characters.isAsciiHexDigit(first)) {
+            if (AsciiCode.isHexDigit(first)) {
                 if (hasNext()) {
                     int second = next();
-                    if (Characters.isAsciiHexDigit(second)) {
-                        int value = Characters.hexDigitToValue(first) * 16 
-                                + Characters.hexDigitToValue(second);
+                    if (AsciiCode.isHexDigit(second)) {
+                        int value = AsciiCode.hexDigitToValue(first) * 16 
+                                + AsciiCode.hexDigitToValue(second);
                         return withClassAtomOf(value);
                     }
                 }
@@ -656,10 +656,10 @@ abstract class RegExpMatcher extends FormatMatcher {
         int digits = 0;
         while (hasNext()) {
             int c = next();
-            if (!Characters.isAsciiHexDigit(c)) {
+            if (!AsciiCode.isHexDigit(c)) {
                 break;
             }
-            value = value * 16 + Characters.hexDigitToValue(c);
+            value = value * 16 + AsciiCode.hexDigitToValue(c);
             if (++digits >= 4) {
                 this.lastNumericValue = value;
                 return true;
@@ -791,7 +791,7 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
     
     protected static boolean isControlLetter(int c) {
-        return Characters.isAsciiAlphabetic(c);
+        return AsciiCode.isAlphabetic(c);
     }
 
     protected static int digitToValue(int c) {

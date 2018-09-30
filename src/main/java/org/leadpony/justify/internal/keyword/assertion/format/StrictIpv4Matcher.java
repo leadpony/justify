@@ -50,7 +50,7 @@ class StrictIpv4Matcher extends Ipv4Matcher {
         }
         // 1st digit
         int c = next();
-        if (!Characters.isAsciiDigit(c)) {
+        if (!AsciiCode.isDigit(c)) {
             return false;
         }
         int value = digitToValue(c);
@@ -60,7 +60,7 @@ class StrictIpv4Matcher extends Ipv4Matcher {
         if (hasNext() && peek() != '.') {
             // 2nd digit
             c = next();
-            if (!Characters.isAsciiDigit(c)) {
+            if (!AsciiCode.isDigit(c)) {
                 return false;
             }
             value = value * 10 + digitToValue(c);
@@ -68,7 +68,7 @@ class StrictIpv4Matcher extends Ipv4Matcher {
             if (hasNext() && peek() != '.') {
                 // 3rd digit
                 c = next();
-                if (!Characters.isAsciiDigit(c)) {
+                if (!AsciiCode.isDigit(c)) {
                     return false;
                 }
                 value = value * 10 + digitToValue(c);

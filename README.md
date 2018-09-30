@@ -92,22 +92,21 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 * description
 * format
   * date-time/date/time
-  * email (compliant with RFC 5322)
-  * idn-email (compliant with RFC 6531)
-  * hostname (compliant with RFC 1034)
-  * idn-hostname (compliant with RFC 5890)
-  * ipv4 (compliant with RFC 2673)
-  * ipv6 (compliant with RFC 4291)
-  * json-pointer (compliant with RFC 6901)
+  * email (compliant with [RFC 5322])
+  * idn-email (compliant with [RFC 6531])
+  * hostname (compliant with [RFC 1034])
+  * idn-hostname (compliant with [RFC 5890])
+  * ipv4 (compliant with [RFC 2673])
+  * ipv6 (compliant with [RFC 4291])
+  * json-pointer (compliant with [RFC 6901])
   * relative-json-pointer
-  * uri/uri-reference (compliant with RFC 3986)
-  * iri/iri-reference (compliant with RFC 3987)
-  * regex (compliant with ECMA 262)
+  * uri/uri-reference (compliant with [RFC 3986])
+  * iri/iri-reference (compliant with [RFC 3987])
+  * uri-template (compliant with [RFC 6570])
+  * regex (compliant with [ECMA 262])
 
 ### Schema keywords not implemented yet
 
-* format
-  * uri-template
 * default
 * contentMediaType
 * contentEncoding
@@ -115,7 +114,7 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 ## Building from Source
 
 The following tools are required to build this library.
-* [OpenJDK 11]
+* [JDK 11]
 * [Apache Maven] 3.5.4 or higher
 
 The commands below build the library and install it into your local Maven repository.
@@ -132,7 +131,18 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [JSON Schema Specification]: https://json-schema.org/
 [JSON Processing API]: https://javaee.github.io/jsonp/
 [JSON Binding API]: http://json-b.net/
-[OpenJDK 11]: https://jdk.java.net/11/
+[JDK 11]: https://jdk.java.net/11/
 [Apache Maven]: https://maven.apache.org/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
+[RFC 1034]: https://tools.ietf.org/html/rfc1034.html
+[RFC 2673]: https://tools.ietf.org/html/rfc2673.html
+[RFC 3986]: https://tools.ietf.org/html/rfc3986.html
+[RFC 3987]: https://tools.ietf.org/html/rfc3987.html
+[RFC 4291]: https://tools.ietf.org/html/rfc4291.html
+[RFC 5322]: https://tools.ietf.org/html/rfc5322.html
+[RFC 5890]: https://tools.ietf.org/html/rfc5890.html
+[RFC 6531]: https://tools.ietf.org/html/rfc6531.html
+[RFC 6570]: https://tools.ietf.org/html/rfc6570.html
+[RFC 6901]: https://tools.ietf.org/html/rfc6901.html
+[ECMA 262]: https://www.ecma-international.org/publications/standards/Ecma-262.htm

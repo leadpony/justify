@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.leadpony.justify.internal.keyword.assertion.format.Characters.isAsciiAlphanumeric;
+import static org.leadpony.justify.internal.keyword.assertion.format.AsciiCode.isAlphanumeric;
 
 import java.util.BitSet;
 
@@ -225,7 +225,7 @@ class EmailMatcher extends FormatMatcher {
     }
     
     protected boolean checkAtomLetter(int c) {
-        return isAsciiAlphanumeric(c) || atomTextCharset.get(c);
+        return isAlphanumeric(c) || atomTextCharset.get(c);
     }
     
     protected boolean checkDomainLiteralLetter(int c) {

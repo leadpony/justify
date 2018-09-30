@@ -66,7 +66,7 @@ class Ipv4Matcher extends FormatMatcher {
         }
         // 1st digit
         int c = next();
-        if (!Characters.isAsciiDigit(c)) {
+        if (!AsciiCode.isDigit(c)) {
             return false;
         }
         int value = digitToValue(c);
@@ -74,7 +74,7 @@ class Ipv4Matcher extends FormatMatcher {
         if (hasNext() && peek() != '.') {
             // 2nd digit
             c = next();
-            if (!Characters.isAsciiDigit(c)) {
+            if (!AsciiCode.isDigit(c)) {
                 return false;
             }
             value = value * 10 + digitToValue(c);
@@ -82,7 +82,7 @@ class Ipv4Matcher extends FormatMatcher {
             if (hasNext() && peek() != '.') {
                 // 3rd digit
                 c = next();
-                if (!Characters.isAsciiDigit(c)) {
+                if (!AsciiCode.isDigit(c)) {
                     return false;
                 }
                 value = value * 10 + digitToValue(c);

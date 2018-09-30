@@ -42,6 +42,7 @@ public class FormatValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/optional/format/time.json",
             "/org/json_schema/tests/draft7/optional/format/uri.json",
             "/org/json_schema/tests/draft7/optional/format/uri-reference.json",
+            "/org/json_schema/tests/draft7/optional/format/uri-template.json"
     };
     
     public static Stream<ValidationFixture> provideFixtures() {

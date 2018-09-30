@@ -44,7 +44,7 @@ class RelativeJsonPointer implements StringFormatAttribute {
             int offset = 0;
             while (++offset < length) {
                 c = value.charAt(offset);
-                if (!Characters.isAsciiDigit(c)) {
+                if (!AsciiCode.isDigit(c)) {
                     break;
                 }
             }

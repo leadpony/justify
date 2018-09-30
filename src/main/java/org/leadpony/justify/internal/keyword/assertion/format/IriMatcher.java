@@ -39,7 +39,7 @@ class IriMatcher extends UriMatcher {
     boolean pchar() {
         if (hasNext()) {
             int c = peek();
-            if (isIunreserved(c) || isSubDelim(c) || c == ':' || c == '@') {
+            if (UriCode.isIunreserved(c) || UriCode.isSubDelim(c) || c == ':' || c == '@') {
                 next();
                 return true;
             }
@@ -55,7 +55,7 @@ class IriMatcher extends UriMatcher {
                 continue;
             }
             int c = peek();
-            if (c == '/' || c == '?' || isIprivate(c)) {
+            if (c == '/' || c == '?' || UriCode.isIprivate(c)) {
                 next();
             } else {
                 return fail();
@@ -66,42 +66,10 @@ class IriMatcher extends UriMatcher {
 
     @Override
     boolean unreserved() {
-        if (hasNext() && isIunreserved(peek())) {
+        if (hasNext() && UriCode.isIunreserved(peek())) {
             next();
             return true;
         }
         return false;
-    }
-    
-    static boolean isIunreserved(int c) {
-        return isUnreserved(c) || isUcschar(c);
-    }
-
-    static boolean isUcschar(int c) {
-        return (0xA0 <= c && c <= 0xD7FF) ||
-               (0xF900 <= c && c <= 0xFDCF) ||
-               (0xFDF0 <=c && c <= 0xFFEF) ||
-               (0x10000 <= c && c <= 0x1FFFD) ||
-               (0x20000 <= c && c <= 0x2FFFD) ||
-               (0x30000 <= c && c <= 0x3FFFD) ||
-               (0x40000 <= c && c <= 0x4FFFD) ||
-               (0x50000 <= c && c <= 0x5FFFD) ||
-               (0x60000 <= c && c <= 0x6FFFD) ||
-               (0x70000 <= c && c <= 0x7FFFD) ||
-               (0x80000 <= c && c <= 0x8FFFD) ||
-               (0x90000 <= c && c <= 0x9FFFD) ||
-               (0xA0000 <= c && c <= 0xAFFFD) ||
-               (0xB0000 <= c && c <= 0xBFFFD) ||
-               (0xC0000 <= c && c <= 0xCFFFD) ||
-               (0xD0000 <= c && c <= 0xDFFFD) ||
-               (0xE0000 <= c && c <= 0xEFFFD)
-               ;
-    }
-    
-    static boolean isIprivate(int c) {
-        return (0xE000 <= c && c <= 0xF8FF) ||
-               (0xF0000 <= c && c <= 0xFFFFD) ||
-               (0x100000 <= c && c <= 0x10FFFD)
-               ;
     }
 }

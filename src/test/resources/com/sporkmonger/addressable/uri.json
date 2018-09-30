@@ -46,9 +46,19 @@
         "valid": false
     },
     {
-        "value": "<invalid>:",
+        "value": "http://<invalid>",
         "relative": false,
         "valid": false
+    },
+    {
+        "value": "http://!$&'()*+,;=",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~",
+        "relative": false,
+        "valid": true
     },
     {
         "value": "\t \n:",
@@ -776,6 +786,336 @@
     },
     {
         "value": "http://a/b/c/d;p?q",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "g:h",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "./g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g/",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "/g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?y",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g?y",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "#s",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g#s",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g?y#s",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": ";x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g;x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g;x?y#s",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": ".",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "./",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "..",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../..",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../../",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../../../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../.././../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "../../../../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "/./g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "/../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g.",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": ".g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g..",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "..g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "./../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "./g/.",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g/./h",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g/../h",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g;x=1/./y",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g;x=1/../y",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g?y/./x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g?y/../x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g#s/./x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "g#s/../x",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "http:g",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "relative/path/to/something",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "file:///absolute/path/relative/path/to/something",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "/",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "file:///",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "file:///c:/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "file:///one/two/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "file:///c:/windows/My%20Documents%20100%20/foo.txt",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "/path%2Fsegment/",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://prefix/.example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://p//",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://p//p",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://prefix%20.example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://prefix%2F.example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://7777.example.org:8089",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "feed://example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "file:///path/to/resource/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "file:////path/to/resource/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "feed:http://example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "acct%2Fbob@sporkmonger.com",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//example.com/acct:bob@sporkmonger.com",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "something:acct:bob@sporkmonger.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "urn:uuid:0b3ecf60-3f93-11df-a9c3-001f5bfffe12",
         "relative": false,
         "valid": true
     }
