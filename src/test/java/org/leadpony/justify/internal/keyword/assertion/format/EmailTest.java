@@ -62,7 +62,7 @@ public class EmailTest {
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("provideEmails")
     public void testEmail(Fixture fixture) {
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.result());
+        assertThat(sut.test(fixture.value())).isEqualTo(fixture.isValid());
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

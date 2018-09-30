@@ -57,4 +57,15 @@ final class Characters {
                (c >= 'A' && c <= 'F') ||
                (c >= 'a' && c <= 'f');
     }
+    
+    public static int hexDigitToValue(int c) {
+        if (isAsciiDigit(c)) {
+            return c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            return 10 + (c - 'a');
+        } else if (c >= 'A' && c <= 'F') {
+            return 10 + (c - 'A');
+        }
+        throw new IllegalArgumentException();
+    }
 }

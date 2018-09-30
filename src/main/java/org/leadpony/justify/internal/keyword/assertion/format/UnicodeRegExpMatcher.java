@@ -192,10 +192,10 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             return false;
         }
         final int mark = pos();
-        int value = hexDigitToValue(next());
+        int value = Characters.hexDigitToValue(next());
         while (hasNext()) {
             if (Characters.isAsciiHexDigit(peek())) {
-                value = value * 16 + hexDigitToValue(next());
+                value = value * 16 + Characters.hexDigitToValue(next());
             } else {
                 this.lastNumericValue = value;
                 return true;

@@ -92,16 +92,21 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 * description
 * format
   * date-time/date/time
-  * email/idn-email
-  * hostname/idn-hostname
-  * ipv4/ipv6
-  * json-pointer/relative-json-pointer
-  * regex (ECMA 262 compliant)
+  * email (compliant with RFC 5322)
+  * idn-email (compliant with RFC 6531)
+  * hostname (compliant with RFC 1034)
+  * idn-hostname (compliant with RFC 5890)
+  * ipv4 (compliant with RFC 2673)
+  * ipv6 (compliant with RFC 4291)
+  * json-pointer (compliant with RFC 6901)
+  * relative-json-pointer
+  * uri/uri-reference (compliant with RFC 3986)
+  * iri/iri-reference (compliant with RFC 3987)
+  * regex (compliant with ECMA 262)
 
 ### Schema keywords not implemented yet
 
 * format
-  * uri/uri-reference/iri/iri-reference
   * uri-template
 * default
 * contentMediaType

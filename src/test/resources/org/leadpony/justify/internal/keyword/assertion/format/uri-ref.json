@@ -1,0 +1,26 @@
+[
+    {
+        "value": "",
+        "valid": true
+    },
+    {
+        "value": "#",
+        "valid": true
+    },
+    {
+        "value": "./this:that",
+        "valid": true
+    },
+    {
+        "value": "t/inner.json",
+        "valid": true
+    },
+    {
+        "value": "?q=foo",
+        "valid": true
+    },
+    {
+        "value": "#foo",
+        "valid": true
+    }
+]

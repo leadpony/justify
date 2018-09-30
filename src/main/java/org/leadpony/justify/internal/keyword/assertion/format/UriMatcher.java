@@ -16,15 +16,10 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
- * Matcher for URI based on RFC 3986.
+ * Matcher for URI conformant to RFC 3986.
  * 
  * @author leadpony
  * 
@@ -33,37 +28,21 @@ import java.util.stream.Collectors;
  */
 class UriMatcher extends FormatMatcher {
     
-    private static final Logger log = Logger.getLogger(UriMatcher.class.getName());
-
-    private int schemaStart, schemaEnd;
-    private int userInfoStart, userInfoEnd;
-    private int hostStart, hostEnd;
-    private int portStart, portEnd;
-    private int pathStart, pathEnd;
-    private int queryStart, queryEnd;
-    private int fragmentStart, fragmentEnd;
-    
+    /**
+     * Constructs this matcher.
+     * 
+     * @param input the input character sequence.
+     */
     UriMatcher(CharSequence input) {
-        super(input);
-        this.schemaStart = 
-        this.userInfoStart = 
-        this.hostStart =
-        this.portStart = 
-        this.pathStart = 
-        this.queryStart = 
-        this.fragmentStart = -1;
+        super(decodeAllUnreserved(input));
     }
 
     @Override
     boolean all() {
-        boolean result = uri();
-        if (result) {
-            printComponents();
-        }
-        return result;
+        return uri();
     }
     
-    private boolean uri() {
+    boolean uri() {
         if (scheme() && hasNext(':')) {
             next();
             if (hierPart()) {
@@ -85,27 +64,27 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    private boolean scheme() {
-        final int start = pos();
+    boolean scheme() {
+        final int mark = pos();
         if (hasNext()) {
             int c = next();
             if (Characters.isAsciiAlphabetic(c)) {
                 while(hasNext() && peek() != ':') {
                     c = next();
-                    if (!Characters.isAsciiAlphanumeric(c) && 
-                        c != '+' && c != '-' && c != '.') {
-                        return false;
+                    if (Characters.isAsciiAlphanumeric(c) || 
+                        c == '+' || c == '-' || c == '.') {
+                        continue;
+                    } else {
+                        return backtrack(mark);
                     }
                 }
-                this.schemaStart = start;
-                this.schemaEnd = pos() + 1;
                 return true;
             }
         }
-        return false;
+        return backtrack(mark);
     }
 
-    private boolean hierPart() {
+    boolean hierPart() {
         if (hasNext('/')) {
             final int mark = pos();
             next();
@@ -119,7 +98,7 @@ class UriMatcher extends FormatMatcher {
         return pathRootless() || pathEmpty();
     }
 
-    private boolean authority() {
+    boolean authority() {
         if (!hasNext()) {
             return false;
         }
@@ -137,18 +116,17 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    private boolean userinfo() {
+    boolean userinfo() {
         final int start = pos();
         while (hasNext()) {
+            if (unreserved() || pctEncoded()) {
+                continue;
+            }
             int c = peek();
             if (c == '@') {
-                this.userInfoStart = start;
-                this.userInfoEnd = pos();
                 return true;
-            }
-            if (isUnreserved(c) || isSubDelim(c) || c == ':') {
+            } else if (isSubDelim(c) || c == ':') {
                 next();
-            } else if (pctEncoded()) {
                 continue;
             } else {
                 break;
@@ -157,18 +135,15 @@ class UriMatcher extends FormatMatcher {
         return backtrack(start);
     }
 
-    private boolean host() {
-        final int start = pos();
+    boolean host() {
         if (ipLiteral() || ipv4Address() || regName()) {
-            this.hostStart = start;
-            this.hostEnd = pos();
             return true;
         } else {
             return false;
         }
     }
     
-    private boolean ipLiteral() {
+    boolean ipLiteral() {
         if (hasNext('[')) {
             next();
             if (ipvFuture() || ipv6Address()) {
@@ -181,7 +156,7 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    private boolean ipvFuture() {
+    boolean ipvFuture() {
         if (hasNext('v') || hasNext('V')) {
             next();
             if (Characters.isAsciiHexDigit(next())) {
@@ -207,7 +182,7 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    private boolean ipv6Address() {
+    boolean ipv6Address() {
         final int start = pos();
         while (hasNext()) {
             if (peek() == ']') {
@@ -220,7 +195,7 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    private boolean ipv4Address() {
+    boolean ipv4Address() {
         final int start = pos();
         while (hasNext()) {
             if (isReserved(peek())) {
@@ -235,13 +210,12 @@ class UriMatcher extends FormatMatcher {
         return backtrack(start);
     }
 
-    private boolean regName() {
+    boolean regName() {
         while (hasNext()) {
-            if (pctEncoded()) {
+            if (unreserved() || pctEncoded()) {
                 continue;
             }
-            int c = peek();
-            if (isUnreserved(c) || isSubDelim(c)) {
+            if (isSubDelim(peek())) {
                 next();
             } else {
                 break;
@@ -250,8 +224,7 @@ class UriMatcher extends FormatMatcher {
         return true;
     }
 
-    private void port() {
-        this.portStart = pos();
+    void port() {
         // Skips digits
         while (hasNext()) {
             if (Characters.isAsciiDigit(peek())) {
@@ -260,23 +233,30 @@ class UriMatcher extends FormatMatcher {
                 break;
             }
         }
-        this.portEnd = pos();
     }
 
-    private boolean pathAbempty() {
-        final int start = pos();
+    boolean pathAbempty() {
         while (hasNext('/')) {
             // Skips '/'
             next();
             segment();
         }
-        this.pathStart = start;
-        this.pathEnd = pos();
         return true;
     }
     
-    private boolean pathAbsolute() {
-        final int start = pos();
+    boolean pathNoscheme() {
+        if (segmentNzNc()) {
+            while (hasNext('/')) {
+                next();
+                segment();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    boolean pathAbsolute() {
         if (hasNext('/')) {
             next();
             if (segmentNz()) {
@@ -285,47 +265,41 @@ class UriMatcher extends FormatMatcher {
                     segment();
                 }
             }
-            this.pathStart = start;
-            this.pathEnd = pos();
             return true;
         } else {
             return false;
         }
     }
     
-    private boolean pathRootless() {
-        final int start = pos();
+    boolean pathRootless() {
         if (segmentNz()) {
             while (hasNext('/')) {
                 next();
                 segment();
             }
-            this.pathStart = start;
-            this.pathEnd = pos();
             return true;
         } else {
             return false;
         }
     }
     
-    private boolean pathEmpty() {
+    boolean pathEmpty() {
         if (hasNext()) {
             int c = peek();
             if (c != '?' && c != '#') {
                 return false;
             }
         }
-        this.pathStart = this.pathEnd = pos();
         return true;
     }
     
-    protected boolean segment() {
+    boolean segment() {
         while (pchar()) {
         }
         return true;
     }
     
-    protected boolean segmentNz() {
+    boolean segmentNz() {
         if (pchar()) {
             while (pchar()) {
             }
@@ -334,14 +308,34 @@ class UriMatcher extends FormatMatcher {
         return false;
     }
     
-    protected boolean pchar() {
+    boolean segmentNzNc() {
+        int length = 0;
+        while (hasNext()) {
+            if (unreserved() || pctEncoded()) {
+                length++;
+            } else {
+                int c = peek();
+                if (isSubDelim(c) || c == '@') {
+                    next();
+                    length++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return length > 0;
+    }
+    
+    boolean pchar() {
         if (hasNext()) {
+            if (unreserved() || pctEncoded()) {
+                return true;
+            }
             int c = peek();
-            if (isUnreserved(c) || isSubDelim(c) || c == ':' || c == '@') {
+            if (isSubDelim(c) || c == ':' || c == '@') {
                 next();
                 return true;
             }
-            return pctEncoded();
         }
         return false;
     }
@@ -355,8 +349,7 @@ class UriMatcher extends FormatMatcher {
      * 
      * @return {@code true} if the query component is valid.
      */
-    private boolean query() {
-        final int start = pos();
+    boolean query() {
         while (hasNext() && peek() != '#') {
             if (pchar()) {
                 continue;
@@ -368,8 +361,6 @@ class UriMatcher extends FormatMatcher {
                 return fail();
             }
         }
-        this.queryStart = start;
-        this.queryEnd = pos();
         return true;
     }
 
@@ -381,8 +372,7 @@ class UriMatcher extends FormatMatcher {
      * 
      * @return {@code true} if the fragment component is valid.
      */
-    private boolean fragment() {
-        final int start = pos();
+    boolean fragment() {
         while (hasNext()) {
             if (pchar()) {
                 continue;
@@ -394,12 +384,18 @@ class UriMatcher extends FormatMatcher {
                 return fail();
             }
         }
-        this.fragmentStart = start;
-        this.fragmentEnd = pos();
         return true;
     }
     
-    private boolean pctEncoded() {
+    boolean unreserved() {
+        if (hasNext() && isUnreserved(peek())) {
+            next();
+            return true;
+        }
+        return false;
+    }
+    
+    boolean pctEncoded() {
         if (hasNext('%')) {
             // Skips '%'
             next();
@@ -414,55 +410,86 @@ class UriMatcher extends FormatMatcher {
         }
     }
     
-    private static boolean isReserved(int c) {
+    boolean relativeRef() {
+        if (relativePart()) {
+            if (hasNext('?')) {
+                next();
+                if (!query()) {
+                    return false;
+                }
+            }
+            if (hasNext('#')) {
+                next();
+                if (!fragment()) {
+                    return false;
+                }
+            }
+            return !hasNext();
+        }
+        return false;
+    }
+    
+    boolean relativePart() {
+        if (hasNext('/')) {
+            final int mark = pos();
+            next();
+            if (hasNext('/')) {
+                next();
+                return authority() && pathAbempty();
+            }
+            backtrack(mark);
+            return pathAbsolute();
+        }
+        return pathNoscheme() || pathEmpty();
+    }
+    
+    static boolean isReserved(int c) {
         return reserved.get(c);
     }
     
-    private static boolean isSubDelim(int c) {
+    static boolean isSubDelim(int c) {
         return subDelims.get(c);
     }
     
-    protected boolean isUnreserved(int c) {
+    static boolean isUnreserved(int c) {
         return Characters.isAsciiAlphanumeric(c) ||
                c == '-' || c == '.' || c == '_' || c == '~'; 
     }
     
-    private void printComponents() {
-        if (!log.isLoggable(Level.FINE)) {
-            return;
-        }
+    private static CharSequence decodeAllUnreserved(CharSequence input) {
         StringBuilder b = new StringBuilder();
-        b.append(input())
-         .append(" -> ")
-         .append(getComponents().stream().collect(Collectors.joining(", ", "[", "]")))
-         ;
-        log.fine(b.toString());
+        final int length = input.length();
+        int startIndex = 0;
+        int index = 0;
+        while (index < length) {
+            if (input.charAt(index) == '%' && index + 2 < length) {
+                char high = input.charAt(index + 1);
+                char low = input.charAt(index + 2);
+                int codePoint = decodePercentEncoded(high, low);
+                if (codePoint >= 0 && isUnreserved(codePoint)) {
+                    b.append(input, startIndex, index).appendCodePoint(codePoint);
+                    startIndex = index + 3;
+                }
+                index += 3;
+            } else {
+                index++;
+            }
+        }
+        if (startIndex == 0) {
+            return input;
+        } else if (startIndex < length) {
+            b.append(input, startIndex, length);
+        }
+        return b.toString();
     }
     
-    private List<String> getComponents() {
-        List<String> components = new ArrayList<>();
-        if (schemaStart >= 0) {
-            components.add(extract(schemaStart, schemaEnd));
+    private static int decodePercentEncoded(int high, int low) {
+        int codePoint = -1;
+        if (Characters.isAsciiHexDigit(high) && Characters.isAsciiHexDigit(low)) {
+            codePoint = Characters.hexDigitToValue(high) * 16 +
+                        Characters.hexDigitToValue(low);
         }
-        if (userInfoStart >= 0) {
-            components.add(extract(userInfoStart, userInfoEnd));
-        }
-        if (hostStart >= 0) {
-            components.add(extract(hostStart, hostEnd));
-        }
-        if (portStart >= 0) {
-            components.add(extract(portStart, portEnd));
-        }
-        if (pathStart >= 0) {
-            components.add(extract(pathStart, pathEnd));
-        }
-        if (queryStart >= 0) {
-            components.add(extract(queryStart, queryEnd));
-        }
-        if (fragmentStart >= 0) {
-            components.add(extract(fragmentStart, fragmentEnd));
-        }
-        return components;
+        return codePoint;
     }
     
     private static final int[] GEN_DELIMS = { ':', '/', '?', '#', '[', ']', '@' };

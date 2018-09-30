@@ -1,0 +1,18 @@
+[
+    {
+        "value": "http://www.詹姆斯.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "remark": "Spaces was percent-encoded.",
+        "value": "http://www.詹姆斯.com/%20some%20spaces%20/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.詹姆斯.com/atomtests/iri/詹.html",
+        "relative": false,
+        "valid": true
+    }
+]

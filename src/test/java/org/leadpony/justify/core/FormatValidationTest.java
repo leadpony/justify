@@ -34,7 +34,7 @@ public class FormatValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/optional/format/idn-hostname.json",
             "/org/json_schema/tests/draft7/optional/format/ipv4.json",
             "/org/json_schema/tests/draft7/optional/format/ipv6.json",
-            //"/org/json_schema/tests/draft7/optional/format/iri.json",
+            "/org/json_schema/tests/draft7/optional/format/iri.json",
             "/org/json_schema/tests/draft7/optional/format/iri-reference.json",
             "/org/json_schema/tests/draft7/optional/format/json-pointer.json",
             "/org/json_schema/tests/draft7/optional/format/regex.json",

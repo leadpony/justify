@@ -1,0 +1,782 @@
+[
+    {
+        "remark": "modified from the original",
+        "value": "http:",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://local\"host/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "ht%0atp://localhost/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://localhost/%0a",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://local%0ahost/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://foo%0abar@localhost/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example:foo%0abar@example/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://local\nhost/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "::http",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "<invalid>:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "\t \n:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "123:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "1scheme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "+scheme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": ".scheme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "-scheme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "scheme!:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "sch eme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "sch\neme:",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "remark": "modified from the original",
+        "value": "http:#fragment",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://user:password@example.com:8080/path?query=value#fragment",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "HTTP://example.com.:%38%30/%70a%74%68?a=%31#1%323",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "//user:pass@:80",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//user@example.com",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//example...",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//example\\example",
+        "relative": true,
+        "valid": false
+    },
+    {
+        "value": "example example",
+        "relative": true,
+        "valid": false
+    },
+    {
+        "value": "http://example.com/path",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http:path",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "ftp://ftp.is.co.za/rfc/rfc1808.txt",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.ietf.org/rfc/rfc2396.txt",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "ldap://[2001:db8::7]/c=GB?objectClass?one",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "mailto:John.Doe@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "mailto:?to=addr1@an.example,addr2@an.example",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "news:comp.infosystems.www.servers.unix",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "tel:+1-816-555-1212",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "telnet://192.0.2.16:80/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "urn:oasis:names:specification:docbook:dtd:xml:4.1.2",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://192.0.2.16:8000",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://EXAMPLE.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://user%40123%21@example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://:newpass@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://:%23secret%40123%21@example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://newuser@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://newuser:@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "HTTP://www.w3.org/pub/WWW/TheProject.html",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[3ffe:1900:4545:3:200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[fe80:0:0:0:200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[fe80::200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[::1]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[fe80::1]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[<invalid>]/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://[v9.3ffe:1900:4545:3:200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[vff.fe80:0:0:0:200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[v12.fe80::200:f8ff:fe21:67cf]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[va0.::1]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[v255.fe80::1]/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://[v0.<invalid>]/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://example.com?#",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://@example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com./",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://:@example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "HTTP://EXAMPLE.COM/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.example.co.uk/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://sub_domain.blogspot.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/~smith/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%7Esmith/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%7esmith/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%E8",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/path%2Fsegment/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/path/segment/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?%F6",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/#%F6",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%C3%87",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/C%CC%A7",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%25C3%2587",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q=string",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com:80/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com:8080/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com:%38%30/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/%2E/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/..",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/../..",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/path(/..",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/(path)/..",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/path(/../",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/(path)/../",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "/..//example.com",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "/a/b/c/./../../g",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "mid/content=5/../6",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "http://www.example.com///../",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.example.com//",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/path/to/resource/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "relative/path/to/resource",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "relative_path_with_no_slashes",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/file.txt",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/file.txt;parameter",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/file.txt;x=y",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "svn+ssh://developername@rubyforge.org/var/svn/project",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "ssh+svn://developername@RUBYFORGE.ORG/var/svn/project",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "mailto:user@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "tag:example.com,2006-08-18:/path/to/something",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/x;y/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?x=1&y=2",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "view-source:http://example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://user:pass@example.com/path/to/resource?query=x#fragment",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/search?q=Q%26A",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?&x=b",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q='one;two'&x=1",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?&&x=b",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q=a&&x=b",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q&&x=b",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q=a+b",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q=a%2bb",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "remark": "percent character must be percent-encoded.",
+        "value": "http://example.com/?v=%7E&w=%&x=%25&y=%2B&z=C%CC%A7",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://example.com/?v=%7E&w=%25&x=%25&y=%2B&z=C%CC%A7",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "remark": "percent character must be percent-encoded.",
+        "value": "http://example.com/?v=%7E&w=%&x=%25&y=+&z=C%CC%A7",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://example.com/?v=%7E&w=%25&x=%25&y=+&z=C%CC%A7",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/sound%2bvision",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/?q=",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://user@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://user:@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://:pass@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://:@example.com",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "#example",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "//example.com/",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "feed://http://example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "feed:http://example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "example://a/b/c/%7Bfoo%7D",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://example.com/indirect/path/./to/../resource/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://under_score.example.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "./this:that",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "this:that",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "?",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?one=1&two=2&three=3",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?one=1=uno&two=2=dos",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D=four",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?one.two.three=four",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D=four&one%5Btwo%5D%5Bfive%5D=six",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?one.two.three=four&one.two.five=six",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "?one=two&one=three&one=four",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D%5B%5D=four&one%5Btwo%5D%5Bthree%5D%5B%5D=five",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D%5B0%5D=four&one%5Btwo%5D%5Bthree%5D%5B1%5D=five",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D%5B1%5D=four&one%5Btwo%5D%5Bthree%5D%5B0%5D=five",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "remark": "Square brackets was percent-encoded.",
+        "value": "?one%5Btwo%5D%5Bthree%5D%5B2%5D=four&one%5Btwo%5D%5Bthree%5D%5B1%5D=five",
+        "relative": true,
+        "valid": true
+    },
+    {
+        "value": "http://www.詹姆斯.com/",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://www.詹姆斯.com/ some spaces /",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://www.xn--8ws00zhy3a.com/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.詹姆斯.com/atomtests/iri/詹.html",
+        "relative": false,
+        "valid": false
+    },
+    {
+        "value": "http://www.xn--8ws00zhy3a.com/atomtests/iri/%E8%A9%B9.html",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://www.%E3%81%BB%E3%82%93%E3%81%A8%E3%81%86%E3%81%AB%E3%81%AA%E3%81%8C%E3%81%84%E3%82%8F%E3%81%91%E3%81%AE%E3%82%8F%E3%81%8B%E3%82%89%E3%81%AA%E3%81%84%E3%81%A9%E3%82%81%E3%81%84%E3%82%93%E3%82%81%E3%81%84%E3%81%AE%E3%82%89%E3%81%B9%E3%82%8B%E3%81%BE%E3%81%A0%E3%81%AA%E3%81%8C%E3%81%8F%E3%81%97%E3%81%AA%E3%81%84%E3%81%A8%E3%81%9F%E3%82%8A%E3%81%AA%E3%81%84.w3.mag.keio.ac.jp",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "http://a/b/c/d;p?q",
+        "relative": false,
+        "valid": true
+    }
+]

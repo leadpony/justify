@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assumptions;
@@ -26,30 +28,48 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Ipv6} class.
+ * Test cases for {@link UriReference} class.
  * 
  * @author leadpony
  */
-public class Ipv6Test {
-
+public class UriReferenceTest {
+    
     // System under test
-    private static Ipv6 sut;
-  
+    private static UriReference sut;
+
     private static int index;
     
     @BeforeAll
     public static void setUpOnce() {
-        sut = new Ipv6();
+        sut = new UriReference(true);
     }
     
-    public static Stream<Fixture> provideFixtures() {
-        return Fixture.load("ipv6.json");
+    public static Stream<UriFixture> uris() {
+        return UriFixture.load("uri.json")
+                .filter(UriFixture::isValid);
+    }
+
+    public static Stream<UriFixture> uriRefs() {
+        List<String> files = Arrays.asList(
+            "uri-ref.json",
+            "/com/sporkmonger/addressable/uri.json"
+        );
+        return files.stream().flatMap(UriFixture::load);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideFixtures")
-    public void test(Fixture fixture) {
+    @MethodSource("uris")
+    public void testUri(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.isValid());
+        boolean valid = sut.test(fixture.value()); 
+        assertThat(valid).isEqualTo(fixture.isValid());
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("uriRefs")
+    public void testUriReference(UriFixture fixture) {
+        Assumptions.assumeTrue(++index >= 0);
+        boolean valid = sut.test(fixture.value()); 
+        assertThat(valid).isEqualTo(fixture.isValid());
     }
 }

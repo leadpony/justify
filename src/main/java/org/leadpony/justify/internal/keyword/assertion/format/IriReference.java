@@ -16,9 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * Format attribute representing "iri-reference" attribute.
  * 
@@ -36,11 +33,6 @@ class IriReference implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        try {
-            new URI(value);
-            return true;
-        } catch (URISyntaxException e) {
-            return false;
-        }
+        return new IriReferenceMatcher(value).matches();
     }
 }

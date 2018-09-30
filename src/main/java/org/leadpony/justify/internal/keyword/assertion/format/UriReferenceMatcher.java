@@ -17,22 +17,26 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * Format attribute representing "iri" attribute.
+ * Matcher for URI reference conformant to RFC 3986.
  * 
  * @author leadpony
  * 
- * @see <a href="https://tools.ietf.org/html/rfc3987">
- * "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
+ * @see <a href="https://tools.ietf.org/html/rfc3986">
+ * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
-class Iri implements StringFormatAttribute {
+class UriReferenceMatcher extends UriMatcher {
 
-    @Override
-    public String name() {
-        return "iri";
+    /**
+     * Constructs this matcher.
+     * 
+     * @param input the input character sequence.
+     */
+    UriReferenceMatcher(CharSequence input) {
+        super(input);
     }
 
     @Override
-    public boolean test(String value) {
-        return new IriMatcher(value).matches();
+    boolean all() {
+        return uri() || relativeRef();
     }
 }

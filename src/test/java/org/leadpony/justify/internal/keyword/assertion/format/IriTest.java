@@ -26,35 +26,41 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Uri} class.
+ * Test cases for {@link Iri} class.
  * 
  * @author leadpony
  */
-public class UriTest {
+public class IriTest {
     
     // System under test
-    private static Uri sut;
+    private static Iri sut;
 
     private static int index;
     
     @BeforeAll
     public static void setUpOnce() {
-        sut = new Uri(true);
+        sut = new Iri();
     }
     
     public static Stream<UriFixture> uris() {
-        return UriFixture.load("uri.json");
+        return UriFixture.load("uri.json")
+                .filter(UriFixture::isValid);
     }
 
     public static Stream<UriFixture> uriRefs() {
-        return UriFixture.load("/com/sporkmonger/addressable/uri.json");
+        return UriFixture.load("/com/sporkmonger/addressable/uri.json")
+                .filter(UriFixture::isValid);
+    }
+    
+    public static Stream<UriFixture> iriRefs() {
+        return UriFixture.load("/com/sporkmonger/addressable/iri.json");
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
     @MethodSource("uris")
     public void testUri(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         assertThat(valid).isEqualTo(fixture.isValid());
     }
 
@@ -62,7 +68,19 @@ public class UriTest {
     @MethodSource("uriRefs")
     public void testUriRef(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
+        if (fixture.isRelative()) {
+            assertThat(valid).isFalse();
+        } else {
+            assertThat(valid).isEqualTo(fixture.isValid());
+        }
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("iriRefs")
+    public void testIriRef(UriFixture fixture) {
+        Assumptions.assumeTrue(++index >= 0);
+        boolean valid = sut.test(fixture.value());
         if (fixture.isRelative()) {
             assertThat(valid).isFalse();
         } else {

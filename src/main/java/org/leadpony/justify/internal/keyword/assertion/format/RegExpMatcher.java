@@ -640,7 +640,8 @@ abstract class RegExpMatcher extends FormatMatcher {
                 if (hasNext()) {
                     int second = next();
                     if (Characters.isAsciiHexDigit(second)) {
-                        int value = hexDigitToValue(first) * 16 + hexDigitToValue(second);
+                        int value = Characters.hexDigitToValue(first) * 16 
+                                + Characters.hexDigitToValue(second);
                         return withClassAtomOf(value);
                     }
                 }
@@ -658,7 +659,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             if (!Characters.isAsciiHexDigit(c)) {
                 break;
             }
-            value = value * 16 + hexDigitToValue(c);
+            value = value * 16 + Characters.hexDigitToValue(c);
             if (++digits >= 4) {
                 this.lastNumericValue = value;
                 return true;
@@ -795,17 +796,6 @@ abstract class RegExpMatcher extends FormatMatcher {
 
     protected static int digitToValue(int c) {
         return (c - '0');
-    }
-    
-    protected static int hexDigitToValue(int c) {
-        if (Characters.isAsciiDigit(c)) {
-            return c - '0';
-        } else if (c >= 'a' && c <= 'f') {
-            return 10 + (c - 'a');
-        } else if (c >= 'A' && c <= 'F') {
-            return 10 + (c - 'A');
-        }
-        throw new IllegalArgumentException();
     }
     
     protected static boolean optional(boolean result) {

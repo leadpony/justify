@@ -26,32 +26,38 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * Test fixture.
+ * URI test fixture.
  * 
  * @author leadpony
  */
-class Fixture {
+class UriFixture {
     
     private final String value;
+    private final boolean relative;
     private final boolean valid;
     
-    static Stream<Fixture> load(String name) {
-        InputStream in = Fixture.class.getResourceAsStream(name);
+    static Stream<UriFixture> load(String name) {
+        InputStream in = UriFixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             JsonArray array = reader.readArray();
             return array.stream()
                     .map(JsonValue::asJsonObject)
-                    .map(Fixture::new);
+                    .map(UriFixture::new);
         }
     }
     
-    protected Fixture(JsonObject object) {
+    protected UriFixture(JsonObject object) {
         this.value = object.getString("value");
+        this.relative = object.getBoolean("relative", false);
         this.valid = object.getBoolean("valid");
     }
     
     String value() {
         return value;
+    }
+    
+    boolean isRelative() {
+        return relative;
     }
     
     boolean isValid() {

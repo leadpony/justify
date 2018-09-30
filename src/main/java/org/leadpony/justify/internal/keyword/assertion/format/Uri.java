@@ -25,6 +25,16 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
 class Uri implements StringFormatAttribute {
+    
+    private final boolean verbose;
+    
+    Uri() {
+        this(false);
+    }
+    
+    Uri(boolean verbose) {
+        this.verbose = verbose;
+    }
 
     @Override
     public String name() {
@@ -33,6 +43,8 @@ class Uri implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return new UriMatcher(value).matches();
+        UriMatcher m = verbose ? 
+                new VerboseUriMatcher(value) : new UriMatcher(value);
+        return m.matches();
     }
 }
