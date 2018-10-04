@@ -153,7 +153,7 @@
         "value": "2001:db8:aaaa:bbbb:cccc:dddd:eeee:AaAa",
         "valid": true
     },
-    
+
     {
         "value": "",
         "valid": false
@@ -194,5 +194,10 @@
     {
         "value": "2001:db8:00000::",
         "valid": false
+    },
+    {
+        "description": "IPv4 address with leading zeros",
+        "value": "::FFFF:129.144.052.038",
+        "valid": true
     }
 ]

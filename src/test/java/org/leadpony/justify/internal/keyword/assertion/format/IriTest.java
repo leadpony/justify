@@ -52,6 +52,10 @@ public class IriTest {
                 .filter(UriFixture::isValid);
     }
     
+    public static Stream<UriFixture> iris() {
+        return UriFixture.load("iri.json");
+    }
+
     public static Stream<UriFixture> iriRefs() {
         return UriFixture.load("/com/sporkmonger/addressable/iri.json");
     }
@@ -74,6 +78,14 @@ public class IriTest {
         } else {
             assertThat(valid).isEqualTo(fixture.isValid());
         }
+    }
+
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MethodSource("iris")
+    public void testIri(UriFixture fixture) {
+        Assumptions.assumeTrue(++index >= 0);
+        boolean valid = sut.test(fixture.value());
+        assertThat(valid).isEqualTo(fixture.isValid());
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

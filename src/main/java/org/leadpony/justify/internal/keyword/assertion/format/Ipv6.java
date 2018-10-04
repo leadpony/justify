@@ -32,6 +32,6 @@ class Ipv6 implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return new Ipv6Matcher(value).matches();
+        return new Ipv6Matcher(value).withLeadingZerosAllowed().matches();
     }
 }

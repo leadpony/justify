@@ -1,0 +1,12 @@
+[
+    {
+        "value": "http://\u6176\u61C9\u7FA9\u587E\u5927\u5B66.jp/",
+        "relative": false,
+        "valid": true
+    },
+    {
+        "value": "r\u00E9sum\u00E9://example.org",
+        "relative": false,
+        "valid": false
+    }
+]

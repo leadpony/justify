@@ -22,6 +22,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @author leadpony
  */
 class Ipv4Matcher extends FormatMatcher {
+    
+    private boolean allowLeadingZeros = false;
 
     /**
      * Constructs this matcher.
@@ -30,6 +32,16 @@ class Ipv4Matcher extends FormatMatcher {
      */
     Ipv4Matcher(CharSequence input) {
         super(input);
+    }
+    
+    /**
+     * Allows leading zeros for each decimal byte.
+     * 
+     * @return this matcher.
+     */
+    Ipv4Matcher withLeadingZerosAllowed() {
+        this.allowLeadingZeros = true;
+        return this;
     }
 
     /**
@@ -70,6 +82,9 @@ class Ipv4Matcher extends FormatMatcher {
             return false;
         }
         int value = digitToValue(c);
+        if (value == 0 && !this.allowLeadingZeros) {
+            return !hasNext() || peek() == '.';
+        }
         
         if (hasNext() && peek() != '.') {
             // 2nd digit

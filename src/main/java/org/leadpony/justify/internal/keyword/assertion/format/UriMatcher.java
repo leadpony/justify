@@ -203,7 +203,7 @@ class UriMatcher extends FormatMatcher {
             }
             next();
         }
-        StrictIpv4Matcher m = new StrictIpv4Matcher(input(), start, pos());
+        Ipv4Matcher m = new Ipv4Matcher(input(), start, pos());
         if (m.matches()) {
             return true;
         }

@@ -31,6 +31,6 @@ class Ipv4 implements StringFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return new Ipv4Matcher(value).matches();
+        return new Ipv4Matcher(value).withLeadingZerosAllowed().matches();
     }
 }

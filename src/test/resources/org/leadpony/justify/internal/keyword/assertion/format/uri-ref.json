@@ -1,26 +1,32 @@
 [
     {
         "value": "",
+        "relative": true,
         "valid": true
     },
     {
         "value": "#",
+        "relative": true,
         "valid": true
     },
     {
         "value": "./this:that",
+        "relative": true,
         "valid": true
     },
     {
         "value": "t/inner.json",
+        "relative": true,
         "valid": true
     },
     {
         "value": "?q=foo",
+        "relative": true,
         "valid": true
     },
     {
         "value": "#foo",
+        "relative": true,
         "valid": true
     }
 ]

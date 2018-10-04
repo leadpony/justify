@@ -1,0 +1,360 @@
+[
+    {
+        "description": "from RFC 6570",
+        "value": "http://example.com/~{username}/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/dictionary/{term:1}/{term}",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/search{?q,lang}",
+        "valid": true
+    },
+    {
+        "value": "{var}",
+        "valid": true
+    },
+    {
+        "value": "{hello}",
+        "valid": true
+    },
+    {
+        "value": "{+var}",
+        "valid": true
+    },
+    {
+        "value": "{+hello}",
+        "valid": true
+    },
+    {
+        "value": "{+path}/here",
+        "valid": true
+    },
+    {
+        "value": "here?ref={+path}",
+        "valid": true
+    },
+    {
+        "value": "X{#var}",
+        "valid": true
+    },
+    {
+        "value": "X{#hello}",
+        "valid": true
+    },
+    {
+        "value": "map?{x,y}",
+        "valid": true
+    },
+    {
+        "value": "{x,hello,y}",
+        "valid": true
+    },
+    {
+        "value": "{+x,hello,y}",
+        "valid": true
+    },
+    {
+        "value": "{+path,x}/here",
+        "valid": true
+    },
+    {
+        "value": "{#x,hello,y}",
+        "valid": true
+    },
+    {
+        "value": "{#path,x}/here",
+        "valid": true
+    },
+    {
+        "value": "X{.var}",
+        "valid": true
+    },
+    {
+        "value": "X{.x,y}",
+        "valid": true
+    },
+    {
+        "value": "{/var}",
+        "valid": true
+    },
+    {
+        "value": "{/var,x}/here",
+        "valid": true
+    },
+    {
+        "value": "{;x,y}",
+        "valid": true
+    },
+    {
+        "value": "{;x,y,empty}",
+        "valid": true
+    },
+    {
+        "value": "{?x,y}",
+        "valid": true
+    },
+    {
+        "value": "{?x,y,empty}",
+        "valid": true
+    },
+    {
+        "value": "?fixed=yes{&x}",
+        "valid": true
+    },
+    {
+        "value": "{&x,y,empty}",
+        "valid": true
+    },
+    {
+        "value": "{var:3}",
+        "valid": true
+    },
+    {
+        "value": "{var:30}",
+        "valid": true
+    },
+    {
+        "value": "{list}",
+        "valid": true
+    },
+    {
+        "value": "{list*}",
+        "valid": true
+    },
+    {
+        "value": "{keys}",
+        "valid": true
+    },
+    {
+        "value": "{keys*}",
+        "valid": true
+    },
+    {
+        "value": "{+path:6}/here",
+        "valid": true
+    },
+    {
+        "value": "{+list}",
+        "valid": true
+    },
+    {
+        "value": "{+list*}",
+        "valid": true
+    },
+    {
+        "value": "{+keys}",
+        "valid": true
+    },
+    {
+        "value": "{+keys*}",
+        "valid": true
+    },
+    {
+        "value": "{#path:6}/here",
+        "valid": true
+    },
+    {
+        "value": "{#list}",
+        "valid": true
+    },
+    {
+        "value": "{#list*}",
+        "valid": true
+    },
+    {
+        "value": "{#keys}",
+        "valid": true
+    },
+    {
+        "value": "{#keys*}",
+        "valid": true
+    },
+    {
+        "value": "X{.var:3}",
+        "valid": true
+    },
+    {
+        "value": "X{.list}",
+        "valid": true
+    },
+    {
+        "value": "X{.list*}",
+        "valid": true
+    },
+    {
+        "value": "X{.keys}",
+        "valid": true
+    },
+    {
+        "value": "X{.keys*}",
+        "valid": true
+    },
+    {
+        "value": "{/var:1,var}",
+        "valid": true
+    },
+    {
+        "value": "{/list}",
+        "valid": true
+    },
+    {
+        "value": "{/list*}",
+        "valid": true
+    },
+    {
+        "value": "{/list*,path:4}",
+        "valid": true
+    },
+    {
+        "value": "{/keys}",
+        "valid": true
+    },
+    {
+        "value": "{/keys*}",
+        "valid": true
+    },
+    {
+        "value": "{;hello:5}",
+        "valid": true
+    },
+    {
+        "value": "{;list}",
+        "valid": true
+    },
+    {
+        "value": "{;list*}",
+        "valid": true
+    },
+    {
+        "value": "{;keys}",
+        "valid": true
+    },
+    {
+        "value": "{;keys*}",
+        "valid": true
+    },
+    {
+        "value": "{?var:3}",
+        "valid": true
+    },
+    {
+        "value": "{?list}",
+        "valid": true
+    },
+    {
+        "value": "{?list*}",
+        "valid": true
+    },
+    {
+        "value": "{?keys}",
+        "valid": true
+    },
+    {
+        "value": "{?keys*}",
+        "valid": true
+    },
+    {
+        "value": "{&var:3}",
+        "valid": true
+    },
+    {
+        "value": "{&list}",
+        "valid": true
+    },
+    {
+        "value": "{&list*}",
+        "valid": true
+    },
+    {
+        "value": "{&keys}",
+        "valid": true
+    },
+    {
+        "value": "{&keys*}",
+        "valid": true
+    },
+    {
+        "value": "{var}",
+        "valid": true
+    },
+    {
+        "value": "{var:20}",
+        "valid": true
+    },
+    {
+        "value": "{var:3}",
+        "valid": true
+    },
+    {
+        "value": "{semi}",
+        "valid": true
+    },
+    {
+        "value": "{semi:2}",
+        "valid": true
+    },
+    {
+        "value": "/mapper{?address*}",
+        "valid": true
+    },
+    {
+        "value": "find{?year*}",
+        "valid": true
+    },
+    {
+        "value": "www{.dom*}",
+        "valid": true
+    },
+    {
+        "description": "original tests",
+        "value": "http://example.com/r\u00E9sum\u00E9/{foo}/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/r%C3%A9sum%C3%A9/{foo}/",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/{}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo,}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo,bar,}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo,",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo{bar}}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo:}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo:0}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/{foo:9999}",
+        "valid": true
+    },
+    {
+        "value": "http://example.com/{foo:10000}",
+        "valid": false
+    },
+    {
+        "value": "http://example.com/<invalid>/{foo}",
+        "valid": false
+    }
+]
