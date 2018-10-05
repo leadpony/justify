@@ -23,6 +23,7 @@ module org.leadpony.justify {
     
     requires transitive java.json;
     requires java.logging;
+    requires icu4j;
     
     uses javax.json.spi.JsonProvider;
     uses org.leadpony.justify.core.spi.JsonValidationProvider; 
