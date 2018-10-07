@@ -43,5 +43,14 @@
             } 
         },
         "valid": false
+    },
+    {
+        "description": "property name is not a regular expression",
+        "schema": { 
+            "patternProperties": {
+                "^(abc]": {}
+            } 
+        },
+        "valid": false
     }
 ]

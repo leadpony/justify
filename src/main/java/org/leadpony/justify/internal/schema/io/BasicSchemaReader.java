@@ -20,6 +20,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -192,11 +193,11 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     
     private void populateSchema(String keyName, EnhancedSchemaBuilder builder) {
         switch (keyName) {
-        case "$id":
-            addId(builder);
-            break;
         case "$schema":
             addSchema(builder);
+            break;
+        case "$id":
+            addId(builder);
             break;
         case "$ref":
             addRef(builder);
@@ -324,34 +325,49 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
     }
     
-    private void addRef(EnhancedSchemaBuilder builder) {
-        Event event = parser.next();
-        if (event == Event.VALUE_STRING) {
-            URI uri = URI.create(parser.getString());
-            builder.withRef(uri);
-        } else {
-            skipValue(event);
-        }
-    }
+    /* Core keywords */
     
-    private void addId(JsonSchemaBuilder builder) {
-        Event event = parser.next();
-        if (event == Event.VALUE_STRING) {
-            builder.withId(URI.create(parser.getString()));
-        } else {
-            skipValue(event);
-        }
-    }
-
     private void addSchema(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
-            builder.withSchema(URI.create(parser.getString()));
+            try {
+                builder.withSchema(new URI(parser.getString()));
+            } catch (URISyntaxException e) {
+                // Do nothing.
+            }
         } else {
             skipValue(event);
         }
     }
 
+    private void addId(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            try {
+                builder.withId(new URI(parser.getString()));
+            } catch (URISyntaxException e) {
+                // Do nothing.
+            }
+        } else {
+            skipValue(event);
+        }
+    }
+
+    private void addRef(EnhancedSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            try {
+                builder.withRef(new URI(parser.getString()));
+            } catch (URISyntaxException e) {
+                // Do nothing.
+            }
+        } else {
+            skipValue(event);
+        }
+    }
+
+    /* Validation keywords */
+    
     private void addType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -471,6 +487,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             try {
                 builder.withPattern(parser.getString());
             } catch (PatternSyntaxException e) {
+                // Do nothing.
             }
         } else {
             skipValue(event);
@@ -647,7 +664,11 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                 String pattern = parser.getString();
                 event = parser.next();
                 if (canStartSchema(event)) {
-                    builder.withPatternProperty(pattern, subschema(event));
+                    try {
+                        builder.withPatternProperty(pattern, subschema(event));
+                    } catch (PatternSyntaxException e) {
+                        // Do nothing.
+                    }
                 } else {
                     skipValue(event);
                 }
@@ -787,7 +808,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             try {
                 builder.withFormat(attribute);
             } catch (IllegalArgumentException e) {
-                // TODO:
+                handleUnknownFormatAttribute(attribute);
             }
         } else {
             skipValue(event);
@@ -897,6 +918,14 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         default:
             break;
         }
+    }
+    
+    private void handleUnknownFormatAttribute(String attribute) {
+        Problem p = createProblemBuilder(parser)
+                .withMessage("schema.problem.format.unknown")
+                .withParameter("attribute", attribute)
+                .build();
+        addProblem(p);
     }
    
     private void addProblem(Problem problem) {

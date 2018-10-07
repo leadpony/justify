@@ -1,0 +1,17 @@
+[
+    {
+        "description": "value is a URI",
+        "schema": { "$ref": "http://json-schema.org/draft-07/schema#" },
+        "valid": true
+    },
+    {
+        "description": "value is a relative-ref",
+        "schema": { "$ref": "#" },
+        "valid": true
+    },
+    {
+        "description": "value is not a URI",
+        "schema": { "$ref": "http://<invalid>/schema.json#" },
+        "valid": false
+    }
+]
