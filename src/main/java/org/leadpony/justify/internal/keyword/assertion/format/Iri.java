@@ -24,7 +24,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @see <a href="https://tools.ietf.org/html/rfc3987">
  * "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
-class Iri implements StringFormatAttribute {
+class Iri extends AbstractFormatAttribute {
 
     @Override
     public String name() {

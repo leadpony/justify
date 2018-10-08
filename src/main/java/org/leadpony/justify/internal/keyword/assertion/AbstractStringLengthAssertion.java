@@ -54,11 +54,10 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
         if (testLength(length, this.bound)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser, event)
                     .withMessage(this.messageKey)
                     .withParameter("actual", length)
                     .withParameter("bound", this.bound)
-                    .withParameter("context", getContextName(event))
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -69,11 +68,10 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.bound)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser, event)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", length)
                     .withParameter("bound", this.bound)
-                    .withParameter("context", getContextName(event))
                     .build();
             reporter.accept(p);
             return Result.FALSE;

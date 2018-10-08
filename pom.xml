@@ -293,7 +293,7 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>attach-javadocs</id>
+                                <id>attach-javadoc</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>jar</goal>

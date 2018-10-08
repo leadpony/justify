@@ -16,8 +16,13 @@
 
 package org.leadpony.justify.internal.base;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import org.leadpony.justify.core.Localized;
 
 /**
  * Formatter of message.
@@ -27,37 +32,35 @@ import java.util.function.Function;
 class MessageFormatter {
 
     private final String input;
-    private final Function<String, String> resolver;
+    private final ResourceBundle bundle;
     private int offset;
-  
+   
+    private Map<String, Object> parameters;
+    
     /**
      * Constructs this formatter.
      * 
      * @param input the original message.
-     * @param resolver the type to resolve variables to their contents. 
+     * @param bundle the resource bundle to be used for localization.
      */
-    MessageFormatter(String input, Function<String, String> resolver) {
+    MessageFormatter(String input, ResourceBundle bundle) {
         this.input = input;
-        this.resolver = resolver;
+        this.bundle = bundle;
         this.offset= 0;
     }
   
     /**
      * Formats the message.
-     * 
+     * @param parameters the values for variables.
      * @return the formatted message.
      */
-    String format() {
+    String format(Map<String, Object> parameters) {
+        this.parameters = parameters;
         StringBuilder builder = new StringBuilder();
         while (hasNext()) {
             char c = next();
-            if (c == '$' && hasNext()) {
-                c = next();
-                if (c == '{') {
-                    builder.append(placeholder());
-                } else {
-                    builder.append('$').append(c);
-                }
+            if (c == '{') {
+                builder.append(placeholder());
             } else {
                 builder.append(c); 
             }
@@ -71,37 +74,51 @@ class MessageFormatter {
             char c = next();
             if (c == '}') {
                 break;
-            } else if (c == '$' && hasNext()) {
-                c = next();
-                if (c == '{') {
-                    String expanded = placeholder(); 
-                    builder.append(unquote(expanded));
-                } else {
-                    builder.append('$');
-                    if (c == '}') {
-                        break;
-                    } else {
-                        builder.append(c);
-                    }
-                }
             } else {
                 builder.append(c); 
             }
         }
-        return resolve(builder.toString());
+        return expandVariable(builder.toString());
     }
     
-    private String resolve(String name) {
-        String[] tokens = name.split(":");
-        String content = resolver.apply(tokens[0]);
-        if (tokens.length > 1) {
-            if (tokens[1].equals("captal")) {
-                content = capitalizeFirst(content);
-            }
+    private String expandVariable(String spec) {
+        String[] tokens = spec.split("\\|");
+        String name = tokens[0];
+        String modifier = (tokens.length > 1) ? tokens[1] : null;
+        Object value = resolveVariable(name);
+        return stringify(value, modifier);
+    }
+    
+    private Object resolveVariable(String name) {
+        if (parameters.containsKey(name)) {
+            return parameters.get(name);
         }
-        return content;
+        return bundle.getObject(name);
     }
     
+    private String stringify(Object object, String modifier) {
+        String string = null;
+        if (object instanceof Collection<?>) {
+            return collectionToString(object, modifier);
+        } else if (object instanceof Enum<?>) {
+            string = enumToString(object);
+        } else if (object instanceof Localized) {
+            string = localizedToString(object);
+        } else if (object instanceof String) {
+            string = stringToString(object);
+        } else {
+            string = object.toString();
+        }
+        return modify(string, modifier);
+    }
+    
+    private String modify(String source, String modifier) {
+        if ("capitalize".equals(modifier)) {
+            return capitalizeFirst(source);
+        }
+        return source;
+    }
+
     private static String capitalizeFirst(String string) {
         if (string == null || string.isEmpty()) {
             return string;
@@ -109,14 +126,6 @@ class MessageFormatter {
         char[] chars = string.toCharArray();
         chars[0] = Character.toUpperCase(chars[0]);
         return new String(chars);
-    }
-    
-    private static String unquote(String string) {
-        if (string.startsWith("\"") && string.endsWith("\"")) {
-            return string.substring(1, string.length() - 1);
-        } else {
-            return string;
-        }
     }
     
     private boolean hasNext() {
@@ -129,5 +138,36 @@ class MessageFormatter {
         } else {
             throw new NoSuchElementException();
         }
+    }
+    
+    private String stringToString(Object object) {
+        return (String)object;
+    }
+    
+    private String localizedToString(Object object) {
+        Localized localized = (Localized)object;
+        return localized.getLocalized(bundle.getLocale());
+    }
+
+    private String enumToString(Object object) {
+        Enum<?> actual = (Enum<?>)object;
+        String className = actual.getClass().getSimpleName();
+        String key = className + "." + actual.name();
+        if (bundle.containsKey(key)) {
+            return bundle.getString(key);
+        } else {
+            return actual.name();
+        }
+    }
+
+    private String collectionToString(Object object, String modifier) {
+        Collection<?> actual = (Collection<?>)object;
+        StringBuilder sb = new StringBuilder();
+        return sb.append("[")
+                 .append(actual.stream()
+                               .map(item->stringify(item, modifier))
+                               .collect(Collectors.joining(", ")))
+                 .append("]")
+                 .toString();
     }
 }

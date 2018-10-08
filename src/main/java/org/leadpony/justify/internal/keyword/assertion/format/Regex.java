@@ -23,7 +23,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @see <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
  *      ECMA 262 specification</a>
  */
-public class Regex implements StringFormatAttribute {
+public class Regex extends AbstractFormatAttribute {
 
     @Override
     public String name() {

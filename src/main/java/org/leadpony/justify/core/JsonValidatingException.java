@@ -24,7 +24,7 @@ import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParsingException;
 
 /**
- * <code>JsonValidatingException</code> indicates that some exception happened 
+ * {@code JsonValidatingException} indicates that some exception happened 
  * while validating a JSON document.
  * 
  * @author leadpony

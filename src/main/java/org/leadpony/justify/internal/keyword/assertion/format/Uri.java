@@ -24,7 +24,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @see <a href="https://tools.ietf.org/html/rfc3986">
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
-class Uri implements StringFormatAttribute {
+class Uri extends AbstractFormatAttribute {
     
     private final boolean verbose;
     

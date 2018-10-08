@@ -21,6 +21,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -258,14 +259,14 @@ public class JsonParserDecorator implements JsonParser {
     }
     
     private JsonParsingException newParsingException(Event... expectedEvents) {
-        String message = Message.get("parser.unexpected.eoi")
-                .withParameter("expected", Arrays.asList(expectedEvents))
-                .toString();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("expected", Arrays.asList(expectedEvents));
+        String message = Message.get("parser.unexpected.eoi").format(parameters);
         return new JsonParsingException(message, getLastCharLocation());
     }
     
     private JsonException newInternalError() {
-        return new JsonException(Message.getAsString("internal.error"));
+        return new JsonException(Message.asString("internal.error"));
     }
     
     private static abstract class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {

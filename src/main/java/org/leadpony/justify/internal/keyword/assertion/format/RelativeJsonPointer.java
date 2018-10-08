@@ -22,7 +22,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @author leadpony
  * 
  */
-class RelativeJsonPointer implements StringFormatAttribute {
+class RelativeJsonPointer extends AbstractFormatAttribute {
     
     private final JsonPointer jsonPointer = new JsonPointer();
 

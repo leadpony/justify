@@ -158,7 +158,7 @@ public class ProblemBuilder {
         @Override
         public String getMessage(Locale locale) {
             requireNonNull(locale, "locale");
-            return buildMessage(locale).toString();
+            return buildMessage(locale);
         }
         
         /**
@@ -167,8 +167,8 @@ public class ProblemBuilder {
         @Override
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
-            Message message = buildMessage(locale);
-            return buildContextualMessage(message, locale).toString();
+            String message = buildMessage(locale);
+            return buildContextualMessage(message, locale);
         }
     
         /**
@@ -242,8 +242,8 @@ public class ProblemBuilder {
          * @param locale the locale for which the message will be localized. 
          * @return the built message.
          */
-        private Message buildMessage(Locale locale) {
-            return Message.get(messageKey, locale).withParameters(parameters);
+        private String buildMessage(Locale locale) {
+            return Message.get(messageKey, locale).format(parameters);
         }
         
         /**
@@ -253,10 +253,11 @@ public class ProblemBuilder {
          * @param locale the locale for which the message will be localized. 
          * @return the built message.
          */
-        private Message buildContextualMessage(Message message, Locale locale) {
-            return Message.get("format", locale)
-                    .withParameter("message", message)
-                    .withParameter("location", buildLocation(getLocation(), locale));
+        private String buildContextualMessage(String message, Locale locale) {
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("message", message);
+            parameters.put("location", buildLocation(getLocation(), locale));
+            return Message.get("format", locale).format(parameters);
         }
         
         /**
@@ -266,13 +267,14 @@ public class ProblemBuilder {
          * @param locale the locale for which the message will be localized. 
          * @return the built message.
          */
-        private Message buildLocation(JsonLocation location, Locale locale) {
+        private String buildLocation(JsonLocation location, Locale locale) {
             if (location == null) {
-                return Message.get("location.unknown", locale);
+                return Message.asString("location.unknown", locale);
             } else {
-                return Message.get("location", locale)
-                        .withParameter("row", location.getLineNumber())
-                        .withParameter("col", location.getColumnNumber());
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("row", location.getLineNumber());
+                parameters.put("col", location.getColumnNumber());
+                return Message.get("location", locale).format(parameters);
             }
         }
     }

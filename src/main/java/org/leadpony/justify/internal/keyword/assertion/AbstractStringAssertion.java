@@ -24,7 +24,10 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Localized;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
@@ -33,6 +36,9 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
  * @author leadpony
  */
 abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
+  
+    private static final Localized LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
+    private static final Localized LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
     
     @Override
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
@@ -48,16 +54,24 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Eval
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
         return evaluateAgainst(parser.getString(), event, parser, reporter);
     }
+ 
+    public ProblemBuilder createProblemBuilder(JsonParser parser, Event event) {
+        ProblemBuilder builder = super.createProblemBuilder(parser);
+        if (event == Event.KEY_NAME) {
+            builder.withParameter("subject", "key")
+                   .withParameter("localizedSubject", LOCALIZED_KEY); 
+        } else {
+            builder.withParameter("subject", "value")
+                   .withParameter("localizedSubject", LOCALIZED_VALUE); 
+        }
+        return builder;
+    }
     
     private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
         return evaluateNegatedAgainst(parser.getString(), event, parser, reporter);
     }
 
-    protected static String getContextName(Event event) {
-        return event == Event.KEY_NAME ? "key" : "value";
-    }
-    
     /**
      * Evaluates this assertion on a string value.
      * 

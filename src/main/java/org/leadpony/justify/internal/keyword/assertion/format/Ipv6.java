@@ -23,7 +23,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @see <a href="https://tools.ietf.org/html/rfc4291">RFC 4291</a>
  */
-class Ipv6 implements StringFormatAttribute {
+class Ipv6 extends AbstractFormatAttribute {
     
     @Override
     public String name() {

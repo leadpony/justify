@@ -20,20 +20,35 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Localized;
 import org.leadpony.justify.core.spi.FormatAttribute;
+import org.leadpony.justify.internal.base.Message;
 
 /**
- * Format attribute for string type.
+ * Skeletal implementation for {@link FormatAttribute}.
  * 
  * @author leadpony
  */
-public interface StringFormatAttribute extends FormatAttribute {
+public abstract class AbstractFormatAttribute implements FormatAttribute {
+    
+    private final Localized LOCALIZED_NAME = (locale)->{
+        String key = "format." + name();
+        return Message.asString(key, locale);
+    };
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Localized localizedName() {
+        return LOCALIZED_NAME;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    default InstanceType valueType() {
+    public InstanceType valueType() {
         return InstanceType.STRING;
     }
     
@@ -41,16 +56,16 @@ public interface StringFormatAttribute extends FormatAttribute {
      * {@inheritDoc}
      */
     @Override
-    default boolean test(JsonValue value) {
+    public boolean test(JsonValue value) {
         String string = ((JsonString)value).getString(); 
         return test(string);
     }
     
     /**
-     * Checks if the string value conforms to the expected format.
+     * Checks if the string value conforms to this format.
      * 
      * @param value the string value to check, which cannot be {@code null}.
      * @return {@code true} if the value conforms to the format, or {@code false}.
      */
-    boolean test(String value);
+    abstract boolean test(String value);
 }

@@ -91,6 +91,7 @@ public class Format extends AbstractAssertion implements Evaluator {
     @Override
     public ProblemBuilder createProblemBuilder(JsonParser parser) {
         return super.createProblemBuilder(parser)
-                    .withParameter("attribute", attribute.name());
+                    .withParameter("attribute", attribute.name())
+                    .withParameter("localizedAttribute", attribute.localizedName());
     }
 }

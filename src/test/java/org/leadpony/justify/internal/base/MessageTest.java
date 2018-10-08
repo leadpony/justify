@@ -18,7 +18,9 @@ package org.leadpony.justify.internal.base;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.core.InstanceType;
@@ -30,11 +32,13 @@ public class MessageTest {
 
     @Test
     public void toString_returnsFormattedMessage() {
-        Message sut = Message.get("instance.problem.type.single", Locale.ENGLISH);
-        sut.withParameter("actual", InstanceType.STRING)
-           .withParameter("expected", InstanceType.INTEGER);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("actual", InstanceType.STRING);
+        parameters.put("expected", InstanceType.INTEGER);
         
-        String message = sut.toString();
+        Message sut = Message.get("instance.problem.type.single", Locale.ENGLISH);
+        
+        String message = sut.format(parameters);
         
         String expectedMessage = "Type of value must be integer, but actual type was string.";
         assertThat(message).isEqualTo(expectedMessage);

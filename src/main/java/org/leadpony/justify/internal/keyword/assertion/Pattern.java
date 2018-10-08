@@ -53,10 +53,9 @@ class Pattern extends AbstractStringAssertion {
         if (testValue(value)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser, event)
                     .withMessage("instance.problem.pattern")
                     .withParameter("pattern", pattern.toString())
-                    .withParameter("context", getContextName(event))
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -66,10 +65,9 @@ class Pattern extends AbstractStringAssertion {
     @Override
     protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         if (testValue(value)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(parser, event)
                     .withMessage("instance.problem.not.pattern")
                     .withParameter("pattern", pattern.toString())
-                    .withParameter("context", getContextName(event))
                     .build();
             reporter.accept(p);
             return Result.FALSE;

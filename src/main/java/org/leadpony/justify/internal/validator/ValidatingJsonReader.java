@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.validator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.json.JsonArray;
 import javax.json.JsonException;
 import javax.json.JsonObject;
@@ -57,9 +60,10 @@ public class ValidatingJsonReader implements JsonReader {
                 } else if (event == Event.START_OBJECT) {
                     return parser.getObject();
                 } else {
+                    Map<String, Object> parameters = new HashMap<>();
+                    parameters.put("event", event);
                     String message = Message.get("reader.read.error")
-                            .withParameter("event", event)
-                            .toString();
+                                            .format(parameters);
                     throw newParsingException(message);
                 }
             } catch (IllegalStateException e) {
@@ -130,7 +134,7 @@ public class ValidatingJsonReader implements JsonReader {
     }
 
     private static JsonException newUnexpectedEndOfInputException() {
-        String message = Message.getAsString("reader.unexpected.eoi");
+        String message = Message.asString("reader.unexpected.eoi");
         return new JsonException(message);
     }
     

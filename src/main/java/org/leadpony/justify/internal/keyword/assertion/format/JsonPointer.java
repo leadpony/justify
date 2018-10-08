@@ -24,7 +24,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * @see <a href="https://tools.ietf.org/html/rfc6901">
  * "JavaScript Object Notation (JSON) Pointer", RFC 6901</a>
  */
-class JsonPointer implements StringFormatAttribute {
+class JsonPointer extends AbstractFormatAttribute {
 
     @Override
     public String name() {

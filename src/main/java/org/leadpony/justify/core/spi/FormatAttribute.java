@@ -16,11 +16,10 @@
 
 package org.leadpony.justify.core.spi;
 
-import java.util.Locale;
-
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Localized;
 
 /**
  * Service provider interface for providing a format attribute.
@@ -35,34 +34,28 @@ public interface FormatAttribute {
     
     /**
      * Returns the name of this attribute.
-     * 
-     * @return the name of this attribute, cannot be {@code null}.
+     * @return the name of this attribute, never be {@code null}.
      */
     String name();
     
     /**
-     * Returns the name of this attribute for presentation purposes.
-     * 
-     * @param locale the language in which the name will be rendered.
-     * @return the name of this attribute, cannot be {@code null}.
-     * @throws NullPointerException if the specified {@code locale} was {@code null}.
+     * Returns the localized name.
+     * @return the localized name of this attribute, never be {@code null}.
      */
-    default String displayName(Locale locale) {
-        return name();
+    default Localized localizedName() {
+        return l->name();
     }
     
     /**
-     * Returns the expected type of the value.
-     * 
-     * @return the expected type of the value, cannot be {@code null}.
+     * Returns the type of the value expected by this attribute.
+     * @return the expected type of the value, never be {@code null}.
      */
     InstanceType valueType();
     
     /**
-     * Checks if the value matches the expected format.
-     * 
-     * @param value the value to test, never be {@code null}.
-     * @return {@code true} if the value matches, or {@code false}.
+     * Checks if the value matches this format.
+     * @param value the value to check, cannot be {@code null}.
+     * @return {@code true} if the value matches this format, or {@code false}.
      * @throws NullPointerException if the specified {@code value} was {@code null}.
      */
     boolean test(JsonValue value);

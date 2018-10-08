@@ -23,7 +23,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @see <a href="https://tools.ietf.org/html/rfc1034">RFC 1034</a>
  */
-public class Hostname implements StringFormatAttribute {
+public class Hostname extends AbstractFormatAttribute {
 
     @Override
     public String name() {

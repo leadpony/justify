@@ -21,7 +21,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
  * 
  * @author leadpony
  */
-public class UriTemplate implements StringFormatAttribute {
+public class UriTemplate extends AbstractFormatAttribute {
 
     @Override
     public String name() {
