@@ -94,14 +94,16 @@ class UniqueItems extends AbstractAssertion {
             } else {
                 JsonValue value = builder.build();
                 builder = null;
-                Result result = testItemValue(value, index++, parser, reporter);
-                values.put(value, index);
-                return result;
+                return testItemValue(value, index++, parser, reporter);
             }
         }
         
         protected boolean hasItemAlready(JsonValue value) {
             return values.containsKey(value);
+        }
+        
+        protected void addUniqueItem(JsonValue value, int index) {
+            values.put(value, index);
         }
         
         protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
@@ -110,10 +112,12 @@ class UniqueItems extends AbstractAssertion {
                 Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.uniqueItems")
                         .withParameter("index", index)
-                        .withParameter("lastIndex", lastIndex)
+                        .withParameter("firstIndex", lastIndex)
                         .build();
                 reporter.accept(p);
                 return Result.FALSE;
+            } else {
+                addUniqueItem(value, index);
             }
             return Result.PENDING;
         }
@@ -136,6 +140,8 @@ class UniqueItems extends AbstractAssertion {
         protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
             if (hasItemAlready(value)) {
                 duplicated = true;
+            } else {
+                addUniqueItem(value, index);
             }
             return Result.PENDING;
         }

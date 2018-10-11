@@ -19,7 +19,7 @@ package org.leadpony.justify.core.spi;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Localized;
+import org.leadpony.justify.core.Localizable;
 
 /**
  * Service provider interface for providing a format attribute.
@@ -42,7 +42,7 @@ public interface FormatAttribute {
      * Returns the localized name.
      * @return the localized name of this attribute, never be {@code null}.
      */
-    default Localized localizedName() {
+    default Localizable localizedName() {
         return l->name();
     }
     

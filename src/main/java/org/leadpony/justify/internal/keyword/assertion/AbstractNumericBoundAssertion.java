@@ -30,7 +30,7 @@ import org.leadpony.justify.core.Problem;
  */
 abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
-    private final BigDecimal bound;
+    private final BigDecimal limit;
     private final String name;
     private final String messageKey;
     private final String negatedMessageKey;
@@ -38,14 +38,14 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     /**
      * Constructs this assertion.
      * 
-     * @param bound the lower of upper bound.
+     * @param limit the lower or upper limit.
      * @param name the name of this assertion.
      * @param messageKey the error message for normal evaluation. 
      * @param negatedMessageKey the error message for negated evaluation.
      */
     protected AbstractNumericBoundAssertion(
-            BigDecimal bound, String name, String messageKey, String negatedMessageKey) {
-        this.bound = bound;
+            BigDecimal limit, String name, String messageKey, String negatedMessageKey) {
+        this.limit = limit;
         this.name = name;
         this.messageKey = messageKey;
         this.negatedMessageKey = negatedMessageKey;
@@ -58,18 +58,18 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), this.bound);
+        builder.add(name(), this.limit);
     }
 
     @Override
     protected Result evaluateAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
-        if (testValue(value, this.bound)) {
+        if (testValue(value, this.limit)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
                     .withMessage(this.messageKey)
                     .withParameter("actual", value)
-                    .withParameter("bound", this.bound)
+                    .withParameter("limit", this.limit)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -78,11 +78,11 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     @Override
     protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
-        if (testValue(value, this.bound)) {
+        if (testValue(value, this.limit)) {
             Problem p = createProblemBuilder(parser)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", value)
-                    .withParameter("bound", this.bound)
+                    .withParameter("limit", this.limit)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -91,5 +91,5 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
         }
     }
 
-    protected abstract boolean testValue(BigDecimal actual, BigDecimal bound);
+    protected abstract boolean testValue(BigDecimal actual, BigDecimal limit);
 }

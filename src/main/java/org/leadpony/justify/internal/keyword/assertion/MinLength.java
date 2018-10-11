@@ -23,12 +23,12 @@ package org.leadpony.justify.internal.keyword.assertion;
  */
 class MinLength extends AbstractStringLengthAssertion {
 
-    MinLength(int bound) {
-        super(bound, "minLength", "instance.problem.minLength", "instance.problem.not.minLength");
+    MinLength(int limit) {
+        super(limit, "minLength", "instance.problem.minLength", "instance.problem.not.minLength");
     }
 
     @Override
-    protected boolean testLength(int actualLength, int bound) {
-        return actualLength >= bound;
+    protected boolean testLength(int actualLength, int limit) {
+        return actualLength >= limit;
     }
 }

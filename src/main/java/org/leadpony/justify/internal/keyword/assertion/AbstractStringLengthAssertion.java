@@ -30,14 +30,14 @@ import org.leadpony.justify.core.Problem;
  */
 abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     
-    private final int bound;
+    private final int limit;
     private final String name;
     private final String messageKey;
     private final String negatedMessageKey;
     
     protected AbstractStringLengthAssertion(
-            int bound, String name, String messageKey, String negatedMessageKey) {
-        this.bound = bound;
+            int limit, String name, String messageKey, String negatedMessageKey) {
+        this.limit = limit;
         this.name = name;
         this.messageKey = messageKey;
         this.negatedMessageKey = negatedMessageKey;
@@ -51,13 +51,13 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     @Override
     protected Result evaluateAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         int length = value.codePointCount(0, value.length());
-        if (testLength(length, this.bound)) {
+        if (testLength(length, this.limit)) {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser, event)
                     .withMessage(this.messageKey)
                     .withParameter("actual", length)
-                    .withParameter("bound", this.bound)
+                    .withParameter("limit", this.limit)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -67,11 +67,11 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     @Override
     protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
         int length = value.codePointCount(0, value.length());
-        if (testLength(length, this.bound)) {
+        if (testLength(length, this.limit)) {
             Problem p = createProblemBuilder(parser, event)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", length)
-                    .withParameter("bound", this.bound)
+                    .withParameter("limit", this.limit)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -82,8 +82,8 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), this.bound);
+        builder.add(name(), this.limit);
     }
     
-    protected abstract boolean testLength(int actualLength, int bound);
+    protected abstract boolean testLength(int actualLength, int limit);
 }

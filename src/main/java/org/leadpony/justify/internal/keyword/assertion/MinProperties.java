@@ -37,10 +37,10 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  */
 class MinProperties extends AbstractAssertion {
     
-    private final int bound;
+    private final int limit;
     
-    MinProperties(int bound) {
-        this.bound = bound;
+    MinProperties(int limit) {
+        this.limit = limit;
     }
 
     @Override
@@ -53,9 +53,9 @@ class MinProperties extends AbstractAssertion {
         if (type == InstanceType.OBJECT) {
             Evaluator evaluator;
             if (affirmative) {
-                evaluator = new AssertionEvaluator(bound, this);
-            } else if (bound > 0) {
-                evaluator = new MaxProperties.AssertionEvaluator(bound - 1, this);
+                evaluator = new AssertionEvaluator(limit, this);
+            } else if (limit > 0) {
+                evaluator = new MaxProperties.AssertionEvaluator(limit - 1, this);
             } else {
                 evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
             }
@@ -67,7 +67,7 @@ class MinProperties extends AbstractAssertion {
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), bound);
+        builder.add(name(), limit);
     }
     
     static class AssertionEvaluator implements ShallowEvaluator {
@@ -94,7 +94,7 @@ class MinProperties extends AbstractAssertion {
                     Problem p = factory.createProblemBuilder(parser)
                             .withMessage("instance.problem.minProperties")
                             .withParameter("actual", currentCount)
-                            .withParameter("bound", minProperties)
+                            .withParameter("limit", minProperties)
                             .build();
                     reporter.accept(p);
                     return Result.FALSE;

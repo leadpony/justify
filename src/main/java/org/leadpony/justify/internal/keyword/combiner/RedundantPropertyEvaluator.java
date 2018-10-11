@@ -43,7 +43,7 @@ class RedundantPropertyEvaluator implements Evaluator {
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
-                .withMessage("instance.problem.unexpected.property")
+                .withMessage("instance.problem.redundant.property")
                 .withParameter("name", keyName)
                 .withSchema(schema)
                 .build();

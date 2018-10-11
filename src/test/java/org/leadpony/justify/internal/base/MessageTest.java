@@ -31,16 +31,16 @@ import org.leadpony.justify.core.InstanceType;
 public class MessageTest {
 
     @Test
-    public void toString_returnsFormattedMessage() {
+    public void format_returnsFormattedMessage() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("actual", InstanceType.STRING);
         parameters.put("expected", InstanceType.INTEGER);
         
-        Message sut = Message.get("instance.problem.type.single", Locale.ENGLISH);
+        Message sut = Message.get("instance.problem.type", Locale.ROOT);
         
         String message = sut.format(parameters);
         
-        String expectedMessage = "Type of value must be integer, but actual type was string.";
+        String expectedMessage = "The value must be of type integer, but actual type is string.";
         assertThat(message).isEqualTo(expectedMessage);
     }
 }

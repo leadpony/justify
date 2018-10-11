@@ -37,7 +37,7 @@ public final class Assertions {
         if (types.size() == 1) {
             return new SingleType(types.iterator().next());
         } else {
-            return new Type(types);
+            return new MultipleTypes(types);
         }
     }
 
@@ -51,34 +51,34 @@ public final class Assertions {
 
     /* Validation Keywords for Numeric Instances (number and integer) */
     
-    public static Assertion multipleOf(BigDecimal divisor) {
-        return new MultipleOf(divisor);
+    public static Assertion multipleOf(BigDecimal factor) {
+        return new MultipleOf(factor);
     }
 
-    public static Assertion maximum(BigDecimal bound) {
-        return new Maximum(bound);
+    public static Assertion maximum(BigDecimal limit) {
+        return new Maximum(limit);
     }
 
-    public static Assertion exclusiveMaximum(BigDecimal bound) {
-        return new ExclusiveMaximum(bound);
+    public static Assertion exclusiveMaximum(BigDecimal limit) {
+        return new ExclusiveMaximum(limit);
     }
     
-    public static Assertion minimum(BigDecimal bound) {
-        return new Minimum(bound);
+    public static Assertion minimum(BigDecimal limit) {
+        return new Minimum(limit);
     }
 
-    public static Assertion exclusiveMinimum(BigDecimal bound) {
-        return new ExclusiveMinimum(bound);
+    public static Assertion exclusiveMinimum(BigDecimal limit) {
+        return new ExclusiveMinimum(limit);
     }
     
     /* Validation Keywords for Strings */
     
-    public static Assertion maxLength(int bound) {
-        return new MaxLength(bound);
+    public static Assertion maxLength(int limit) {
+        return new MaxLength(limit);
     }
 
-    public static Assertion minLength(int bound) {
-        return new MinLength(bound);
+    public static Assertion minLength(int limit) {
+        return new MinLength(limit);
     }
     
     public static Assertion pattern(java.util.regex.Pattern pattern) {
@@ -87,34 +87,34 @@ public final class Assertions {
 
     /* Validation Keywords for Arrays */
     
-    public static Assertion maxItems(int bound) {
-        return new MaxItems(bound);
+    public static Assertion maxItems(int limit) {
+        return new MaxItems(limit);
     }
 
-    public static Assertion minItems(int bound) {
-        return new MinItems(bound);
+    public static Assertion minItems(int limit) {
+        return new MinItems(limit);
     }
     
     public static Assertion uniqueItems(boolean unique) {
         return new UniqueItems(unique);
     }
    
-    public static Keyword maxContains(int value) {
-        return new MaxContains(value);
+    public static Keyword maxContains(int limit) {
+        return new MaxContains(limit);
     }
 
-    public static Keyword minContains(int value) {
-        return new MinContains(value);
+    public static Keyword minContains(int limit) {
+        return new MinContains(limit);
     }
     
     /* Validation Keywords for Objects */
 
-    public static Assertion maxProperties(int bound) {
-        return new MaxProperties(bound);
+    public static Assertion maxProperties(int limit) {
+        return new MaxProperties(limit);
     }
 
-    public static Assertion minProperties(int bound) {
-        return new MinProperties(bound);
+    public static Assertion minProperties(int limit) {
+        return new MinProperties(limit);
     }
 
     public static Assertion required(Set<String> names) {

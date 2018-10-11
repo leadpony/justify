@@ -19,21 +19,12 @@ package org.leadpony.justify.core;
 import java.util.Locale;
 
 /**
- * Localized text.
+ * Interface for localizable strings.
  * 
  * @author leadpony
  */
 @FunctionalInterface
-public interface Localized {
-    
-    /**
-     * Returns the string localized for the specified locale.
-     * @param locale the locale for which the source string to be localized. 
-     *        This cannot be {@code null}.
-     * @return the localized string, never be {@code null}.
-     * @throws NullPointerException if the specified {@code locale} was {@code null}.
-     */
-    String getLocalized(Locale locale);
+public interface Localizable {
     
     /**
      * Returns the string localized for the current default locale.
@@ -42,4 +33,13 @@ public interface Localized {
     default String getLocalized() {
         return getLocalized(Locale.getDefault());
     }
+
+    /**
+     * Returns the string localized for the specified locale.
+     * @param locale the locale for which the source string to be localized. 
+     *        This cannot be {@code null}.
+     * @return the localized string, never be {@code null}.
+     * @throws NullPointerException if the specified {@code locale} was {@code null}.
+     */
+    String getLocalized(Locale locale);
 }

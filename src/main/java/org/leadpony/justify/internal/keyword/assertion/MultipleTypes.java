@@ -36,11 +36,11 @@ import org.leadpony.justify.internal.base.ParserEvents;
  * 
  * @author leadpony
  */
-class Type extends AbstractAssertion implements Evaluator {
+class MultipleTypes extends AbstractAssertion implements Evaluator {
     
     protected final Set<InstanceType> typeSet;
     
-    Type(Set<InstanceType> types) {
+    MultipleTypes(Set<InstanceType> types) {
         this.typeSet = new LinkedHashSet<>(types);
     }
     
@@ -93,7 +93,7 @@ class Type extends AbstractAssertion implements Evaluator {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
-                    .withMessage("instance.problem.type")
+                    .withMessage("instance.problem.type.plural")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
@@ -105,7 +105,7 @@ class Type extends AbstractAssertion implements Evaluator {
     private Result assertTypeNotMatches(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
         if (contains(type)) {
             Problem p = createProblemBuilder(parser)
-                    .withMessage("instance.problem.not.type")
+                    .withMessage("instance.problem.not.type.plural")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();

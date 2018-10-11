@@ -24,7 +24,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Localized;
+import org.leadpony.justify.core.Localizable;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ProblemBuilder;
@@ -37,8 +37,8 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
  */
 abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
   
-    private static final Localized LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
-    private static final Localized LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
+    private static final Localizable LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
+    private static final Localizable LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
     
     @Override
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {

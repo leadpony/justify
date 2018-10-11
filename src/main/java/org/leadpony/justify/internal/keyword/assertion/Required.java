@@ -101,11 +101,13 @@ class Required extends AbstractAssertion {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
-                Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.required")
-                        .withParameter("expected", missing)
-                        .build();
-                reporter.accept(p);
+                for (String property : missing) {
+                    Problem p = createProblemBuilder(parser)
+                            .withMessage("instance.problem.required")
+                            .withParameter("required", property)
+                            .build();
+                    reporter.accept(p);
+                }
                 return Result.FALSE;
             } else {
                 return Result.PENDING;
@@ -139,13 +141,13 @@ class Required extends AbstractAssertion {
                 if (names.size() == 1) {
                     String name = names.iterator().next();
                     p = createProblemBuilder(parser)
-                            .withMessage("instance.problem.not.required.single")
-                            .withParameter("expected", name)
+                            .withMessage("instance.problem.not.required")
+                            .withParameter("required", name)
                             .build();
                 } else {
                     p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.not.required")
-                        .withParameter("expected", names)
+                        .withMessage("instance.problem.not.required.plural")
+                        .withParameter("required", names)
                         .build();
                 }
                 reporter.accept(p);

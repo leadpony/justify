@@ -43,7 +43,7 @@ class RedundantItemEvaluator implements Evaluator {
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
-                .withMessage("instance.problem.unexpected.item")
+                .withMessage("instance.problem.redundant.item")
                 .withParameter("index", itemIndex)
                 .withSchema(schema)
                 .build();

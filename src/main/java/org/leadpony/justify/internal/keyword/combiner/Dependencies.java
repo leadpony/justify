@@ -35,6 +35,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
@@ -284,24 +285,36 @@ public class Dependencies extends Combiner {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.dependencies")
-                        .withParameter("missing", missing)
-                        .withParameter("dependant", property)
-                        .build();
-                reporter.accept(p);
+                for (String entry : missing) {
+                    Problem p = createProblemBuilder(parser)
+                            .withMessage("instance.problem.dependencies")
+                            .withParameter("required", entry)
+                            .withParameter("dependant", property)
+                            .build();
+                    reporter.accept(p);
+                }
                 return Result.FALSE;
             }
         }
 
         private Result testNegation(JsonParser parser, Consumer<Problem> reporter) {
-            if (missing.isEmpty()) {
+            if (required.isEmpty()) {
                 Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.not.dependencies")
-                        .withParameter("required", required)
-                        .withParameter("dependant", property)
+                        .withMessage("instance.problem.unknown")
                         .build();
                 reporter.accept(p);
+                return Result.FALSE;
+            } else if (missing.isEmpty()) {
+                ProblemBuilder b = createProblemBuilder(parser)
+                        .withParameter("dependant", property);
+                if (required.size() == 1) {
+                    b.withMessage("instance.problem.not.dependencies")
+                     .withParameter("required", required.iterator().next()); 
+                } else {
+                    b.withMessage("instance.problem.not.dependencies.plural")
+                     .withParameter("required", required); 
+                }
+                reporter.accept(b.build());
                 return Result.FALSE;
             } else {
                 return Result.TRUE;

@@ -28,14 +28,14 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  */
 public class MinContains extends AbstractKeyword {
     
-    private final int value;
+    private final int limit;
     
-    MinContains(int value) {
-        this.value = value;
+    MinContains(int limit) {
+        this.limit = limit;
     }
     
     public int value() {
-        return value;
+        return limit;
     }
 
     @Override
@@ -50,6 +50,6 @@ public class MinContains extends AbstractKeyword {
     
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value);
+        builder.add(name(), limit);
     }
 }

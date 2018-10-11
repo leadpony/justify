@@ -63,7 +63,7 @@ class SingleType extends AbstractAssertion implements Evaluator {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(parser)
-                    .withMessage("instance.problem.type.single")
+                    .withMessage("instance.problem.type")
                     .withParameter("actual", type)
                     .withParameter("expected", this.type)
                     .build();
@@ -78,7 +78,7 @@ class SingleType extends AbstractAssertion implements Evaluator {
             return Result.TRUE; 
         } else {
             Problem p = createProblemBuilder(parser)
-                    .withMessage("instance.problem.not.type.single")
+                    .withMessage("instance.problem.not.type")
                     .withParameter("expected", this.type)
                     .build();
             reporter.accept(p);

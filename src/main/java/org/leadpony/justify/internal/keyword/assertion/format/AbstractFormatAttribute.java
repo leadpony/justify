@@ -20,7 +20,7 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Localized;
+import org.leadpony.justify.core.Localizable;
 import org.leadpony.justify.core.spi.FormatAttribute;
 import org.leadpony.justify.internal.base.Message;
 
@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.Message;
  */
 public abstract class AbstractFormatAttribute implements FormatAttribute {
     
-    private final Localized LOCALIZED_NAME = (locale)->{
+    private final Localizable LOCALIZED_NAME = (locale)->{
         String key = "format." + name();
         return Message.asString(key, locale);
     };
@@ -40,7 +40,7 @@ public abstract class AbstractFormatAttribute implements FormatAttribute {
      * {@inheritDoc}
      */
     @Override
-    public Localized localizedName() {
+    public Localizable localizedName() {
         return LOCALIZED_NAME;
     }
 

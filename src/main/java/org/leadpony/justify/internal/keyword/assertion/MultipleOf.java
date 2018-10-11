@@ -32,10 +32,10 @@ import org.leadpony.justify.core.Problem;
  */
 class MultipleOf extends AbstractNumericAssertion {
     
-    protected final BigDecimal divisor;
+    protected final BigDecimal factor;
     
-    MultipleOf(BigDecimal divisor) {
-        this.divisor = divisor;
+    MultipleOf(BigDecimal factor) {
+        this.factor = factor;
     }
 
     @Override
@@ -45,7 +45,7 @@ class MultipleOf extends AbstractNumericAssertion {
     
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), divisor);
+        builder.add(name(), factor);
     }
     
     @Override
@@ -56,7 +56,7 @@ class MultipleOf extends AbstractNumericAssertion {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.multipleOf")
                     .withParameter("actual", value)
-                    .withParameter("divisor", divisor)
+                    .withParameter("factor", factor)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -69,7 +69,7 @@ class MultipleOf extends AbstractNumericAssertion {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.not.multipleOf")
                     .withParameter("actual", value)
-                    .withParameter("divisor", divisor)
+                    .withParameter("factor", factor)
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -79,7 +79,7 @@ class MultipleOf extends AbstractNumericAssertion {
     }
     
     private boolean testValue(BigDecimal value) {
-        BigDecimal remainder = value.remainder(divisor);
+        BigDecimal remainder = value.remainder(factor);
         return remainder.compareTo(BigDecimal.ZERO) == 0;
     }
 }

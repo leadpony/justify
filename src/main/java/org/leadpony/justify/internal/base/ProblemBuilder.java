@@ -257,7 +257,7 @@ public class ProblemBuilder {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("message", message);
             parameters.put("location", buildLocation(getLocation(), locale));
-            return Message.get("format", locale).format(parameters);
+            return Message.get("line", locale).format(parameters);
         }
         
         /**

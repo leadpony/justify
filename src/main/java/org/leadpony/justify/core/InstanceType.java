@@ -16,6 +16,11 @@
 
 package org.leadpony.justify.core;
 
+import java.util.Objects;
+
+import javax.json.JsonNumber;
+import javax.json.JsonValue;
+
 /**
  * Primitive types of JSON instances.
  * 
@@ -40,7 +45,6 @@ public enum InstanceType {
     
     /**
      * Checks if this type is numeric or not.
-     * 
      * @return {@code true} if this type is numeric, {@code false} otherwise.
      */
     public boolean isNumeric() {
@@ -50,10 +54,36 @@ public enum InstanceType {
     /**
      * Checks if this type can contain other types or not.
      * A container is either JSON array or JSON object.
-     * 
      * @return {@code true} if this type is container, {@code false} otherwise.
      */
     public boolean isContainer() {
         return this == OBJECT || this == ARRAY;
+    }
+    
+    /**
+     * Returns the type of the specified JSON value.
+     * @param value the JSON value whose type will be returned.
+     * @return the type of the JSON value.
+     * @throws NullPointerException if the specified {@code value} was {@code null}.
+     */
+    public static InstanceType of(JsonValue value) {
+        Objects.requireNonNull(value, "value must not be null");
+        switch (value.getValueType()) {
+        case ARRAY:
+            return ARRAY;
+        case OBJECT:
+            return OBJECT;
+        case STRING:
+            return STRING;
+        case NUMBER:
+            return ((JsonNumber)value).isIntegral() ? INTEGER : NUMBER;
+        case TRUE:
+        case FALSE:
+            return BOOLEAN;
+        case NULL:
+            return NULL;
+        default:
+            throw new IllegalArgumentException();
+        }
     }
 }

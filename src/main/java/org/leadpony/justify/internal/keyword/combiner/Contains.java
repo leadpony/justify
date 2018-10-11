@@ -131,7 +131,7 @@ class Contains extends UnaryCombiner {
         private void reportTooFewTruths(int numberOfTruths, JsonParser parser, Consumer<Problem> reporter) {
             ProblemBuilder builder = createProblemBuilder(parser);
             builder.withMessage("instance.problem.cotains")
-                   .withParameter("expected", min)
+                   .withParameter("limit", min)
                    .withParameter("actual", numberOfTruths);
             accumulatedProblems.forEach(builder::withSubproblems);
             reporter.accept(builder.build());

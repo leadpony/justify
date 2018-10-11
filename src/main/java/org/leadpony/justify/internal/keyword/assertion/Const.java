@@ -24,6 +24,7 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 
 /**
@@ -58,6 +59,7 @@ class Const extends AbstractEqualityAssertion {
                     .withMessage("instance.problem.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)
+                    .withParameter("expectedType", InstanceType.of(expected))
                     .build();
             reporter.accept(p);
             return Result.FALSE;
@@ -71,6 +73,7 @@ class Const extends AbstractEqualityAssertion {
                     .withMessage("instance.problem.not.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)
+                    .withParameter("expectedType", InstanceType.of(expected))
                     .build();
             reporter.accept(p);
             return Result.FALSE;

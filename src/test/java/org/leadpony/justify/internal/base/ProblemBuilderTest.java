@@ -58,13 +58,13 @@ public class ProblemBuilderTest {
         ProblemBuilderFactory factory = new ProblemBuilderFactory() {};
         ProblemBuilder builder = factory.createProblemBuilder(this.parser);
         Problem problem = builder
-                .withMessage("instance.problem.type.single")
+                .withMessage("instance.problem.type")
                 .withParameter("actual", InstanceType.STRING)
                 .withParameter("expected", InstanceType.INTEGER)
                 .build();
         
-        String expectedMessage = "Type of value must be integer, but actual type was string.";
-        assertThat(problem.getMessage(Locale.ENGLISH)).isEqualTo(expectedMessage);
+        String expectedMessage = "The value must be of type integer, but actual type is string.";
+        assertThat(problem.getMessage(Locale.ROOT)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)
             .containsKeys("actual", "expected")

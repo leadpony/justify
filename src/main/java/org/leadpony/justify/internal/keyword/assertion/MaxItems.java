@@ -38,10 +38,10 @@ import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
  */
 class MaxItems extends AbstractAssertion {
 
-    private final int bound;
+    private final int limit;
     
-    MaxItems(int bound) {
-        this.bound = bound;
+    MaxItems(int limit) {
+        this.limit = limit;
     }
 
     @Override
@@ -53,8 +53,8 @@ class MaxItems extends AbstractAssertion {
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         if (type == InstanceType.ARRAY) {
             return affirmative ?
-                    new AssertionEvaluator(bound, this) :
-                    new MinItems.AssertionEvaluator(bound + 1, this);   
+                    new AssertionEvaluator(limit, this) :
+                    new MinItems.AssertionEvaluator(limit + 1, this);   
         } else {
             return Evaluators.ALWAYS_IGNORED;
         }
@@ -62,7 +62,7 @@ class MaxItems extends AbstractAssertion {
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), bound);
+        builder.add(name(), limit);
     }
     
     static class AssertionEvaluator implements ShallowEvaluator { 
@@ -89,7 +89,7 @@ class MaxItems extends AbstractAssertion {
                     Problem p = factory.createProblemBuilder(parser)
                             .withMessage("instance.problem.maxItems")
                             .withParameter("actual", currentCount)
-                            .withParameter("bound", maxItems)
+                            .withParameter("limit", maxItems)
                             .build();
                     reporter.accept(p);
                     return Result.FALSE;

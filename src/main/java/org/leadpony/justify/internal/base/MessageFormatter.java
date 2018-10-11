@@ -20,9 +20,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.leadpony.justify.core.Localized;
+import org.leadpony.justify.core.Localizable;
 
 /**
  * Formatter of message.
@@ -35,7 +36,7 @@ class MessageFormatter {
     private final ResourceBundle bundle;
     private int offset;
    
-    private Map<String, Object> parameters;
+    private Map<String, Object> arguments;
     
     /**
      * Constructs this formatter.
@@ -51,11 +52,11 @@ class MessageFormatter {
   
     /**
      * Formats the message.
-     * @param parameters the values for variables.
+     * @param arguments the values for variables.
      * @return the formatted message.
      */
-    String format(Map<String, Object> parameters) {
-        this.parameters = parameters;
+    String format(Map<String, Object> arguments) {
+        this.arguments = arguments;
         StringBuilder builder = new StringBuilder();
         while (hasNext()) {
             char c = next();
@@ -84,48 +85,35 @@ class MessageFormatter {
     private String expandVariable(String spec) {
         String[] tokens = spec.split("\\|");
         String name = tokens[0];
-        String modifier = (tokens.length > 1) ? tokens[1] : null;
+        Function<String, String> modifier = Function.identity();
+        for (int i = 1; i < tokens.length; i++) {
+            modifier = modifier.andThen(Modifier.byName(tokens[i]));
+        }
         Object value = resolveVariable(name);
         return stringify(value, modifier);
     }
     
     private Object resolveVariable(String name) {
-        if (parameters.containsKey(name)) {
-            return parameters.get(name);
+        if (arguments.containsKey(name)) {
+            return arguments.get(name);
         }
-        return bundle.getObject(name);
+        throw new IllegalArgumentException("variable \"" + name + "\" is undefined.");
     }
     
-    private String stringify(Object object, String modifier) {
+    private String stringify(Object object, Function<String, String> modifier) {
         String string = null;
         if (object instanceof Collection<?>) {
             return collectionToString(object, modifier);
         } else if (object instanceof Enum<?>) {
             string = enumToString(object);
-        } else if (object instanceof Localized) {
+        } else if (object instanceof Localizable) {
             string = localizedToString(object);
         } else if (object instanceof String) {
             string = stringToString(object);
         } else {
             string = object.toString();
         }
-        return modify(string, modifier);
-    }
-    
-    private String modify(String source, String modifier) {
-        if ("capitalize".equals(modifier)) {
-            return capitalizeFirst(source);
-        }
-        return source;
-    }
-
-    private static String capitalizeFirst(String string) {
-        if (string == null || string.isEmpty()) {
-            return string;
-        }
-        char[] chars = string.toCharArray();
-        chars[0] = Character.toUpperCase(chars[0]);
-        return new String(chars);
+        return modifier.apply(string);
     }
     
     private boolean hasNext() {
@@ -145,7 +133,7 @@ class MessageFormatter {
     }
     
     private String localizedToString(Object object) {
-        Localized localized = (Localized)object;
+        Localizable localized = (Localizable)object;
         return localized.getLocalized(bundle.getLocale());
     }
 
@@ -160,7 +148,7 @@ class MessageFormatter {
         }
     }
 
-    private String collectionToString(Object object, String modifier) {
+    private String collectionToString(Object object, Function<String, String> modifier) {
         Collection<?> actual = (Collection<?>)object;
         StringBuilder sb = new StringBuilder();
         return sb.append("[")
@@ -169,5 +157,46 @@ class MessageFormatter {
                                .collect(Collectors.joining(", ")))
                  .append("]")
                  .toString();
+    }
+    
+    /**
+     * Variable modifier.
+     * 
+     * @author leadpony
+     */
+    private static enum Modifier implements Function<String, String> {
+        
+        CAPITALIZE() {
+            @Override
+            public String apply(String t) {
+                if (t.isEmpty()) {
+                    return t;
+                }
+                char[] chars = t.toCharArray();
+                chars[0] = Character.toUpperCase(chars[0]);
+                return new String(chars);
+            }
+        },
+
+        QUOTE() {
+            @Override
+            public String apply(String t) {
+                return new StringBuilder()
+                        .append('"')
+                        .append(t)
+                        .append('"')
+                        .toString();
+            }
+        }
+        ;
+        
+        @Override
+        public String apply(String t) {
+            return t;
+        }
+        
+        public static Modifier byName(String name) {
+            return valueOf(name.toUpperCase());
+        }
     }
 }

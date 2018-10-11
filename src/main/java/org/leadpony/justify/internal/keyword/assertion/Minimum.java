@@ -25,12 +25,12 @@ import java.math.BigDecimal;
  */
 class Minimum extends AbstractNumericBoundAssertion {
 
-    Minimum(BigDecimal bound) {
-        super(bound, "minimum", "instance.problem.minimum", "instance.problem.exclusiveMaximum");
+    Minimum(BigDecimal limit) {
+        super(limit, "minimum", "instance.problem.minimum", "instance.problem.exclusiveMaximum");
     }
     
     @Override
-    protected boolean testValue(BigDecimal actual, BigDecimal bound) {
-        return actual.compareTo(bound) >= 0;
+    protected boolean testValue(BigDecimal actual, BigDecimal limit) {
+        return actual.compareTo(limit) >= 0;
     }
 }

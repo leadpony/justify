@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  */
 public class Message {
     
-    private static final String BUNDLE_BASE_NAME = "org.leadpony.justify.internal.message";
+    private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/message";
 
     private final String pattern;
     private final ResourceBundle bundle;
@@ -64,12 +64,15 @@ public class Message {
         this.bundle = bundle;
     }
     
-    public String format(Map<String, Object> parameters) {
+    public String format(Map<String, Object> arguments) {
         MessageFormatter formatter = new MessageFormatter(this.pattern, this.bundle);
-        return formatter.format(parameters);
+        return formatter.format(arguments);
     }
     
+    /*
+     * Note that {@code ResourceBundle.Control} cannot be used in named modules.
+     */
     private static ResourceBundle getBundle(Locale locale) {
-        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale);    
+        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale, Message.class.getClassLoader());
     }
 }
