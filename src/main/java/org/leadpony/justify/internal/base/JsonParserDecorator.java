@@ -266,7 +266,7 @@ public class JsonParserDecorator implements JsonParser {
     }
     
     private JsonException newInternalError() {
-        return new JsonException(Message.asString("internal.error"));
+        return new JsonException("Internal error");
     }
     
     private static abstract class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
@@ -286,7 +286,7 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super JsonValue> action) {
-            requireNonNull("action", "action");
+            requireNonNull(action, "action");
             if (hasNext() && next() != Event.END_ARRAY) {
                 action.accept(getValue());
                 return true;
@@ -300,17 +300,14 @@ public class JsonParserDecorator implements JsonParser {
 
         @Override
         public boolean tryAdvance(Consumer<? super Map.Entry<String, JsonValue>> action) {
-            requireNonNull("action", "action");
+            requireNonNull(action, "action");
             if (!hasNext()) {
                 return false;
             }
             JsonParser.Event event = next();
             if (event == Event.END_OBJECT) {
                 return false;
-            } else if (event != Event.KEY_NAME) {
-                // TODO:
-                throw newInternalError(); 
-            } else {
+            } else if (event == Event.KEY_NAME) {
                 String key = getString();
                 if (!hasNext()) {
                     throw newParsingException(
@@ -326,6 +323,9 @@ public class JsonParserDecorator implements JsonParser {
                 JsonValue value = getValue();
                 action.accept(new AbstractMap.SimpleImmutableEntry<>(key, value));
                 return true;
+            } else {
+                // This will never happen.
+                throw newInternalError(); 
             }
         }
     }

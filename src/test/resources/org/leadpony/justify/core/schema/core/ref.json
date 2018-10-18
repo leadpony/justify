@@ -13,5 +13,22 @@
         "description": "value is not a URI",
         "schema": { "$ref": "http://<invalid>/schema.json#" },
         "valid": false
+    },
+    {
+        "description": "value cannot be resolved",
+        "schema": { "$ref": "#foo" },
+        "valid": false
+    },
+    {
+        "description": "value cannot be resolved",
+        "schema": {
+            "$id": "http://example.com/root.json",
+            "definitions": {
+                "A": { 
+                    "$ref": "#foo"
+                }
+            } 
+        },
+        "valid": false
     }
 ]

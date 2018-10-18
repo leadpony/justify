@@ -475,6 +475,23 @@ public class JsonParserTest {
     }
     
     @Test
+    public void getObjectStream_throwsException() {
+        String schema = PERSON_SCHEMA;
+        String instance = "{\"foo\", \"bar\"}";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Stream<Map.Entry<String, JsonValue>> stream = sut.getObjectStream();
+        Throwable thrown = catchThrowable(()->{
+            stream.forEach(entry->{});
+        });
+        sut.close();
+        
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
+    }
+    
+    @Test
     public void getValueStream_returnsValueStream() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";

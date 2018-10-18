@@ -36,29 +36,36 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Schema reference containing  "$ref" keyword.
+ * Schema reference containing "$ref" keyword.
  * 
  * @author leadpony
  */
 public class SchemaReference extends AbstractJsonSchema {
 
-    private URI ref;
-    @SuppressWarnings("unused")
-    private final URI originalRef;
+    private final URI ref;
+    private URI targetId;
     private JsonSchema referencedSchema;
 
     /**
      * Constructs this schema reference.
      * 
-     * @param ref the URI of the referenced schema.
+     * @param ref the value of the "$ref" keyword.
      * @param keywordMap the keywords contained in this schema.
      * @param builderFactory the builder of JSON arrays and objects.
      */
     public SchemaReference(URI ref, Map<String, Keyword> keywordMap, 
             JsonBuilderFactory builderFactory) {
         super(keywordMap, builderFactory);
-        this.ref = this.originalRef = ref;
+        this.targetId = this.ref = ref;
         this.referencedSchema = new NonexistentSchema();
+    }
+    
+    /**
+     * Returns the original value of the keyword "$ref".
+     * @return the value of the keyword "$ref".
+     */
+    public URI ref() {
+        return ref;
     }
     
     /**
@@ -66,18 +73,18 @@ public class SchemaReference extends AbstractJsonSchema {
      * 
      * @return the URI of the referenced schema.
      */
-    public URI getRef() {
-        return ref;
+    public URI getTargetId() {
+        return targetId;
     }
     
     /**
      * Assigns the URI of the referenced schema.
      * 
-     * @param ref the URI of the referenced schema, cannot be {@code null}.
+     * @param targetId the URI of the referenced schema, cannot be {@code null}.
      */
-    public void setRef(URI ref) {
-        requireNonNull(ref, "ref");
-        this.ref = ref;
+    public void setTargetId(URI targetId) {
+        requireNonNull(targetId, "targetId");
+        this.targetId = targetId;
     }
     
     /**
@@ -122,8 +129,9 @@ public class SchemaReference extends AbstractJsonSchema {
         public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
             Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
                     .withKeyword("$ref")
-                    .withMessage("schema.problem.dereference")
-                    .withParameter("ref", getRef())
+                    .withMessage("schema.problem.reference")
+                    .withParameter("ref", ref())
+                    .withParameter("targetId", getTargetId())
                     .build();
             reporter.accept(p);
             return Result.FALSE;

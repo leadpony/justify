@@ -958,7 +958,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
         if (schema instanceof SchemaReference) {
             SchemaReference ref = (SchemaReference)schema;
-            ref.setRef(baseURI.resolve(ref.getRef()));
+            ref.setTargetId(baseURI.resolve(ref.getTargetId()));
         }
         final URI nextURI = baseURI;
         schema.subschemas().forEach(
@@ -971,15 +971,16 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     
     private void resolveAllReferences() {
         for (SchemaReference reference : this.references.keySet()) {
-            URI ref = reference.getRef();
-            JsonSchema schema = dereferenceSchema(ref);
+            URI targetId = reference.getTargetId();
+            JsonSchema schema = dereferenceSchema(targetId);
             if (schema != null) {
                 reference.setReferencedSchema(schema);
             } else {
                 JsonLocation location = this.references.get(reference);
                 Problem p = createProblemBuilder(location)
-                        .withMessage("schema.problem.dereference")
-                        .withParameter("ref", ref)
+                        .withMessage("schema.problem.reference")
+                        .withParameter("ref", reference.ref())
+                        .withParameter("targetId", targetId)
                         .build();
                 addProblem(p);
             }
