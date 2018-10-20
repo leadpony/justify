@@ -207,7 +207,21 @@ public enum IdnProperty {
     }
     
     private static boolean isOldHangulJamo(int codePoint) {
-        // TODO:
+        // Hangul_Syllable_Type=Leading_Jamo
+        if ((0x1100 <= codePoint && codePoint <= 0x115F) ||
+            (0xA960 <= codePoint && codePoint <= 0xA97C)) {
+            return true;
+        }
+        // Hangul_Syllable_Type=Vowel_Jamo
+        if ((0x1160 <= codePoint && codePoint <= 0x11A7) ||
+            (0xD7B0 <= codePoint && codePoint <= 0xD7C6)) {
+            return true;
+        }
+        // Hangul_Syllable_Type=Trailing_Jamo
+        if ((0x11A8 <= codePoint && codePoint <= 0x11FF) ||
+            (0xD7CB <= codePoint && codePoint <= 0xD7FB)) {
+            return true;
+        }
         return false;
     }
     
