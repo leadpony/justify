@@ -79,6 +79,7 @@ public class SchemaValidationTest {
         };
     
     private static final Jsonv jsonv = Jsonv.newInstance();
+    private static final ProblemHandler printer = jsonv.createProblemPrinter(log::info);
     
     public static Stream<SchemaFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(SchemaFixture::newStream);
@@ -101,7 +102,7 @@ public class SchemaValidationTest {
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());
-            problems.forEach(p->p.printAll(log::info));
+            printer.handleProblems(problems);
         }
     }
 }

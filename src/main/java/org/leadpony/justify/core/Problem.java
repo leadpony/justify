@@ -16,17 +16,20 @@
 
 package org.leadpony.justify.core;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
 /**
  * Problem found in the process of validation.
+ * <p>
+ * If the problem represents alternative groups of problems,
+ * actual type will be extended to be {@link BranchProblem}.
+ * </p>
  * 
  * @author leadpony
+ * @see BranchProblem
  */
 public interface Problem {
     
@@ -99,28 +102,6 @@ public interface Problem {
      *         The map may be empty, but never be {@code null}.
      */
     Map<String, ?> parametersAsMap();
-    
-    /**
-     * Checks if this problem has subproblems or not.
-     * 
-     * @return {@code true} if this problem has subproblems, {@code false} otherwise.
-     */
-    boolean hasSubproblem();
-    
-    /**
-     * Returns all subproblems of this problem.
-     * 
-     * @return the list of subproblem list. It may be empty but never be {@code null}.
-     */
-    List<List<Problem>> getSubproblems();
-    
-    /**
-     * Prints this problem and subproblems with the aid of the specified line consumer.
-     * 
-     * @param lineConsumer the object which will output the line to somewhere.
-     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
-     */
-    void printAll(Consumer<String> lineConsumer);
     
     /**
      * Returns the same string as {@link #getContextualMessage()} for the default locale.

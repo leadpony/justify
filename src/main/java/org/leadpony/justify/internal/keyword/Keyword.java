@@ -64,11 +64,10 @@ public interface Keyword {
     
     /**
      * Creates an evaluator for this keyword.
-     * 
      * @param type the type of the instance, cannot be {@code null}.
      * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
-     * @param affirmative {@code true} to create normal evaluators,
-     *                    {@code false} to create negated evaluators. 
+     * @param affirmative {@code true} to create a normal evaluator,
+     *                    {@code false} to create a negated evaluator. 
      */
     default Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
         throw new UnsupportedOperationException(

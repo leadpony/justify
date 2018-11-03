@@ -17,39 +17,85 @@
 package org.leadpony.justify.internal.base;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
+import org.leadpony.justify.core.BranchProblem;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemHandler;
 
 /**
- * Utility class for printing validation problems.
+ * An object to print validation problems.
  * 
  * @author leadpony
  */
-class ProblemPrinter {
+public class ProblemPrinter implements ProblemHandler {
 
-    private static final String INDENT = "  ";
+    private final Consumer<String> lineConsumer;
+    private final Locale locale;
     
-    static void printProblem(Problem problem, Consumer<String> lineConsumer) {
-        lineConsumer.accept(problem.toString());
-        if (problem.hasSubproblem()) {
-            printSubproblemsOf(problem, INDENT, lineConsumer);
+    /**
+     * Constructs this object.
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @param locale the locale for which the problem messages will be localized. 
+     */
+    public ProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
+        this.lineConsumer = lineConsumer;
+        this.locale = locale;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void handleProblems(List<Problem> problems) {
+        for (Problem problem : problems) {
+            printProblem(problem);
+        }
+    }
+
+    private void printProblem(Problem problem) {
+        if (problem instanceof BranchProblem) {
+            lineConsumer.accept(problem.getMessage(locale));
+            printAllProblemGroups((BranchProblem)problem, "");
+        } else {
+            lineConsumer.accept(problem.getContextualMessage(locale));
         }
     }
     
-    private static void printSubproblemsOf(Problem problem, String indent, Consumer<String> lineConsumer) {
-        final String firstPrefix = indent + "- ";
-        final String laterPrefix = indent + "  ";
-        for (List<Problem> list : problem.getSubproblems()) {
-            boolean isFirst = true;
-            for (Problem subproblem : list) {
-                String prefix = isFirst ? firstPrefix : laterPrefix;
-                lineConsumer.accept(prefix + subproblem.toString());
-                isFirst = false;
-                if (subproblem.hasSubproblem()) {
-                    printSubproblemsOf(subproblem, indent + INDENT, lineConsumer);
-                }
-            }
+    private void printAllProblemGroups(BranchProblem problem, String prefix) {
+        for (int i = 0; i < problem.countBranches(); i++) {
+            List<Problem> branch = problem.getBranch(i); 
+            printProblemGroup(i, branch, prefix);
         }
+    }
+    
+    private void printProblemGroup(int groupIndex, List<Problem> group, String prefix) {
+        final String firstPrefix = prefix + (groupIndex + 1) + ") ";
+        final String laterPrefix = repeat(' ', firstPrefix.length());
+        boolean isFirst = true;
+        for (Problem problem : group) {
+            String currentPrefix = isFirst ? firstPrefix : laterPrefix;
+            if (problem instanceof BranchProblem) {
+                putLine(currentPrefix + problem.getMessage(locale));
+                printAllProblemGroups((BranchProblem)problem, laterPrefix);
+            } else {
+                putLine(currentPrefix + problem.getContextualMessage(locale));
+            }
+            isFirst = false;
+        }
+    }
+    
+    private void putLine(String line) {
+        this.lineConsumer.accept(line);
+    }
+    
+    private static String repeat(char c, int count) {
+        StringBuilder b = new StringBuilder();
+        while (count-- > 0) {
+            b.append(c);
+        }
+        return b.toString();
     }
 }
+

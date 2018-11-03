@@ -53,6 +53,7 @@ public class JsonParserTest {
     
     private static final Logger log = Logger.getLogger(JsonParserTest.class.getName());
     private static final Jsonv jsonv = Jsonv.newInstance();
+    private static final ProblemHandler printer = jsonv.createProblemPrinter(log::info);
     
     private static JsonParser newParser(String instance) {
         return Json.createParser(new StringReader(instance));
@@ -548,7 +549,7 @@ public class JsonParserTest {
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            problems.forEach(p->p.printAll(log::info));
+            printer.handleProblems(problems);
         }
     }
 }

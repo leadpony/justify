@@ -41,6 +41,7 @@ public class ProblemTest {
     private static final String RESOURCE_NAME = "problem.tml";
   
     private static final Jsonv jsonv = Jsonv.newInstance();
+    private static final ProblemHandler printer = jsonv.createProblemPrinter(log::info);
     
     public static Stream<ProblemFixture> fixtureProvider() {
         return ProblemFixture.newStream(RESOURCE_NAME);
@@ -75,7 +76,7 @@ public class ProblemTest {
     private void printProblems(List<Problem> problems, ProblemFixture fixture) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());
-            problems.forEach(p->p.printAll(log::info));
+            printer.handleProblems(problems);
         }
     }
 }

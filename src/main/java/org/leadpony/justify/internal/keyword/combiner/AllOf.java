@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
@@ -41,10 +42,11 @@ class AllOf extends NaryBooleanLogic {
   
     @Override
     protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative) {
+        Stream<JsonSchema> subschemas = subschemas().distinct();
         if (affirmative) {
-            return Evaluators.conjunctive(subschemas(), type, true);
+            return Evaluators.conjunctive(subschemas, type, true);
         } else {
-            return Evaluators.disjunctive(subschemas(), type, false);
+            return Evaluators.disjunctive(subschemas, type, false);
         }
     }
 }

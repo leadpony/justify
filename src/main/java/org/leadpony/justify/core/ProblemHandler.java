@@ -19,7 +19,6 @@ package org.leadpony.justify.core;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * Handler of problems found by a JSON validator.
@@ -46,18 +45,5 @@ public interface ProblemHandler {
     static ProblemHandler collectingTo(Collection<Problem> collection) {
         Objects.requireNonNull(collection, "collection must not be null.");
         return collection::addAll;
-    }
-   
-    /**
-     * Creates a problem handler which will print problems 
-     * with the aid of the specified line consumer.
-     * 
-     * @param lineConsumer the object which will output the line to somewhere.
-     * @return newly created instance of problem handler.
-     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
-     */
-    static ProblemHandler printingWith(Consumer<String> lineConsumer) {
-        Objects.requireNonNull(lineConsumer, "lineConsumer must not be null.");
-        return problems->problems.forEach(p->p.printAll(lineConsumer));
     }
 }

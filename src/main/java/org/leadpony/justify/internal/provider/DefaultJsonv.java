@@ -26,7 +26,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
@@ -45,6 +47,7 @@ import org.leadpony.justify.core.JsonvException;
 import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.core.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.ProblemPrinter;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.BasicSchemaReader;
@@ -268,6 +271,16 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         return new ValidatingJsonProvider(jsonProvider, schema, handlerFactory);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
+        requireNonNull(lineConsumer, "lineConsumer");
+        requireNonNull(locale, "locale");
+        return new ProblemPrinter(lineConsumer, locale);
     }
     
     /**

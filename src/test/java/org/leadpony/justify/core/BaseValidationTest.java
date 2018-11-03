@@ -30,6 +30,7 @@ import javax.json.stream.JsonParser;
 
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -43,6 +44,7 @@ public abstract class BaseValidationTest {
     private static final Logger log = Logger.getLogger(BaseValidationTest.class.getName());
     
     public static final Jsonv jsonv = Jsonv.newInstance();
+    private static final ProblemHandler printer = jsonv.createProblemPrinter(log::info);
 
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
@@ -74,6 +76,7 @@ public abstract class BaseValidationTest {
     
     @ParameterizedTest
     @MethodSource("provideFixtures")
+    @Disabled
     public void testValidationWithNegatedSchema(ValidationFixture fixture) {
         Assumptions.assumeTrue(fixture.index() >= 0);
         JsonSchema schema = negate(getSchema(fixture.schema()));
@@ -131,6 +134,6 @@ public abstract class BaseValidationTest {
             return;
         }
         log.info(">>>" + fixture.displayName());
-        problems.forEach(p->p.printAll(log::info));
+        printer.handleProblems(problems);
     }
 }

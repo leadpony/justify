@@ -20,7 +20,9 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonException;
 import javax.json.JsonReader;
@@ -377,4 +379,29 @@ public interface Jsonv {
      * @return newly created instance of {@link JsonProvider}, which is defined in the JSON Processing API.
      */
     JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory);
+    
+    /**
+     * Creates a problem handler which will print problems 
+     * with the aid of the specified line consumer.
+     * 
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the specified {@code lineConsumer} was {@code null}.
+     */
+    default ProblemHandler createProblemPrinter(Consumer<String> lineConsumer) {
+        return createProblemPrinter(lineConsumer, Locale.getDefault());
+    }
+
+    /**
+     * Creates a problem handler which will print problems 
+     * with the aid of the specified line consumer,
+     * localizing the messages for the specified locale.
+     * 
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @param locale the locale for which the problem messages will be localized. 
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the specified {@code lineConsumer} or {@code local} 
+     *         was {@code null}.
+     */
+    ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale);
 }

@@ -33,6 +33,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * N-ary boolean logic.
+ * This class is the abstract base class for {@link AllOf}, {@link AnyOf} and {@link OneOf}.
  * 
  * @author leadpony
  */
@@ -83,5 +84,12 @@ abstract class NaryBooleanLogic extends Combiner {
         return null;
     }
     
+    /**
+     * Creates a new evaluator for this boolean logic.
+     * @param type the type of the instance to validate.
+     * @param affirmative {@code true} to create a normal evaluator,
+     *                    {@code false} to create a negated evaluator. 
+     * @return newly created evaluator.
+     */
     protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative);
 }

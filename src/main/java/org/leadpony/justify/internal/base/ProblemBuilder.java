@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
+import org.leadpony.justify.core.BranchProblem;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 
@@ -122,7 +122,7 @@ public class ProblemBuilder {
         if (this.childLists == null || this.childLists.isEmpty()) {
             return new SimpleProblem(this);
         } else {
-            return new CompositexProblem(this);
+            return new CompositeProblem(this);
         }
     }
 
@@ -207,31 +207,6 @@ public class ProblemBuilder {
          * {@inheritDoc}
          */
         @Override
-        public boolean hasSubproblem() {
-            return false;
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public List<List<Problem>> getSubproblems() {
-            return Collections.emptyList();
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void printAll(Consumer<String> lineConsumer) {
-            requireNonNull(lineConsumer, "lineConsumer");
-            ProblemPrinter.printProblem(this, lineConsumer);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public String toString() {
             return getContextualMessage();
         }
@@ -284,31 +259,37 @@ public class ProblemBuilder {
      * 
      * @author leadpony
      */
-    private static class CompositexProblem extends SimpleProblem {
+    private static class CompositeProblem extends SimpleProblem implements BranchProblem {
         
         /**
          * Lists of subproblems.
          */
-        private final List<List<Problem>> subproblems;
+        private final List<List<Problem>> branches;
 
         /**
          * Constructs this problem.
          * 
          * @param builder the builder of the problem.
          */
-        CompositexProblem(ProblemBuilder builder) {
+        CompositeProblem(ProblemBuilder builder) {
             super(builder);
-            this.subproblems = Collections.unmodifiableList(builder.childLists);
+            this.branches = Collections.unmodifiableList(builder.childLists);
         }
 
         @Override
-        public boolean hasSubproblem() {
-            return true;
+        public String getContextualMessage(Locale locale) {
+            requireNonNull(locale, "locale");
+            return super.getMessage(locale);
         }
-        
+
         @Override
-        public List<List<Problem>> getSubproblems() {
-            return subproblems;
+        public int countBranches() {
+            return branches.size();
+        }
+
+        @Override
+        public List<Problem> getBranch(int index) {
+            return branches.get(index);
         }
     }
 }

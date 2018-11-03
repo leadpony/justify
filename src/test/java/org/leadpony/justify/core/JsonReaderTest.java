@@ -47,6 +47,7 @@ public class JsonReaderTest {
    
     private static final Logger log = Logger.getLogger(JsonReaderTest.class.getName());
     private static final Jsonv jsonv = Jsonv.newInstance();
+    private static final ProblemHandler printer = jsonv.createProblemPrinter(log::info);
     
     private static JsonReader newReader(String instance) {
         return Json.createReader(new StringReader(instance));
@@ -195,7 +196,7 @@ public class JsonReaderTest {
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            problems.forEach(p->p.printAll(log::info));
+            printer.handleProblems(problems);
         }
     }
 }

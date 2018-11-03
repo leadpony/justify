@@ -40,7 +40,7 @@ public class MessageTest {
         
         String message = sut.format(parameters);
         
-        String expectedMessage = "The value must be of type integer, but actual type is string.";
+        String expectedMessage = "The value must be of integer type, but actual type is string.";
         assertThat(message).isEqualTo(expectedMessage);
     }
 }
