@@ -29,7 +29,6 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -44,7 +43,7 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
     private List<RetainingEvaluator> good;
     private List<RetainingEvaluator> bad;
     private long evaluationsAsTrue;
-    private final Event stopEvent;
+    private final InstanceMonitor monitor;
     
     ExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
         this.children = new ArrayList<>();
@@ -55,14 +54,14 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
             this.negated.add(new RetainingEvaluator(
                     child.evaluator(type, Evaluators.asFactory(), false)));
         });
-        this.stopEvent = ParserEvents.lastEventOf(type);
+        this.monitor = InstanceMonitor.of(type);
     }
     
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
         evaluateAll(event, parser, depth, reporter);
         evaluateAllNegated(event, parser, depth, reporter);
-        if (this.stopEvent == null || (depth == 0 && event == this.stopEvent)) {
+        if (monitor.isCompleted(event, depth)) {
             if (evaluationsAsTrue == 1) {
                 return Result.TRUE;
             } else if (evaluationsAsTrue < 1) {

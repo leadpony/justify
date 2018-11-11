@@ -26,18 +26,17 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ParserEvents;
 
 /**
  * @author leadpony
  */
 public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
 
-    private final Event stopEvent;
+    private final InstanceMonitor monitor;
     
     LongNotExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
         super(children, type);
-        this.stopEvent = ParserEvents.lastEventOf(type);
+        this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
                 it.remove();
             }
         }
-        if (depth == 0 && event == this.stopEvent) {
+        if (monitor.isCompleted(event, depth)) {
             if (badEvaluators == null || badEvaluators.size() != 1) {
                 return Result.TRUE;
             } else {

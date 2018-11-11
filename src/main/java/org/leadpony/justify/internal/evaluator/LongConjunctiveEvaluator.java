@@ -27,22 +27,21 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ParserEvents;
 
 /**
  * @author leadpony
  */
 class LongConjunctiveEvaluator extends ConjunctiveEvaluator {
 
-    private final Event stopEvent;
+    private final InstanceMonitor monitor;
     
     LongConjunctiveEvaluator(InstanceType type) {
-        this.stopEvent = ParserEvents.lastEventOf(type);
+        this.monitor = InstanceMonitor.of(type);
     }
     
     LongConjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
         super(children, type, affirmative);
-        this.stopEvent = ParserEvents.lastEventOf(type);
+        this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
@@ -57,7 +56,7 @@ class LongConjunctiveEvaluator extends ConjunctiveEvaluator {
                 it.remove();
             }
         }
-        if (depth == 0 && event == this.stopEvent) {
+        if (monitor.isCompleted(event, depth)) {
             return (evaluationsAsInvalid == 0) ? Result.TRUE : Result.FALSE;
         }
         return Result.PENDING;

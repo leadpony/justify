@@ -90,17 +90,6 @@ public final class ParserEvents {
     public static boolean isValue(Event event) {
         return valueEvents.contains(event);
     }
-     
-    public static Event lastEventOf(InstanceType type) {
-        switch (type) {
-        case ARRAY:
-            return Event.END_ARRAY;
-        case OBJECT:
-            return Event.END_OBJECT;
-        default:
-            return null;
-        }
-    }
     
     private ParserEvents() {
     }
