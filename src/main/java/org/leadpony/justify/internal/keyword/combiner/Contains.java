@@ -133,7 +133,7 @@ class Contains extends UnaryCombiner {
             builder.withMessage("instance.problem.cotains")
                    .withParameter("limit", min)
                    .withParameter("actual", numberOfTruths);
-            accumulatedProblems.forEach(builder::withSubproblems);
+            accumulatedProblems.forEach(builder::withBranch);
             reporter.accept(builder.build());
         }
     }

@@ -105,7 +105,7 @@ public class ProblemBuilder {
      * @param problems the list of problems which are children of the problem to be built.
      * @return this builder.
      */
-    public ProblemBuilder withSubproblems(List<Problem> problems) {
+    public ProblemBuilder withBranch(List<Problem> problems) {
         if (this.childLists == null) {
             this.childLists = new ArrayList<>();
         }

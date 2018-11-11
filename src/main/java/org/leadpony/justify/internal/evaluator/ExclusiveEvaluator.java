@@ -123,11 +123,11 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
             bad.get(0).problems().forEach(reporter::accept);
         } else {
             ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.oneOf");
+                    .withMessage("instance.problem.oneOf.few");
             bad.stream()
                 .map(RetainingEvaluator::problems)
                 .filter(Objects::nonNull)
-                .forEach(builder::withSubproblems);
+                .forEach(builder::withBranch);
             reporter.accept(builder.build());
         }
         return Result.FALSE;
@@ -135,9 +135,13 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
 
     protected Result reportTooManyValid(JsonParser parser, Consumer<Problem> reporter) {
         assert good.size() > 1;
-        for (int i = 1; i < good.size(); i++) {
-            good.get(i).problems().forEach(reporter::accept);
-        }
+        ProblemBuilder builder = createProblemBuilder(parser)
+                .withMessage("instance.problem.oneOf.many");
+        good.stream()
+            .map(RetainingEvaluator::problems)
+            .filter(Objects::nonNull)
+            .forEach(builder::withBranch);
+        reporter.accept(builder.build());
         return Result.FALSE;
     }
 }

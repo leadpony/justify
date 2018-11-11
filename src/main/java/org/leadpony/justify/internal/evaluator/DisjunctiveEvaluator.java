@@ -92,7 +92,7 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
             badEvaluators.stream()
                 .map(RetainingEvaluator::problems)
                 .filter(Objects::nonNull)
-                .forEach(builder::withSubproblems);
+                .forEach(builder::withBranch);
             reporter.accept(builder.build());
         }
         return Result.FALSE;
