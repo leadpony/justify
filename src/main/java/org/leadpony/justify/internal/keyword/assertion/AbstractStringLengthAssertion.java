@@ -16,14 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -49,7 +48,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
     
     @Override
-    protected Result evaluateAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result evaluateAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.limit)) {
             return Result.TRUE;
@@ -59,13 +58,13 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         }
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.limit)) {
             Problem p = createProblemBuilder(parser, event)
@@ -73,7 +72,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

@@ -17,13 +17,13 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
-import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -62,7 +62,7 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
 
     @Override
-    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
         if (testValue(value, this.limit)) {
             return Result.TRUE;
         } else {
@@ -71,20 +71,20 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         }
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
         if (testValue(value, this.limit)) {
             Problem p = createProblemBuilder(parser)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

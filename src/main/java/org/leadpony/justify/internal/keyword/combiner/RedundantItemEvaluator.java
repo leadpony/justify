@@ -16,14 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
@@ -41,13 +40,13 @@ class RedundantItemEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
                 .withMessage("instance.problem.redundant.item")
                 .withParameter("index", itemIndex)
                 .withSchema(schema)
                 .build();
-        reporter.accept(p);
+        dispatcher.dispatchProblem(p);
         return Result.FALSE;
     }
 }

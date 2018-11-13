@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -29,10 +28,10 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.Keyword;
@@ -69,7 +68,7 @@ class Contains extends UnaryCombiner {
     public void link(Map<String, Keyword> siblings) {
     }
     
-    private class ItemsSchemaEvaluator implements Evaluator, ProblemReporter {
+    private class ItemsSchemaEvaluator implements Evaluator, ProblemDispatcher {
         
         private final List<Problem> problems = new ArrayList<>();
         private final List<List<Problem>> accumulatedProblems = new ArrayList<>();
@@ -80,7 +79,7 @@ class Contains extends UnaryCombiner {
         }
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (itemEvaluator == null) {
                 itemEvaluator = createItemSchemaEvaluator(event, parser, depth);
             }
@@ -88,13 +87,13 @@ class Contains extends UnaryCombiner {
                 evaluateItemschema(event, parser, depth);
             }
             if (depth == 0 && event == Event.END_ARRAY) {
-                return assertCountInRange(numberOfTruths, parser, reporter);
+                return assertCountInRange(numberOfTruths, parser, dispatcher);
             }
             return Result.PENDING;
         }
         
         @Override
-        public void accept(Problem problem) {
+        public void dispatchProblem(Problem problem) {
             problems.add(problem);
         }
 
@@ -120,21 +119,21 @@ class Contains extends UnaryCombiner {
             }
         }
         
-        protected Result assertCountInRange(int numberOfTruths, JsonParser parser, Consumer<Problem> reporter) {
+        protected Result assertCountInRange(int numberOfTruths, JsonParser parser, ProblemDispatcher dispatcher) {
             if (numberOfTruths < min) {
-                reportTooFewTruths(numberOfTruths, parser, reporter);
+                reportTooFewTruths(numberOfTruths, parser, dispatcher);
                 return Result.FALSE;
             }
             return Result.TRUE;
         }
 
-        private void reportTooFewTruths(int numberOfTruths, JsonParser parser, Consumer<Problem> reporter) {
+        private void reportTooFewTruths(int numberOfTruths, JsonParser parser, ProblemDispatcher dispatcher) {
             ProblemBuilder builder = createProblemBuilder(parser);
             builder.withMessage("instance.problem.cotains")
                    .withParameter("limit", min)
                    .withParameter("actual", numberOfTruths);
             accumulatedProblems.forEach(builder::withBranch);
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
         }
     }
     
@@ -148,7 +147,7 @@ class Contains extends UnaryCombiner {
         }
 
         @Override
-        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 append(subschema.evaluator(type, Evaluators.asFactory(), false));

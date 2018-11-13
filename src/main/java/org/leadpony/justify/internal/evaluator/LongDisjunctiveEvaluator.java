@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
@@ -26,7 +25,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -45,11 +44,11 @@ class LongDisjunctiveEvaluator extends DisjunctiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<RetainingEvaluator> it = children.iterator();
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
-            Result result = invokeChildEvaluator(current, event, parser, depth, reporter);
+            Result result = invokeChildEvaluator(current, event, parser, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else if (result != Result.PENDING) {
@@ -60,13 +59,13 @@ class LongDisjunctiveEvaluator extends DisjunctiveEvaluator {
             }
         }
         if (monitor.isCompleted(event, depth)) {
-            return reportProblems(parser, reporter);
+            return reportProblems(parser, dispatcher);
         }
         return Result.PENDING;
     }
 
     protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
-            Consumer<Problem> reporter) {
-        return evaluator.evaluate(event, parser, depth, reporter);
+            ProblemDispatcher dispatcher) {
+        return evaluator.evaluate(event, parser, depth, dispatcher);
     }
 }

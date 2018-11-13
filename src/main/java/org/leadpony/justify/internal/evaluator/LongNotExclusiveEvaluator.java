@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.Iterator;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
@@ -25,7 +24,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -40,11 +39,11 @@ public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<RetainingEvaluator> it = children.iterator();
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, reporter);
+            Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadEvaluator(current);
@@ -56,7 +55,7 @@ public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
             if (badEvaluators == null || badEvaluators.size() != 1) {
                 return Result.TRUE;
             } else {
-                return dispatchProblems(badEvaluators.get(0), reporter);
+                return dispatchProblems(badEvaluators.get(0), dispatcher);
             }
         }
         return Result.PENDING;

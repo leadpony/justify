@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -29,6 +28,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 
@@ -86,18 +86,18 @@ class Required extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
                 missing.remove(parser.getString());
-                return test(parser, reporter, false);
+                return test(parser, dispatcher, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, reporter, true);
+                return test(parser, dispatcher, true);
             } else {
                 return Result.PENDING;
             }
         }
         
-        private Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
+        private Result test(JsonParser parser, ProblemDispatcher dispatcher, boolean last) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
@@ -106,7 +106,7 @@ class Required extends AbstractAssertion {
                             .withMessage("instance.problem.required")
                             .withParameter("required", property)
                             .build();
-                    reporter.accept(p);
+                    dispatcher.dispatchProblem(p);
                 }
                 return Result.FALSE;
             } else {
@@ -124,18 +124,18 @@ class Required extends AbstractAssertion {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
                 missing.remove(parser.getString());
-                return test(parser, reporter, false);
+                return test(parser, dispatcher, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, reporter, true);
+                return test(parser, dispatcher, true);
             } else {
                 return Result.PENDING;
             }
         }
 
-        private Result test(JsonParser parser, Consumer<Problem> reporter, boolean last) {
+        private Result test(JsonParser parser, ProblemDispatcher dispatcher, boolean last) {
             if (missing.isEmpty()) {
                 Problem p = null;
                 if (names.size() == 1) {
@@ -150,7 +150,7 @@ class Required extends AbstractAssertion {
                         .withParameter("required", names)
                         .build();
                 }
-                reporter.accept(p);
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (last) {
                 return Result.TRUE;

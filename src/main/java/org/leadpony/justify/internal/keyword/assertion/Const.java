@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -26,6 +24,7 @@ import javax.json.stream.JsonParser;
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * Assertion specified with "const" validation keyword.
@@ -51,7 +50,7 @@ class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
@@ -61,13 +60,13 @@ class Const extends AbstractEqualityAssertion {
                     .withParameter("expected", expected)
                     .withParameter("expectedType", InstanceType.of(expected))
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         }
     }
 
     @Override
-    protected Result assertNotEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
         if (actual.equals(expected)) {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.not.const")
@@ -75,7 +74,7 @@ class Const extends AbstractEqualityAssertion {
                     .withParameter("expected", expected)
                     .withParameter("expectedType", InstanceType.of(expected))
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

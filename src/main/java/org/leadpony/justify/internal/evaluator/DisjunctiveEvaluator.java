@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
@@ -28,7 +27,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -50,16 +49,16 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         for (RetainingEvaluator child : children) {
-            Result result = child.evaluate(event, parser, depth, reporter);
+            Result result = child.evaluate(event, parser, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else {
                 addBadEvaluator(child);
             }
         }
-        return reportProblems(parser, reporter);
+        return reportProblems(parser, dispatcher);
     }
 
     @Override
@@ -77,15 +76,15 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
         badEvaluators.add(evaluator);
     }
     
-    protected Result reportProblems(JsonParser parser, Consumer<Problem> reporter) {
+    protected Result reportProblems(JsonParser parser, ProblemDispatcher dispatcher) {
         int count = (badEvaluators != null) ? 
                 badEvaluators.size() : 0;
         if (count == 0) {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.anyOf.none");
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
         } else if (count == 1) {
-            badEvaluators.get(0).problems().forEach(reporter::accept);
+            badEvaluators.get(0).problems().forEach(dispatcher::dispatchProblem);
         } else {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.anyOf");
@@ -93,7 +92,7 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
                 .map(RetainingEvaluator::problems)
                 .filter(Objects::nonNull)
                 .forEach(builder::withBranch);
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
         }
         return Result.FALSE;
     }

@@ -16,14 +16,11 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemReporter;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * Combination evaluator of if/then/else.
@@ -31,6 +28,8 @@ import org.leadpony.justify.internal.base.ProblemReporter;
  * @author leadpony
  */
 public class ConditionalEvaluator implements Evaluator {
+    
+    private static final ProblemDispatcher SILENT_DISPATCHER = problem->{};
  
     private final Evaluator ifEvaluator;
     private final Evaluator thenEvaluator;
@@ -52,36 +51,36 @@ public class ConditionalEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, ProblemReporter.SILENT);
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, SILENT_DISPATCHER);
         if (ifResult == Result.TRUE) {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, reporter);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, dispatcher);
             if (thenResult != Result.PENDING) {
-                return finalizeEvaluation(thenResult, thenEvaluator, parser, reporter);
+                return finalizeEvaluation(thenResult, thenEvaluator, parser, dispatcher);
             }
         } else if (ifResult == Result.FALSE) {
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, parser, depth, reporter);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, parser, depth, dispatcher);
             if (elseResult != Result.PENDING) {
-                return finalizeEvaluation(elseResult, elseEvaluator, parser, reporter);
+                return finalizeEvaluation(elseResult, elseEvaluator, parser, dispatcher);
             }
         } else {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, reporter);
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, parser, depth, reporter);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, dispatcher);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, parser, depth, dispatcher);
         }
         return null;
     }
     
-    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         if (result == Result.PENDING) {
-            return evaluator.evaluate(event, parser, depth, reporter);
+            return evaluator.evaluate(event, parser, depth, dispatcher);
         } else {
             return result;
         }
     }
     
-    private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, Consumer<Problem> reporter) {
+    private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
-            ((RetainingEvaluator)evaluator).problems().forEach(problem->reporter.accept(problem));
+            ((RetainingEvaluator)evaluator).problems().forEach(problem->dispatcher.dispatchProblem(problem));
         }
         return result;
     }

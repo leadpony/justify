@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
@@ -31,7 +30,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
@@ -120,7 +119,7 @@ abstract class Items extends Combiner {
         }
         
         @Override
-        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (ParserEvents.isValue(event)) {
                 append(this.subschema, ParserEvents.toInstanceType(event, parser));
             }
@@ -195,7 +194,7 @@ abstract class Items extends Combiner {
             }
 
             @Override
-            protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+            protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
                     appendSubschema(type);

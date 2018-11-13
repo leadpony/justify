@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
@@ -28,7 +27,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
@@ -58,26 +57,26 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
-        evaluateAll(event, parser, depth, reporter);
-        evaluateAllNegated(event, parser, depth, reporter);
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        evaluateAll(event, parser, depth, dispatcher);
+        evaluateAllNegated(event, parser, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
             if (evaluationsAsTrue == 1) {
                 return Result.TRUE;
             } else if (evaluationsAsTrue < 1) {
-                return reportTooFewValid(parser, reporter);
+                return reportTooFewValid(parser, dispatcher);
             } else {
-                return reportTooManyValid(parser, reporter);
+                return reportTooManyValid(parser, dispatcher);
             }
         }
         return Result.PENDING;
     }
 
-    private void evaluateAll(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private void evaluateAll(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<RetainingEvaluator> it = children.iterator();
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, reporter);
+            Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.TRUE) {
                     evaluationsAsTrue++;
@@ -89,11 +88,11 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         }
     }
 
-    private void evaluateAllNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private void evaluateAllNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<RetainingEvaluator> it = negated.iterator();
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, reporter);
+            Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addGood(current);
@@ -117,9 +116,9 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         this.bad.add(evaluator);
     }
     
-    private Result reportTooFewValid(JsonParser parser, Consumer<Problem> reporter) {
+    private Result reportTooFewValid(JsonParser parser, ProblemDispatcher dispatcher) {
         if (bad.size() == 1) {
-            bad.get(0).problems().forEach(reporter::accept);
+            bad.get(0).problems().forEach(dispatcher::dispatchProblem);
         } else {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.oneOf.few");
@@ -127,12 +126,12 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
                 .map(RetainingEvaluator::problems)
                 .filter(Objects::nonNull)
                 .forEach(builder::withBranch);
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
         }
         return Result.FALSE;
     }
 
-    protected Result reportTooManyValid(JsonParser parser, Consumer<Problem> reporter) {
+    protected Result reportTooManyValid(JsonParser parser, ProblemDispatcher dispatcher) {
         assert good.size() > 1;
         ProblemBuilder builder = createProblemBuilder(parser)
                 .withMessage("instance.problem.oneOf.many");
@@ -140,7 +139,7 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
             .map(RetainingEvaluator::problems)
             .filter(Objects::nonNull)
             .forEach(builder::withBranch);
-        reporter.accept(builder.build());
+        dispatcher.dispatchProblem(builder.build());
         return Result.FALSE;
     }
 }

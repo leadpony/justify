@@ -16,15 +16,13 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.function.Consumer;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
@@ -45,11 +43,11 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         if (depth == 1) {
-            update(event, parser, reporter);
+            update(event, parser, dispatcher);
         }
-        return childrenEvaluator.evaluate(event, parser, depth, reporter);
+        return childrenEvaluator.evaluate(event, parser, depth, dispatcher);
     }
     
     public boolean isAffirmative() {
@@ -71,7 +69,7 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
         childrenEvaluator.append(evaluator);
     }
     
-    protected abstract void update(Event event, JsonParser parser, Consumer<Problem> reporter);
+    protected abstract void update(Event event, JsonParser parser, ProblemDispatcher dispatcher);
 
     /**
      * @author leadpony
@@ -84,9 +82,9 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
 
         @Override
         protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
-                Consumer<Problem> reporter) {
+                ProblemDispatcher dispatcher) {
             assert depth > 0;
-            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
+            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, dispatcher);
         }
     }
 
@@ -101,9 +99,9 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
 
         @Override
         protected Result invokeChildEvaluator(Evaluator evaluator, Event event, JsonParser parser, int depth,
-                Consumer<Problem> reporter) {
+                ProblemDispatcher dispatcher) {
             assert depth > 0;
-            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, reporter);
+            return super.invokeChildEvaluator(evaluator, event, parser, depth - 1, dispatcher);
         }
     }
 }

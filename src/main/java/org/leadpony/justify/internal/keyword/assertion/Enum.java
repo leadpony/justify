@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -27,6 +26,7 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * Assertion specified with "enum" validation keyword.
@@ -54,7 +54,7 @@ class Enum extends AbstractEqualityAssertion {
     }
     
     @Override
-    protected Result assertEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
         if (contains(actual)) {
             return Result.TRUE;
         } else {
@@ -63,20 +63,20 @@ class Enum extends AbstractEqualityAssertion {
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         }
     }
 
     @Override
-    protected Result assertNotEquals(JsonValue actual, JsonParser parser, Consumer<Problem> reporter) {
+    protected Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
         if (contains(actual)) {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.not.enum")
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +28,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -46,18 +46,18 @@ class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<RetainingEvaluator> it = children.iterator();
         while (it.hasNext()) {
             RetainingEvaluator current = it.next();
-            if (current.evaluate(event, parser, depth, reporter) == Result.FALSE) {
+            if (current.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
                 addBadEvaluator(current);
             }
         }
         if (badEvaluators == null || badEvaluators.size() != 1) {
             return Result.TRUE;
         } else {
-            return dispatchProblems(badEvaluators.get(0), reporter);
+            return dispatchProblems(badEvaluators.get(0), dispatcher);
         }
     }
 
@@ -68,9 +68,9 @@ class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
         this.badEvaluators.add(evaluator);
     }
     
-    protected Result dispatchProblems(RetainingEvaluator evaluator, Consumer<Problem> reporter) {
+    protected Result dispatchProblems(RetainingEvaluator evaluator, ProblemDispatcher dispatcher) {
         List<Problem> problems = evaluator.problems();
-        problems.forEach(reporter::accept);
+        problems.forEach(dispatcher::dispatchProblem);
         return Result.FALSE;
     }
 }

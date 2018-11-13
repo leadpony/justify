@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.function.Consumer;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -26,7 +24,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.core.spi.FormatAttribute;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -64,24 +62,24 @@ public class Format extends AbstractAssertion implements Evaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         JsonValue value = parser.getValue();
         if (attribute.test(value)) {
             return Result.TRUE;
         } else {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.format");
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
         }
     }
 
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         JsonValue value = parser.getValue();
         if (attribute.test(value)) {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.not.format");
-            reporter.accept(builder.build());
+            dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
         } else {
             return Result.TRUE;

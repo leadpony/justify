@@ -20,21 +20,20 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.internal.base.ProblemReporter;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * Evaluator which retains the found problems internally.
  * 
  * @author leadpony
  */
-class RetainingEvaluator implements Evaluator, ProblemReporter, Comparable<RetainingEvaluator> {
+class RetainingEvaluator implements Evaluator, ProblemDispatcher, Comparable<RetainingEvaluator> {
 
     private final Evaluator evaluator;
     private List<Problem> problems;
@@ -49,12 +48,12 @@ class RetainingEvaluator implements Evaluator, ProblemReporter, Comparable<Retai
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         return evaluator.evaluate(event, parser, depth, this);
     }
     
     @Override
-    public void accept(Problem problem) {
+    public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         if (this.problems == null) {
             this.problems = new ArrayList<>();

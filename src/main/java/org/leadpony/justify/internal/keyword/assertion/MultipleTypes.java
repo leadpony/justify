@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -29,6 +28,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 
 /**
@@ -65,19 +65,19 @@ class MultipleTypes extends AbstractAssertion implements Evaluator {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
-            return assertTypeMatches(type, parser, reporter);
+            return assertTypeMatches(type, parser, dispatcher);
         } else {
             return Result.TRUE;
         }
     }
     
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         if (type != null) {
-            return assertTypeNotMatches(type, parser, reporter);
+            return assertTypeNotMatches(type, parser, dispatcher);
         } else {
             return Result.TRUE;
         }
@@ -88,7 +88,7 @@ class MultipleTypes extends AbstractAssertion implements Evaluator {
                (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
     }
 
-    private Result assertTypeMatches(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
+    private Result assertTypeMatches(InstanceType type, JsonParser parser, ProblemDispatcher dispatcher) {
         if (contains(type)) {
             return Result.TRUE;
         } else {
@@ -97,19 +97,19 @@ class MultipleTypes extends AbstractAssertion implements Evaluator {
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         }
     }
     
-    private Result assertTypeNotMatches(InstanceType type, JsonParser parser, Consumer<Problem> reporter) {
+    private Result assertTypeNotMatches(InstanceType type, JsonParser parser, ProblemDispatcher dispatcher) {
         if (contains(type)) {
             Problem p = createProblemBuilder(parser)
                     .withMessage("instance.problem.not.type.plural")
                     .withParameter("actual", type)
                     .withParameter("expected", typeSet)
                     .build();
-            reporter.accept(p);
+            dispatcher.dispatchProblem(p);
             return Result.FALSE;
         } else {
             return Result.TRUE;

@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
-
-import java.util.function.Consumer;
-
-import org.leadpony.justify.core.Problem;
+package org.leadpony.justify.core;
 
 /**
- * Marker interface representing a problem reporter.
- *  
+ * Dispatcher of problem found by a JSON validator.
+ * 
  * @author leadpony
  */
-public interface ProblemReporter extends Consumer<Problem> {
+public interface ProblemDispatcher {
     
     /**
-     * Silent reporter which ignores any problems.
+     * Dispatches the problem found.
+     * @param problem the problem to dispatch, cannot be {@code null}.
      */
-    ProblemReporter SILENT = problem->{};
+    void dispatchProblem(Problem problem);
 }

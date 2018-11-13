@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.function.Consumer;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
@@ -26,6 +24,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
@@ -76,7 +75,7 @@ class MaxProperties extends AbstractAssertion {
         }
         
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (event == Event.KEY_NAME) {
                     ++currentCount;
@@ -90,7 +89,7 @@ class MaxProperties extends AbstractAssertion {
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxProperties)
                             .build();
-                    reporter.accept(p);
+                    dispatcher.dispatchProblem(p);
                     return Result.FALSE;
                 }
             }

@@ -31,10 +31,10 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
-import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
@@ -42,7 +42,7 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
  * 
  * @author leadpony
  */
-public class ValidatingJsonParser extends JsonParserDecorator implements ProblemReporter {
+public class ValidatingJsonParser extends JsonParserDecorator implements ProblemDispatcher {
     
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;
@@ -90,7 +90,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     }
   
     @Override
-    public void accept(Problem problem) {
+    public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         this.currentProblems.add(problem);
     }

@@ -35,12 +35,12 @@ public final class Evaluators {
     /**
      * The evaluator which evaluates any JSON schema as true ("valid").
      */
-    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, reporter)->Result.TRUE;
+    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, dispatcher)->Result.TRUE;
 
     /**
      * The evaluator whose result should be ignored.
      */
-    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, reporter)->Result.IGNORED;
+    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, dispatcher)->Result.IGNORED;
     
     private Evaluators() {
     }

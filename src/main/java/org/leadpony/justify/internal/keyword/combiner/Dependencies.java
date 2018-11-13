@@ -22,7 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
@@ -35,8 +34,8 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.base.ProblemReporter;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 
@@ -161,7 +160,7 @@ public class Dependencies extends Combiner {
         }
     }
     
-    private static class SubschemaEvaluator implements Evaluator, ProblemReporter {
+    private static class SubschemaEvaluator implements Evaluator, ProblemDispatcher {
 
         private final String property;
         private boolean active;
@@ -176,18 +175,18 @@ public class Dependencies extends Combiner {
         }
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (!active) {
                 if (depth == 1 && event == Event.KEY_NAME) {
                     String keyName = parser.getString();
                     if (keyName.equals(property)) {
                         active = true;
-                        dispatchAllProblems(reporter);
+                        dispatchAllProblems(dispatcher);
                     }
                 }
             }
             if (this.result == null) {
-                Result result = realEvaluator.evaluate(event, parser, depth, active ? reporter : this);
+                Result result = realEvaluator.evaluate(event, parser, depth, active ? dispatcher : this);
                 if (result != Result.PENDING) {
                     this.result = result;
                 }
@@ -204,19 +203,19 @@ public class Dependencies extends Combiner {
         }
         
         @Override
-        public void accept(Problem problem) {
+        public void dispatchProblem(Problem problem) {
             if (problems == null) {
                 problems = new ArrayList<>();
             }
             problems.add(problem);
         }
 
-        private void dispatchAllProblems(Consumer<Problem> reporter) {
+        private void dispatchAllProblems(ProblemDispatcher dispatcher) {
             if (problems == null) {
                 return;
             }
             for (Problem problem : problems) {
-                reporter.accept(problem);
+                dispatcher.dispatchProblem(problem);
             }
         }
     }
@@ -260,7 +259,7 @@ public class Dependencies extends Combiner {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = parser.getString();
                 if (keyName.equals(property)) {
@@ -270,9 +269,9 @@ public class Dependencies extends Combiner {
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
                     if (affirmative) {
-                        return test(parser, reporter);
+                        return test(parser, dispatcher);
                     } else {
-                        return testNegation(parser, reporter);
+                        return testNegation(parser, dispatcher);
                     }
                 } else {
                     return Result.IGNORED;
@@ -281,7 +280,7 @@ public class Dependencies extends Combiner {
             return Result.PENDING;
         }
         
-        private Result test(JsonParser parser, Consumer<Problem> reporter) {
+        private Result test(JsonParser parser, ProblemDispatcher dispatcher) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
@@ -291,18 +290,18 @@ public class Dependencies extends Combiner {
                             .withParameter("required", entry)
                             .withParameter("dependant", property)
                             .build();
-                    reporter.accept(p);
+                    dispatcher.dispatchProblem(p);
                 }
                 return Result.FALSE;
             }
         }
 
-        private Result testNegation(JsonParser parser, Consumer<Problem> reporter) {
+        private Result testNegation(JsonParser parser, ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
                 Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.unknown")
                         .build();
-                reporter.accept(p);
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
                 ProblemBuilder b = createProblemBuilder(parser)
@@ -314,7 +313,7 @@ public class Dependencies extends Combiner {
                     b.withMessage("instance.problem.not.dependencies.plural")
                      .withParameter("required", required); 
                 }
-                reporter.accept(b.build());
+                dispatcher.dispatchProblem(b.build());
                 return Result.FALSE;
             } else {
                 return Result.TRUE;

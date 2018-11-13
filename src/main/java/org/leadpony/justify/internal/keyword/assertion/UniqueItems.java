@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -29,6 +28,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 
@@ -78,10 +78,10 @@ class UniqueItems extends AbstractAssertion {
         }
         
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
             if (depth == 0) { 
                 if (event == Event.END_ARRAY) {
-                    return getFinalResult(parser, reporter);
+                    return getFinalResult(parser, dispatcher);
                 } else {
                     return Result.PENDING;
                 }
@@ -94,7 +94,7 @@ class UniqueItems extends AbstractAssertion {
             } else {
                 JsonValue value = builder.build();
                 builder = null;
-                return testItemValue(value, index++, parser, reporter);
+                return testItemValue(value, index++, parser, dispatcher);
             }
         }
         
@@ -106,7 +106,7 @@ class UniqueItems extends AbstractAssertion {
             values.put(value, index);
         }
         
-        protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
+        protected Result testItemValue(JsonValue value, int index, JsonParser parser, ProblemDispatcher dispatcher) {
             if (hasItemAlready(value)) {
                 int lastIndex = values.get(value);
                 Problem p = createProblemBuilder(parser)
@@ -114,7 +114,7 @@ class UniqueItems extends AbstractAssertion {
                         .withParameter("index", index)
                         .withParameter("firstIndex", lastIndex)
                         .build();
-                reporter.accept(p);
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else {
                 addUniqueItem(value, index);
@@ -122,7 +122,7 @@ class UniqueItems extends AbstractAssertion {
             return Result.PENDING;
         }
 
-        protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
+        protected Result getFinalResult(JsonParser parser, ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
     }
@@ -137,7 +137,7 @@ class UniqueItems extends AbstractAssertion {
         }
 
         @Override
-        protected Result testItemValue(JsonValue value, int index, JsonParser parser, Consumer<Problem> reporter) {
+        protected Result testItemValue(JsonValue value, int index, JsonParser parser, ProblemDispatcher dispatcher) {
             if (hasItemAlready(value)) {
                 duplicated = true;
             } else {
@@ -147,14 +147,14 @@ class UniqueItems extends AbstractAssertion {
         }
 
         @Override
-        protected Result getFinalResult(JsonParser parser, Consumer<Problem> reporter) {
+        protected Result getFinalResult(JsonParser parser, ProblemDispatcher dispatcher) {
             if (duplicated) {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(parser)
                         .withMessage("instance.problem.not.uniqueItems")
                         .build();
-                reporter.accept(p);
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             }
         }

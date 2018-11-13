@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.function.Consumer;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -25,7 +23,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -65,7 +63,7 @@ class PropertyNames extends UnaryCombiner {
         }
 
         @Override
-        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
                 append(subschema, InstanceType.STRING);
             }

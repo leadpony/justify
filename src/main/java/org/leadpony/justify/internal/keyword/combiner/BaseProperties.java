@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -32,7 +31,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -109,7 +108,7 @@ public abstract class BaseProperties<K> extends Combiner {
         }
         
         @Override
-        protected void update(Event event, JsonParser parser, Consumer<Problem> reporter) {
+        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
                 String keyName = parser.getString();
                 findSubschemas(keyName);

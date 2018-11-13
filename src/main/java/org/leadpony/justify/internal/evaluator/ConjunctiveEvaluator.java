@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
@@ -27,7 +26,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * Evaluator for "allOf" boolean logic.
@@ -48,9 +47,9 @@ public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements Ap
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, Consumer<Problem> reporter) {
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         for (Evaluator child : children) {
-            if (child.evaluate(event, parser, depth, reporter) == Result.FALSE) {
+            if (child.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
                 evaluationsAsInvalid++;
             }
         }
