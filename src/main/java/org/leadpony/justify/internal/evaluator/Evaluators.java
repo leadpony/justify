@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
-
 import java.util.stream.Stream;
 
 import org.leadpony.justify.core.Evaluator;
@@ -33,11 +31,6 @@ import org.leadpony.justify.core.InstanceType;
 public final class Evaluators {
      
     /**
-     * The evaluator which evaluates any JSON schema as true ("valid").
-     */
-    public static final Evaluator ALWAYS_TRUE = (event, parser, depth, dispatcher)->Result.TRUE;
-
-    /**
      * The evaluator whose result should be ignored.
      */
     public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, dispatcher)->Result.IGNORED;
@@ -46,14 +39,9 @@ public final class Evaluators {
     }
     
     public static Evaluator always(boolean result, JsonSchema schema) {
-        return result ? ALWAYS_TRUE : alwaysFalse(schema);
+        return result ? Evaluator.ALWAYS_TRUE : Evaluator.alwaysFalse(schema);
     }
 
-    public static Evaluator alwaysFalse(JsonSchema schema) {
-        requireNonNull(schema, "schema");
-        return new AlwaysFalseEvaluator(schema);
-    }
-    
     public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
         if (type.isContainer()) {
             return new LongConjunctiveEvaluator(type);
@@ -96,35 +84,5 @@ public final class Evaluators {
         } else {
             return new NotExclusiveEvaluator(children, type);
         }
-    }
-
-    private static final DefaultFactory DEFAULT_FACTORY = new DefaultFactory();
-
-    /**
-     * Returns the implementation of {@link JsonSchema.EvaluatorFactory}.
-     * 
-     * @return the evaluator factory.
-     */
-    public static JsonSchema.EvaluatorFactory asFactory() {
-        return DEFAULT_FACTORY;
-    }
-
-    /**
-     * The implementation of {@link JsonSchema.EvaluatorFactory}.
-     * 
-     * @author leadpony
-     */
-    private static class DefaultFactory implements JsonSchema.EvaluatorFactory {
-
-        @Override
-        public Evaluator alwaysTrue() {
-            return ALWAYS_TRUE;
-        }
-
-        @Override
-        public Evaluator alwaysFalse(JsonSchema schema) {
-            return new AlwaysFalseEvaluator(schema);
-        }
-        
     }
 }

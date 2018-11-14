@@ -40,6 +40,6 @@ class Not extends UnaryCombiner {
 
     @Override
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        return getSubschema().evaluator(type, getEvaluatorFactory(), !affirmative);
+        return getSubschema().evaluator(type, !affirmative);
     }
 }

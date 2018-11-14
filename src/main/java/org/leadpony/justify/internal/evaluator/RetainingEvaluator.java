@@ -27,13 +27,14 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 
 /**
  * Evaluator which retains the found problems internally.
  * 
  * @author leadpony
  */
-class RetainingEvaluator implements Evaluator, ProblemDispatcher, Comparable<RetainingEvaluator> {
+class RetainingEvaluator implements Evaluator, DefaultProblemDispatcher, Comparable<RetainingEvaluator> {
 
     private final Evaluator evaluator;
     private List<Problem> problems;

@@ -31,18 +31,17 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.JsonValidatingException;
 import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * JSON parser with validation functionality.
  * 
  * @author leadpony
  */
-public class ValidatingJsonParser extends JsonParserDecorator implements ProblemDispatcher {
+public class ValidatingJsonParser extends JsonParserDecorator implements DefaultProblemDispatcher {
     
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;
@@ -97,7 +96,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Problem
     
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        this.evaluator = rootSchema.evaluator(type, Evaluators.asFactory(), true);
+        this.evaluator = rootSchema.evaluator(type, true);
         if (this.evaluator != null) {
             handleEvent(event, parser);
         }

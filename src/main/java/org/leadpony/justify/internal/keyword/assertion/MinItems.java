@@ -57,7 +57,7 @@ class MinItems extends AbstractAssertion {
             } else if (limit > 0) {
                 evaluator = new MaxItems.AssertionEvaluator(limit - 1, this);
             } else {
-                evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
+                evaluator = Evaluator.alwaysFalse(getEnclosingSchema());
             }
             return evaluator;
         } else {

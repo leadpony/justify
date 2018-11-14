@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.core;
+package org.leadpony.justify.internal.base;
 
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
+
 /**
- * Dispatcher of problem found by a JSON validator.
- * 
  * @author leadpony
  */
-public interface ProblemDispatcher {
+public class SilentProblemDispatcher implements ProblemDispatcher {
     
-    /**
-     * Dispatches the problem found.
-     * @param problem the problem to dispatch, cannot be {@code null}.
-     */
-    void dispatchProblem(Problem problem);
+    public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
     
-    /**
-     * Dispatches an inevitable problem.
-     * @param parser the parser which encountered the problem, cannot be {@code null}.
-     * @param schema the JSON schema evaluated, cannot be {@code null}.
-     */
-    void dispatchInevitableProblem(JsonParser parser, JsonSchema schema);
+    private SilentProblemDispatcher() {
+    }
+    
+    @Override
+    public void dispatchProblem(Problem problem) {
+    }
+
+    @Override
+    public void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
+    }
 }

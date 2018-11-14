@@ -35,6 +35,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
@@ -140,7 +141,6 @@ public class Dependencies extends Combiner {
         Evaluator createEvaluator(boolean affirmative) {
             Evaluator evaluator = subschema.evaluator(
                     InstanceType.OBJECT,
-                    Evaluators.asFactory(),
                     affirmative);
             return new SubschemaEvaluator(getProperty(), evaluator);
         }
@@ -160,7 +160,7 @@ public class Dependencies extends Combiner {
         }
     }
     
-    private static class SubschemaEvaluator implements Evaluator, ProblemDispatcher {
+    private static class SubschemaEvaluator implements Evaluator, DefaultProblemDispatcher {
 
         private final String property;
         private boolean active;

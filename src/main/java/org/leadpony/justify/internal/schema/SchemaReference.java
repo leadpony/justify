@@ -98,8 +98,8 @@ public class SchemaReference extends AbstractJsonSchema {
     }
 
     @Override
-    public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
-        return referencedSchema.evaluator(type, factory, affirmative);
+    public Evaluator evaluator(InstanceType type, boolean affirmative) {
+        return referencedSchema.evaluator(type, affirmative);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class SchemaReference extends AbstractJsonSchema {
     private class NonexistentSchema implements JsonSchema, Evaluator {
 
         @Override
-        public Evaluator evaluator(InstanceType type, EvaluatorFactory evaluatorFactory, boolean affirmative) {
+        public Evaluator evaluator(InstanceType type, boolean affirmative) {
             return this;
         }
 

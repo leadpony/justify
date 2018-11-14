@@ -21,6 +21,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.SilentProblemDispatcher;
 
 /**
  * Combination evaluator of if/then/else.
@@ -29,8 +30,6 @@ import org.leadpony.justify.core.ProblemDispatcher;
  */
 public class ConditionalEvaluator implements Evaluator {
     
-    private static final ProblemDispatcher SILENT_DISPATCHER = problem->{};
- 
     private final Evaluator ifEvaluator;
     private final Evaluator thenEvaluator;
     private final Evaluator elseEvaluator;
@@ -52,7 +51,7 @@ public class ConditionalEvaluator implements Evaluator {
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, SILENT_DISPATCHER);
+        ifResult = updateEvaluation(ifResult, ifEvaluator, event, parser, depth, SilentProblemDispatcher.SINGLETON);
         if (ifResult == Result.TRUE) {
             thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, dispatcher);
             if (thenResult != Result.PENDING) {

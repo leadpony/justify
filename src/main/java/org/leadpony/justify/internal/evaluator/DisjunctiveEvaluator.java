@@ -44,7 +44,7 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
     }
     
     DisjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
-        children.map(s->s.evaluator(type, Evaluators.asFactory(), affirmative))
+        children.map(s->s.evaluator(type, affirmative))
             .forEach(this::append);
     }
 

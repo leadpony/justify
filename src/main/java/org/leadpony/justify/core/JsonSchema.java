@@ -55,7 +55,6 @@ public interface JsonSchema {
  
     /**
      * Checks if this schema has an identifier assigned or not.
-     * 
      * @return {@code true} if this schema has an identifier, {@code false} otherwise.
      */
     default boolean hasId() {
@@ -64,7 +63,6 @@ public interface JsonSchema {
     
     /**
      * Returns the identifier of this schema, specified with "$id" keyword.
-     * 
      * @return the identifier of this schema, or {@code null}.
      */
     default URI id() {
@@ -73,7 +71,6 @@ public interface JsonSchema {
     
     /**
      * Returns the version identifier of this schema, specified with "$schema" keyword.
-     * 
      * @return the version identifier of this schema, or {@code null}.
      */
     default URI schemaId() {
@@ -82,7 +79,6 @@ public interface JsonSchema {
     
     /**
      * Checks if this schema is a boolean schema.
-     * 
      * @return {@code true} if this schema is a boolean schema, {@code false} otherwise.
      */
     default boolean isBoolean() {
@@ -91,7 +87,6 @@ public interface JsonSchema {
     
     /**
      * Returns the all subschemas contained in this schema.
-     * 
      * @return the stream of subschemas contained in this schema.
      */
     default Stream<JsonSchema> subschemas() {
@@ -100,7 +95,6 @@ public interface JsonSchema {
     
     /**
      * Returns the subschema at the location specified with a JSON pointer.
-     * 
      * @param jsonPointer the valid escaped JSON Pointer string.
      *                    It must be an empty string or a sequence of '/' prefixed tokens.
      * @return the subschema found or {@code null} if the subschema does not exist.
@@ -114,26 +108,22 @@ public interface JsonSchema {
     
     /**
      * Creates an evaluator of this object.
-     * 
      * @param type the type of the JSON instance against which this object will be evaluated.
-     * @param factory the factory of predefined evaluators.
      * @param affirmative {@code true} to create a normal evaluator, or
      *                    {@code false} to create a negating evaluator.
      * @return newly created evaluator. It must not be {@code null}.
-     * @throws NullPointerException if the specified {@code type} or {@code factory} is {@code null}.
+     * @throws NullPointerException if the specified {@code type} is {@code null}.
      */
-    Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative);
+    Evaluator evaluator(InstanceType type, boolean affirmative);
 
     /**
      * Returns the JSON representation of this schema.
-     * 
      * @return the JSON representation of this schema, never be {@code null}.
      */
     JsonValue toJson();
     
     /**
      * Returns the string representation of this schema.
-     * 
      * @return the string representation of this schema, never be {@code null}.
      * @throws JsonException if an error occurred while generating a JSON.
      */
@@ -142,7 +132,6 @@ public interface JsonSchema {
     
     /**
      * Returns a boolean schema instance representing the specified boolean value. 
-     * 
      * @param value the boolean value.
      * @return {@link JsonSchema#TRUE} if the specified {@code value} is {@code true},
      *         or {@link JsonSchema#FALSE} if the specified {@code value} is {@code false}.
@@ -152,55 +141,12 @@ public interface JsonSchema {
     }
   
     /**
-     * Factory for producing the predefined basic evaluators.
-     * 
-     * @author leadpony
-     */
-    static public interface EvaluatorFactory {
-
-        /**
-         * Returns the evaluator which evaluates anything as true ("valid").
-         * 
-         * @return the evaluator, never be {@code null}.
-         */
-        Evaluator alwaysTrue();
-        
-        /**
-         * Returns the evaluator which evaluates anything as false ("invalid").
-         * 
-         * @param schema the JSON schema to be evaluated, cannot be {@code null}.
-         * @return the evaluator, never be {@code null}.
-         */
-        Evaluator alwaysFalse(JsonSchema schema);
-    };
-    
-    /**
-     * JSON Schema represented by an empty JSON object.
-     * This schema is always evaluated as true.  
-     */
-    JsonSchema EMPTY = new JsonSchema() {
-        
-        @Override
-        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
-            return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
-        }
-
-        @Override
-        public JsonValue toJson() {
-            return JsonObject.EMPTY_JSON_OBJECT;
-        }
-
-        @Override
-        public String toString() {
-            return "{}";
-        }
-    };
-
-    /**
      * The JSON schema which is always evaluated as true.
      * Any JSON instance satisfy this schema.
      */
     JsonSchema TRUE = new JsonSchema() {
+        
+        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
         
         @Override
         public boolean isBoolean() {
@@ -208,8 +154,8 @@ public interface JsonSchema {
         }
         
         @Override
-        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
-            return affirmative ? factory.alwaysTrue() : factory.alwaysFalse(this);
+        public Evaluator evaluator(InstanceType type, boolean affirmative) {
+            return affirmative ? Evaluator.ALWAYS_TRUE : ALWAYS_FALSE;
         }
         
         @Override
@@ -229,14 +175,16 @@ public interface JsonSchema {
      */
     JsonSchema FALSE = new JsonSchema() {
         
+        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
+
         @Override
         public boolean isBoolean() {
             return true;
         }
 
         @Override
-        public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
-            return affirmative ? factory.alwaysFalse(this) : factory.alwaysTrue();
+        public Evaluator evaluator(InstanceType type, boolean affirmative) {
+            return affirmative ? ALWAYS_FALSE : Evaluator.ALWAYS_TRUE;
         }
 
         @Override
@@ -249,4 +197,28 @@ public interface JsonSchema {
             return "false";
         }
     };
-}
+
+    /**
+     * The JSON Schema represented by an empty JSON object.
+     * This schema is always evaluated as true.  
+     */
+    JsonSchema EMPTY = new JsonSchema() {
+        
+        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
+
+        @Override
+        public Evaluator evaluator(InstanceType type, boolean affirmative) {
+            return affirmative ? Evaluator.ALWAYS_TRUE : ALWAYS_FALSE;
+        }
+        
+        @Override
+        public JsonValue toJson() {
+            return JsonObject.EMPTY_JSON_OBJECT;
+        }
+
+        @Override
+        public String toString() {
+            return "{}";
+        }
+    };
+ }

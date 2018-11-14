@@ -76,9 +76,8 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     }
 
     @Override
-    public Evaluator evaluator(InstanceType type, EvaluatorFactory factory, boolean affirmative) {
+    public Evaluator evaluator(InstanceType type, boolean affirmative) {
         requireNonNull(type, "type");
-        requireNonNull(factory, "factory");
         if (this.evaluatables.isEmpty()) {
             return createDefaultEvaluator(affirmative);
         } else if (this.evaluatables.size() == 1) {

@@ -42,7 +42,7 @@ public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements Ap
     }
     
     ConjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
-        children.map(s->s.evaluator(type, Evaluators.asFactory(), affirmative))
+        children.map(s->s.evaluator(type, affirmative))
             .forEach(this::append);
     }
     
@@ -58,7 +58,7 @@ public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements Ap
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator == Evaluators.ALWAYS_TRUE || evaluator == Evaluators.ALWAYS_IGNORED) {
+        if (evaluator == Evaluator.ALWAYS_TRUE || evaluator == Evaluators.ALWAYS_IGNORED) {
             return;
         }
         this.children.add(evaluator);

@@ -14,36 +14,33 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.base;
 
-import java.util.Iterator;
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
+import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
- * The type for combining subschemas.
+ * Default implementation of {@link ProblemDispatcher}.
  * 
  * @author leadpony
  */
-public abstract class Combiner extends AbstractKeyword {
-
+public interface DefaultProblemDispatcher extends ProblemDispatcher {
+    
     /**
      * {@inheritDoc}
-     * 
-     * <p>Combiners can be evaluated.</p>
      */
     @Override
-    public boolean canEvaluate() {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>This method must be overridden.</p>
-     */
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        throw new UnsupportedOperationException();
+    default void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
+        requireNonNull(parser, "parser");
+        Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+                .withMessage("instance.problem.unknown")
+                .withSchema(schema)
+                .build();
+        dispatchProblem(problem);
     }
 }

@@ -57,13 +57,13 @@ class Required extends AbstractAssertion {
         }
         if (affirmative) {
             if (names.isEmpty()) {
-                return Evaluators.ALWAYS_TRUE; 
+                return Evaluator.ALWAYS_TRUE; 
             } else {
                 return new AssertionEvaluator(names);
             }
         } else {
             if (names.isEmpty()) {
-                return Evaluators.alwaysFalse(getEnclosingSchema());
+                return Evaluator.alwaysFalse(getEnclosingSchema());
             } else {
                 return new NegatedAssertionEvaluator(names);    
             }

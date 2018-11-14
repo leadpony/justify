@@ -29,6 +29,7 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
@@ -68,7 +69,7 @@ class Contains extends UnaryCombiner {
     public void link(Map<String, Keyword> siblings) {
     }
     
-    private class ItemsSchemaEvaluator implements Evaluator, ProblemDispatcher {
+    private class ItemsSchemaEvaluator implements Evaluator, DefaultProblemDispatcher {
         
         private final List<Problem> problems = new ArrayList<>();
         private final List<List<Problem>> accumulatedProblems = new ArrayList<>();
@@ -100,7 +101,7 @@ class Contains extends UnaryCombiner {
         private Evaluator createItemSchemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return getSubschema().evaluator(type, getEvaluatorFactory(), true);
+                return getSubschema().evaluator(type, true);
             } else {
                 return null;
             }
@@ -150,7 +151,7 @@ class Contains extends UnaryCombiner {
         protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                append(subschema.evaluator(type, Evaluators.asFactory(), false));
+                append(subschema.evaluator(type, false));
             }
         }
     }

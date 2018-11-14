@@ -56,7 +56,7 @@ class MinProperties extends AbstractAssertion {
             } else if (limit > 0) {
                 evaluator = new MaxProperties.AssertionEvaluator(limit - 1, this);
             } else {
-                evaluator = Evaluators.alwaysFalse(getEnclosingSchema());
+                evaluator = Evaluator.alwaysFalse(getEnclosingSchema());
             }
             return evaluator;
         } else {
