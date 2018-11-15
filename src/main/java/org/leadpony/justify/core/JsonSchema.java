@@ -139,14 +139,12 @@ public interface JsonSchema {
     static JsonSchema valueOf(boolean value) {
         return value ? JsonSchema.TRUE : JsonSchema.FALSE;
     }
-  
+    
     /**
      * The JSON schema which is always evaluated as true.
      * Any JSON instance satisfy this schema.
      */
-    JsonSchema TRUE = new JsonSchema() {
-        
-        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
+    JsonSchema TRUE = new SimpleJsonSchema() {
         
         @Override
         public boolean isBoolean() {
@@ -173,10 +171,8 @@ public interface JsonSchema {
      * The JSON schema which is always evaluated as false.
      * Any JSON instance does not satisfy this schema.
      */
-    JsonSchema FALSE = new JsonSchema() {
+    JsonSchema FALSE = new SimpleJsonSchema() {
         
-        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
-
         @Override
         public boolean isBoolean() {
             return true;
@@ -202,10 +198,8 @@ public interface JsonSchema {
      * The JSON Schema represented by an empty JSON object.
      * This schema is always evaluated as true.  
      */
-    JsonSchema EMPTY = new JsonSchema() {
+    JsonSchema EMPTY = new SimpleJsonSchema() {
         
-        final Evaluator ALWAYS_FALSE = Evaluator.alwaysFalse(this);
-
         @Override
         public Evaluator evaluator(InstanceType type, boolean affirmative) {
             return affirmative ? Evaluator.ALWAYS_TRUE : ALWAYS_FALSE;
@@ -221,4 +215,5 @@ public interface JsonSchema {
             return "{}";
         }
     };
- }
+}
+

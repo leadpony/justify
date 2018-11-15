@@ -25,22 +25,23 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.keyword.NumericKeyword;
 
 /**
- * Assertion on values of numeric type.
+ * Assertion on a value of numeric type.
  * 
  * @author leadpony
  */
-abstract class AbstractNumericAssertion extends AbstractAssertion implements Evaluator {
+abstract class AbstractNumericAssertion extends AbstractAssertion implements NumericKeyword, Evaluator {
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type.isNumeric()) {
-            return affirmative ? this : this::evaluateNegated;
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this;
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this::evaluateNegated;
     }
 
     @Override

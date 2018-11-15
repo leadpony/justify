@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -26,7 +29,6 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Combiner representing "propertyNames" keyword.
@@ -45,12 +47,23 @@ class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.OBJECT) {
-            return new SubschemaEvaluator(affirmative, this, getSubschema());
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    public boolean supportsType(InstanceType type) {
+        return type == InstanceType.OBJECT;
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(InstanceType.OBJECT);
+    }
+    
+    @Override
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new SubschemaEvaluator(true, this, getSubschema());
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new SubschemaEvaluator(false, this, getSubschema());
     }
 
     private static class SubschemaEvaluator extends AbstractChildrenEvaluator {

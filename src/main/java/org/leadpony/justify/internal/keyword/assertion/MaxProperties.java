@@ -26,15 +26,15 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Assertion specified with "maxProperties" validation keyword.
  * 
  * @author leadpony
  */
-class MaxProperties extends AbstractAssertion {
+class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     
     private final int limit;
     
@@ -48,14 +48,13 @@ class MaxProperties extends AbstractAssertion {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.OBJECT) {
-            return affirmative ?
-                    new AssertionEvaluator(limit, this) :
-                    new MinProperties.AssertionEvaluator(limit + 1, this);    
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new AssertionEvaluator(limit, this);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new MinProperties.AssertionEvaluator(limit + 1, this);    
     }
 
     @Override

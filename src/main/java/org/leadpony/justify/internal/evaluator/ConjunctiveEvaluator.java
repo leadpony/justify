@@ -58,7 +58,7 @@ public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements Ap
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator == Evaluator.ALWAYS_TRUE || evaluator == Evaluators.ALWAYS_IGNORED) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
         this.children.add(evaluator);

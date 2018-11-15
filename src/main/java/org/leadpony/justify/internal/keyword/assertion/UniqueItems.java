@@ -30,14 +30,14 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
 /**
  * Assertion specified with "uniqueItems" validation keyword.
  * 
  * @author leadpony
  */
-class UniqueItems extends AbstractAssertion {
+class UniqueItems extends AbstractAssertion implements ArrayKeyword {
     
     private final boolean unique;
     
@@ -51,16 +51,19 @@ class UniqueItems extends AbstractAssertion {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.ARRAY && unique) {
-            return affirmative ?
-                    new AssertionEvaluator(builderFactory) :
-                    new NegatedAssertionEvaluator(builderFactory);    
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new AssertionEvaluator(builderFactory);
     }
     
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (unique) {
+            return new NegatedAssertionEvaluator(builderFactory);    
+        } else {
+            return createAlwaysFalseEvaluator();
+        }
+    }
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), unique);

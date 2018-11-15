@@ -46,9 +46,13 @@ abstract class NaryBooleanLogic extends Combiner {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        return createLogicalEvaluator(type, affirmative)
-                .withProblemBuilderFactory(this);
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return createLogicalEvaluator(type, true).withProblemBuilderFactory(this);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return createLogicalEvaluator(type, false).withProblemBuilderFactory(this);
     }
 
     @Override

@@ -26,25 +26,26 @@ import org.leadpony.justify.core.Localizable;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.keyword.StringKeyword;
 
 /**
  * Assertion on values of string type.
  * 
  * @author leadpony
  */
-abstract class AbstractStringAssertion extends AbstractAssertion implements Evaluator {
+abstract class AbstractStringAssertion extends AbstractAssertion implements StringKeyword, Evaluator {
   
     private static final Localizable LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
     private static final Localizable LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
     
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.STRING) {
-            return affirmative ? this : this::evaluateNegated;
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this;
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this::evaluateNegated;
     }
 
     @Override

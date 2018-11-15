@@ -32,27 +32,27 @@ import org.leadpony.justify.core.ProblemDispatcher;
 abstract class AbstractEqualityAssertion extends AbstractAssertion {
     
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
-        Evaluator evaluator;
-        if (affirmative) {
-            evaluator = (event, parser, depth, dispatcher)->{
+        return (event, parser, depth, dispatcher)->{
                 if (builder.append(event, parser)) {
                     return Result.PENDING;
                 }
                 return assertEquals(builder.build(), parser, dispatcher);
             };
-        } else {
-            evaluator = (event, parser, depth, dispatcher)->{
+    }
+    
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
+        return (event, parser, depth, dispatcher)->{
                 if (builder.append(event, parser)) {
                     return Result.PENDING;
                 }
                 return assertNotEquals(builder.build(), parser, dispatcher);
             };
-        }
-        return evaluator;
     }
-    
+
     protected abstract Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher);
 
     protected abstract Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher);

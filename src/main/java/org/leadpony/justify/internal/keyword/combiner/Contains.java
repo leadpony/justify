@@ -34,13 +34,13 @@ import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * @author leadpony
  */
-class Contains extends UnaryCombiner {
+class Contains extends UnaryCombiner implements ArrayKeyword {
     
     private int min;
     
@@ -53,16 +53,15 @@ class Contains extends UnaryCombiner {
     public String name() {
         return "contains";
     }
+    
+    @Override
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new ItemsSchemaEvaluator();
+    }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.ARRAY) {
-            return affirmative ? 
-                    new ItemsSchemaEvaluator() : 
-                    new NegatedItemSchemaEvaluator(this, getSubschema());
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new NegatedItemSchemaEvaluator(this, getSubschema());
     }
 
     @Override

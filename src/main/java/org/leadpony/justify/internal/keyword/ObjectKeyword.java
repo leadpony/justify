@@ -14,37 +14,27 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword;
 
-import javax.json.JsonBuilderFactory;
+import java.util.EnumSet;
+import java.util.Set;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 
 /**
- * Type representing "not" boolean logic.
+ * Keyword for arrays.
  * 
  * @author leadpony
  */
-class Not extends UnaryCombiner {
+public interface ObjectKeyword extends Keyword {
+
+    @Override
+    default boolean supportsType(InstanceType type) {
+        return type == InstanceType.OBJECT;
+    }
     
-    Not(JsonSchema subschema) {
-        super(subschema);
-    }
-
     @Override
-    public String name() {
-        return "not";
-    }
-
-    @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return getSubschema().evaluator(type, false);
-    }
-
-    @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return getSubschema().evaluator(type, true);
+    default Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(InstanceType.OBJECT);
     }
 }

@@ -26,15 +26,15 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Assertion specified with "minProperties" validation keyword.
  * 
  * @author leadpony
  */
-class MinProperties extends AbstractAssertion {
+class MinProperties extends AbstractAssertion implements ObjectKeyword {
     
     private final int limit;
     
@@ -48,19 +48,16 @@ class MinProperties extends AbstractAssertion {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.OBJECT) {
-            Evaluator evaluator;
-            if (affirmative) {
-                evaluator = new AssertionEvaluator(limit, this);
-            } else if (limit > 0) {
-                evaluator = new MaxProperties.AssertionEvaluator(limit - 1, this);
-            } else {
-                evaluator = Evaluator.alwaysFalse(getEnclosingSchema());
-            }
-            return evaluator;
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new AssertionEvaluator(limit, this);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (limit > 0) {
+            return new MaxProperties.AssertionEvaluator(limit - 1, this);
         } else {
-            return Evaluators.ALWAYS_IGNORED;
+            return createAlwaysFalseEvaluator();
         }
     }
 

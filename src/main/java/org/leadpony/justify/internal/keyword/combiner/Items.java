@@ -34,7 +34,7 @@ import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -42,7 +42,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * 
  * @author leadpony
  */
-abstract class Items extends Combiner {
+abstract class Items extends Combiner implements ArrayKeyword {
     
     @Override
     public String name() {
@@ -61,12 +61,13 @@ abstract class Items extends Combiner {
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-            if (type == InstanceType.ARRAY) {
-                return new SingleSchemaEvaluator(affirmative, this, this.subschema);
-            } else {
-                return Evaluators.ALWAYS_IGNORED;
-            }
+        protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+            return new SingleSchemaEvaluator(true, this, this.subschema);
+        }
+
+        @Override
+        protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+            return new SingleSchemaEvaluator(false, this, this.subschema);
         }
 
         @Override
@@ -141,14 +142,15 @@ abstract class Items extends Combiner {
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-            if (type == InstanceType.ARRAY) {
-                return new SeparateSchemaEvaluator(affirmative, this);
-            } else {
-                return Evaluators.ALWAYS_IGNORED;
-            }
+        protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+            return new SeparateSchemaEvaluator(true, this);
         }
         
+        @Override
+        protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+            return new SeparateSchemaEvaluator(false, this);
+        }
+
         @Override
         public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
             JsonArrayBuilder itemsBuilder = builderFactory.createArrayBuilder();

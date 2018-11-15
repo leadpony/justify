@@ -34,16 +34,16 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Skeletal implementation for "properties" and "patternProperties" keywords.
  * 
  * @author leadpony
  */
-public abstract class BaseProperties<K> extends Combiner {
+public abstract class BaseProperties<K> extends Combiner implements ObjectKeyword {
     
     protected final Map<K, JsonSchema> propertyMap;
     protected AdditionalProperties additionalProperties;
@@ -56,16 +56,17 @@ public abstract class BaseProperties<K> extends Combiner {
         this.propertyMap = propertyMap;
         this.additionalProperties = additionalProperties;
     }
-
+    
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.OBJECT) {
-            return new ProperySchemaEvaluator(affirmative, this);
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new ProperySchemaEvaluator(true, this);
     }
     
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new ProperySchemaEvaluator(false, this);
+    }
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         JsonObjectBuilder propertiesBuilder = builderFactory.createObjectBuilder();

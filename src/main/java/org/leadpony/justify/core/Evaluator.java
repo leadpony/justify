@@ -37,10 +37,7 @@ public interface Evaluator {
         /** Evaluated as true, which means valid. */
         TRUE,
         /** Evaluated as false, which means invalid. */
-        FALSE,
-        /** Result of evaluation should be ignored. */
-        IGNORED
-        ;
+        FALSE
     };
     
     /**
@@ -61,16 +58,4 @@ public interface Evaluator {
     Evaluator ALWAYS_TRUE = (event, parser, depth, dispatcher)->{
         return Result.TRUE;
     };
-    
-    /**
-     * Creates an evaluator which evaluates anything as false.
-     * @param schema the schema to be evaluated, cannot be {@code null}.
-     * @return newly created evaluator, never be {@code null}.
-     */
-    static Evaluator alwaysFalse(JsonSchema schema) {
-        return (event, parser, depth, dispatcher)->{
-            dispatcher.dispatchInevitableProblem(parser, schema);
-            return Result.FALSE;
-        };
-    }
 }

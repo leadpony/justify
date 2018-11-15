@@ -16,11 +16,19 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import javax.json.stream.JsonParser;
+import java.util.Set;
 
+import javax.json.JsonBuilderFactory;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Skeletal implementation of {@link Keyword}.
@@ -31,7 +39,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
 
     // the schema enclosing this keyword.
     private JsonSchema schema;
-
+    
     @Override
     public JsonSchema getEnclosingSchema() {
         return schema;
@@ -40,6 +48,43 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     @Override
     public void setEnclosingSchema(JsonSchema schema) {
         this.schema = schema;
+    }
+    
+    @Override
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
+        if (affirmative) {
+            if (!supportsType(type)) {
+                return Evaluator.ALWAYS_TRUE;
+            }
+            return doCreateEvaluator(type, builderFactory);
+        } else {
+            if (!supportsType(type)) {
+                return new TypeMismatchEvaluator(type);
+            }
+            return doCreateNegatedEvaluator(type, builderFactory);
+        }
+    }
+    
+    /**
+     * Creates an evaluator for this keyword.
+     * @param type the type of the instance, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
+     */
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        throw new UnsupportedOperationException(name() + " does not support evaluation.");
+    }
+
+    /**
+     * Creates an evaluator for the negation of this keyword.
+     * @param type the type of the instance, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
+     */
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        throw new UnsupportedOperationException(name() + " does not support evaluation.");
+    }
+    
+    protected Evaluator createAlwaysFalseEvaluator() {
+        return Evaluators.alwaysFalse(getEnclosingSchema());
     }
     
     /**
@@ -53,5 +98,31 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
         return ProblemBuilderFactory.super.createProblemBuilder(parser)
                 .withSchema(schema)
                 .withKeyword(name());
+    }
+    
+    private class TypeMismatchEvaluator implements Evaluator {
+        
+        private final InstanceType actual;
+        
+        private TypeMismatchEvaluator(InstanceType actual) {
+            this.actual = actual;
+        }
+
+        @Override
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+            Set<InstanceType> expected = getSupportedTypes();
+            ProblemBuilder builder = createProblemBuilder(parser)
+                                    .withParameter("actual", actual);
+            if (expected.size() > 1) {
+                builder.withMessage("instance.problem.type.plural")
+                       .withParameter("expected", expected);
+            } else {
+                InstanceType first = expected.iterator().next();
+                builder.withMessage("instance.problem.type")
+                       .withParameter("expected", first);
+            }
+            dispatcher.dispatchProblem(builder.build());
+            return Result.FALSE;
+        }
     }
 }

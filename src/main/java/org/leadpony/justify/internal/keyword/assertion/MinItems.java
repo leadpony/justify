@@ -27,15 +27,15 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
 /**
  * Assertion specified with "minItems" validation keyword.
  * 
  * @author leadpony
  */
-class MinItems extends AbstractAssertion {
+class MinItems extends AbstractAssertion implements ArrayKeyword {
 
     private final int limit;
     
@@ -47,24 +47,21 @@ class MinItems extends AbstractAssertion {
     public String name() {
         return "minItems";
     }
-    
+   
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.ARRAY) {
-            Evaluator evaluator;
-            if (affirmative) {
-                evaluator = new AssertionEvaluator(limit, this);
-            } else if (limit > 0) {
-                evaluator = new MaxItems.AssertionEvaluator(limit - 1, this);
-            } else {
-                evaluator = Evaluator.alwaysFalse(getEnclosingSchema());
-            }
-            return evaluator;
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new AssertionEvaluator(limit, this);
     }
     
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (limit > 0) {
+            return new MaxItems.AssertionEvaluator(limit - 1, this);
+        } else {
+            return createAlwaysFalseEvaluator();
+        }
+    }
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), limit);

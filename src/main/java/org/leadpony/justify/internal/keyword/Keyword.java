@@ -16,8 +16,10 @@
 
 package org.leadpony.justify.internal.keyword;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -55,6 +57,23 @@ public interface Keyword {
     void setEnclosingSchema(JsonSchema schema);
     
     /**
+     * Checks if this keyword supports the specified type.
+     * @param type the type to check.
+     * @return {@code true} if this keyword supports the type.
+     */
+    default boolean supportsType(InstanceType type) {
+        return true;
+    }
+    
+    /**
+     * Returns the types supported by this keyword.
+     * @return the supported types.
+     */
+    default Set<InstanceType> getSupportedTypes() {
+        return EnumSet.allOf(InstanceType.class);
+    }
+    
+    /**
      * Checks if this keyword can be evaluated.
      * 
      * @return {@code true} if this keyword can be evaluated, 
@@ -69,10 +88,7 @@ public interface Keyword {
      * @param affirmative {@code true} to create a normal evaluator,
      *                    {@code false} to create a negated evaluator. 
      */
-    default Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        throw new UnsupportedOperationException(
-                name() + " does not support evaluation.");
-    }
+    Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative);
     
     /**
      * Adds this keyword to the specified JSON object.

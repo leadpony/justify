@@ -29,15 +29,15 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Assertion specified with "required" validation keyword.
  * 
  * @author leadpony
  */
-class Required extends AbstractAssertion {
+class Required extends AbstractAssertion implements ObjectKeyword {
     
     protected final Set<String> names;
     
@@ -51,22 +51,20 @@ class Required extends AbstractAssertion {
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type != InstanceType.OBJECT) {
-            return Evaluators.ALWAYS_IGNORED;
-        }
-        if (affirmative) {
-            if (names.isEmpty()) {
-                return Evaluator.ALWAYS_TRUE; 
-            } else {
-                return new AssertionEvaluator(names);
-            }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (names.isEmpty()) {
+            return Evaluator.ALWAYS_TRUE; 
         } else {
-            if (names.isEmpty()) {
-                return Evaluator.alwaysFalse(getEnclosingSchema());
-            } else {
-                return new NegatedAssertionEvaluator(names);    
-            }
+            return new AssertionEvaluator(names);
+        }
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (names.isEmpty()) {
+            return createAlwaysFalseEvaluator();
+        } else {
+            return new NegatedAssertionEvaluator(names);    
         }
     }
 

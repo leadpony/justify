@@ -35,9 +35,10 @@ public final class Assertions {
     
     public static Assertion type(Set<InstanceType> types) {
         if (types.size() == 1) {
-            return new SingleType(types.iterator().next());
+            InstanceType first = types.iterator().next();
+            return new Type.Single(first);
         } else {
-            return new MultipleTypes(types);
+            return new Type.Multiple(types);
         }
     }
 

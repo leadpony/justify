@@ -81,7 +81,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
         if (this.evaluatables.isEmpty()) {
             return createDefaultEvaluator(affirmative);
         } else if (this.evaluatables.size() == 1) {
-            return createFirstEvaluator(type, affirmative);
+            return createSingleEvaluator(type, affirmative);
         } else {
             return createCombinedEvaluator(type, affirmative);
         }
@@ -112,14 +112,10 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
         return Evaluators.always(affirmative, this);
     }
     
-    private Evaluator createFirstEvaluator(InstanceType type, boolean affirmative) {
+    private Evaluator createSingleEvaluator(InstanceType type, boolean affirmative) {
         Evaluator evaluator = this.evaluatables.get(0)
                 .createEvaluator(type, getBuilderFactory(), affirmative);
-        if (evaluator != Evaluators.ALWAYS_IGNORED) {
-            return evaluator;
-        } else {
-            return createDefaultEvaluator(affirmative);
-        }
+        return evaluator;
     }
 
     private Evaluator createCombinedEvaluator(InstanceType type, boolean affirmative) {

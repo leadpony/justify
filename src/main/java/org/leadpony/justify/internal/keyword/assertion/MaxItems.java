@@ -27,15 +27,15 @@ import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
 /**
  * Assertion specified with "maxItems" validation keyword.
  * 
  * @author leadpony
  */
-class MaxItems extends AbstractAssertion {
+class MaxItems extends AbstractAssertion implements ArrayKeyword {
 
     private final int limit;
     
@@ -47,16 +47,15 @@ class MaxItems extends AbstractAssertion {
     public String name() {
         return "maxItems";
     }
-    
+  
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type == InstanceType.ARRAY) {
-            return affirmative ?
-                    new AssertionEvaluator(limit, this) :
-                    new MinItems.AssertionEvaluator(limit + 1, this);   
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new AssertionEvaluator(limit, this);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return new MinItems.AssertionEvaluator(limit + 1, this);   
     }
 
     @Override

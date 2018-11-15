@@ -17,7 +17,9 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
@@ -29,7 +31,6 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -61,17 +62,29 @@ class AdditionalProperties extends UnaryCombiner {
     public boolean canEvaluate() {
         return enabled;
     }
-   
+  
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        assert enabled;
-        if (type == InstanceType.OBJECT) {
-            return new ProperySchemaEvaluator(affirmative, this);
-        } else {
-            return Evaluators.ALWAYS_IGNORED;
-        }
+    public boolean supportsType(InstanceType type) {
+        return type == InstanceType.OBJECT;
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(InstanceType.OBJECT);
     }
     
+    @Override
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        assert enabled;
+        return new ProperySchemaEvaluator(true, this);
+    }
+    
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        assert enabled;
+        return new ProperySchemaEvaluator(false, this);
+    }
+
     /**
      * {@inheritDoc}
      * <p>

@@ -30,18 +30,25 @@ import org.leadpony.justify.core.InstanceType;
  */
 public final class Evaluators {
      
-    /**
-     * The evaluator whose result should be ignored.
-     */
-    public static final Evaluator ALWAYS_IGNORED = (event, parser, depth, dispatcher)->Result.IGNORED;
-    
     private Evaluators() {
     }
     
     public static Evaluator always(boolean result, JsonSchema schema) {
-        return result ? Evaluator.ALWAYS_TRUE : Evaluator.alwaysFalse(schema);
+        return result ? Evaluator.ALWAYS_TRUE : alwaysFalse(schema);
     }
 
+    /**
+     * Creates an evaluator which evaluates anything as false.
+     * @param schema the schema to be evaluated, cannot be {@code null}.
+     * @return newly created evaluator, never be {@code null}.
+     */
+    public static Evaluator alwaysFalse(JsonSchema schema) {
+        return (event, parser, depth, dispatcher)->{
+            dispatcher.dispatchInevitableProblem(parser, schema);
+            return Result.FALSE;
+        };
+    }
+    
     public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
         if (type.isContainer()) {
             return new LongConjunctiveEvaluator(type);

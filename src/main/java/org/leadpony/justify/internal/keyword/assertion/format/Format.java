@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -27,7 +30,6 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.core.spi.FormatAttribute;
 import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 
 /**
@@ -47,15 +49,27 @@ public class Format extends AbstractAssertion implements Evaluator {
     public String name() {
         return "format";
     }
+    
+    @Override
+    public boolean supportsType(InstanceType type) {
+        return type == attribute.valueType();
+    }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (type != attribute.valueType()) {
-            return Evaluators.ALWAYS_IGNORED;
-        }
-        return affirmative ? this : this::evaluateNegated;
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(attribute.valueType());
+    }
+
+    @Override
+    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this;
     }
     
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        return this::evaluateNegated;
+    }
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), attribute.name());
