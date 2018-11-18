@@ -47,12 +47,12 @@ abstract class NaryBooleanLogic extends Combiner {
 
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return createLogicalEvaluator(type, true).withProblemBuilderFactory(this);
+        return createLogicalEvaluator(type).withProblemBuilderFactory(this);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return createLogicalEvaluator(type, false).withProblemBuilderFactory(this);
+        return createNegatedLogicalEvaluator(type).withProblemBuilderFactory(this);
     }
 
     @Override
@@ -91,9 +91,14 @@ abstract class NaryBooleanLogic extends Combiner {
     /**
      * Creates a new evaluator for this boolean logic.
      * @param type the type of the instance to validate.
-     * @param affirmative {@code true} to create a normal evaluator,
-     *                    {@code false} to create a negated evaluator. 
      * @return newly created evaluator.
      */
-    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative);
+    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type);
+
+    /**
+     * Creates a new evaluator for the negated version of this boolean logic.
+     * @param type the type of the instance to validate.
+     * @return newly created evaluator.
+     */
+    protected abstract LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type);
 }

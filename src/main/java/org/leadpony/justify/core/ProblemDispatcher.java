@@ -21,6 +21,8 @@ import javax.json.stream.JsonParser;
 /**
  * Dispatcher of problem found by a JSON validator.
  * 
+ * <p>Note that this type is not intended to be used directly by end users.</p>
+ * 
  * @author leadpony
  */
 public interface ProblemDispatcher {

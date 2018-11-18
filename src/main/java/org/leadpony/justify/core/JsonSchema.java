@@ -26,6 +26,8 @@ import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
+import org.leadpony.justify.core.Evaluator.Result;
+
 /**
  * JSON schema.
  * 
@@ -107,14 +109,34 @@ public interface JsonSchema {
     }
     
     /**
-     * Creates an evaluator of this object.
-     * @param type the type of the JSON instance against which this object will be evaluated.
-     * @param affirmative {@code true} to create a normal evaluator, or
-     *                    {@code false} to create a negating evaluator.
+     * Creates an evaluator of this schema.
+     * <p>Note that this method is not intended to be used directly by end users.</p>
+     * @param type the type of the JSON instance against which this schema will be evaluated.
      * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} is {@code null}.
      */
-    Evaluator evaluator(InstanceType type, boolean affirmative);
+    Evaluator createEvaluator(InstanceType type);
+
+    /**
+     * Creates an evaluator of the negated version of this schema.
+     * <p>Note that this method is not intended to be used directly by end users.</p>
+     * @param type the type of the JSON instance against which this schema will be evaluated.
+     * @return newly created evaluator. It must not be {@code null}.
+     * @throws NullPointerException if the specified {@code type} is {@code null}.
+     */
+    Evaluator createNegatedEvaluator(InstanceType type);
+    
+    /**
+     * Creates an evaluator which always evaluates this schema as false.
+     * <p>Note that this method is not intended to be used directly by end users.</p>
+     * @return newly created evaluator. It must not be {@code null}.
+     */
+    default Evaluator createAlwaysFalseEvaluator() {
+        return (event, parser, depth, dispatcher)->{
+            dispatcher.dispatchInevitableProblem(parser, this);
+            return Result.FALSE;
+        };        
+    }
 
     /**
      * Returns the JSON representation of this schema.
@@ -152,10 +174,15 @@ public interface JsonSchema {
         }
         
         @Override
-        public Evaluator evaluator(InstanceType type, boolean affirmative) {
-            return affirmative ? Evaluator.ALWAYS_TRUE : ALWAYS_FALSE;
+        public Evaluator createEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_TRUE;
         }
         
+        @Override
+        public Evaluator createNegatedEvaluator(InstanceType type) {
+            return ALWAYS_FALSE;
+        }
+
         @Override
         public JsonValue toJson() {
             return JsonValue.TRUE;
@@ -179,8 +206,13 @@ public interface JsonSchema {
         }
 
         @Override
-        public Evaluator evaluator(InstanceType type, boolean affirmative) {
-            return affirmative ? ALWAYS_FALSE : Evaluator.ALWAYS_TRUE;
+        public Evaluator createEvaluator(InstanceType type) {
+            return ALWAYS_FALSE;
+        }
+
+        @Override
+        public Evaluator createNegatedEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
@@ -201,10 +233,15 @@ public interface JsonSchema {
     JsonSchema EMPTY = new SimpleJsonSchema() {
         
         @Override
-        public Evaluator evaluator(InstanceType type, boolean affirmative) {
-            return affirmative ? Evaluator.ALWAYS_TRUE : ALWAYS_FALSE;
+        public Evaluator createEvaluator(InstanceType type) {
+            return Evaluator.ALWAYS_TRUE;
         }
         
+        @Override
+        public Evaluator createNegatedEvaluator(InstanceType type) {
+            return ALWAYS_FALSE;
+        }
+
         @Override
         public JsonValue toJson() {
             return JsonObject.EMPTY_JSON_OBJECT;

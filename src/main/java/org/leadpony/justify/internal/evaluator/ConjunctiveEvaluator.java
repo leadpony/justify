@@ -25,7 +25,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
@@ -41,9 +40,8 @@ public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements Ap
     ConjunctiveEvaluator() {
     }
     
-    ConjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
-        children.map(s->s.evaluator(type, affirmative))
-            .forEach(this::append);
+    ConjunctiveEvaluator(Stream<Evaluator> children, InstanceType type) {
+        children.forEach(this::append);
     }
     
     @Override

@@ -21,7 +21,7 @@ import javax.json.stream.JsonParser;
 /**
  * Evaluator which applies a JSON schema to a location in a JSON document.
  * 
- * <p>This type is not intended to be used directly by end users.</p>
+ * <p>Note that this type is not intended to be used directly by end users.</p>
  * 
  * @author leadpony
  */

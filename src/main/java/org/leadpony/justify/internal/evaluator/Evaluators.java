@@ -18,9 +18,8 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.stream.Stream;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Evaluator.Result;
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 
 /**
@@ -33,22 +32,6 @@ public final class Evaluators {
     private Evaluators() {
     }
     
-    public static Evaluator always(boolean result, JsonSchema schema) {
-        return result ? Evaluator.ALWAYS_TRUE : alwaysFalse(schema);
-    }
-
-    /**
-     * Creates an evaluator which evaluates anything as false.
-     * @param schema the schema to be evaluated, cannot be {@code null}.
-     * @return newly created evaluator, never be {@code null}.
-     */
-    public static Evaluator alwaysFalse(JsonSchema schema) {
-        return (event, parser, depth, dispatcher)->{
-            dispatcher.dispatchInevitableProblem(parser, schema);
-            return Result.FALSE;
-        };
-    }
-    
     public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
         if (type.isContainer()) {
             return new LongConjunctiveEvaluator(type);
@@ -57,11 +40,11 @@ public final class Evaluators {
         }
     }
     
-    public static LogicalEvaluator conjunctive(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
+    public static LogicalEvaluator conjunctive(Stream<Evaluator> children, InstanceType type) {
         if (type.isContainer()) {
-            return new LongConjunctiveEvaluator(children, type, affirmative);
+            return new LongConjunctiveEvaluator(children, type);
         } else {
-            return new ConjunctiveEvaluator(children, type, affirmative);
+            return new ConjunctiveEvaluator(children, type);
         }
     }
 
@@ -73,11 +56,11 @@ public final class Evaluators {
         }
     }
 
-    public static LogicalEvaluator disjunctive(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
+    public static LogicalEvaluator disjunctive(Stream<Evaluator> children, InstanceType type) {
         if (type.isContainer()) {
-            return new LongDisjunctiveEvaluator(children, type, affirmative);
+            return new LongDisjunctiveEvaluator(children, type);
         } else {
-            return new DisjunctiveEvaluator(children, type, affirmative);
+            return new DisjunctiveEvaluator(children, type);
         }
     }
 

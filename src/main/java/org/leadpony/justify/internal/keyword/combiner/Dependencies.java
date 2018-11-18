@@ -219,13 +219,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         
         @Override
         Evaluator createEvaluator() {
-            Evaluator subschemaEvaluator = subschema.evaluator(InstanceType.OBJECT, true);
+            Evaluator subschemaEvaluator = subschema.createEvaluator(InstanceType.OBJECT);
             return new SchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
         }
 
         @Override
         Evaluator createNegatedEvaluator() {
-            Evaluator subschemaEvaluator = subschema.evaluator(InstanceType.OBJECT, false);
+            Evaluator subschemaEvaluator = subschema.createNegatedEvaluator(InstanceType.OBJECT);
             return new NegatedSchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
         }
 

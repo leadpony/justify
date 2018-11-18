@@ -85,11 +85,16 @@ public interface Keyword {
      * Creates an evaluator for this keyword.
      * @param type the type of the instance, cannot be {@code null}.
      * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
-     * @param affirmative {@code true} to create a normal evaluator,
-     *                    {@code false} to create a negated evaluator. 
      */
-    Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative);
+    Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory);
     
+    /**
+     * Creates an evaluator for the negated version of this keyword.
+     * @param type the type of the instance, cannot be {@code null}.
+     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
+     */
+    Evaluator createNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory);
+
     /**
      * Adds this keyword to the specified JSON object.
      * 

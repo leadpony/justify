@@ -98,8 +98,13 @@ public class SchemaReference extends AbstractJsonSchema {
     }
 
     @Override
-    public Evaluator evaluator(InstanceType type, boolean affirmative) {
-        return referencedSchema.evaluator(type, affirmative);
+    public Evaluator createEvaluator(InstanceType type) {
+        return referencedSchema.createEvaluator(type);
+    }
+
+    @Override
+    public Evaluator createNegatedEvaluator(InstanceType type) {
+        return referencedSchema.createNegatedEvaluator(type);
     }
 
     @Override
@@ -116,7 +121,12 @@ public class SchemaReference extends AbstractJsonSchema {
     private class NonexistentSchema implements JsonSchema, Evaluator {
 
         @Override
-        public Evaluator evaluator(InstanceType type, boolean affirmative) {
+        public Evaluator createEvaluator(InstanceType type) {
+            return this;
+        }
+
+        @Override
+        public Evaluator createNegatedEvaluator(InstanceType type) {
             return this;
         }
 

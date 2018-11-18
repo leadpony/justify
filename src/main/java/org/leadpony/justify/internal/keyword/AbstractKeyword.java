@@ -28,7 +28,6 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Skeletal implementation of {@link Keyword}.
@@ -51,18 +50,19 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     }
     
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory, boolean affirmative) {
-        if (affirmative) {
-            if (!supportsType(type)) {
-                return Evaluator.ALWAYS_TRUE;
-            }
-            return doCreateEvaluator(type, builderFactory);
-        } else {
-            if (!supportsType(type)) {
-                return new TypeMismatchEvaluator(type);
-            }
-            return doCreateNegatedEvaluator(type, builderFactory);
+    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (!supportsType(type)) {
+            return Evaluator.ALWAYS_TRUE;
         }
+        return doCreateEvaluator(type, builderFactory);
+    }
+
+    @Override
+    public Evaluator createNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+        if (!supportsType(type)) {
+            return new TypeMismatchEvaluator(type);
+        }
+        return doCreateNegatedEvaluator(type, builderFactory);
     }
     
     /**
@@ -84,7 +84,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     }
     
     protected Evaluator createAlwaysFalseEvaluator() {
-        return Evaluators.alwaysFalse(getEnclosingSchema());
+        return getEnclosingSchema().createAlwaysFalseEvaluator();
     }
     
     /**

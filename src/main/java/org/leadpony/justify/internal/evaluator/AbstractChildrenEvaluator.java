@@ -60,7 +60,8 @@ public abstract class AbstractChildrenEvaluator implements Evaluator {
     
     protected void append(JsonSchema schema, InstanceType type) {
         assert schema != null;
-        Evaluator evaluator = schema.evaluator(type, isAffirmative());
+        Evaluator evaluator = isAffirmative() ?
+                schema.createEvaluator(type) : schema.createNegatedEvaluator(type);
         append(evaluator);
     }
 

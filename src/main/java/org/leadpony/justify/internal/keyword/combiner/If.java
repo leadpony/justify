@@ -52,17 +52,17 @@ class If extends UnaryCombiner {
     
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        Evaluator ifEvaluator = getSubschema().evaluator(type, true);
-        Evaluator thenEvaluator = getThenSchema().evaluator(type, true);
-        Evaluator elseEvaluator = getElseSchema().evaluator(type, true);
+        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
+        Evaluator thenEvaluator = getThenSchema().createEvaluator(type);
+        Evaluator elseEvaluator = getElseSchema().createEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        Evaluator ifEvaluator = getSubschema().evaluator(type, true);
-        Evaluator thenEvaluator = getThenSchema().evaluator(type, false);
-        Evaluator elseEvaluator = getElseSchema().evaluator(type, false);
+        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
+        Evaluator thenEvaluator = getThenSchema().createNegatedEvaluator(type);
+        Evaluator elseEvaluator = getElseSchema().createNegatedEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 

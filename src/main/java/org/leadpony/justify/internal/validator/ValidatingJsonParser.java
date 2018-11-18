@@ -96,7 +96,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
     
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        this.evaluator = rootSchema.evaluator(type, true);
+        this.evaluator = rootSchema.createEvaluator(type);
         if (this.evaluator != null) {
             handleEvent(event, parser);
         }

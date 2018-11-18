@@ -26,7 +26,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
@@ -43,9 +42,8 @@ class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements Appendabl
     DisjunctiveEvaluator() {
     }
     
-    DisjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
-        children.map(s->s.evaluator(type, affirmative))
-            .forEach(this::append);
+    DisjunctiveEvaluator(Stream<Evaluator> children, InstanceType type) {
+        children.forEach(this::append);
     }
 
     @Override

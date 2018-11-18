@@ -40,7 +40,7 @@ class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
     
     NotExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
         this.children = children
-                .map(s->s.evaluator(type, false))
+                .map(s->s.createNegatedEvaluator(type))
                 .map(RetainingEvaluator::new)
                 .collect(Collectors.toList());
     }

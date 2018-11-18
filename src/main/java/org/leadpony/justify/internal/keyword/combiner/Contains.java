@@ -100,7 +100,7 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
         private Evaluator createItemSchemaEvaluator(Event event, JsonParser parser, int depth) {
             if (depth == 1 && ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                return getSubschema().evaluator(type, true);
+                return getSubschema().createEvaluator(type);
             } else {
                 return null;
             }
@@ -150,7 +150,7 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
         protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
-                append(subschema.evaluator(type, false));
+                append(subschema.createNegatedEvaluator(type));
             }
         }
     }

@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.core;
 
-import org.leadpony.justify.core.Evaluator.Result;
-
 /**
  * Skeletal implementation of simple JSON schema.
  * 
@@ -25,8 +23,5 @@ import org.leadpony.justify.core.Evaluator.Result;
  */
 abstract class SimpleJsonSchema implements JsonSchema {
     
-    final Evaluator ALWAYS_FALSE = (event, parser, depth, dispatcher)->{
-        dispatcher.dispatchInevitableProblem(parser, this);
-        return Result.FALSE;
-    };
+    final Evaluator ALWAYS_FALSE = createAlwaysFalseEvaluator();
 }

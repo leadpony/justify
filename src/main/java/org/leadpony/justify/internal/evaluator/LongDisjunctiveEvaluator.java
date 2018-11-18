@@ -24,7 +24,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
@@ -38,8 +37,8 @@ class LongDisjunctiveEvaluator extends DisjunctiveEvaluator {
         this.monitor = InstanceMonitor.of(type);
     }
     
-    LongDisjunctiveEvaluator(Stream<JsonSchema> children, InstanceType type, boolean affirmative) {
-        super(children, type, affirmative);
+    LongDisjunctiveEvaluator(Stream<Evaluator> children, InstanceType type) {
+        super(children, type);
         this.monitor = InstanceMonitor.of(type);
     }
 

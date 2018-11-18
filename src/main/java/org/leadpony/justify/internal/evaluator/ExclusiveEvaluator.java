@@ -49,9 +49,9 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         this.negated = new ArrayList<>();
         children.forEach(child->{
             this.children.add(new RetainingEvaluator(
-                    child.evaluator(type, true)));
+                    child.createEvaluator(type)));
             this.negated.add(new RetainingEvaluator(
-                    child.evaluator(type, false)));
+                    child.createNegatedEvaluator(type)));
         });
         this.monitor = InstanceMonitor.of(type);
     }

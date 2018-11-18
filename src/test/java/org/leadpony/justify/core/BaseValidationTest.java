@@ -136,7 +136,7 @@ public abstract class BaseValidationTest {
         if (problems.isEmpty() || !log.isLoggable(Level.INFO)) {
             return;
         }
-        log.info(">>>" + fixture.displayName());
+        log.info("\n# " + fixture.displayName());
         printer.handleProblems(problems);
     }
 }

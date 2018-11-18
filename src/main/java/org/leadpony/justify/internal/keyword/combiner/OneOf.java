@@ -40,11 +40,12 @@ class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type, boolean affirmative) {
-        if (affirmative) {
-            return Evaluators.exclusive(subschemas(), type);
-        } else {
-            return Evaluators.notExclusive(subschemas(), type);
-        }
+    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
+        return Evaluators.exclusive(subschemas(), type);
+    }
+
+    @Override
+    protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
+        return Evaluators.notExclusive(subschemas(), type);
     }
 }
