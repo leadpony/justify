@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -38,7 +39,6 @@ import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
-import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 
@@ -63,7 +63,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         AppendableLogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependencyMap.values().stream()
-            .map(d->d.createEvaluator(true))
+            .map(Dependency::createEvaluator)
             .forEach(evaluator::append);
         return evaluator.withProblemBuilderFactory(this);
     }
@@ -72,7 +72,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         AppendableLogicalEvaluator evaluator = Evaluators.disjunctive(type);
         dependencyMap.values().stream()
-            .map(d->d.createEvaluator(false))
+            .map(Dependency::createNegatedEvaluator)
             .forEach(evaluator::append);
         return evaluator.withProblemBuilderFactory(this);
     }
@@ -105,11 +105,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      * @param subschema the value of the dependency.
      */
     public void addDependency(String property, JsonSchema subschema) {
-        Dependency dependency = 
-                subschema.isBoolean() ?
-                new BooleanSchemaDependency(property, subschema) :
-                new SchemaDependency(property, subschema);
-        dependencyMap.put(property, dependency);
+        dependencyMap.put(property, newDependency(property, subschema));
     }
 
     /**
@@ -118,32 +114,53 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      * @param requiredProperties the names of the required properties.
      */
     public void addDependency(String property, Set<String> requiredProperties) {
-        dependencyMap.put(property, new PropertyDependency(property, requiredProperties));
+        dependencyMap.put(property, newDependency(property, requiredProperties));
+    }
+
+    private Dependency newDependency(String property, JsonSchema subschema) {
+        if (subschema == JsonSchema.TRUE) {
+            return new TrueSchemaDependency(property);
+        } else if (subschema == JsonSchema.FALSE) {
+            return new FalseSchemaDependency(property);
+        } else {
+            return new SchemaDependency(property, subschema);
+        }
     }
     
+    private Dependency newDependency(String property, Set<String> requiredProperties) {
+        if (requiredProperties.isEmpty()) {
+            return new EmptyPropertyDependency(property);
+        } else {
+            return new PropertyDependency(property, requiredProperties); 
+        }
+    }
+
+    /**
+     * Base evaluator for dependency.
+     * 
+     * @author leadpony
+     */
     private abstract class DependencyEvaluator implements Evaluator {
         
         protected final String property;
-        protected final boolean affirmative;
         protected boolean active;
         
-        protected DependencyEvaluator(String property, boolean affirmative) {
+        protected DependencyEvaluator(String property) {
             this.property = property;
-            this.affirmative = affirmative;
             this.active = false;
         }
 
-        protected Result getResultWithoutKey(JsonParser parser, ProblemDispatcher dispatcher) {
-            if (affirmative) {
-                return Result.TRUE;
-            } else {
-                Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.required")
-                        .withParameter("required", this.property)
-                        .build();
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            }
+        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
+            return Result.TRUE;
+        }
+        
+        protected Evaluator.Result dispatchMissingDependantProblem(JsonParser parser, ProblemDispatcher dispatcher) {
+            Problem p = createProblemBuilder(parser)
+                    .withMessage("instance.problem.required")
+                    .withParameter("required", property)
+                    .build();
+            dispatcher.dispatchProblem(p);
+            return Evaluator.Result.FALSE;
         }
     }
     
@@ -168,8 +185,18 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             return false;
         }
 
-        abstract Evaluator createEvaluator(boolean affirmative);
+        /**
+         * Creates a new evaluator for this dependency.
+         * @return newly created evaluator.
+         */
+        abstract Evaluator createEvaluator();
         
+        /**
+         * Creates a new evaluator for the negation of this dependency.
+         * @return newly created evaluator.
+         */
+        abstract Evaluator createNegatedEvaluator();
+
         abstract void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
     }
 
@@ -191,9 +218,15 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
         
         @Override
-        Evaluator createEvaluator(boolean affirmative) {
-            Evaluator subschemaEvaluator = subschema.evaluator(InstanceType.OBJECT, affirmative);
-            return new SchemaDependencyEvaluator(getProperty(), subschemaEvaluator, affirmative);
+        Evaluator createEvaluator() {
+            Evaluator subschemaEvaluator = subschema.evaluator(InstanceType.OBJECT, true);
+            return new SchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
+        }
+
+        @Override
+        Evaluator createNegatedEvaluator() {
+            Evaluator subschemaEvaluator = subschema.evaluator(InstanceType.OBJECT, false);
+            return new NegatedSchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
         }
 
         @Override
@@ -211,29 +244,42 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
     }
     
-    private class BooleanSchemaDependency extends SchemaDependency {
+    private class TrueSchemaDependency extends SchemaDependency {
         
-        private BooleanSchemaDependency(String property, JsonSchema subschema) {
-            super(property, subschema);
+        private TrueSchemaDependency(String property) {
+            super(property, JsonSchema.TRUE);
+        }
+
+        Evaluator createEvaluator() {
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createEvaluator(boolean affirmative) {
-            if (affirmative && getSubschema() == JsonSchema.FALSE) {
-                return new ForbiddenKeyEvaluator(getProperty());
-            }
-            return super.createEvaluator(affirmative);
+        Evaluator createNegatedEvaluator() {
+            return new NegatedForbiddenDependantEvaluator(getProperty());
         }
     }
     
+    private class FalseSchemaDependency extends SchemaDependency {
+        
+        private FalseSchemaDependency(String property) {
+            super(property, JsonSchema.FALSE);
+        }
+
+        @Override
+        Evaluator createEvaluator() {
+            return new ForbiddenDependantEvaluator(getProperty());
+        }
+    }
+
     private class SchemaDependencyEvaluator extends DependencyEvaluator implements DefaultProblemDispatcher {
 
         private final Evaluator subschemaEvaluator;
         private Result result;
         private List<Problem> problems;
         
-        SchemaDependencyEvaluator(String property, Evaluator subschemaEvaluator, boolean affirmative) {
-            super(property, affirmative);
+        SchemaDependencyEvaluator(String property, Evaluator subschemaEvaluator) {
+            super(property);
             this.subschemaEvaluator = subschemaEvaluator;
         }
         
@@ -255,7 +301,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 return (result != null) ? result : Result.PENDING;
             } else {
                 if (depth == 0 && event == Event.END_OBJECT) {
-                    return getResultWithoutKey(parser, dispatcher);
+                    return getResultWithoutDependant(parser, dispatcher);
                 } else {
                     return Result.PENDING;
                 }
@@ -286,6 +332,23 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             }
         }
     }
+
+    /**
+     * Negated version of {@link SchemaDependencyEvaluator}.
+     * 
+     * @author leadpony
+     */
+    private class NegatedSchemaDependencyEvaluator extends SchemaDependencyEvaluator {
+
+        NegatedSchemaDependencyEvaluator(String property, Evaluator subschemaEvaluator) {
+            super(property, subschemaEvaluator);
+        }
+
+        @Override
+        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(parser, dispatcher);
+        }
+    }
     
     /**
      * A dependency whose value is an array of property names.
@@ -302,8 +365,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator(boolean affirmative) {
-            return new PropertyDependencyEvaluator(getProperty(), requiredProperties, affirmative);
+        Evaluator createEvaluator() {
+            return new PropertyDependencyEvaluator(getProperty(), requiredProperties);
+        }
+
+        @Override
+        Evaluator createNegatedEvaluator() {
+            return new NegatedPropertyDependencyEvaluator(getProperty(), requiredProperties);
         }
 
         @Override
@@ -314,13 +382,30 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
     }
     
+    private class EmptyPropertyDependency extends PropertyDependency {
+        
+        EmptyPropertyDependency(String property) {
+            super(property, Collections.emptySet());
+        }
+
+        @Override
+        Evaluator createEvaluator() {
+            return Evaluator.ALWAYS_TRUE;
+        }
+
+        @Override
+        Evaluator createNegatedEvaluator() {
+            return new NegatedForbiddenDependantEvaluator(getProperty());
+        }
+    }
+    
     private class PropertyDependencyEvaluator extends DependencyEvaluator {
         
-        private final Set<String> required;
-        private final Set<String> missing;
+        protected final Set<String> required;
+        protected final Set<String> missing;
         
-        PropertyDependencyEvaluator(String property, Set<String> required, boolean affirmative) {
-            super(property, affirmative);
+        PropertyDependencyEvaluator(String property, Set<String> required) {
+            super(property);
             this.required = required;
             this.missing = new LinkedHashSet<>(required);
         }
@@ -335,19 +420,15 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 missing.remove(keyName);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
-                    if (affirmative) {
-                        return test(parser, dispatcher);
-                    } else {
-                        return testNegation(parser, dispatcher);
-                    }
+                    return test(parser, dispatcher);
                 } else {
-                    return getResultWithoutKey(parser, dispatcher);
+                    return getResultWithoutDependant(parser, dispatcher);
                 }
             }
             return Result.PENDING;
         }
         
-        private Result test(JsonParser parser, ProblemDispatcher dispatcher) {
+        protected Result test(JsonParser parser, ProblemDispatcher dispatcher) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
@@ -362,11 +443,25 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 return Result.FALSE;
             }
         }
+    }
 
-        private Result testNegation(JsonParser parser, ProblemDispatcher dispatcher) {
+    private class NegatedPropertyDependencyEvaluator extends PropertyDependencyEvaluator {
+
+        NegatedPropertyDependencyEvaluator(String property, Set<String> required) {
+            super(property, required);
+        }
+
+        @Override
+        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(parser, dispatcher);
+        }
+        
+        @Override
+        protected Result test(JsonParser parser, ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
                 Problem p = createProblemBuilder(parser)
-                        .withMessage("instance.problem.unknown")
+                        .withMessage("instance.problem.not.required")
+                        .withParameter("required", this.property)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
@@ -393,22 +488,20 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      * 
      * @author leadpony
      */
-    private class ForbiddenKeyEvaluator implements ShallowEvaluator {
+    private class ForbiddenDependantEvaluator extends DependencyEvaluator {
         
-        private final String property;
-        
-        private ForbiddenKeyEvaluator(String property) {
-            this.property = property;
+        ForbiddenDependantEvaluator(String property) {
+            super(property);
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            if (event == Event.KEY_NAME) {
+        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+            if (depth == 1 && event == Event.KEY_NAME) {
                 if (parser.getString().equals(property)) {
                     return dispatchProblem(parser, dispatcher);
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return Result.TRUE;
+                return getResultWithoutDependant(parser, dispatcher);
             }
             return Result.PENDING;
         }
@@ -420,6 +513,18 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                     .build();
             dispatcher.dispatchProblem(problem);
             return Result.FALSE;
+        }
+    }
+    
+    private class NegatedForbiddenDependantEvaluator extends ForbiddenDependantEvaluator {
+
+        NegatedForbiddenDependantEvaluator(String property) {
+            super(property);
+        }
+
+        @Override
+        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(parser, dispatcher);
         }
     }
 }
