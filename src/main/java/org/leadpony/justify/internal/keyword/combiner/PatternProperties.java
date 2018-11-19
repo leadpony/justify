@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,14 +33,7 @@ public class PatternProperties extends BaseProperties<Pattern> {
     private boolean enabled;
     
     PatternProperties() {
-        this(new LinkedHashMap<>(), AdditionalProperties.DEFAULT, false);
-    }
-
-    PatternProperties(Map<Pattern, JsonSchema> propertyMap, 
-            AdditionalProperties additionalProperties,
-            boolean enabled) {
-        super(propertyMap, additionalProperties);
-        this.enabled = enabled;
+        this.enabled = false;
     }
 
     @Override
@@ -73,17 +65,14 @@ public class PatternProperties extends BaseProperties<Pattern> {
         return null;
     }
     
-    
     @Override
-    protected void findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
+    protected void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas) {
+        subschemas.isEmpty();
         for (Pattern pattern : propertyMap.keySet()) {
             Matcher m = pattern.matcher(keyName);
             if (m.find()) {
                 subschemas.add(propertyMap.get(pattern));
             }
-        }
-        if (subschemas.isEmpty()) {
-            super.findSubschemas(keyName, subschemas);
         }
     }
 }

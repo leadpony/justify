@@ -33,8 +33,8 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
@@ -49,22 +49,18 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
     protected AdditionalProperties additionalProperties;
     
     protected BaseProperties() {
-        this(new LinkedHashMap<>(), AdditionalProperties.DEFAULT);
-    }
-    
-    protected BaseProperties(Map<K, JsonSchema> propertyMap, AdditionalProperties additionalProperties) {
-        this.propertyMap = propertyMap;
-        this.additionalProperties = additionalProperties;
+        this.propertyMap = new LinkedHashMap<>();
+        this.additionalProperties = AdditionalProperties.DEFAULT;
     }
     
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new ProperySchemaEvaluator(true, this);
+        return new PropertiesEvaluator();
     }
     
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new ProperySchemaEvaluator(false, this);
+        return new NegatedPropertiesEvaluator();
     }
 
     @Override
@@ -95,46 +91,91 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         propertyMap.put(key, subschema);
     }
 
-    protected void findSubschemas(String keyName, Collection<JsonSchema> subschemas) {
-        assert subschemas.isEmpty();
-        additionalProperties.findSubshcmeas(keyName, subschemas);
+    protected abstract void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas);
+    
+    private JsonSchema getDefaultSchema() {
+        return additionalProperties.getSubschema();
     }
     
-    private class ProperySchemaEvaluator extends AbstractChildrenEvaluator {
+    private class PropertiesEvaluator extends AbstractChildrenEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
-        ProperySchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-            super(affirmative, InstanceType.OBJECT, problemBuilderFactory);
+        PropertiesEvaluator() {
+            super(InstanceType.OBJECT, BaseProperties.this);
         }
         
         @Override
-        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+        public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
-                String keyName = parser.getString();
-                findSubschemas(keyName);
-                appendImmediateEvaluator(keyName);
+                findSubschemaFor(parser.getString());
             } else if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 appendEvaluators(type);
             }
         }
         
-        private void findSubschemas(String keyName) {
-            BaseProperties.this.findSubschemas(keyName, this.subschemas);
-        }
-        
-        private void appendImmediateEvaluator(String keyName) {
-            JsonSchema schemaToFail = getSchemaToFail();
-            if (subschemas.contains(schemaToFail)) {
-                append(new RedundantPropertyEvaluator(keyName, schemaToFail));
-                subschemas.removeIf(s->s == schemaToFail);
+        private void findSubschemaFor(String keyName) {
+            BaseProperties.this.findSubschemasFor(keyName, subschemas);
+            if (subschemas.isEmpty()) {
+                findDefaultSchemaFor(keyName);
             }
         }
         
+        private void findDefaultSchemaFor(String keyName) {
+            JsonSchema subschema = getDefaultSchema();
+            if (subschema == JsonSchema.FALSE) {
+                append(new RedundantPropertyEvaluator(keyName, subschema));
+            } else {
+                subschemas.add(subschema);
+            }
+        }
+
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                append(subschema, type);
+                append(subschema.createEvaluator(type));
+            }
+            this.subschemas.clear();
+        }
+    }
+
+    private class NegatedPropertiesEvaluator extends AbstractNegatedChildrenEvaluator {
+
+        private final List<JsonSchema> subschemas = new ArrayList<>();
+        
+        NegatedPropertiesEvaluator() {
+            super(InstanceType.OBJECT, BaseProperties.this);
+        }
+        
+        @Override
+        public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            if (event == Event.KEY_NAME) {
+                findSubschemaFor(parser.getString());
+            } else if (ParserEvents.isValue(event)) {
+                InstanceType type = ParserEvents.toInstanceType(event, parser);
+                appendEvaluators(type);
+            }
+        }
+        
+        private void findSubschemaFor(String keyName) {
+            BaseProperties.this.findSubschemasFor(keyName, subschemas);
+            if (subschemas.isEmpty()) {
+                findDefaultSchemaFor(keyName);
+            }
+        }
+        
+        private void findDefaultSchemaFor(String keyName) {
+            JsonSchema subschema = getDefaultSchema();
+            if (subschema == JsonSchema.TRUE) {
+                append(new RedundantPropertyEvaluator(keyName, subschema));
+            } else {
+                subschemas.add(subschema);
+            }
+        }
+
+        private void appendEvaluators(InstanceType type) {
+            for (JsonSchema subschema : this.subschemas) {
+                append(subschema.createNegatedEvaluator(type));
             }
             this.subschemas.clear();
         }

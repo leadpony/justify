@@ -34,7 +34,7 @@ class RedundantItemEvaluator implements Evaluator {
     private final JsonSchema schema;
     
     RedundantItemEvaluator(int itemIndex, JsonSchema schema) {
-        assert schema.isBoolean();
+        assert schema.isBoolean() || schema == JsonSchema.EMPTY;
         this.itemIndex = itemIndex;
         this.schema = schema;
     }

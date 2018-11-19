@@ -35,21 +35,21 @@ import org.leadpony.justify.core.ProblemDispatcher;
  */
 class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    protected final List<RetainingEvaluator> children;
-    protected List<RetainingEvaluator> badEvaluators;
+    protected final List<DeferredEvaluator> children;
+    protected List<DeferredEvaluator> badEvaluators;
     
     NotExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
         this.children = children
                 .map(s->s.createNegatedEvaluator(type))
-                .map(RetainingEvaluator::new)
+                .map(DeferredEvaluator::new)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<RetainingEvaluator> it = children.iterator();
+        Iterator<DeferredEvaluator> it = children.iterator();
         while (it.hasNext()) {
-            RetainingEvaluator current = it.next();
+            DeferredEvaluator current = it.next();
             if (current.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
                 addBadEvaluator(current);
             }
@@ -61,14 +61,14 @@ class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
         }
     }
 
-    protected void addBadEvaluator(RetainingEvaluator evaluator) {
+    protected void addBadEvaluator(DeferredEvaluator evaluator) {
         if (this.badEvaluators == null) {
             this.badEvaluators = new ArrayList<>();
         }
         this.badEvaluators.add(evaluator);
     }
     
-    protected Result dispatchProblems(RetainingEvaluator evaluator, ProblemDispatcher dispatcher) {
+    protected Result dispatchProblems(DeferredEvaluator evaluator, ProblemDispatcher dispatcher) {
         List<Problem> problems = evaluator.problems();
         problems.forEach(dispatcher::dispatchProblem);
         return Result.FALSE;

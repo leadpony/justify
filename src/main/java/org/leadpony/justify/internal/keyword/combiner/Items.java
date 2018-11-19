@@ -32,8 +32,8 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -48,8 +48,14 @@ abstract class Items extends Combiner implements ArrayKeyword {
     public String name() {
         return "items";
     }
+    
+    protected Evaluator createRedundantItemEvaluator(int itemIndex, JsonSchema subschema) {
+        return new RedundantItemEvaluator(itemIndex, subschema);
+    }
 
     /**
+     * "items" keyword with single schema.
+     * 
      * @author leadpony
      */
     static class BroadcastItems extends Items {
@@ -62,12 +68,20 @@ abstract class Items extends Combiner implements ArrayKeyword {
 
         @Override
         protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return new SingleSchemaEvaluator(true, this, this.subschema);
+            if (subschema == JsonSchema.FALSE) {
+                return createForbiddenItemsEvaluator();
+            } else {
+                return createItemsEvaluator();
+            }
         }
 
         @Override
         protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return new SingleSchemaEvaluator(false, this, this.subschema);
+            if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
+                return createNegatedForbiddenItemsEvaluator();
+            } else {
+                return createNegatedItemsEvaluator();
+            }
         }
 
         @Override
@@ -89,46 +103,66 @@ abstract class Items extends Combiner implements ArrayKeyword {
         public JsonSchema getSubschema(Iterator<String> jsonPointer) {
             return subschema;
         }
+        
+        private Evaluator createSubschemaEvaluator(Event event, JsonParser parser) {
+            InstanceType type = ParserEvents.toInstanceType(event, parser);
+            return subschema.createEvaluator(type);
+        }
+        
+        private Evaluator createItemsEvaluator() {
+            return new AbstractChildrenEvaluator(InstanceType.ARRAY, this) {
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        append(createSubschemaEvaluator(event, parser));
+                    }
+                }
+            };
+        }
+        
+        private Evaluator createNegatedSubschemaEvaluator(Event event, JsonParser parser) {
+            InstanceType type = ParserEvents.toInstanceType(event, parser);
+            return subschema.createNegatedEvaluator(type);
+        }
+
+        private Evaluator createNegatedItemsEvaluator() {
+            return new AbstractNegatedChildrenEvaluator(InstanceType.ARRAY, this) {
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        append(createNegatedSubschemaEvaluator(event, parser));
+                    }
+                }
+            };
+        }
+
+        private Evaluator createForbiddenItemsEvaluator() {
+            return new AbstractChildrenEvaluator(InstanceType.ARRAY, this) {
+                private int itemIndex;
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        append(createRedundantItemEvaluator(itemIndex++, subschema));
+                    }
+                }
+            };
+        }
+        
+        private Evaluator createNegatedForbiddenItemsEvaluator() {
+            return new AbstractNegatedChildrenEvaluator(InstanceType.ARRAY, this) {
+                private int itemIndex;
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        append(createRedundantItemEvaluator(itemIndex++, subschema));
+                    }
+                }
+            };
+        }
     }
     
-    private static abstract class DynamicItemsEvaluator extends AbstractChildrenEvaluator {
-        
-        protected int currentItemIndex;
-        
-        protected DynamicItemsEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-            super(affirmative, InstanceType.ARRAY, problemBuilderFactory);
-        }
-        
-        @Override
-        protected void append(JsonSchema schema, InstanceType type) {
-            if (schema == getSchemaToFail()) {
-                append(new RedundantItemEvaluator(currentItemIndex, schema));
-            } else {
-                super.append(schema, type);
-            }
-            currentItemIndex++;
-        }
-    }
-
-    private static class SingleSchemaEvaluator extends DynamicItemsEvaluator {
-        
-        private final JsonSchema subschema;
-
-        SingleSchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory, JsonSchema subschema) {
-            super(affirmative, problemBuilderFactory);
-            this.subschema = subschema;
-        }
-        
-        @Override
-        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
-            if (ParserEvents.isValue(event)) {
-                append(this.subschema, ParserEvents.toInstanceType(event, parser));
-            }
-        }
-    }
-
     /**
-     * "items" with array of subschemas.
+     * "items" keyword with array of subschemas.
      * 
      * @author leadpony
      */
@@ -143,12 +177,12 @@ abstract class Items extends Combiner implements ArrayKeyword {
 
         @Override
         protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return new SeparateSchemaEvaluator(true, this);
+            return createItemsEvaluator();
         }
         
         @Override
         protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return new SeparateSchemaEvaluator(false, this);
+            return createNegatedItemsEvaluator();
         }
 
         @Override
@@ -189,29 +223,56 @@ abstract class Items extends Combiner implements ArrayKeyword {
             return null;
         }
         
-        private class SeparateSchemaEvaluator extends DynamicItemsEvaluator {
+        private JsonSchema findSubschemaAt(int itemIndex) {
+            if (itemIndex < subschemas.size()) {
+                return subschemas.get(itemIndex);
+            } else {
+                return additionalItems.getSubschema();
+            }
+        }
+        
+        private Evaluator createSubschemaEvaluator(int itemIndex, JsonSchema subschema, InstanceType type) {
+            if (subschema == JsonSchema.FALSE) {
+                return createRedundantItemEvaluator(itemIndex, subschema); 
+            } else {
+                return subschema.createEvaluator(type);
+            }
+        }
 
-            private SeparateSchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-                super(affirmative, problemBuilderFactory);
+        private Evaluator createNegatedSubschemaEvaluator(int itemIndex, JsonSchema subschema, InstanceType type) {
+            if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
+                return createRedundantItemEvaluator(itemIndex, subschema); 
+            } else {
+                return subschema.createNegatedEvaluator(type);
             }
+        }
 
-            @Override
-            protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
-                if (ParserEvents.isValue(event)) {
-                    InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    appendSubschema(type);
+        private Evaluator createItemsEvaluator() {
+            return new AbstractChildrenEvaluator(InstanceType.ARRAY, this) {
+                private int itemIndex;
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        JsonSchema subschema = findSubschemaAt(itemIndex++);
+                        append(createSubschemaEvaluator(itemIndex, subschema, type));
+                    }
                 }
-            }
-      
-            protected void appendSubschema(InstanceType type) {
-                JsonSchema subschema = null;
-                if (currentItemIndex < subschemas.size()) {
-                    subschema = subschemas.get(currentItemIndex);
-                } else {
-                    subschema = additionalItems.getSubschema();
+            };
+        }
+        
+        private Evaluator createNegatedItemsEvaluator() {
+            return new AbstractNegatedChildrenEvaluator(InstanceType.ARRAY, this) {
+                private int itemIndex;
+                @Override
+                public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                    if (ParserEvents.isValue(event)) {
+                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        JsonSchema subschema = findSubschemaAt(itemIndex++);
+                        append(createNegatedSubschemaEvaluator(itemIndex, subschema, type));
+                    }
                 }
-                append(subschema, type);
-            }
+            };
         }
     }
 }

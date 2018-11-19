@@ -22,6 +22,8 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
+ * Skeletal implementation of {@link LogicalEvaluator}.
+ * 
  * @author leadpony
  */
 abstract class AbstractLogicalEvaluator implements LogicalEvaluator {

@@ -41,9 +41,9 @@ public class ConditionalEvaluator implements Evaluator {
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         this.ifEvaluator = ifEvaluator;
         this.thenEvaluator = (thenEvaluator != null) ? 
-                new RetainingEvaluator(thenEvaluator) : Evaluator.ALWAYS_TRUE;
+                new DeferredEvaluator(thenEvaluator) : Evaluator.ALWAYS_TRUE;
         this.elseEvaluator = (elseEvaluator != null) ?
-                new RetainingEvaluator(elseEvaluator) : Evaluator.ALWAYS_TRUE;
+                new DeferredEvaluator(elseEvaluator) : Evaluator.ALWAYS_TRUE;
         this.ifResult = Result.PENDING;
         this.thenResult = Result.PENDING;
         this.elseResult = Result.PENDING;
@@ -79,7 +79,7 @@ public class ConditionalEvaluator implements Evaluator {
     
     private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
-            ((RetainingEvaluator)evaluator).problems().forEach(problem->dispatcher.dispatchProblem(problem));
+            ((DeferredEvaluator)evaluator).problems().forEach(problem->dispatcher.dispatchProblem(problem));
         }
         return result;
     }

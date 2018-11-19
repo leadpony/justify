@@ -37,6 +37,7 @@ public interface DefaultProblemDispatcher extends ProblemDispatcher {
     @Override
     default void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
         requireNonNull(parser, "parser");
+        requireNonNull(schema, "schema");
         Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
                 .withMessage("instance.problem.unknown")
                 .withSchema(schema)

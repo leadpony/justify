@@ -16,19 +16,21 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
- * Appender of evaluators.
- * 
  * @author leadpony
  */
-public interface EvaluatorAppender {
+public interface ChildrenEvaluator extends AppendableLogicalEvaluator {
 
     /**
-     * Appends an evaluator.
-     * 
-     * @param evaluator the evaluator to append, cannot be {@code null}.
+     * Updates children of this evaluator.
+     * @param event the event triggered by the JSON parser, cannot be {@code null}.
+     * @param parser the JSON parser, cannot be {@code null}.
+     * @param dispatcher the dispatcher of the found problems, cannot be {@code null}.
      */
-    void append(Evaluator evaluator);
+    void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher);
 }

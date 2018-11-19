@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +29,8 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -76,13 +75,21 @@ class AdditionalProperties extends UnaryCombiner {
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         assert enabled;
-        return new ProperySchemaEvaluator(true, this);
+        if (getSubschema() == JsonSchema.FALSE) {
+            return createForbiddenPropertiesEvaluator();
+        } else {
+            return createPropertiesEvaluator();
+        }
     }
     
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         assert enabled;
-        return new ProperySchemaEvaluator(false, this);
+        if (getSubschema() == JsonSchema.TRUE) {
+            return createNegatedForbiddenPropertiesEvaluator();
+        } else {
+            return createNegatedPropertiesEvaluator();
+        }
     }
 
     /**
@@ -98,39 +105,69 @@ class AdditionalProperties extends UnaryCombiner {
                   !siblings.containsKey("patternProperties");
     }
     
-    void findSubshcmeas(String keyName, Collection<JsonSchema> subschemas) {
-        assert subschemas.isEmpty();
-        subschemas.add(getSubschema());
+    private Evaluator createSubschemaEvaluator(Event event, JsonParser parser) {
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
+        return getSubschema().createEvaluator(type);
     }
-    
-    class ProperySchemaEvaluator extends AbstractChildrenEvaluator {
+     
+    private Evaluator createNegatedSubschemaEvaluator(Event event, JsonParser parser) {
+        InstanceType type = ParserEvents.toInstanceType(event, parser);
+        return getSubschema().createNegatedEvaluator(type);
+    }
 
-        private JsonSchema nextSubschema;
-        
-        ProperySchemaEvaluator(boolean affirmative, ProblemBuilderFactory problemBuilderFactory) {
-            super(affirmative, InstanceType.OBJECT, problemBuilderFactory);
-        }
-
-        @Override
-        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
-            if (event == Event.KEY_NAME) {
-                findSubschema(parser.getString());
-            } else if (ParserEvents.isValue(event)) {
-                if (nextSubschema != null) {
-                    InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    append(nextSubschema, type);
-                    nextSubschema = null;
+    /**
+     * Create an evaluator which evaluates the subschema for all properties in the object.
+     * @return newly created evaluator.
+     */
+    private Evaluator createPropertiesEvaluator() {
+        return new AbstractChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (ParserEvents.isValue(event)) {
+                    append(createSubschemaEvaluator(event, parser));
                 }
             }
-        }
-        
-        private void findSubschema(String keyName) {
-            JsonSchema subschema = getSubschema();
-            if (subschema == getSchemaToFail()) {
-                append(new RedundantPropertyEvaluator(keyName, subschema));
-            } else {
-                nextSubschema = subschema;
+        };
+    }
+
+    /**
+     * Create an evaluator which evaluates the negated subschema for all properties in the object.
+     * @return newly created evaluator.
+     */
+    private Evaluator createNegatedPropertiesEvaluator() {
+        return new AbstractNegatedChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (ParserEvents.isValue(event)) {
+                    append(createNegatedSubschemaEvaluator(event, parser));
+                }
             }
-        }
+        };
+    }
+    
+    private Evaluator createForbiddenPropertiesEvaluator() {
+        return new AbstractChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (event == Event.KEY_NAME) {
+                    append(createRedundantPropertyEvaluator(parser.getString()));
+                }
+            }
+        };
+    }
+    
+    private Evaluator createNegatedForbiddenPropertiesEvaluator() {
+        return new AbstractNegatedChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (event == Event.KEY_NAME) {
+                    append(createRedundantPropertyEvaluator(parser.getString()));
+                }
+            }
+        };
+    }
+
+    private Evaluator createRedundantPropertyEvaluator(String keyName) {
+        return new RedundantPropertyEvaluator(keyName, getSubschema());
     }
 }

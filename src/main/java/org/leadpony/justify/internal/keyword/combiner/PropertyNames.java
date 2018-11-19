@@ -27,8 +27,8 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
 
 /**
  * Combiner representing "propertyNames" keyword.
@@ -58,28 +58,27 @@ class PropertyNames extends UnaryCombiner {
     
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new SubschemaEvaluator(true, this, getSubschema());
+        final JsonSchema subschema = getSubschema();
+        return new AbstractChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (event == Event.KEY_NAME) {
+                    append(subschema.createEvaluator(InstanceType.STRING));
+                }
+            }
+        };
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new SubschemaEvaluator(false, this, getSubschema());
-    }
-
-    private static class SubschemaEvaluator extends AbstractChildrenEvaluator {
-
-        private final JsonSchema subschema;
-        
-        SubschemaEvaluator(boolean affirmative, ProblemBuilderFactory problemFactory, JsonSchema subschema) {
-            super(affirmative, InstanceType.OBJECT, problemFactory);
-            this.subschema = subschema;
-        }
-
-        @Override
-        protected void update(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
-            if (event == Event.KEY_NAME) {
-                append(subschema, InstanceType.STRING);
+        final JsonSchema subschema = getSubschema();
+        return new AbstractNegatedChildrenEvaluator(InstanceType.OBJECT, this) {
+            @Override
+            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+                if (event == Event.KEY_NAME) {
+                    append(subschema.createNegatedEvaluator(InstanceType.STRING));
+                }
             }
-        }
+        };
     }
 }

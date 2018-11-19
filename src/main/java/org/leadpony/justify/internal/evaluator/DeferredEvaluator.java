@@ -30,11 +30,11 @@ import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 
 /**
- * Evaluator which retains the found problems internally.
+ * Evaluator which retains the found problems and dispatches them later.
  * 
  * @author leadpony
  */
-class RetainingEvaluator implements Evaluator, DefaultProblemDispatcher, Comparable<RetainingEvaluator> {
+class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher, Comparable<DeferredEvaluator> {
 
     private final Evaluator evaluator;
     private List<Problem> problems;
@@ -44,7 +44,7 @@ class RetainingEvaluator implements Evaluator, DefaultProblemDispatcher, Compara
      * 
      * @param evaluator the actual evaluator, cannot be {@code null}.
      */
-    RetainingEvaluator(Evaluator evaluator) {
+    DeferredEvaluator(Evaluator evaluator) {
         this.evaluator = evaluator;
     }
     
@@ -63,7 +63,7 @@ class RetainingEvaluator implements Evaluator, DefaultProblemDispatcher, Compara
     }
 
     @Override
-    public int compareTo(RetainingEvaluator other) {
+    public int compareTo(DeferredEvaluator other) {
         return countProblems() - other.countProblems();
     }
     

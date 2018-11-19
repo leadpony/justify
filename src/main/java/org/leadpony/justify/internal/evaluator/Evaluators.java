@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 
 /**
@@ -34,33 +33,17 @@ public final class Evaluators {
     
     public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
         if (type.isContainer()) {
-            return new LongConjunctiveEvaluator(type);
+            return new ConjunctiveEvaluator(type);
         } else {
-            return new ConjunctiveEvaluator();
-        }
-    }
-    
-    public static LogicalEvaluator conjunctive(Stream<Evaluator> children, InstanceType type) {
-        if (type.isContainer()) {
-            return new LongConjunctiveEvaluator(children, type);
-        } else {
-            return new ConjunctiveEvaluator(children, type);
+            return new SimpleConjunctiveEvaluator();
         }
     }
 
     public static AppendableLogicalEvaluator disjunctive(InstanceType type) {
         if (type.isContainer()) {
-            return new LongDisjunctiveEvaluator(type);
+            return new DisjunctiveEvaluator(type);
         } else {
-            return new DisjunctiveEvaluator();
-        }
-    }
-
-    public static LogicalEvaluator disjunctive(Stream<Evaluator> children, InstanceType type) {
-        if (type.isContainer()) {
-            return new LongDisjunctiveEvaluator(children, type);
-        } else {
-            return new DisjunctiveEvaluator(children, type);
+            return new SimpleDisjunctiveEvaluator();
         }
     }
 

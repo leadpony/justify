@@ -16,9 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.Iterator;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -28,37 +26,37 @@ import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
- * Evaluator for "allOf" boolean logic.
- * 
  * @author leadpony
  */
-public class ConjunctiveEvaluator extends AbstractLogicalEvaluator implements AppendableLogicalEvaluator {
+class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
 
-    protected final List<Evaluator> children = new ArrayList<>();
-    protected int evaluationsAsInvalid;
-    
-    ConjunctiveEvaluator() {
-    }
-    
-    ConjunctiveEvaluator(Stream<Evaluator> children, InstanceType type) {
-        children.forEach(this::append);
+    private final InstanceMonitor monitor;
+    private int evaluationsAsFalse;
+   
+    ConjunctiveEvaluator(InstanceType type) {
+        this.monitor = InstanceMonitor.of(type);
     }
     
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        for (Evaluator child : children) {
-            if (child.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
-                evaluationsAsInvalid++;
+        invokeOperandEvaluators(event, parser, depth, dispatcher);
+        if (monitor.isCompleted(event, depth)) {
+            return (evaluationsAsFalse == 0) ? Result.TRUE : Result.FALSE;
+        }
+        return Result.PENDING;
+    }
+    
+    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        Iterator<Evaluator> it = iterator();
+        while (it.hasNext()) {
+            Result result = it.next().evaluate(event, parser, depth, dispatcher);
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    evaluationsAsFalse++;
+                }
+                it.remove();
             }
         }
-        return (evaluationsAsInvalid == 0) ? Result.TRUE : Result.FALSE;
-    }
-
-    @Override
-    public void append(Evaluator evaluator) {
-        if (evaluator == Evaluator.ALWAYS_TRUE) {
-            return;
-        }
-        this.children.add(evaluator);
+        return Result.PENDING;
     }
 }

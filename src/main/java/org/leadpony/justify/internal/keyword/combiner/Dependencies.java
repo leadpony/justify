@@ -256,7 +256,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
         @Override
         Evaluator createNegatedEvaluator() {
-            return new NegatedForbiddenDependantEvaluator(getProperty());
+            return getSubschema().createAlwaysFalseEvaluator();
         }
     }
     

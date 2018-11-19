@@ -40,9 +40,9 @@ public class LongNotExclusiveEvaluator extends NotExclusiveEvaluator {
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<RetainingEvaluator> it = children.iterator();
+        Iterator<DeferredEvaluator> it = children.iterator();
         while (it.hasNext()) {
-            RetainingEvaluator current = it.next();
+            DeferredEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {

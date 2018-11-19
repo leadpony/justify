@@ -16,79 +16,50 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Iterator;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 
 /**
- * Evaluator for "anyOf" boolean logic.
- * 
  * @author leadpony
  */
-class DisjunctiveEvaluator extends AbstractLogicalEvaluator implements AppendableLogicalEvaluator {
-    
-    protected final List<RetainingEvaluator> children = new ArrayList<>();
-    private List<RetainingEvaluator> badEvaluators;
-    
-    DisjunctiveEvaluator() {
-    }
-    
-    DisjunctiveEvaluator(Stream<Evaluator> children, InstanceType type) {
-        children.forEach(this::append);
-    }
+class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
 
+    private final InstanceMonitor monitor;
+    
+    DisjunctiveEvaluator(InstanceType type) {
+        this.monitor = InstanceMonitor.of(type);
+    }
+    
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        for (RetainingEvaluator child : children) {
-            Result result = child.evaluate(event, parser, depth, dispatcher);
-            if (result == Result.TRUE) {
-                return Result.TRUE;
-            } else {
-                addBadEvaluator(child);
-            }
+        if (invokeOperandEvaluators(event, parser, depth, dispatcher) == Result.TRUE) {
+            return Result.TRUE;
         }
-        return reportProblems(parser, dispatcher);
+        if (monitor.isCompleted(event, depth)) {
+            return reportProblems(parser, dispatcher);
+        }
+        return Result.PENDING;
     }
 
-    @Override
-    public void append(Evaluator evaluator) {
-        this.children.add(new RetainingEvaluator(evaluator));
-    }
-    
-    protected void addBadEvaluator(RetainingEvaluator evaluator) {
-        if (this.badEvaluators == null) {
-            this.badEvaluators = new ArrayList<>();
+    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        Iterator<DeferredEvaluator> it = iterator();
+        while (it.hasNext()) {
+            DeferredEvaluator current = it.next();
+            Result result = current.evaluate(event, parser, depth, dispatcher);
+            if (result == Result.TRUE) {
+                return Result.TRUE;
+            } else if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    addBadEvaluator(current);
+                }
+                it.remove();
+            }
         }
-        badEvaluators.add(evaluator);
-    }
-    
-    protected Result reportProblems(JsonParser parser, ProblemDispatcher dispatcher) {
-        int count = (badEvaluators != null) ? 
-                badEvaluators.size() : 0;
-        if (count == 0) {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.anyOf.none");
-            dispatcher.dispatchProblem(builder.build());
-        } else if (count == 1) {
-            badEvaluators.get(0).problems().forEach(dispatcher::dispatchProblem);
-        } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.anyOf");
-            badEvaluators.stream()
-                .map(RetainingEvaluator::problems)
-                .filter(Objects::nonNull)
-                .forEach(builder::withBranch);
-            dispatcher.dispatchProblem(builder.build());
-        }
-        return Result.FALSE;
+        return Result.PENDING;
     }
 }

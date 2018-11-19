@@ -26,9 +26,9 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 /**
  * @author leadpony
  */
-public abstract class AbstractChildrenEvaluator extends ConjunctiveEvaluator implements ChildrenEvaluator {
+public abstract class AbstractNegatedChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
     
-    protected AbstractChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
+    protected AbstractNegatedChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
         super(type);
         withProblemBuilderFactory(problemBuilderFactory);
     }

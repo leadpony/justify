@@ -37,10 +37,10 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  */
 public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    private final List<RetainingEvaluator> children;
-    private final List<RetainingEvaluator> negated;
-    private List<RetainingEvaluator> good;
-    private List<RetainingEvaluator> bad;
+    private final List<DeferredEvaluator> children;
+    private final List<DeferredEvaluator> negated;
+    private List<DeferredEvaluator> good;
+    private List<DeferredEvaluator> bad;
     private long evaluationsAsTrue;
     private final InstanceMonitor monitor;
     
@@ -48,9 +48,9 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         this.children = new ArrayList<>();
         this.negated = new ArrayList<>();
         children.forEach(child->{
-            this.children.add(new RetainingEvaluator(
+            this.children.add(new DeferredEvaluator(
                     child.createEvaluator(type)));
-            this.negated.add(new RetainingEvaluator(
+            this.negated.add(new DeferredEvaluator(
                     child.createNegatedEvaluator(type)));
         });
         this.monitor = InstanceMonitor.of(type);
@@ -73,9 +73,9 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
     }
 
     private void evaluateAll(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<RetainingEvaluator> it = children.iterator();
+        Iterator<DeferredEvaluator> it = children.iterator();
         while (it.hasNext()) {
-            RetainingEvaluator current = it.next();
+            DeferredEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.TRUE) {
@@ -89,9 +89,9 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
     }
 
     private void evaluateAllNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<RetainingEvaluator> it = negated.iterator();
+        Iterator<DeferredEvaluator> it = negated.iterator();
         while (it.hasNext()) {
-            RetainingEvaluator current = it.next();
+            DeferredEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
@@ -102,14 +102,14 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         }
     }
     
-    private void addGood(RetainingEvaluator evaluator) {
+    private void addGood(DeferredEvaluator evaluator) {
         if (this.good == null) {
             this.good = new ArrayList<>();
         }
         this.good.add(evaluator);
     }
 
-    private void addBad(RetainingEvaluator evaluator) {
+    private void addBad(DeferredEvaluator evaluator) {
         if (this.bad == null) {
             this.bad = new ArrayList<>();
         }
@@ -123,7 +123,7 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.oneOf.few");
             bad.stream()
-                .map(RetainingEvaluator::problems)
+                .map(DeferredEvaluator::problems)
                 .filter(Objects::nonNull)
                 .forEach(builder::withBranch);
             dispatcher.dispatchProblem(builder.build());
@@ -136,7 +136,7 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
         ProblemBuilder builder = createProblemBuilder(parser)
                 .withMessage("instance.problem.oneOf.many");
         good.stream()
-            .map(RetainingEvaluator::problems)
+            .map(DeferredEvaluator::problems)
             .filter(Objects::nonNull)
             .forEach(builder::withBranch);
         dispatcher.dispatchProblem(builder.build());

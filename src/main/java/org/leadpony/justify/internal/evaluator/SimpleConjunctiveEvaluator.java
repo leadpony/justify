@@ -16,36 +16,50 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
+ * Evaluator for "allOf" boolean logic.
+ * 
  * @author leadpony
  */
-public abstract class AbstractChildrenEvaluator extends ConjunctiveEvaluator implements ChildrenEvaluator {
-    
-    protected AbstractChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
-        super(type);
-        withProblemBuilderFactory(problemBuilderFactory);
-    }
+public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator 
+    implements AppendableLogicalEvaluator, Iterable<Evaluator> {
 
+    private final List<Evaluator> operands = new ArrayList<>();
+    
+    SimpleConjunctiveEvaluator() {
+    }
+    
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (depth == 1) {
-            updateChildren(event, parser, dispatcher);
+        int evaluationsAsFalse = 0;
+        for (Evaluator operand : operands) {
+            if (operand.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
+                evaluationsAsFalse++;
+            }
         }
-        return super.evaluate(event, parser, depth, dispatcher);
+        return (evaluationsAsFalse == 0) ? Result.TRUE : Result.FALSE;
     }
 
     @Override
-    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (depth > 0) {
-            return super.invokeOperandEvaluators(event, parser, depth - 1, dispatcher);
+    public void append(Evaluator evaluator) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
+            return;
         }
-        return Result.PENDING;
+        this.operands.add(evaluator);
+    }
+
+    @Override
+    public Iterator<Evaluator> iterator() {
+        return operands.iterator();
     }
 }
