@@ -27,10 +27,9 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -120,9 +119,9 @@ class AdditionalProperties extends UnaryCombiner {
      * @return newly created evaluator.
      */
     private Evaluator createPropertiesEvaluator() {
-        return new AbstractChildrenEvaluator(InstanceType.OBJECT, this) {
+        return new AbstractConjunctivePropertiesEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     append(createSubschemaEvaluator(event, parser));
                 }
@@ -135,9 +134,9 @@ class AdditionalProperties extends UnaryCombiner {
      * @return newly created evaluator.
      */
     private Evaluator createNegatedPropertiesEvaluator() {
-        return new AbstractNegatedChildrenEvaluator(InstanceType.OBJECT, this) {
+        return new AbstractDisjunctivePropertiesEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     append(createNegatedSubschemaEvaluator(event, parser));
                 }
@@ -146,9 +145,9 @@ class AdditionalProperties extends UnaryCombiner {
     }
     
     private Evaluator createForbiddenPropertiesEvaluator() {
-        return new AbstractChildrenEvaluator(InstanceType.OBJECT, this) {
+        return new AbstractConjunctivePropertiesEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
                     append(createRedundantPropertyEvaluator(parser.getString()));
                 }
@@ -157,9 +156,9 @@ class AdditionalProperties extends UnaryCombiner {
     }
     
     private Evaluator createNegatedForbiddenPropertiesEvaluator() {
-        return new AbstractNegatedChildrenEvaluator(InstanceType.OBJECT, this) {
+        return new AbstractDisjunctivePropertiesEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
                     append(createRedundantPropertyEvaluator(parser.getString()));
                 }

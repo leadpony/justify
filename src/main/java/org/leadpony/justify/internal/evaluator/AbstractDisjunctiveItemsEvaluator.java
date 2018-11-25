@@ -17,35 +17,25 @@
 package org.leadpony.justify.internal.evaluator;
 
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-public abstract class AbstractNegatedChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
-    
-    protected AbstractNegatedChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
-        super(type);
-        withProblemBuilderFactory(problemBuilderFactory);
+public abstract class AbstractDisjunctiveItemsEvaluator extends AbstractDisjunctiveChildrenEvaluator {
+
+    public AbstractDisjunctiveItemsEvaluator(ProblemBuilderFactory problemBuilderFactory) {
+        super(InstanceType.ARRAY, problemBuilderFactory);
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (depth == 1) {
-            updateChildren(event, parser, dispatcher);
-        }
-        return super.evaluate(event, parser, depth, dispatcher);
-    }
-
-    @Override
-    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (depth > 0) {
-            return super.invokeOperandEvaluators(event, parser, depth - 1, dispatcher);
-        }
-        return Result.PENDING;
+    protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {
+        ProblemBuilder b = createProblemBuilder(parser)
+                .withMessage("instance.problem.array.empty");
+        dispatcher.dispatchProblem(b.build());
     }
 }

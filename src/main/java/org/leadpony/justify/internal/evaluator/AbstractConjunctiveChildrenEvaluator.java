@@ -16,49 +16,35 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Iterator;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
-
-    private final InstanceMonitor monitor;
+abstract class AbstractConjunctiveChildrenEvaluator extends ConjunctiveEvaluator implements ChildrenEvaluator {
     
-    DisjunctiveEvaluator(InstanceType type) {
-        this.monitor = InstanceMonitor.of(type);
+    protected AbstractConjunctiveChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
+        super(type);
+        withProblemBuilderFactory(problemBuilderFactory);
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (invokeOperandEvaluators(event, parser, depth, dispatcher) == Result.TRUE) {
-            return Result.TRUE;
+        if (depth == 1) {
+            updateChildren(event, parser);
         }
-        if (monitor.isCompleted(event, depth)) {
-            return dispatchProblems(parser, dispatcher);
-        }
-        return Result.PENDING;
+        return super.evaluate(event, parser, depth, dispatcher);
     }
 
+    @Override
     protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<DeferredEvaluator> it = iterator();
-        while (it.hasNext()) {
-            DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
-            if (result == Result.TRUE) {
-                return Result.TRUE;
-            } else if (result != Result.PENDING) {
-                if (result == Result.FALSE) {
-                    addBadEvaluator(current);
-                }
-                it.remove();
-            }
+        if (depth > 0) {
+            return super.invokeOperandEvaluators(event, parser, depth - 1, dispatcher);
         }
         return Result.PENDING;
     }

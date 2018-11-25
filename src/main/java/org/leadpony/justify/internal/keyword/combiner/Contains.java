@@ -25,10 +25,9 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Keyword;
 
@@ -75,9 +74,9 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
     
     private Evaluator createItemsEvaluator() {
         final JsonSchema subschema = getSubschema();
-        return new AbstractNegatedChildrenEvaluator(InstanceType.ARRAY, this) {
+        return new AbstractDisjunctiveItemsEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
                     append(subschema.createEvaluator(type));
@@ -88,9 +87,9 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
 
     private Evaluator createNegatedItemsEvaluator() {
         final JsonSchema subschema = getSubschema();
-        return new AbstractChildrenEvaluator(InstanceType.ARRAY, this) {
+        return new AbstractConjunctiveItemsEvaluator(this) {
             @Override
-            public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+            public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
                     append(subschema.createNegatedEvaluator(type));

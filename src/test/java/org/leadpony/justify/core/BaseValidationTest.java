@@ -71,7 +71,7 @@ public abstract class BaseValidationTest {
         for (Problem problem : problems) {
             assertThat(problem.getSchema()).isNotNull();
         }
-        printProblems(fixture, problems);
+        printProblems(fixture, true, problems);
     }
     
     @ParameterizedTest
@@ -89,7 +89,7 @@ public abstract class BaseValidationTest {
         for (Problem problem : problems) {
             assertThat(problem.getSchema()).isNotNull();
         }
-        printProblems(fixture, problems);
+        printProblems(fixture, false, problems);
     }
 
     @Disabled
@@ -132,11 +132,18 @@ public abstract class BaseValidationTest {
         return jsonv.createSchemaReader(reader);
     }
 
-    protected void printProblems(Fixture fixture, List<Problem> problems) {
+    protected void printProblems(Fixture fixture, boolean affirmative, List<Problem> problems) {
         if (problems.isEmpty() || !log.isLoggable(Level.INFO)) {
             return;
         }
-        log.info("\n# " + fixture.displayName());
+        StringBuilder b = new StringBuilder();
+        if (affirmative) {
+            b.append("\n+ ");
+        } else {
+            b.append("\n- ");
+        }
+        b.append(fixture.displayName());
+        log.info(b.toString());
         printer.handleProblems(problems);
     }
 }

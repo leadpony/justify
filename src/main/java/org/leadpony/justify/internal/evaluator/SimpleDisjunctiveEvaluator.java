@@ -52,7 +52,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
                 addBadEvaluator(child);
             }
         }
-        return reportProblems(parser, dispatcher);
+        return dispatchProblems(parser, dispatcher);
     }
 
     @Override
@@ -72,16 +72,11 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         badEvaluators.add(evaluator);
     }
     
-    protected Result reportProblems(JsonParser parser, ProblemDispatcher dispatcher) {
-        int count = (badEvaluators != null) ? 
-                badEvaluators.size() : 0;
-        if (count == 0) {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.anyOf.none");
-            dispatcher.dispatchProblem(builder.build());
-        } else if (count == 1) {
+    protected Result dispatchProblems(JsonParser parser, ProblemDispatcher dispatcher) {
+        final int count = (badEvaluators != null) ? badEvaluators.size() : 0;
+        if (count == 1) {
             badEvaluators.get(0).problems().forEach(dispatcher::dispatchProblem);
-        } else {
+        } else if (count > 1) {
             ProblemBuilder builder = createProblemBuilder(parser)
                     .withMessage("instance.problem.anyOf");
             badEvaluators.stream()
@@ -89,7 +84,13 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
                 .filter(Objects::nonNull)
                 .forEach(builder::withBranch);
             dispatcher.dispatchProblem(builder.build());
+        } else {
+            dispatchDefaultProblem(parser, dispatcher);
         }
         return Result.FALSE;
+    }
+    
+    protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {
+        throw new IllegalStateException();
     }
 }

@@ -31,10 +31,9 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ParserEvents;
-import org.leadpony.justify.internal.evaluator.AbstractChildrenEvaluator;
-import org.leadpony.justify.internal.evaluator.AbstractNegatedChildrenEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
@@ -97,16 +96,16 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         return additionalProperties.getSubschema();
     }
     
-    private class PropertiesEvaluator extends AbstractChildrenEvaluator {
+    private class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
         PropertiesEvaluator() {
-            super(InstanceType.OBJECT, BaseProperties.this);
+            super(BaseProperties.this);
         }
         
         @Override
-        public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+        public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
                 findSubschemaFor(parser.getString());
             } else if (ParserEvents.isValue(event)) {
@@ -139,16 +138,16 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         }
     }
 
-    private class NegatedPropertiesEvaluator extends AbstractNegatedChildrenEvaluator {
+    private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
         NegatedPropertiesEvaluator() {
-            super(InstanceType.OBJECT, BaseProperties.this);
+            super(BaseProperties.this);
         }
         
         @Override
-        public void updateChildren(Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+        public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
                 findSubschemaFor(parser.getString());
             } else if (ParserEvents.isValue(event)) {

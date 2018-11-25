@@ -16,18 +16,15 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-public interface ChildrenEvaluator extends AppendableLogicalEvaluator {
+public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractConjunctiveChildrenEvaluator {
 
-    /**
-     * Updates children of this evaluator.
-     * @param event the event triggered by the JSON parser, cannot be {@code null}.
-     * @param parser the JSON parser, cannot be {@code null}.
-     */
-    void updateChildren(Event event, JsonParser parser);
+    public AbstractConjunctivePropertiesEvaluator(ProblemBuilderFactory problemBuilderFactory) {
+        super(InstanceType.OBJECT, problemBuilderFactory);
+    }
 }
