@@ -34,7 +34,6 @@ class RedundantPropertyEvaluator implements Evaluator {
     private final JsonSchema schema;
     
     RedundantPropertyEvaluator(String keyName, JsonSchema schema) {
-        assert schema.isBoolean();
         this.keyName = keyName;
         this.schema = schema;
     }

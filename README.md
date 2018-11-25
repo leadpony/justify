@@ -116,7 +116,7 @@ try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
 
 The following tools are required to build this library.
 * [JDK 11]
-* [Apache Maven] 3.5.4 or higher
+* [Apache Maven] 3.6.0 or higher
 
 The commands below build the library and install it into your local Maven repository.
 

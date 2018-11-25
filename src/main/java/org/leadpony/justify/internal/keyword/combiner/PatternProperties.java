@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
 /**
  * @author leadpony
  */
-public class PatternProperties extends BaseProperties<Pattern> {
+public class PatternProperties extends AbstractProperties<Pattern> {
     
     private boolean enabled;
     

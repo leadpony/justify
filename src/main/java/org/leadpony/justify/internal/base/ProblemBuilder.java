@@ -41,9 +41,10 @@ public class ProblemBuilder {
     private final JsonLocation location;
     private JsonSchema schema;
     private String keyword;
+    private boolean resolvable = true;
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
-    private List<List<Problem>> childLists;
+    private List<List<Problem>> branches;
     
     /**
      * Constructs this builder.
@@ -73,6 +74,17 @@ public class ProblemBuilder {
      */
     public ProblemBuilder withSchema(JsonSchema schema) {
         this.schema = schema;
+        return this;
+    }
+    
+    /**
+     * Specifies the resolvability of the problem.
+     * 
+     * @param resolvable the resolvability of the problem.
+     * @return this builder.
+     */
+    public ProblemBuilder withResolvability(boolean resolvable) {
+        this.resolvable = resolvable;
         return this;
     }
 
@@ -106,10 +118,10 @@ public class ProblemBuilder {
      * @return this builder.
      */
     public ProblemBuilder withBranch(List<Problem> problems) {
-        if (this.childLists == null) {
-            this.childLists = new ArrayList<>();
+        if (this.branches == null) {
+            this.branches = new ArrayList<>();
         }
-        this.childLists.add(Collections.unmodifiableList(problems));
+        this.branches.add(Collections.unmodifiableList(problems));
         return this;
     }
     
@@ -119,7 +131,7 @@ public class ProblemBuilder {
      * @return built problem.
      */
     public Problem build() {
-        if (this.childLists == null || this.childLists.isEmpty()) {
+        if (this.branches == null || this.branches.isEmpty()) {
             return new SimpleProblem(this);
         } else {
             return new CompositeProblem(this);
@@ -136,6 +148,7 @@ public class ProblemBuilder {
         private final JsonLocation location;
         private final JsonSchema schema;
         private final String keyword;
+        private final boolean resolvable;
         private final String messageKey;
         private final Map<String, Object> parameters;
     
@@ -148,6 +161,7 @@ public class ProblemBuilder {
             this.location = builder.location;
             this.schema = builder.schema;
             this.keyword = builder.keyword;
+            this.resolvable = builder.resolvable;
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
         }
@@ -201,6 +215,14 @@ public class ProblemBuilder {
         @Override
         public Map<String, ?> parametersAsMap() {
             return parameters;
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isResolvable() {
+            return resolvable;
         }
         
         /**
@@ -273,7 +295,7 @@ public class ProblemBuilder {
          */
         CompositeProblem(ProblemBuilder builder) {
             super(builder);
-            this.branches = Collections.unmodifiableList(builder.childLists);
+            this.branches = Collections.unmodifiableList(builder.branches);
         }
 
         @Override

@@ -41,6 +41,7 @@ public interface DefaultProblemDispatcher extends ProblemDispatcher {
         Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
                 .withMessage("instance.problem.unknown")
                 .withSchema(schema)
+                .withResolvability(false)
                 .build();
         dispatchProblem(problem);
     }

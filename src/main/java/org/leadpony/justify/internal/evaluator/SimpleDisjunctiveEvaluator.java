@@ -19,12 +19,13 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 
@@ -37,19 +38,19 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     implements AppendableLogicalEvaluator, Iterable<DeferredEvaluator> {
     
     private final List<DeferredEvaluator> operands = new ArrayList<>();
-    private List<DeferredEvaluator> badEvaluators;
+    private List<List<Problem>> problemLists;
     
     SimpleDisjunctiveEvaluator() {
     }
     
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        for (DeferredEvaluator child : operands) {
-            Result result = child.evaluate(event, parser, depth, dispatcher);
+        for (DeferredEvaluator operand : operands) {
+            Result result = operand.evaluate(event, parser, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else {
-                addBadEvaluator(child);
+                addBadEvaluator(operand);
             }
         }
         return dispatchProblems(parser, dispatcher);
@@ -66,28 +67,52 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     protected void addBadEvaluator(DeferredEvaluator evaluator) {
-        if (this.badEvaluators == null) {
-            this.badEvaluators = new ArrayList<>();
+        if (this.problemLists == null) {
+            this.problemLists = new ArrayList<>();
         }
-        badEvaluators.add(evaluator);
+        problemLists.add(evaluator.problems());
     }
     
     protected Result dispatchProblems(JsonParser parser, ProblemDispatcher dispatcher) {
-        final int count = (badEvaluators != null) ? badEvaluators.size() : 0;
-        if (count == 1) {
-            badEvaluators.get(0).problems().forEach(dispatcher::dispatchProblem);
-        } else if (count > 1) {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.anyOf");
-            badEvaluators.stream()
-                .map(DeferredEvaluator::problems)
-                .filter(Objects::nonNull)
-                .forEach(builder::withBranch);
-            dispatcher.dispatchProblem(builder.build());
-        } else {
+        if (problemLists == null) {
             dispatchDefaultProblem(parser, dispatcher);
+        } else {
+            assert !problemLists.isEmpty();
+            dispatchProblemBranches(parser, dispatcher);
         }
         return Result.FALSE;
+    }
+    
+    private void dispatchProblemBranches(JsonParser parser, ProblemDispatcher dispatcher) {
+        List<List<Problem>> lists = this.problemLists.stream()
+            .filter(SimpleDisjunctiveEvaluator::isResolvable)
+            .collect(Collectors.toList());
+        if (lists.isEmpty()) {
+            List<Problem> firstList = this.problemLists.get(0);
+            dispatchSingleBranch(firstList, dispatcher);
+        } else if (lists.size() == 1) {
+            dispatchSingleBranch(lists.get(0), dispatcher);
+        } else {
+            ProblemBuilder builder = createProblemBuilder(parser)
+                    .withMessage("instance.problem.anyOf");
+            lists.forEach(builder::withBranch);
+            dispatcher.dispatchProblem(builder.build());
+        }
+    }
+    
+    private static boolean isResolvable(List<Problem> problems) {
+        for (Problem problem : problems) {
+            if (!problem.isResolvable()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void dispatchSingleBranch(List<Problem> problems, ProblemDispatcher dispatcher) {
+        for (Problem problem : problems) {
+            dispatcher.dispatchProblem(problem);
+        }
     }
     
     protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {

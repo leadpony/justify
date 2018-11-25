@@ -702,7 +702,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                     if (canStartSchema(event)) {
                         builder.withDependency(property, subschema(event));
                     } else if (event == Event.START_ARRAY) {
-                        Set<String> required = new HashSet<>();
+                        Set<String> required = new LinkedHashSet<>();
                         while (parser.hasNext()) {
                             event = parser.next();
                             if (event == Event.VALUE_STRING) {

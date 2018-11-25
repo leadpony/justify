@@ -70,7 +70,11 @@ class PropertyNames extends UnaryCombiner {
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonSchema subschema = getSubschema();
-        return createNegatedPropertiesEvaluator(subschema);
+        if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
+            return subschema.createAlwaysFalseEvaluator();
+        } else {
+            return createNegatedPropertiesEvaluator(subschema);
+        }
     }
     
     private Evaluator createForbiddenPropertyEvaluator(JsonSchema subschema) {

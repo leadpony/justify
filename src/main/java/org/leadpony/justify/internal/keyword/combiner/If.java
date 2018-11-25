@@ -53,16 +53,20 @@ class If extends UnaryCombiner {
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = getThenSchema().createEvaluator(type);
-        Evaluator elseEvaluator = getElseSchema().createEvaluator(type);
+        Evaluator thenEvaluator = thenSchema != null ?
+                thenSchema.createEvaluator(type) : Evaluator.ALWAYS_TRUE;
+        Evaluator elseEvaluator = elseSchema != null ?
+                elseSchema.createEvaluator(type) : Evaluator.ALWAYS_TRUE;
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = getThenSchema().createNegatedEvaluator(type);
-        Evaluator elseEvaluator = getElseSchema().createNegatedEvaluator(type);
+        Evaluator thenEvaluator = thenSchema != null ?
+                thenSchema.createNegatedEvaluator(type) : getSubschema().createNegatedEvaluator(type);
+        Evaluator elseEvaluator = elseSchema != null ?
+                elseSchema.createNegatedEvaluator(type) : getSubschema().createEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
@@ -74,13 +78,5 @@ class If extends UnaryCombiner {
         if (siblings.containsKey("else")) {
             elseSchema = ((UnaryCombiner)siblings.get("else")).getSubschema();
         }
-    }
-    
-    private JsonSchema getThenSchema() {
-        return (thenSchema != null) ? thenSchema : JsonSchema.TRUE;
-    }
-
-    private JsonSchema getElseSchema() {
-        return (elseSchema != null) ? elseSchema : JsonSchema.TRUE;
     }
 }

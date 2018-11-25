@@ -42,12 +42,12 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  * 
  * @author leadpony
  */
-public abstract class BaseProperties<K> extends Combiner implements ObjectKeyword {
+public abstract class AbstractProperties<K> extends Combiner implements ObjectKeyword {
     
     protected final Map<K, JsonSchema> propertyMap;
     protected AdditionalProperties additionalProperties;
     
-    protected BaseProperties() {
+    protected AbstractProperties() {
         this.propertyMap = new LinkedHashMap<>();
         this.additionalProperties = AdditionalProperties.DEFAULT;
     }
@@ -101,7 +101,7 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
         PropertiesEvaluator() {
-            super(BaseProperties.this);
+            super(AbstractProperties.this);
         }
         
         @Override
@@ -115,26 +115,33 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         }
         
         private void findSubschemaFor(String keyName) {
-            BaseProperties.this.findSubschemasFor(keyName, subschemas);
+            AbstractProperties.this.findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
                 findDefaultSchemaFor(keyName);
+            } else if (subschemas.contains(JsonSchema.FALSE)) {
+                appendRedundantPropertyEvaluator(keyName);
+                subschemas.clear();
             }
         }
         
         private void findDefaultSchemaFor(String keyName) {
             JsonSchema subschema = getDefaultSchema();
             if (subschema == JsonSchema.FALSE) {
-                append(new RedundantPropertyEvaluator(keyName, subschema));
+                appendRedundantPropertyEvaluator(keyName);
             } else {
                 subschemas.add(subschema);
             }
         }
-
+        
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
                 append(subschema.createEvaluator(type));
             }
             this.subschemas.clear();
+        }
+
+        private void appendRedundantPropertyEvaluator(String keyName) {
+            append(new RedundantPropertyEvaluator(keyName, JsonSchema.FALSE));
         }
     }
 
@@ -143,7 +150,7 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         private final List<JsonSchema> subschemas = new ArrayList<>();
         
         NegatedPropertiesEvaluator() {
-            super(BaseProperties.this);
+            super(AbstractProperties.this);
         }
         
         @Override
@@ -157,16 +164,24 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
         }
         
         private void findSubschemaFor(String keyName) {
-            BaseProperties.this.findSubschemasFor(keyName, subschemas);
+            AbstractProperties.this.findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
                 findDefaultSchemaFor(keyName);
+            } else {
+                subschemas.stream()
+                    .filter(s->s == JsonSchema.TRUE || s == JsonSchema.EMPTY)
+                    .findAny()
+                    .ifPresent(s->{
+                        appendRedundantPropertyEvaluator(keyName, s);
+                        subschemas.clear();
+                    });
             }
         }
         
         private void findDefaultSchemaFor(String keyName) {
             JsonSchema subschema = getDefaultSchema();
-            if (subschema == JsonSchema.TRUE) {
-                append(new RedundantPropertyEvaluator(keyName, subschema));
+            if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
+                appendRedundantPropertyEvaluator(keyName, subschema);
             } else {
                 subschemas.add(subschema);
             }
@@ -177,6 +192,10 @@ public abstract class BaseProperties<K> extends Combiner implements ObjectKeywor
                 append(subschema.createNegatedEvaluator(type));
             }
             this.subschemas.clear();
+        }
+
+        private void appendRedundantPropertyEvaluator(String keyName, JsonSchema schema) {
+            append(new RedundantPropertyEvaluator(keyName, schema));
         }
     }
 }

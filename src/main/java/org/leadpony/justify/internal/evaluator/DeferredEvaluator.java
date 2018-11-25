@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
  * 
  * @author leadpony
  */
-class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher, Comparable<DeferredEvaluator> {
+class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     private final Evaluator evaluator;
     private List<Problem> problems;
@@ -62,20 +62,19 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher, Comparab
         this.problems.add(problem);
     }
 
-    @Override
-    public int compareTo(DeferredEvaluator other) {
-        return countProblems() - other.countProblems();
-    }
-    
+    /**
+     * Returns the internal evaluator.
+     * @return the internal evaluator.
+     */
     Evaluator internalEvaluator() {
         return evaluator;
     }
     
+    /**
+     * Returns the problems found by this evaluator.
+     * @return the problems found by this evaluator. 
+     */
     List<Problem> problems() {
         return this.problems;
-    }
-    
-    int countProblems() {
-        return (this.problems == null) ? 0 : this.problems.size();
     }
 }

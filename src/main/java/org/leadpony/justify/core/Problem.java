@@ -104,6 +104,13 @@ public interface Problem {
     Map<String, ?> parametersAsMap();
     
     /**
+     * Checks if this problem is resolvable or not.
+     * @return {@code true} if this problem can be resolved.
+     *         {@code false} if this problem is inevitable and cannot be resolved.  
+     */
+    boolean isResolvable();
+    
+    /**
      * Returns the same string as {@link #getContextualMessage()} for the default locale.
      * 
      * @return the message describing this problem including the location, never be {@code null}.
