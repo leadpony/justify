@@ -118,8 +118,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     }
 
     private Dependency newDependency(String property, JsonSchema subschema) {
-        if (subschema == JsonSchema.TRUE) {
-            return new TrueSchemaDependency(property);
+        if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
+            return new TrueSchemaDependency(property, subschema);
         } else if (subschema == JsonSchema.FALSE) {
             return new FalseSchemaDependency(property);
         } else {
@@ -246,8 +246,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     
     private class TrueSchemaDependency extends SchemaDependency {
         
-        private TrueSchemaDependency(String property) {
-            super(property, JsonSchema.TRUE);
+        private TrueSchemaDependency(String property, JsonSchema subschema) {
+            super(property, subschema);
         }
 
         Evaluator createEvaluator() {

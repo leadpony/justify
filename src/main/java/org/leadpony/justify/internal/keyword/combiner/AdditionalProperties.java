@@ -84,7 +84,8 @@ class AdditionalProperties extends UnaryCombiner {
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         assert enabled;
-        if (getSubschema() == JsonSchema.TRUE) {
+        JsonSchema subschema = getSubschema();
+        if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return createNegatedForbiddenPropertiesEvaluator();
         } else {
             return createNegatedPropertiesEvaluator();
