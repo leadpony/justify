@@ -25,7 +25,6 @@ import javax.json.stream.JsonParser;
  * 
  * @author leadpony
  */
-@FunctionalInterface
 public interface Evaluator {
 
     /**
@@ -53,9 +52,20 @@ public interface Evaluator {
     Result evaluate(JsonParser.Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher);
     
     /**
-     * The evaluator which evaluates anything as true.
+     * Checks whether this evaluator evaluates anything as true or not.
+     * This method returns {@code false} by default.
+     * @return {@code true} if this evaluator is always true, otherwise {@code false}.
      */
-    Evaluator ALWAYS_TRUE = (event, parser, depth, dispatcher)->{
-        return Result.TRUE;
-    };
+    default boolean isAlwaysTrue() {
+        return false;
+    }
+    
+    /**
+     * Checks whether this evaluator evaluates anything as false or not.
+     * This method returns {@code false} by default.
+     * @return {@code true} if this evaluator is always false, otherwise {@code false}.
+     */
+    default boolean isAlwaysFalse() {
+        return false;
+    }
 }

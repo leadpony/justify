@@ -52,7 +52,7 @@ public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator == Evaluator.ALWAYS_TRUE) {
+        if (evaluator.isAlwaysTrue()) {
             return;
         }
         this.operands.add(evaluator);

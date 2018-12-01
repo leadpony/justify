@@ -31,19 +31,20 @@ import org.leadpony.justify.internal.base.SilentProblemDispatcher;
 public class ConditionalEvaluator implements Evaluator {
     
     private final Evaluator ifEvaluator;
-    private final Evaluator thenEvaluator;
-    private final Evaluator elseEvaluator;
+    private final DeferredEvaluator thenEvaluator;
+    private final DeferredEvaluator elseEvaluator;
     
     private Result ifResult;
     private Result thenResult;
     private Result elseResult;
     
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
+        assert ifEvaluator != null;
+        assert thenEvaluator != null;
+        assert elseEvaluator != null;
         this.ifEvaluator = ifEvaluator;
-        this.thenEvaluator = (thenEvaluator != null) ? 
-                new DeferredEvaluator(thenEvaluator) : Evaluator.ALWAYS_TRUE;
-        this.elseEvaluator = (elseEvaluator != null) ?
-                new DeferredEvaluator(elseEvaluator) : Evaluator.ALWAYS_TRUE;
+        this.thenEvaluator = new DeferredEvaluator(thenEvaluator);
+        this.elseEvaluator = new DeferredEvaluator(elseEvaluator);
         this.ifResult = Result.PENDING;
         this.thenResult = Result.PENDING;
         this.elseResult = Result.PENDING;
@@ -77,9 +78,9 @@ public class ConditionalEvaluator implements Evaluator {
         }
     }
     
-    private Result finalizeEvaluation(Result result, Evaluator evaluator, JsonParser parser, ProblemDispatcher dispatcher) {
+    private Result finalizeEvaluation(Result result, DeferredEvaluator evaluator, JsonParser parser, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
-            ((DeferredEvaluator)evaluator).problems().forEach(problem->dispatcher.dispatchProblem(problem));
+            evaluator.problems().forEach(problem->dispatcher.dispatchProblem(problem));
         }
         return result;
     }

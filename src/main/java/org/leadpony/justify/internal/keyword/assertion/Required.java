@@ -53,7 +53,7 @@ class Required extends AbstractAssertion implements ObjectKeyword {
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         if (names.isEmpty()) {
-            return Evaluator.ALWAYS_TRUE; 
+            return createAlwaysTrueEvaluator();
         } else {
             return new AssertionEvaluator(names);
         }

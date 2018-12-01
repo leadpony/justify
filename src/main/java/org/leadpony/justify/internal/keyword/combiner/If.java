@@ -54,9 +54,9 @@ class If extends UnaryCombiner {
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(type);
         Evaluator thenEvaluator = thenSchema != null ?
-                thenSchema.createEvaluator(type) : Evaluator.ALWAYS_TRUE;
+                thenSchema.createEvaluator(type) : JsonSchema.TRUE.createEvaluator(type);
         Evaluator elseEvaluator = elseSchema != null ?
-                elseSchema.createEvaluator(type) : Evaluator.ALWAYS_TRUE;
+                elseSchema.createEvaluator(type) : JsonSchema.TRUE.createEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 

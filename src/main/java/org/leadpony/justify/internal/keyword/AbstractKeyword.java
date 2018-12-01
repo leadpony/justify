@@ -28,6 +28,7 @@ import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Skeletal implementation of {@link Keyword}.
@@ -52,7 +53,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     @Override
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         if (!supportsType(type)) {
-            return Evaluator.ALWAYS_TRUE;
+            return createAlwaysTrueEvaluator();
         }
         return doCreateEvaluator(type, builderFactory);
     }
@@ -83,8 +84,12 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
     
+    protected Evaluator createAlwaysTrueEvaluator() {
+        return Evaluators.alwaysTrue(getEnclosingSchema());
+    }
+
     protected Evaluator createAlwaysFalseEvaluator() {
-        return getEnclosingSchema().createAlwaysFalseEvaluator();
+        return Evaluators.alwaysFalse(getEnclosingSchema());
     }
     
     /**

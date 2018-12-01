@@ -30,6 +30,7 @@ import org.leadpony.justify.core.Evaluator.Result;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
+import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Combiner representing "propertyNames" keyword.
@@ -71,7 +72,7 @@ class PropertyNames extends UnaryCombiner {
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return subschema.createAlwaysFalseEvaluator();
+            return Evaluators.alwaysFalse(subschema);
         } else {
             return createNegatedPropertiesEvaluator(subschema);
         }

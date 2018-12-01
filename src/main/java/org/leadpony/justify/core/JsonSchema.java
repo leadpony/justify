@@ -26,8 +26,6 @@ import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 
-import org.leadpony.justify.core.Evaluator.Result;
-
 /**
  * JSON schema.
  * 
@@ -127,18 +125,6 @@ public interface JsonSchema {
     Evaluator createNegatedEvaluator(InstanceType type);
     
     /**
-     * Creates an evaluator which always evaluates this schema as false.
-     * <p>Note that this method is not intended to be used directly by end users.</p>
-     * @return newly created evaluator. It must not be {@code null}.
-     */
-    default Evaluator createAlwaysFalseEvaluator() {
-        return (event, parser, depth, dispatcher)->{
-            dispatcher.dispatchInevitableProblem(parser, this);
-            return Result.FALSE;
-        };        
-    }
-
-    /**
      * Returns the JSON representation of this schema.
      * @return the JSON representation of this schema, never be {@code null}.
      */
@@ -175,7 +161,7 @@ public interface JsonSchema {
         
         @Override
         public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+            return ALWAYS_TRUE;
         }
         
         @Override
@@ -212,7 +198,7 @@ public interface JsonSchema {
 
         @Override
         public Evaluator createNegatedEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+            return ALWAYS_TRUE;
         }
 
         @Override
@@ -234,7 +220,7 @@ public interface JsonSchema {
         
         @Override
         public Evaluator createEvaluator(InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
+            return ALWAYS_TRUE;
         }
         
         @Override

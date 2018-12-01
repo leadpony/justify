@@ -79,7 +79,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     public Evaluator createEvaluator(InstanceType type) {
         requireNonNull(type, "type");
         if (this.evaluatables.isEmpty()) {
-            return Evaluator.ALWAYS_TRUE;
+            return Evaluators.alwaysTrue(this);
         } else if (this.evaluatables.size() == 1) {
             Keyword keyword = this.evaluatables.get(0);
             return keyword.createEvaluator(type, getBuilderFactory());
@@ -92,7 +92,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     public Evaluator createNegatedEvaluator(InstanceType type) {
         requireNonNull(type, "type");
         if (this.evaluatables.isEmpty()) {
-            return createAlwaysFalseEvaluator();
+            return Evaluators.alwaysFalse(this);
         } else if (this.evaluatables.size() == 1) {
             Keyword keyword = this.evaluatables.get(0);
             return keyword.createNegatedEvaluator(type, getBuilderFactory());

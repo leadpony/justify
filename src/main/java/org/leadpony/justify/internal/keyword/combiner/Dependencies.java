@@ -251,12 +251,12 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         Evaluator createEvaluator() {
-            return Evaluator.ALWAYS_TRUE;
+            return Evaluators.alwaysTrue(getSubschema());
         }
 
         @Override
         Evaluator createNegatedEvaluator() {
-            return getSubschema().createAlwaysFalseEvaluator();
+            return Evaluators.alwaysFalse(getSubschema());
         }
     }
     
@@ -390,7 +390,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
         @Override
         Evaluator createEvaluator() {
-            return Evaluator.ALWAYS_TRUE;
+            return createAlwaysTrueEvaluator();
         }
 
         @Override
