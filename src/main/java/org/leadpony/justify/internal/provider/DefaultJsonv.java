@@ -147,11 +147,9 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public ValidatingJsonParserFactory createParserFactory(Map<String, ?> config, JsonSchema schema, 
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
+        requireNonNull(handlerFactory, "handlerFactory");
         if (config == null) {
             config = DEFAULT_CONFIG;
-        }
-        if (handlerFactory == null) {
-            handlerFactory = parser->null;
         }
         JsonParserFactory realFactory = jsonProvider.createParserFactory(config);
         return new ValidatingJsonParserFactory(schema, realFactory, handlerFactory, 
@@ -165,6 +163,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonParser createParser(InputStream in, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(in, "in");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createParserFactory(DEFAULT_CONFIG, schema, parser->handler).createParser(in);
     }
     
@@ -176,6 +175,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
         requireNonNull(in, "in");
         requireNonNull(charset, "charset");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createParserFactory(DEFAULT_CONFIG, schema, parser->handler).createParser(in, charset);
     }
 
@@ -186,6 +186,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonParser createParser(Reader reader, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(reader, "reader");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createParserFactory(DEFAULT_CONFIG, schema, parser->handler).createParser(reader);
     }
     
@@ -196,6 +197,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonParser createParser(Path path, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(path, "path");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         try {
             InputStream in = Files.newInputStream(path);
             return createParserFactory(DEFAULT_CONFIG, schema, parser->handler).createParser(in);
@@ -211,6 +213,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public ValidatingJsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
+        requireNonNull(handlerFactory, "handlerFactory");
         if (config == null) {
             config = DEFAULT_CONFIG;
         }
@@ -225,6 +228,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonReader createReader(InputStream in, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(in, "in");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createReaderFactory(DEFAULT_CONFIG, schema, parser->handler).createReader(in);
     }
     
@@ -236,6 +240,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
         requireNonNull(in, "in");
         requireNonNull(charset, "charset");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createReaderFactory(DEFAULT_CONFIG, schema, parser->handler).createReader(in, charset);
     }
 
@@ -246,6 +251,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonReader createReader(Reader reader, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(reader, "reader");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         return createReaderFactory(DEFAULT_CONFIG, schema, parser->handler).createReader(reader);
     }
     
@@ -256,6 +262,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     public JsonReader createReader(Path path, JsonSchema schema, ProblemHandler handler) {
         requireNonNull(path, "path");
         requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
         try {
             InputStream in = Files.newInputStream(path);
             return createReaderFactory(DEFAULT_CONFIG, schema, parser->handler).createReader(in);
@@ -270,6 +277,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
     @Override
     public JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
+        requireNonNull(handlerFactory, "handlerFactory");
         return new ValidatingJsonProvider(jsonProvider, schema, handlerFactory);
     }
     

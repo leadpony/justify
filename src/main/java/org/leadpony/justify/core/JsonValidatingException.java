@@ -38,10 +38,9 @@ public class JsonValidatingException extends JsonParsingException {
      * Constructs a new runtime exception.
      * 
      * @param problems the problems found while validating the JSON document.
-     * @param location the location of the incorrect JSON.
      */
-    public JsonValidatingException(List<Problem> problems, JsonLocation location) {
-        super(null, location);
+    public JsonValidatingException(List<Problem> problems) {
+        super(null, extractFirstLocation(problems));
         this.problems = Collections.unmodifiableList(problems);
     }
     
@@ -68,5 +67,13 @@ public class JsonValidatingException extends JsonParsingException {
         return getProblems().stream()
                 .map(Problem::getContextualMessage)
                 .collect(Collectors.joining("\n"));
+    }
+    
+    private static JsonLocation extractFirstLocation(List<Problem> problems) {
+        if (problems.isEmpty()) {
+            return null;
+        } else {
+            return problems.get(0).getLocation();
+        }
     }
 }

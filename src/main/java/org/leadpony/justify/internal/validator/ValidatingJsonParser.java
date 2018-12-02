@@ -72,8 +72,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
      * @return this parser.
      */
     public ValidatingJsonParser withHandler(ProblemHandler problemHandler) {
-        this.problemHandler = (problemHandler != null) 
-                ? problemHandler : this::throwProblems;
+        this.problemHandler = problemHandler;
         return this;
     }
     
@@ -134,6 +133,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
     }
     
     private void throwProblems(List<Problem> problems) {
-        throw new JsonValidatingException(problems, getLastCharLocation());
+        assert !problems.isEmpty();
+        throw new JsonValidatingException(problems);
     }
 }

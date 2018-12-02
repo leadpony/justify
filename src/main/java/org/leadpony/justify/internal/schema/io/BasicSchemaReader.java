@@ -1017,9 +1017,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     
     private void dispatchProblems() {
         if (!problems.isEmpty()) {
-            throw new JsonValidatingException(
-                    this.problems, 
-                    getLastCharLocation());
+            throw new JsonValidatingException(this.problems);
         }
     }
 }

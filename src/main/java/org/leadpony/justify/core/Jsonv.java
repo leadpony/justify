@@ -213,9 +213,9 @@ public interface Jsonv {
      * @param config the map of provider-specific properties to configure the JSON parsers. 
      *        The map may be empty or {@code null}.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerFactory the factory to supply problem handlers, can be {@code null}.
+     * @param handlerFactory the factory to supply problem handlers, cannot be {@code null}.
      * @return newly created instance of {@link JsonParserFactory}, which is defined in the JSON Processing API.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonParserFactory createParserFactory(Map<String,?> config, JsonSchema schema, 
             ProblemHandlerFactory handlerFactory);
@@ -227,12 +227,10 @@ public interface Jsonv {
      * 
      * @param in the byte stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonParser}, which is defined in the JSON Processing API. 
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      * @throws JsonException if encoding cannot be determined or I/O error occurred. 
      */
     JsonParser createParser(InputStream in, JsonSchema schema, ProblemHandler handler);
@@ -245,12 +243,10 @@ public interface Jsonv {
      * @param in the byte stream from which JSON is to be read.
      * @param charset the character set.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonParser}, which is defined in the JSON Processing API. 
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      * @throws JsonException if encoding cannot be determined or I/O error occurred. 
      */
     JsonParser createParser(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler);
@@ -261,12 +257,10 @@ public interface Jsonv {
      * 
      * @param reader the character stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonParser}, which is defined in the JSON Processing API. 
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonParser createParser(Reader reader, JsonSchema schema, ProblemHandler handler);
     
@@ -276,13 +270,11 @@ public interface Jsonv {
      * 
      * @param path the path from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the parser throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonParser}, which is defined in the JSON Processing API. 
      *         It must be closed by the method caller after use.
      * @throws JsonException if an I/O error occurs while creating parser.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonParser createParser(Path path, JsonSchema schema, ProblemHandler handler);
 
@@ -298,8 +290,8 @@ public interface Jsonv {
      * @param config the map of provider specific properties to configure the JSON readers. 
                      The map may be empty or {@code null}.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerFactory the factory to supply problem handlers, can be {@code null}.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @param handlerFactory the factory to supply problem handlers, cannot be {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      * @return newly created instance of {@link JsonReaderFactory}, which is defined in the JSON Processing API.
      */
     JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
@@ -312,12 +304,10 @@ public interface Jsonv {
      * 
      * @param in a byte stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonReader}, which is defined in the JSON Processing API.
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonReader createReader(InputStream in, JsonSchema schema, ProblemHandler handler);
     
@@ -329,12 +319,10 @@ public interface Jsonv {
      * @param in a byte stream from which JSON is to be read.
      * @param charset the character set.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonReader}, which is defined in the JSON Processing API.
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonReader createReader(InputStream in, Charset charset, JsonSchema schema, ProblemHandler handler);
 
@@ -344,12 +332,10 @@ public interface Jsonv {
      * 
      * @param reader the character stream from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonReader}, which is defined in the JSON Processing API.
      *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonReader createReader(Reader reader, JsonSchema schema, ProblemHandler handler);
 
@@ -359,13 +345,11 @@ public interface Jsonv {
      * 
      * @param path the path from which JSON is to be read.
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handler the object handling problems found in the validation.
-     *                If {@code null} was specified, the reader throws {@link JsonValidatingException}
-     *                when finding problems in the validation.
+     * @param handler the object which handles problems found during the validation, cannot be {@code null}.
      * @return newly created instance of {@link JsonReader}, which is defined in the JSON Processing API.
      *         It must be closed by the method caller after use.
      * @throws JsonException if an I/O error occurs while creating reader.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      */
     JsonReader createReader(Path path, JsonSchema schema, ProblemHandler handler);
 
@@ -374,8 +358,8 @@ public interface Jsonv {
      * This method is intended to be used with Java API for JSON Binding (JSON-B).
      * 
      * @param schema the JSON schema to apply when validating JSON document.
-     * @param handlerFactory the factory to supply problem handlers, can be {@code null}.
-     * @throws NullPointerException if the specified parameter was {@code null}.
+     * @param handlerFactory the factory to supply problem handlers, cannot be {@code null}.
+     * @throws NullPointerException if any of specified parameters was {@code null}.
      * @return newly created instance of {@link JsonProvider}, which is defined in the JSON Processing API.
      */
     JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory);

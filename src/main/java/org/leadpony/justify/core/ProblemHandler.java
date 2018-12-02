@@ -46,4 +46,17 @@ public interface ProblemHandler {
         Objects.requireNonNull(collection, "collection must not be null.");
         return collection::addAll;
     }
+    
+    /**
+     * Creates a problem handler which will throw a {@link JsonValidatingException} exception.
+     * @return newly created instance of problem handler.
+     * @see JsonValidatingException
+     */
+    static ProblemHandler throwing() {
+        return problems->{
+            if (!problems.isEmpty()) {
+                throw new JsonValidatingException(problems);
+            }
+        };
+    }
 }

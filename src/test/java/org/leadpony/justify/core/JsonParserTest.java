@@ -69,7 +69,7 @@ public class JsonParserTest {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
-        JsonParser sut = newParser(instance, schema, null);
+        JsonParser sut = newParser(instance, schema, ProblemHandler.throwing());
         boolean actual = sut.hasNext();
         sut.close();
         
@@ -81,7 +81,7 @@ public class JsonParserTest {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
-        JsonParser sut = newParser(instance, schema, null);
+        JsonParser sut = newParser(instance, schema, ProblemHandler.throwing());
         sut.next();
         boolean actual = sut.hasNext();
         sut.close();
@@ -150,7 +150,7 @@ public class JsonParserTest {
         parser.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonParser sut = newParser(instance, schema, null);
+        JsonParser sut = newParser(instance, schema, ProblemHandler.throwing());
         List<JsonParser.Event> actual = new ArrayList<>();
         while (sut.hasNext()) {
             try {

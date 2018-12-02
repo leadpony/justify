@@ -176,7 +176,7 @@ public class JsonReaderTest {
         reader.close();
 
         List<Problem> problems = new ArrayList<>();
-        JsonReader sut = newReader(data, schema, null);
+        JsonReader sut = newReader(data, schema, ProblemHandler.throwing());
         JsonValue actual = null;
         try {
             actual = sut.readValue();
