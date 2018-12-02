@@ -22,7 +22,7 @@ import javax.json.stream.JsonParser.Event;
 /**
  * @author leadpony
  */
-public interface ChildrenEvaluator extends AppendableLogicalEvaluator {
+public interface ChildrenEvaluator extends LogicalEvaluator {
 
     /**
      * Updates children of this evaluator.

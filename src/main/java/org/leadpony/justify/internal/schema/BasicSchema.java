@@ -30,8 +30,8 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -124,7 +124,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     
     private Evaluator createCombinedEvaluator(InstanceType type) {
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        AppendableLogicalEvaluator evaluator = Evaluators.conjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         evaluator.withProblemBuilderFactory(this);
         for (Keyword keyword : this.evaluatables) {
             Evaluator child = keyword.createEvaluator(type, builderFactory);
@@ -135,7 +135,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
 
     private Evaluator createCombinedNegatedEvaluator(InstanceType type) {
         JsonBuilderFactory builderFactory = getBuilderFactory();
-        AppendableLogicalEvaluator evaluator = Evaluators.disjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.disjunctive(type);
         evaluator.withProblemBuilderFactory(this);
         for (Keyword keyword : this.evaluatables) {
             Evaluator child = keyword.createNegatedEvaluator(type, builderFactory);

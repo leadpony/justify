@@ -39,8 +39,8 @@ import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
-import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 
 /**
  * Combiner representing "dependencies" keyword.
@@ -61,20 +61,20 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        AppendableLogicalEvaluator evaluator = Evaluators.conjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(type).withProblemBuilderFactory(this);
         dependencyMap.values().stream()
             .map(Dependency::createEvaluator)
             .forEach(evaluator::append);
-        return evaluator.withProblemBuilderFactory(this);
+        return evaluator;
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        AppendableLogicalEvaluator evaluator = Evaluators.disjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.disjunctive(type).withProblemBuilderFactory(this);
         dependencyMap.values().stream()
             .map(Dependency::createNegatedEvaluator)
             .forEach(evaluator::append);
-        return evaluator.withProblemBuilderFactory(this);
+        return evaluator;
     }
 
     @Override

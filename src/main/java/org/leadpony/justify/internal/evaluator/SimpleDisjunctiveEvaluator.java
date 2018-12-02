@@ -25,9 +25,9 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemList;
 
 /**
  * Evaluator for "anyOf" boolean logic.
@@ -35,10 +35,10 @@ import org.leadpony.justify.internal.base.ProblemBuilder;
  * @author leadpony
  */
 class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator 
-    implements AppendableLogicalEvaluator, Iterable<DeferredEvaluator> {
+    implements Iterable<DeferredEvaluator> {
     
     private final List<DeferredEvaluator> operands = new ArrayList<>();
-    private List<List<Problem>> problemLists;
+    private List<ProblemList> problemLists;
     
     SimpleDisjunctiveEvaluator() {
     }
@@ -84,34 +84,19 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
     
     private void dispatchProblemBranches(JsonParser parser, ProblemDispatcher dispatcher) {
-        List<List<Problem>> lists = this.problemLists.stream()
-            .filter(SimpleDisjunctiveEvaluator::isResolvable)
+        List<ProblemList> filterdLists = this.problemLists.stream()
+            .filter(ProblemList::isResolvable)
             .collect(Collectors.toList());
-        if (lists.isEmpty()) {
-            List<Problem> firstList = this.problemLists.get(0);
-            dispatchSingleBranch(firstList, dispatcher);
-        } else if (lists.size() == 1) {
-            dispatchSingleBranch(lists.get(0), dispatcher);
+        if (filterdLists.isEmpty()) {
+            filterdLists = this.problemLists;
+        }
+        if (filterdLists.size() == 1) {
+            dispatcher.dispatchAllProblems(filterdLists.get(0));
         } else {
             ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.anyOf");
-            lists.forEach(builder::withBranch);
+                    .withMessage("instance.problem.anyOf")
+                    .withBranches(filterdLists);
             dispatcher.dispatchProblem(builder.build());
-        }
-    }
-    
-    private static boolean isResolvable(List<Problem> problems) {
-        for (Problem problem : problems) {
-            if (!problem.isResolvable()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private void dispatchSingleBranch(List<Problem> problems, ProblemDispatcher dispatcher) {
-        for (Problem problem : problems) {
-            dispatcher.dispatchProblem(problem);
         }
     }
     

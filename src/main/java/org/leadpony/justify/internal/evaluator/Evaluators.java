@@ -73,7 +73,7 @@ public final class Evaluators {
         };
     }
 
-    public static AppendableLogicalEvaluator conjunctive(InstanceType type) {
+    public static LogicalEvaluator conjunctive(InstanceType type) {
         if (type.isContainer()) {
             return new ConjunctiveEvaluator(type);
         } else {
@@ -81,7 +81,7 @@ public final class Evaluators {
         }
     }
 
-    public static AppendableLogicalEvaluator disjunctive(InstanceType type) {
+    public static LogicalEvaluator disjunctive(InstanceType type) {
         if (type.isContainer()) {
             return new DisjunctiveEvaluator(type);
         } else {
@@ -89,15 +89,19 @@ public final class Evaluators {
         }
     }
 
-    public static LogicalEvaluator exclusive(Stream<JsonSchema> children, InstanceType type) {
-        return new ExclusiveEvaluator(children, type);
+    public static LogicalEvaluator exclusive(InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+        if (type.isContainer()) {
+            return new ExclusiveEvaluator(type, operands, negated);
+        } else {
+            return new SimpleExclusiveEvaluator(operands, negated);
+        }
     }
 
-    public static LogicalEvaluator notExclusive(Stream<JsonSchema> children, InstanceType type) {
+    public static LogicalEvaluator notExclusive(InstanceType type) {
         if (type.isContainer()) {
-            return new LongNotExclusiveEvaluator(children, type);
+            return new NotExclusiveEvaluator(type);
         } else {
-            return new NotExclusiveEvaluator(children, type);
+            return new SimpleNotExclusiveEvaluator();
         }
     }
 }

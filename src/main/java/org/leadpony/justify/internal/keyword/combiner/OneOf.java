@@ -41,11 +41,18 @@ class OneOf extends NaryBooleanLogic {
 
     @Override
     protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.exclusive(subschemas(), type);
+        return Evaluators.exclusive(type, 
+                subschemas().map(s->s.createEvaluator(type)),
+                subschemas().map(s->s.createNegatedEvaluator(type))
+                );
     }
 
     @Override
     protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
-        return Evaluators.notExclusive(subschemas(), type);
+        LogicalEvaluator evaluator = Evaluators.notExclusive(type);
+        subschemas()
+            .map(s->s.createNegatedEvaluator(type))
+            .forEach(evaluator::append);
+        return evaluator;
     }
 }

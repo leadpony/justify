@@ -24,42 +24,60 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
- * Evaluator for "allOf" boolean logic.
- * 
  * @author leadpony
  */
-public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator 
-    implements Iterable<Evaluator> {
+class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
+    implements Iterable<DeferredEvaluator> {
 
-    private final List<Evaluator> operands = new ArrayList<>();
+    private final List<DeferredEvaluator> operands = new ArrayList<>();
+    private List<Problem> problemList;
+    private int evaluationsAsFalse;
     
-    SimpleConjunctiveEvaluator() {
+    SimpleNotExclusiveEvaluator() {
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        int evaluationsAsFalse = 0;
-        for (Evaluator operand : operands) {
-            if (operand.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
-                evaluationsAsFalse++;
+        Iterator<DeferredEvaluator> it = operands.iterator();
+        while (it.hasNext()) {
+            DeferredEvaluator current = it.next();
+            if (current.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
+                addBadEvaluator(current);
             }
         }
-        return (evaluationsAsFalse == 0) ? Result.TRUE : Result.FALSE;
+        return finalizeResult(dispatcher);
     }
-
+    
     @Override
     public void append(Evaluator evaluator) {
         if (evaluator.isAlwaysTrue()) {
             return;
         }
-        this.operands.add(evaluator);
+        operands.add(new DeferredEvaluator(evaluator));
     }
 
     @Override
-    public Iterator<Evaluator> iterator() {
+    public Iterator<DeferredEvaluator> iterator() {
         return operands.iterator();
+    }
+    
+    protected void addBadEvaluator(DeferredEvaluator evaluator) {
+        if (this.problemList == null) {
+            this.problemList = evaluator.problems();
+        }
+        ++evaluationsAsFalse;
+    }
+    
+    protected Result finalizeResult(ProblemDispatcher dispatcher) {
+        if (evaluationsAsFalse == 1) {
+            problemList.forEach(dispatcher::dispatchProblem);
+            return Result.FALSE;
+        } else {
+            return Result.TRUE;
+        }
     }
 }

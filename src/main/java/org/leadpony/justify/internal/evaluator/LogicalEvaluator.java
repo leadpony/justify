@@ -33,4 +33,13 @@ public interface LogicalEvaluator extends Evaluator {
      * @return this evaluator.
      */
     LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory); 
+
+    /**
+     * Appends an evaluator.
+     * 
+     * @param evaluator the evaluator to append, cannot be {@code null}.
+     */
+    default void append(Evaluator evaluator) {
+        throw new UnsupportedOperationException();
+    }
 }

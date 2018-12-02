@@ -16,61 +16,41 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 
 /**
  * @author leadpony
  */
-class NotExclusiveEvaluator extends AbstractLogicalEvaluator {
+public class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
-    protected final List<DeferredEvaluator> children;
-    protected List<DeferredEvaluator> badEvaluators;
+    private final InstanceMonitor monitor;
     
-    NotExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
-        this.children = children
-                .map(s->s.createNegatedEvaluator(type))
-                .map(DeferredEvaluator::new)
-                .collect(Collectors.toList());
+    NotExclusiveEvaluator(InstanceType type) {
+        this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<DeferredEvaluator> it = children.iterator();
+        Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            if (current.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
-                addBadEvaluator(current);
+            Result result = current.evaluate(event, parser, depth, dispatcher);
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    addBadEvaluator(current);
+                }
+                it.remove();
             }
         }
-        if (badEvaluators == null || badEvaluators.size() != 1) {
-            return Result.TRUE;
-        } else {
-            return dispatchProblems(badEvaluators.get(0), dispatcher);
+        if (monitor.isCompleted(event, depth)) {
+            return finalizeResult(dispatcher);
         }
-    }
-
-    protected void addBadEvaluator(DeferredEvaluator evaluator) {
-        if (this.badEvaluators == null) {
-            this.badEvaluators = new ArrayList<>();
-        }
-        this.badEvaluators.add(evaluator);
-    }
-    
-    protected Result dispatchProblems(DeferredEvaluator evaluator, ProblemDispatcher dispatcher) {
-        List<Problem> problems = evaluator.problems();
-        problems.forEach(dispatcher::dispatchProblem);
-        return Result.FALSE;
+        return Result.PENDING;
     }
 }

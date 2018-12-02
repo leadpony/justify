@@ -114,14 +114,21 @@ public class ProblemBuilder {
     /**
      * Specifies the child problems of the problem to be built.
      * 
-     * @param problems the list of problems which are children of the problem to be built.
+     * @param branch the list of problems which are children of the problem to be built.
      * @return this builder.
      */
-    public ProblemBuilder withBranch(List<Problem> problems) {
+    public ProblemBuilder withBranch(ProblemList branch) {
         if (this.branches == null) {
             this.branches = new ArrayList<>();
         }
-        this.branches.add(Collections.unmodifiableList(problems));
+        this.branches.add(Collections.unmodifiableList(branch));
+        return this;
+    }
+    
+    public ProblemBuilder withBranches(List<ProblemList> branches) {
+        for (ProblemList branch : branches) {
+            withBranch(branch);
+        }
         return this;
     }
     

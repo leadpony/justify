@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import org.leadpony.justify.core.InstanceType;
 import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.internal.evaluator.AppendableLogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
@@ -42,7 +41,7 @@ class AllOf extends NaryBooleanLogic {
   
     @Override
     protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        AppendableLogicalEvaluator evaluator = Evaluators.conjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         subschemas().distinct()
                 .map(s->s.createEvaluator(type))
                 .forEach(evaluator::append);
@@ -51,7 +50,7 @@ class AllOf extends NaryBooleanLogic {
 
     @Override
     protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
-        AppendableLogicalEvaluator evaluator = Evaluators.disjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.disjunctive(type);
         subschemas().distinct()
                 .map(s->s.createNegatedEvaluator(type))
                 .forEach(evaluator::append);

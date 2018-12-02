@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.core;
 
+import java.util.Collection;
+import java.util.Objects;
+
 import javax.json.stream.JsonParser;
 
 /**
@@ -32,6 +35,18 @@ public interface ProblemDispatcher {
      * @param problem the problem to dispatch, cannot be {@code null}.
      */
     void dispatchProblem(Problem problem);
+    
+    /**
+     * Dispatches all problems in the specified collection.
+     * @param problems the collection of the problems to dispatch.
+     * @throws NullPointerException if the specified {@code problems} is {@code null}.
+     */
+    default void dispatchAllProblems(Collection<Problem> problems) {
+        Objects.requireNonNull(problems, "problems must not be null.");
+        for (Problem problem : problems) {
+            dispatchProblem(problem);
+        }
+    }
     
     /**
      * Dispatches an inevitable problem.

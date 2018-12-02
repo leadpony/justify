@@ -19,61 +19,58 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
 import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.base.ProblemList;
 
 /**
  * Evaluator for "oneOf" boolean logic.
  * 
  * @author leadpony
  */
-public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
+public class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
 
-    private final List<DeferredEvaluator> children;
+    private final List<DeferredEvaluator> operands;
     private final List<DeferredEvaluator> negated;
-    private List<DeferredEvaluator> good;
-    private List<DeferredEvaluator> bad;
+    private List<ProblemList> problemLists;
+    private List<ProblemList> negatedProblemLists;
     private long evaluationsAsTrue;
     private final InstanceMonitor monitor;
     
-    ExclusiveEvaluator(Stream<JsonSchema> children, InstanceType type) {
-        this.children = new ArrayList<>();
-        this.negated = new ArrayList<>();
-        children.forEach(child->{
-            this.children.add(new DeferredEvaluator(
-                    child.createEvaluator(type)));
-            this.negated.add(new DeferredEvaluator(
-                    child.createNegatedEvaluator(type)));
-        });
+    ExclusiveEvaluator(InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+        this.operands = createEvaluators(operands);
+        this.negated = createEvaluators(negated);
         this.monitor = InstanceMonitor.of(type);
     }
     
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        evaluateAll(event, parser, depth, dispatcher);
+        if (evaluationsAsTrue == 0) {
+            evaluateAll(event, parser, depth, dispatcher);
+        }
         evaluateAllNegated(event, parser, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
-            if (evaluationsAsTrue == 1) {
-                return Result.TRUE;
-            } else if (evaluationsAsTrue < 1) {
-                return reportTooFewValid(parser, dispatcher);
-            } else {
-                return reportTooManyValid(parser, dispatcher);
+            if (evaluationsAsTrue == 0) {
+                dispatchProblems(parser, dispatcher, problemLists);
+                return Result.FALSE;
+            } else if (evaluationsAsTrue > 1) {
+                dispatchNegatedProblems(parser, dispatcher, negatedProblemLists);
+                return Result.FALSE;
             }
+            return Result.TRUE;
         }
         return Result.PENDING;
     }
 
     private void evaluateAll(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Iterator<DeferredEvaluator> it = children.iterator();
+        Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
             Result result = current.evaluate(event, parser, depth, dispatcher);
@@ -81,7 +78,7 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
                 if (result == Result.TRUE) {
                     evaluationsAsTrue++;
                 } else if (result == Result.FALSE) {
-                    addBad(current);
+                    addBadEvaluator(current);
                 }
                 it.remove();
             }
@@ -95,51 +92,28 @@ public class ExclusiveEvaluator extends AbstractLogicalEvaluator {
             Result result = current.evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
-                    addGood(current);
+                    addBadNegatedEvaluator(current);
                 }
                 it.remove();
             }
         }
     }
     
-    private void addGood(DeferredEvaluator evaluator) {
-        if (this.good == null) {
-            this.good = new ArrayList<>();
+    private void addBadEvaluator(DeferredEvaluator evaluator) {
+        if (this.problemLists == null) {
+            this.problemLists = new ArrayList<>();
         }
-        this.good.add(evaluator);
-    }
-
-    private void addBad(DeferredEvaluator evaluator) {
-        if (this.bad == null) {
-            this.bad = new ArrayList<>();
-        }
-        this.bad.add(evaluator);
+        this.problemLists.add(evaluator.problems());
     }
     
-    private Result reportTooFewValid(JsonParser parser, ProblemDispatcher dispatcher) {
-        if (bad.size() == 1) {
-            bad.get(0).problems().forEach(dispatcher::dispatchProblem);
-        } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.oneOf.few");
-            bad.stream()
-                .map(DeferredEvaluator::problems)
-                .filter(Objects::nonNull)
-                .forEach(builder::withBranch);
-            dispatcher.dispatchProblem(builder.build());
+    private void addBadNegatedEvaluator(DeferredEvaluator evaluator) {
+        if (this.negatedProblemLists == null) {
+            this.negatedProblemLists = new ArrayList<>();
         }
-        return Result.FALSE;
+        this.negatedProblemLists.add(evaluator.problems());
     }
 
-    protected Result reportTooManyValid(JsonParser parser, ProblemDispatcher dispatcher) {
-        assert good.size() > 1;
-        ProblemBuilder builder = createProblemBuilder(parser)
-                .withMessage("instance.problem.oneOf.many");
-        good.stream()
-            .map(DeferredEvaluator::problems)
-            .filter(Objects::nonNull)
-            .forEach(builder::withBranch);
-        dispatcher.dispatchProblem(builder.build());
-        return Result.FALSE;
+    private List<DeferredEvaluator> createEvaluators(Stream<Evaluator> stream) {
+        return stream.map(DeferredEvaluator::new).collect(Collectors.toList());
     }
 }

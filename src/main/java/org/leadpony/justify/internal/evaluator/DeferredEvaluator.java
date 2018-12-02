@@ -18,9 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -28,6 +25,7 @@ import org.leadpony.justify.core.Evaluator;
 import org.leadpony.justify.core.Problem;
 import org.leadpony.justify.core.ProblemDispatcher;
 import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
+import org.leadpony.justify.internal.base.ProblemList;
 
 /**
  * Evaluator which retains the found problems and dispatches them later.
@@ -37,7 +35,7 @@ import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     private final Evaluator evaluator;
-    private List<Problem> problems;
+    private ProblemList problems;
     
     /**
      * Constructs this evaluator.
@@ -57,7 +55,7 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         if (this.problems == null) {
-            this.problems = new ArrayList<>();
+            this.problems = ProblemList.newList();
         }
         this.problems.add(problem);
     }
@@ -74,7 +72,7 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
      * Returns the problems found by this evaluator.
      * @return the problems found by this evaluator. 
      */
-    List<Problem> problems() {
+    ProblemList problems() {
         return this.problems;
     }
 }
