@@ -19,17 +19,17 @@ Justify is a JSON validator based on [JSON Schema Specification] and [JSON Proce
 ### Using with the JSON-P Streaming API
 
 ```java
-Jsonv jsonv = Jsonv.newInstance();
+Jsonv service = Jsonv.newInstance();
 
 // Reads the JSON schema
 Path pathToSchema = Paths.get("news.schema.json");
-JsonSchema schema = jsonv.readSchema(pathToSchema);
+JsonSchema schema = service.readSchema(pathToSchema);
 
 // Problem handler
-ProblemHandler handler = ProblemHandler.printingWith(System.out::println);
+ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
 Path pathToInstance = Paths.get("fake-news.json");
-try (JsonParser parser = jsonv.createParser(pathToInstance, schema, handler)) {
+try (JsonParser parser = service.createParser(pathToInstance, schema, handler)) {
     while (parser.hasNext()) {
         JsonParser.Event event = parser.next();
         // Do something useful here
@@ -40,21 +40,25 @@ try (JsonParser parser = jsonv.createParser(pathToInstance, schema, handler)) {
 ### Using with the JSON-P Object Model API
 
 ```java
-Jsonv jsonv = Jsonv.newInstance();
+Jsonv service = Jsonv.newInstance();
 
 // Reads the JSON schema
 Path pathToSchema = Paths.get("news.schema.json");
-JsonSchema schema = jsonv.readSchema(pathToSchema);
+JsonSchema schema = service.readSchema(pathToSchema);
 
 // Problem handler
-ProblemHandler handler = ProblemHandler.printingWith(System.out::println);
+ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
 Path pathToInstance = Paths.get("fake-news.json");
-try (JsonReader reader = jsonv.createReader(pathToInstance, schema, handler)) {
+try (JsonReader reader = service.createReader(pathToInstance, schema, handler)) {
     JsonValue value = reader.readValue();
     // Do something useful here
 }
 ```
+
+## Additional Resources
+
+* [Justify Examples]
 
 ## Current Development Status
 
@@ -147,3 +151,4 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [RFC 6570]: https://tools.ietf.org/html/rfc6570.html
 [RFC 6901]: https://tools.ietf.org/html/rfc6901.html
 [ECMA 262]: https://www.ecma-international.org/publications/standards/Ecma-262.htm
+[Justify Examples]: https://github.com/leadpony/justify-examples
