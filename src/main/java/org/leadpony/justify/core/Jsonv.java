@@ -72,7 +72,7 @@ public interface Jsonv {
      * Creates a new instance of this type.
      * 
      * @return newly created instance of this type, never be {@code null}.
-     * @throws JsonvException if an error was encountered while creating the instance.
+     * @throws JsonException if an error was encountered while creating the instance.
      */
     static Jsonv newInstance() {
         return JsonValidationProvider.provider().createJsonv();

@@ -43,7 +43,6 @@ import org.leadpony.justify.core.JsonSchemaBuilderFactory;
 import org.leadpony.justify.core.JsonSchemaReader;
 import org.leadpony.justify.core.JsonSchemaResolver;
 import org.leadpony.justify.core.Jsonv;
-import org.leadpony.justify.core.JsonvException;
 import org.leadpony.justify.core.ProblemHandler;
 import org.leadpony.justify.core.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
@@ -75,7 +74,7 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
      * Constructs this object.
      * 
      * @param jsonProvider the JSON provider.
-     * @throws JsonvException if an error was encountered while constructing this object.
+     * @throws JsonException if an error was encountered while reading the metaschema.
      */
     DefaultJsonv(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
@@ -304,13 +303,17 @@ class DefaultJsonv implements Jsonv, JsonSchemaResolver {
         }
     }
     
+    /**
+     * Loads metaschema from the resource on classpath.
+     * @param name the name of the resource.
+     * @return the loaded schema.
+     * @throws JsonException if an error was encountered while reading the metaschema.
+     */
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
         JsonParser parser = jsonProvider.createParser(in);
         try (JsonSchemaReader reader = new BasicSchemaReader(parser, createBasicSchemaBuilderFactory())) {
             return reader.read();
-        } catch (Exception e) {
-            throw new JsonvException("Failed to read metaschema.", e);
         }
     }
     

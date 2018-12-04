@@ -18,7 +18,8 @@ package org.leadpony.justify.core.spi;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
-import org.leadpony.justify.core.JsonvException;
+import javax.json.JsonException;
+
 import org.leadpony.justify.core.Jsonv;
 
 /**
@@ -38,7 +39,7 @@ public abstract class JsonValidationProvider {
      * Returns an instance of this provider class.
      * 
      * @return the instance of this provider class.     
-     * @throws JsonvException if there is no provider found.
+     * @throws JsonException if there is no provider found.
      */
     public static JsonValidationProvider provider() {
         ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class);
@@ -46,7 +47,7 @@ public abstract class JsonValidationProvider {
         if (it.hasNext()) {
             return it.next();
         } else {
-            throw new JsonvException("JSON validation provider was not found.");
+            throw new JsonException("JSON validation provider was not found.");
         }
     }
     
@@ -60,7 +61,7 @@ public abstract class JsonValidationProvider {
      * Creates a new instance of {@link Jsonv}.
      * 
      * @return newly created instance of {@link Jsonv}.
-     * @throws JsonvException if an error was encountered while creating the instance.
+     * @throws JsonException if an error was encountered while creating the instance.
      */
     public abstract Jsonv createJsonv();
 }
