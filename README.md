@@ -19,7 +19,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [JSON Proce
 ### Using with the JSON-P Streaming API
 
 ```java
-Jsonv service = Jsonv.newInstance();
+JsonValidationService service = JsonValidationService.newInstance();
 
 // Reads the JSON schema
 Path pathToSchema = Paths.get("news.schema.json");
@@ -40,7 +40,7 @@ try (JsonParser parser = service.createParser(pathToInstance, schema, handler)) 
 ### Using with the JSON-P Object Model API
 
 ```java
-Jsonv service = Jsonv.newInstance();
+JsonValidationService service = JsonValidationService.newInstance();
 
 // Reads the JSON schema
 Path pathToSchema = Paths.get("news.schema.json");

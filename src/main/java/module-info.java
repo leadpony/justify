@@ -18,17 +18,17 @@
  * Defines the API for JSON validation.
  */
 module org.leadpony.justify {
-    exports org.leadpony.justify.core;
-    exports org.leadpony.justify.core.spi;
+    exports org.leadpony.justify.api;
+    exports org.leadpony.justify.spi;
     
     requires transitive java.json;
     requires java.logging;
     requires com.ibm.icu;
     
     uses javax.json.spi.JsonProvider;
-    uses org.leadpony.justify.core.spi.JsonValidationProvider; 
-    uses org.leadpony.justify.core.spi.FormatAttribute; 
+    uses org.leadpony.justify.spi.JsonValidationProvider; 
+    uses org.leadpony.justify.spi.FormatAttribute; 
     
-    provides org.leadpony.justify.core.spi.JsonValidationProvider 
+    provides org.leadpony.justify.spi.JsonValidationProvider 
         with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;
 }

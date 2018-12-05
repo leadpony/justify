@@ -27,9 +27,9 @@ import java.util.Map;
 
 import javax.json.stream.JsonLocation;
 
-import org.leadpony.justify.core.BranchProblem;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.api.BranchProblem;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Problem;
 
 /**
  * This class builds problems detected in validation process.

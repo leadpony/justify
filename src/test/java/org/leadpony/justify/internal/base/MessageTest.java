@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.InstanceType;
 
 /**
  * @author leadpony

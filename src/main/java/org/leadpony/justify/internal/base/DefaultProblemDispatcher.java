@@ -20,9 +20,9 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Default implementation of {@link ProblemDispatcher}.

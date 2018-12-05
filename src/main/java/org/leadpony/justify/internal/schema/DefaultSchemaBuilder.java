@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
 
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonSchemaBuilder;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;

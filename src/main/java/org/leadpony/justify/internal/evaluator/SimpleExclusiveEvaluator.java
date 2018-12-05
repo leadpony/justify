@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemList;
 
 /**

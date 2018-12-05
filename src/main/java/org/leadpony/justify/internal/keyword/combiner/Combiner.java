@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Iterator;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**

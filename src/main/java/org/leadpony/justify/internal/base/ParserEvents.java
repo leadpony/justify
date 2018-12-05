@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.InstanceType;
 
 /**
  * @author leadpony

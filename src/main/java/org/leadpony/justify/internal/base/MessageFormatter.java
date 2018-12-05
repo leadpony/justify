@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.leadpony.justify.core.Localizable;
+import org.leadpony.justify.api.Localizable;
 
 /**
  * Formatter of message.

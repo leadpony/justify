@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 

@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**

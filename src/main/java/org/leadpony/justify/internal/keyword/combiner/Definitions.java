@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * @author leadpony

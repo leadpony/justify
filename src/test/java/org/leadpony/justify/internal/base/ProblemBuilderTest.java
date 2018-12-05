@@ -27,8 +27,8 @@ import javax.json.stream.JsonParser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Problem;
 
 /**
  * Test cases for {@link ProblemBuilder}.

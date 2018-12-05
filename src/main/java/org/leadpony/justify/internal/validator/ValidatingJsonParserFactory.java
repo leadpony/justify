@@ -26,8 +26,8 @@ import javax.json.JsonObject;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ProblemHandlerFactory;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
 
 /**

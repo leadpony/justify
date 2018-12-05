@@ -22,8 +22,8 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.

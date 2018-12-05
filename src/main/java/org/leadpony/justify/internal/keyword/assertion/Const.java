@@ -21,10 +21,10 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.Evaluator.Result;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.Evaluator.Result;
 
 /**
  * Assertion specified with "const" validation keyword.

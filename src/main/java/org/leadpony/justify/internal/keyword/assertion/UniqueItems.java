@@ -25,10 +25,10 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.JsonInstanceBuilder;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 

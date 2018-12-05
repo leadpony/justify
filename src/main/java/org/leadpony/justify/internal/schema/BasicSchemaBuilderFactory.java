@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.schema;
 
 import javax.json.JsonBuilderFactory;
 
-import org.leadpony.justify.core.JsonSchemaBuilderFactory;
+import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 
 /**

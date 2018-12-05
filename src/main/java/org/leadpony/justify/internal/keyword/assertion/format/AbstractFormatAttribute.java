@@ -19,10 +19,10 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.Localizable;
-import org.leadpony.justify.core.spi.FormatAttribute;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * Skeletal implementation for {@link FormatAttribute}.

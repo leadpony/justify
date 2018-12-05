@@ -25,7 +25,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.Keyword;
 

@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
 
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.JsonSchemaBuilder;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonSchemaBuilder;
 
 /**
  * Enhanced version of {@link JsonSchemaBuilder}.

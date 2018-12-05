@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Collection;
 import java.util.List;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * Facade class for creating combiners.

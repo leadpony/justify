@@ -26,9 +26,9 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**

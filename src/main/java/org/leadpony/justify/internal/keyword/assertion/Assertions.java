@@ -21,7 +21,7 @@ import java.util.Set;
 
 import javax.json.JsonValue;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**

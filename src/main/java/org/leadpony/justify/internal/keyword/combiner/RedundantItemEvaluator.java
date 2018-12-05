@@ -19,10 +19,10 @@ package org.leadpony.justify.internal.keyword.combiner;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**

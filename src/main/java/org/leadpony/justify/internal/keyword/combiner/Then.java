@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * "Then" conditional keyword.

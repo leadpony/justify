@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import org.leadpony.justify.core.BranchProblem;
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemHandler;
+import org.leadpony.justify.api.BranchProblem;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * An object to print validation problems.

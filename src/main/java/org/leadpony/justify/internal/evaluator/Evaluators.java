@@ -21,10 +21,10 @@ import java.util.stream.Stream;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.JsonSchema;
-import org.leadpony.justify.core.ProblemDispatcher;
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Provides various kinds of evaluators.

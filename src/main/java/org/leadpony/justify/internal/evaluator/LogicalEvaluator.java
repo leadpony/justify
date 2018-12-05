@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.core.Evaluator;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 
 /**

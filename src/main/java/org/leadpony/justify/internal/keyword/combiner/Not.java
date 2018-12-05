@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import javax.json.JsonBuilderFactory;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * Type representing "not" boolean logic.

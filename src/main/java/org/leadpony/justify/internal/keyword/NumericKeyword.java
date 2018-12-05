@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.keyword;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.InstanceType;
 
 /**
  * Keyword for numeric types.

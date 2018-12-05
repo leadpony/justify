@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.util.HashMap;
 import java.util.ServiceLoader;
 
-import org.leadpony.justify.core.spi.FormatAttribute;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * Registry of format attributes.

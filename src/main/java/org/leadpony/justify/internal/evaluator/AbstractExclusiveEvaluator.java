@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.base.ProblemList;
 

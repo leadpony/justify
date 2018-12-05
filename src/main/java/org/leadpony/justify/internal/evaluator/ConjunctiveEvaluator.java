@@ -21,9 +21,9 @@ import java.util.Iterator;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * @author leadpony

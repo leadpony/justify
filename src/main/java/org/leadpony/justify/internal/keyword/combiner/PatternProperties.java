@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**

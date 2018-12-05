@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.leadpony.justify.core.Problem;
+import org.leadpony.justify.api.Problem;
 
 /**
  * List specialized for {@link Problem}.

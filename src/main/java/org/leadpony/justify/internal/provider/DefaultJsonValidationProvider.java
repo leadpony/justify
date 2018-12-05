@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.provider;
 
 import javax.json.spi.JsonProvider;
 
-import org.leadpony.justify.core.Jsonv;
-import org.leadpony.justify.core.spi.JsonValidationProvider;
+import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.spi.JsonValidationProvider;
 
 /**
  * Default implementation of {@link JsonValidationProvider}.
@@ -38,8 +38,8 @@ public class DefaultJsonValidationProvider extends JsonValidationProvider {
      * {@inheritDoc}
      */
     @Override
-    public Jsonv createJsonv() {
+    public JsonValidationService createService() {
         JsonProvider provider = JsonProvider.provider();
-        return new DefaultJsonv(provider);
+        return new DefaultJsonValidationService(provider);
     }
 }

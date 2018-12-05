@@ -21,8 +21,8 @@ import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.Problem;
-import org.leadpony.justify.core.ProblemDispatcher;
+import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Assertion specified with "pattern" validation keyword.

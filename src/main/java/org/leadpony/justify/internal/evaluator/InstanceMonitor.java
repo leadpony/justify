@@ -20,7 +20,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.core.InstanceType;
+import org.leadpony.justify.api.InstanceType;
 
 /**
  * Monitor of events for the current instance.

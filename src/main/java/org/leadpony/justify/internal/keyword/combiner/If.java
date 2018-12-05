@@ -20,9 +20,9 @@ import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 
-import org.leadpony.justify.core.Evaluator;
-import org.leadpony.justify.core.InstanceType;
-import org.leadpony.justify.core.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 
