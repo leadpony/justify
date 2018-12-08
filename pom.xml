@@ -7,16 +7,17 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify</name>
     <description>
-    Justify is a JSON validator based on the JSON Schema specification 
+    Justify is a JSON validator based on the JSON Schema specification
     and the JSON Processing API.
     </description>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
         <javax.json.version>1.1.3</javax.json.version>
         <javax.json.bind.version>1.0</javax.json.bind.version>
         <jsonp.impl.groupId>org.glassfish</jsonp.impl.groupId>
@@ -85,7 +86,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <build>
         <pluginManagement>
             <plugins>
@@ -93,9 +94,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
-                    <configuration>
-                        <release>8</release>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -132,7 +130,7 @@
                         </links>
                         <offlineLinks>
                             <offlineLink>
-                                <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.2</url>
+                                <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.3</url>
                                 <location>${basedir}/src/main/javadoc/javax/json/</location>
                             </offlineLink>
                         </offlineLinks>
@@ -147,6 +145,17 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.8</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -194,24 +203,77 @@
 
     <profiles>
         <profile>
-            <id>default</id>
+            <id>jdk8</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <jdk>1.8</jdk>
             </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <source>1.8</source>
+                                <target>1.8</target>
+                                <excludes>
+                                    <exclude>module-info.java</exclude>
+                                </excludes>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk9-or-higher</id>
+            <activation>
+                <jdk>[9,]</jdk>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <release>${java.version}</release>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>verbose</id>
+            <properties>
+                <test.log.level>FINE</test.log.level>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-with-johnzon</id>
+            <properties>
+                <jsonp.impl.groupId>org.apache.johnzon</jsonp.impl.groupId>
+                <jsonp.impl.artifactId>johnzon-core</jsonp.impl.artifactId>
+                <jsonp.impl.version>1.1.9-SNAPSHOT</jsonp.impl.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>${java.version}</release>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>default-compile</id>
                                 <goals>
                                     <goal>compile</goal>
                                 </goals>
-                                <configuration>
-                                    <release>9</release>
-                                </configuration>
                             </execution>
                             <execution>
                                 <id>base-compile</id>
@@ -219,6 +281,7 @@
                                     <goal>compile</goal>
                                 </goals>
                                 <configuration>
+                                    <release>8</release>
                                     <excludes>
                                         <exclude>module-info.java</exclude>
                                     </excludes>
@@ -252,45 +315,29 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>test-with-johnzon</id>
-            <properties>
-                <jsonp.impl.groupId>org.apache.johnzon</jsonp.impl.groupId>
-                <jsonp.impl.artifactId>johnzon-core</jsonp.impl.artifactId>
-                <jsonp.impl.version>1.1.9-SNAPSHOT</jsonp.impl.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>eclipse</id>
-            <properties>
-                <test.log.level>FINE</test.log.level>
-            </properties>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <excludes>
-                                    <exclude>module-info.java</exclude>
-                                </excludes>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
     </profiles>
-    
+
     <!-- project information  -->
 
     <url>https://github.com/leadpony/justify</url>
     <inceptionYear>2018</inceptionYear>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -304,12 +351,12 @@
         <developerConnection>scm:git:git@github.com:leadpony/justify.git</developerConnection>
         <url>https://github.com/leadpony/justify</url>
     </scm>
-    
+
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/leadpony/justify/issues</url>
     </issueManagement>
-    
+
     <distributionManagement>
         <repository>
             <id>release</id>
@@ -320,7 +367,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <developers>
         <developer>
             <id>leadpony</id>
