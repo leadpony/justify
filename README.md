@@ -1,20 +1,59 @@
 # Justify
-[![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0
-)
+[![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.leadpony.justify/justify/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.leadpony.justify/justify/)
+[![Javadocs](https://www.javadoc.io/badge/org.leadpony.justify/justify.svg?color=blue)](https://www.javadoc.io/doc/org.leadpony.justify/justify)
 
 Justify is a JSON validator based on [JSON Schema Specification] and [JSON Processing API].
 
-## Features
+## Main Features
 
 * Compliant with [JSON Schema Specification] Draft 7.
 * Reinforces [JSON Processing API] (JSR 374) transparently with the validation functionality.
-* Can be used with [JSON Binding API] (JSR 367) via custom JsonProvider.
-* Reports problems with exact locations including line and column number.
+* Can be used with [JSON Binding API] (JSR 367) via a custom JsonProvider.
+* Reports problems with exact locations including line and column numbers.
 * Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
 * Can be used as a modular jar in Java 9 and higher, with additional support of legacy Java 8.
-* Internationalized problem messages.
+* Internationalized problem messages, including Japanese language support.
 
 ## Getting Started
+
+### Minimum Setup
+
+This software is available in the [Maven Central Repository].
+In runtime the library requires one of [JSON Processing API] implementations.
+If your choice is [Reference Implementation] of the API,
+the following two dependencies are all you need to add to your pom.xml.
+
+```xml
+<dependency>
+  <groupId>org.leadpony.justify</groupId>
+  <artifactId>justify</artifactId>
+  <version>0.9.0</version>
+</dependency>
+
+<dependency>
+  <groupId>org.glassfish</groupId>
+  <artifactId>javax.json</artifactId>
+  <version>1.1.3</version>
+</dependency>
+```
+
+Alternatively, the latter dependency can be replaced with other implementation
+such as [Apache Johnzon] as below.
+
+```xml
+<dependency>
+  <groupId>org.leadpony.justify</groupId>
+  <artifactId>justify</artifactId>
+  <version>0.9.0</version>
+</dependency>
+
+<dependency>
+  <groupId>org.apache.johnzon</groupId>
+  <artifactId>johnzon-core</artifactId>
+  <version>1.1.10</version>
+</dependency>
+```
 
 ### Using with the JSON-P Streaming API
 
@@ -59,6 +98,7 @@ try (JsonReader reader = service.createReader(pathToInstance, schema, handler)) 
 ## Additional Resources
 
 * [Justify Examples]
+* [API Reference in Javadoc]
 
 ## Current Development Status
 
@@ -152,3 +192,7 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [RFC 6901]: https://tools.ietf.org/html/rfc6901.html
 [ECMA 262]: https://www.ecma-international.org/publications/standards/Ecma-262.htm
 [Justify Examples]: https://github.com/leadpony/justify-examples
+[API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
+[Maven Central Repository]: https://mvnrepository.com/repos/central
+[Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
+[Apache Johnzon]: https://johnzon.apache.org/

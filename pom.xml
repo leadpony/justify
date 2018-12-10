@@ -7,7 +7,7 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>0.9.0</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify</name>
     <description>
@@ -255,7 +255,7 @@
             <properties>
                 <jsonp.impl.groupId>org.apache.johnzon</jsonp.impl.groupId>
                 <jsonp.impl.artifactId>johnzon-core</jsonp.impl.artifactId>
-                <jsonp.impl.version>1.1.9-SNAPSHOT</jsonp.impl.version>
+                <jsonp.impl.version>1.1.10</jsonp.impl.version>
             </properties>
         </profile>
         <profile>
@@ -327,6 +327,10 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
