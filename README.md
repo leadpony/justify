@@ -1,15 +1,15 @@
 # Justify
 [![Apache 2.0 License](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.leadpony.justify/justify/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.leadpony.justify/justify/)
-[![Javadocs](https://www.javadoc.io/badge/org.leadpony.justify/justify.svg?color=blue)](https://www.javadoc.io/doc/org.leadpony.justify/justify)
+[![Maven Central](https://img.shields.io/maven-central/v/org.leadpony.justify/justify.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22org.leadpony.justify%22%20AND%20a:%22justify%22)
+[![Javadocs](https://www.javadoc.io/badge/org.leadpony.justify/justify.svg?color=green)](https://www.javadoc.io/doc/org.leadpony.justify/justify)
 
-Justify is a JSON validator based on [JSON Schema Specification] and [JSON Processing API].
+Justify is a JSON validator based on [JSON Schema Specification] and [Java API for JSON Processing (JSR 374)].
 
 ## Main Features
 
 * Compliant with [JSON Schema Specification] Draft 7.
-* Reinforces [JSON Processing API] (JSR 374) transparently with the validation functionality.
-* Can be used with [JSON Binding API] (JSR 367) via a custom JsonProvider.
+* Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
+* Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with exact locations including line and column numbers.
 * Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
 * Can be used as a modular jar in Java 9 and higher, with additional support of legacy Java 8.
@@ -20,7 +20,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [JSON Proce
 ### Minimum Setup
 
 This software is available in the [Maven Central Repository].
-In runtime the library requires one of [JSON Processing API] implementations.
+In runtime the library requires one of [Java API for JSON Processing (JSR 374)] implementations.
 If your choice is [Reference Implementation] of the API,
 the following two dependencies are all you need to add to your pom.xml.
 
@@ -55,20 +55,20 @@ such as [Apache Johnzon] as below.
 </dependency>
 ```
 
-### Using with the JSON-P Streaming API
+### Using with the Streaming API for JSON Processing
 
 ```java
 JsonValidationService service = JsonValidationService.newInstance();
 
 // Reads the JSON schema
-Path pathToSchema = Paths.get("news.schema.json");
-JsonSchema schema = service.readSchema(pathToSchema);
+JsonSchema schema = service.readSchema(Paths.get("news.schema.json"));
 
-// Problem handler
+// Problem handler which will print problems found.
 ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
-Path pathToInstance = Paths.get("fake-news.json");
-try (JsonParser parser = service.createParser(pathToInstance, schema, handler)) {
+Path path = Paths.get("fake-news.json");
+// Parses the JSON instance by javax.json.stream.JsonParser
+try (JsonParser parser = service.createParser(path, schema, handler)) {
     while (parser.hasNext()) {
         JsonParser.Event event = parser.next();
         // Do something useful here
@@ -76,20 +76,20 @@ try (JsonParser parser = service.createParser(pathToInstance, schema, handler)) 
 }
 ```
 
-### Using with the JSON-P Object Model API
+### Using with the Object Model API for JSON Processing
 
 ```java
 JsonValidationService service = JsonValidationService.newInstance();
 
 // Reads the JSON schema
-Path pathToSchema = Paths.get("news.schema.json");
-JsonSchema schema = service.readSchema(pathToSchema);
+JsonSchema schema = service.readSchema(Paths.get("news.schema.json"));
 
-// Problem handler
+// Problem handler which will print problems found.
 ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
-Path pathToInstance = Paths.get("fake-news.json");
-try (JsonReader reader = service.createReader(pathToInstance, schema, handler)) {
+Path path = Paths.get("fake-news.json");
+// Reads the JSON instance by javax.json.JsonReader
+try (JsonReader reader = service.createReader(path, schema, handler)) {
     JsonValue value = reader.readValue();
     // Do something useful here
 }
@@ -97,8 +97,8 @@ try (JsonReader reader = service.createReader(pathToInstance, schema, handler)) 
 
 ## Additional Resources
 
-* [Justify Examples]
 * [API Reference in Javadoc]
+* [Justify Examples]
 
 ## Current Development Status
 
@@ -174,8 +174,8 @@ $ mvn clean install
 Copyright &copy; 2018 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [JSON Schema Specification]: https://json-schema.org/
-[JSON Processing API]: https://javaee.github.io/jsonp/
-[JSON Binding API]: http://json-b.net/
+[Java API for JSON Processing (JSR 374)]: https://javaee.github.io/jsonp/
+[Java API for JSON Binding (JSR 367)]: http://json-b.net/
 [JDK 11]: https://jdk.java.net/11/
 [Apache Maven]: https://maven.apache.org/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
