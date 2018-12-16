@@ -26,8 +26,7 @@
         <jsonb.impl.groupId>org.eclipse</jsonb.impl.groupId>
         <jsonb.impl.artifactId>yasson</jsonb.impl.artifactId>
         <jsonb.impl.version>1.0.2</jsonb.impl.version>
-        <junit.jupiter.version>5.2.0</junit.jupiter.version>
-        <junit.platform.version>1.2.0</junit.platform.version>
+        <junit.jupiter.version>5.3.2</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
         <javadoc.link>http://docs.oracle.com/javase/8/docs/api/</javadoc.link>
     </properties>
@@ -190,13 +189,6 @@
                         <exclude></exclude>
                     </excludes>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>${junit.platform.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
