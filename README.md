@@ -12,7 +12,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with exact locations including line and column numbers.
 * Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
-* Can be used as a modular jar in Java 9 and higher, with additional support of legacy Java 8.
+* Supports Java 8, 9, 10 and 11, can be used as a modular jar in Java 9 and higher.
 * Internationalized problem messages, including Japanese language support.
 
 ## Getting Started
@@ -159,7 +159,7 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 ## Building from Source
 
 The following tools are required to build this library.
-* [JDK 11]
+* [JDK 9] or higher
 * [Apache Maven] 3.6.0 or higher
 
 The commands below build the library and install it into your local Maven repository.
@@ -170,13 +170,17 @@ $ cd justify
 $ mvn clean install
 ```
 
+## Similar Solutions
+
+There exist several JSON validator implementations conformant to the JSON Schema Specification, including those for other programming languages. [The list of implementations] is available on the JSON Schema web site.
+
 ## Copyright Notice
 Copyright &copy; 2018 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [JSON Schema Specification]: https://json-schema.org/
 [Java API for JSON Processing (JSR 374)]: https://javaee.github.io/jsonp/
 [Java API for JSON Binding (JSR 367)]: http://json-b.net/
-[JDK 11]: https://jdk.java.net/11/
+[JDK 9]: https://jdk.java.net/archive/
 [Apache Maven]: https://maven.apache.org/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
@@ -196,3 +200,4 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [Maven Central Repository]: https://mvnrepository.com/repos/central
 [Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
 [Apache Johnzon]: https://johnzon.apache.org/
+[The list of implementations]: https://json-schema.org/implementations.html  
