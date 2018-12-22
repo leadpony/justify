@@ -7,7 +7,7 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>0.9.1</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify</name>
     <description>
@@ -17,7 +17,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>9</java.version>
         <javax.json.version>1.1.3</javax.json.version>
         <javax.json.bind.version>1.0</javax.json.bind.version>
         <jsonp.impl.groupId>org.glassfish</jsonp.impl.groupId>
@@ -93,9 +92,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
-                    <configuration>
-                        <release>${java.version}</release>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -199,9 +195,9 @@
     <profiles>
         <profile>
             <id>jdk8</id>
-            <properties>
-                <java.version>8</java.version>
-            </properties>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -209,9 +205,30 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-compiler-plugin</artifactId>
                             <configuration>
+                                <source>1.8</source>
+                                <target>1.8</target>
                                 <excludes>
                                     <exclude>module-info.java</exclude>
                                 </excludes>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk9-or-higher</id>
+            <activation>
+                <jdk>[9,]</jdk>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <release>9</release>
                             </configuration>
                         </plugin>
                     </plugins>
@@ -240,7 +257,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
-                            <release>${java.version}</release>
+                            <release>9</release>
                         </configuration>
                         <executions>
                             <execution>
