@@ -28,7 +28,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
 </dependency>
 
 <dependency>
@@ -43,19 +43,13 @@ such as [Apache Johnzon] as below.
 
 ```xml
 <dependency>
-  <groupId>org.leadpony.justify</groupId>
-  <artifactId>justify</artifactId>
-  <version>0.9.0</version>
-</dependency>
-
-<dependency>
   <groupId>org.apache.johnzon</groupId>
   <artifactId>johnzon-core</artifactId>
   <version>1.1.10</version>
 </dependency>
 ```
 
-### Using with the Streaming API for JSON Processing
+### Using with the Streaming API of JSON Processing
 
 ```java
 JsonValidationService service = JsonValidationService.newInstance();
@@ -76,7 +70,7 @@ try (JsonParser parser = service.createParser(path, schema, handler)) {
 }
 ```
 
-### Using with the Object Model API for JSON Processing
+### Using with the Object Model API of JSON Processing
 
 ```java
 JsonValidationService service = JsonValidationService.newInstance();
@@ -158,11 +152,11 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 ## Building from Source
 
-The following tools are required to build this library.
+The following tools are required to build this software.
 * [JDK 9] or higher
 * [Apache Maven] 3.6.0 or higher
 
-The commands below build the library and install it into your local Maven repository.
+The commands below build the software and install it into your local Maven repository.
 
 ```bash
 $ git clone https://github.com/leadpony/justify.git
