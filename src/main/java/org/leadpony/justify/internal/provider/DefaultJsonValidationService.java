@@ -118,7 +118,6 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
   
     /**
      * {@inheritDoc}
-     * @throws IOException 
      */
     @Override
     public JsonSchemaReader createSchemaReader(Path path) {

@@ -93,6 +93,7 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 * [API Reference in Javadoc]
 * [Justify Examples]
+* [Justify CLI] (command line interface)
 
 ## Current Development Status
 
@@ -190,6 +191,7 @@ Copyright &copy; 2018 the Justify authors. This software is licensed under [Apac
 [RFC 6901]: https://tools.ietf.org/html/rfc6901.html
 [ECMA 262]: https://www.ecma-international.org/publications/standards/Ecma-262.htm
 [Justify Examples]: https://github.com/leadpony/justify-examples
+[Justify CLI]: https://github.com/leadpony/justify-cli
 [API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
 [Maven Central Repository]: https://mvnrepository.com/repos/central
 [Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
