@@ -4,35 +4,35 @@
         "valid": true
     },
     {
-        "value": "abigail@example.com", 
+        "value": "abigail@example.com",
         "valid": true
     },
     {
-        "value": " abigail@example.com", 
+        "value": " abigail@example.com",
         "valid": true
     },
     {
-        "value": "abigail @example.com", 
+        "value": "abigail @example.com",
         "valid": true
     },
     {
-        "value": "*@example.net", 
+        "value": "*@example.net",
         "valid": true
     },
     {
-        "value": "\"\\\"\"@foo.bar", 
+        "value": "\"\\\"\"@foo.bar",
         "valid": true
     },
     {
-        "value": "fred&barny@example.com", 
+        "value": "fred&barny@example.com",
         "valid": true
     },
     {
-        "value": "---@example.com", 
+        "value": "---@example.com",
         "valid": true
     },
     {
-        "value": "foo-bar@example.net", 
+        "value": "foo-bar@example.net",
         "valid": true
     },
     {
@@ -40,42 +40,42 @@
         "valid": true
     },
     {
-        "value": "Abigail(the bitch)@example.com", 
+        "value": "Abigail(the bitch)@example.com",
         "valid": true
     },
     {
-        "value": "(foo) abigail@example.com", 
+        "value": "(foo) abigail@example.com",
         "valid": true
     },
     {
-        "value": "abigail@example.com (foo)", 
+        "value": "abigail@example.com (foo)",
         "valid": true
     },
     {
-        "value": "abigail@[example.com]", 
+        "value": "abigail@[example.com]",
         "valid": true
     },
     {
-        "value": "mailbox.sub1.sub2@this-domain", 
+        "value": "mailbox.sub1.sub2@this-domain",
         "valid": true
     },
     {
-        "value": "sub-net.mailbox@sub-domain.domain", 
+        "value": "sub-net.mailbox@sub-domain.domain",
         "valid": true
     },
     {
-        "value": "Neuman@BBN-TENEXA", 
+        "value": "Neuman@BBN-TENEXA",
         "valid": true
     },
     {
-        "value": "$@[]", 
+        "value": "$@[]",
         "valid": true
     },
     {
-        "value": "*()@[]", 
+        "value": "*()@[]",
         "valid": true
     },
-  
+
     {
         "value": "Just a string",
         "valid": false

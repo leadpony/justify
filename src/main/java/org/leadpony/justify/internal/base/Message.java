@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  */
 public class Message {
     
-    private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/message";
+    private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/messages";
 
     private final String pattern;
     private final ResourceBundle bundle;
