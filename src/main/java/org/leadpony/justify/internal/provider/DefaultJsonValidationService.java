@@ -24,8 +24,10 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -46,6 +48,7 @@ import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ProblemPrinter;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.schema.BasicSchemaBuilderFactory;
@@ -125,6 +128,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         try {
             InputStream in = Files.newInputStream(path);
             return createSchemaReader(in);
+        } catch (NoSuchFileException e) {
+            throw buildJsonException(e, "schema.problem.not.found", path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -199,6 +204,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         try {
             InputStream in = Files.newInputStream(path);
             return createParserFactory(DEFAULT_CONFIG, schema, parser->handler).createParser(in);
+        } catch (NoSuchFileException e) {
+            throw buildJsonException(e, "instance.problem.not.found", path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -264,6 +271,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         try {
             InputStream in = Files.newInputStream(path);
             return createReaderFactory(DEFAULT_CONFIG, schema, parser->handler).createReader(in);
+        } catch (NoSuchFileException e) {
+            throw buildJsonException(e, "instance.problem.not.found", path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -328,6 +337,13 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private JsonSchemaReader createValidatingSchemaReader(ValidatingJsonParser parser) {
         return new ValidatingSchemaReader(parser, createBasicSchemaBuilderFactory())
                 .withSchemaResolver(this);
+    }
+
+    private static JsonException buildJsonException(NoSuchFileException e, String key, Path path) {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("path", path);
+        String message = Message.get(key).format(arguments);
+        return new JsonException(message, e);
     }
 
     /**
