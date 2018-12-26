@@ -50,7 +50,7 @@ class ProblemFixture extends Fixture {
     }
 
     @Override
-    String description() {
+    public String description() {
         return description;
     }
     

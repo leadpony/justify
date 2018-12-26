@@ -38,7 +38,7 @@ class SchemaFixture extends Fixture {
     }
 
     @Override
-    String description() {
+    public String description() {
         return description;
     }
 

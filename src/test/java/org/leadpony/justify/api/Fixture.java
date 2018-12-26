@@ -21,7 +21,7 @@ package org.leadpony.justify.api;
  * 
  * @author leadpony
  */
-abstract class Fixture {
+public abstract class Fixture {
 
     private final String name;
     private final int index;
@@ -37,7 +37,7 @@ abstract class Fixture {
         this.index = index;    
     }
     
-    String name() {
+    public String name() {
         StringBuilder builder = new StringBuilder();
         int beginIndex = name.lastIndexOf('/') + 1;
         int endIndex = name.lastIndexOf('.');
@@ -46,11 +46,11 @@ abstract class Fixture {
         return builder.toString();
     }
     
-    int index() {
+    public int index() {
         return index;
     }
     
-    String displayName() {
+    public String displayName() {
         StringBuilder builder = new StringBuilder();
         int beginIndex = name.lastIndexOf('/') + 1;
         int endIndex = name.lastIndexOf('.');
@@ -65,5 +65,5 @@ abstract class Fixture {
         return displayName();
     }
     
-    abstract String description();
+    public abstract String description();
 }

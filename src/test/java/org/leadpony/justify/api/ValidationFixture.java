@@ -26,7 +26,7 @@ import javax.json.JsonValue;
  * 
  * @author leadpony
  */
-class ValidationFixture extends Fixture {
+public class ValidationFixture extends Fixture {
     
     private final JsonValue schema;
     private final String schemaDescription; 
@@ -44,31 +44,31 @@ class ValidationFixture extends Fixture {
     }
     
     @Override
-    String description() {
+    public String description() {
         return dataDescription();
     }
 
-    JsonValue schema() {
+    public JsonValue schema() {
         return schema;
     }
 
-    String schemaDescription() {
+    public String schemaDescription() {
         return schemaDescription;
     }
 
-    JsonValue data() {
+    public JsonValue data() {
         return data;
     }
 
-    String dataDescription() {
+    public String dataDescription() {
         return dataDescription;
     }
 
-    boolean getDataValidity() {
+    public boolean hasValidData() {
         return dataValidity;
     }
     
-    static Stream<ValidationFixture> newStream(String name) {
+    public static Stream<ValidationFixture> newStream(String name) {
         AtomicInteger counter = new AtomicInteger();
         return TestResources.readJsonArray(name).stream()
                 .map(JsonValue::asJsonObject)

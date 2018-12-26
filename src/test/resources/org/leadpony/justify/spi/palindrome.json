@@ -1,0 +1,18 @@
+[
+    {
+        "description": "validation of palindrome word",
+        "schema": {"format": "palindrome"},
+        "tests": [
+            {
+                "description": "a palindrome word",
+                "data": "kayak",
+                "valid": true
+            },
+            {
+                "description": "not a palindrome word",
+                "data": "canoe",
+                "valid": false
+            }
+        ]
+    }
+]

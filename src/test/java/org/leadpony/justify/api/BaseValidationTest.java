@@ -74,7 +74,7 @@ public abstract class BaseValidationTest {
             parser.next();
         }
         parser.close();
-        assertThat(problems.isEmpty()).isEqualTo(fixture.getDataValidity());
+        assertThat(problems.isEmpty()).isEqualTo(fixture.hasValidData());
         for (Problem problem : problems) {
             assertThat(problem.getSchema()).isNotNull();
         }
@@ -92,7 +92,7 @@ public abstract class BaseValidationTest {
             parser.next();
         }
         parser.close();
-        assertThat(problems.isEmpty()).isEqualTo(!fixture.getDataValidity());
+        assertThat(problems.isEmpty()).isEqualTo(!fixture.hasValidData());
         for (Problem problem : problems) {
             assertThat(problem.getSchema()).isNotNull();
         }
