@@ -398,7 +398,19 @@ public interface JsonSchemaBuilder {
      * @return this builder.
      * @throws NullPointerException if the specified {@code subschema} is {@code null}.
      */
-    JsonSchemaBuilder withItem(JsonSchema subschema);
+    JsonSchemaBuilder withItems(JsonSchema subschema);
+
+    /**
+     * Adds the "items" keyword to the schema.
+     * The value is specified as an array of subschemas.
+     * 
+     * @param subschemas the array of subschemas as the value of the keyword. 
+     *                   At least one element is needed.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     */
+    JsonSchemaBuilder withItemsArray(JsonSchema... subschemas);
 
     /**
      * Adds the "items" keyword to the schema.
@@ -410,7 +422,7 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
      * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
      */
-    JsonSchemaBuilder withItems(List<JsonSchema> subschemas);
+    JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas);
     
     /**
      * Adds the "additionalItems" keyword to the schema.
@@ -564,6 +576,17 @@ public interface JsonSchemaBuilder {
      */
     JsonSchemaBuilder withDependency(String name, JsonSchema subschema);
     
+    /**
+     * Adds an entry of the "dependencies" keyword to the schema.
+     * 
+     * @param name the name of the dependency property.
+     * @param requiredProperties the required properties in the object.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code name} or {@code requiredProperties} is {@code null}.
+     * @throws IllegalArgumentException if any element in {@code requiredProperties} is not unique.
+     */
+    JsonSchemaBuilder withDependency(String name, String... requiredProperties);
+
     /**
      * Adds an entry of the "dependencies" keyword to the schema.
      * 

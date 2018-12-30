@@ -499,10 +499,10 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         if (event == Event.START_ARRAY) {
             List<JsonSchema> subschemas = arrayOfSubschemas();
             if (!subschemas.isEmpty()) {
-                builder.withItems(subschemas);
+                builder.withItemsArray(subschemas);
             }
         } else if (canStartSchema(event)) {
-            builder.withItem(subschema(event));
+            builder.withItems(subschema(event));
         } else {
             skipValue(event);
         }

@@ -233,14 +233,20 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     /* Validation Keywords for Arrays */
     
     @Override
-    public JsonSchemaBuilder withItem(JsonSchema subschema) {
+    public JsonSchemaBuilder withItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.items(subschema));
         return nonemptyBuilder();
     }
 
     @Override
-    public JsonSchemaBuilder withItems(List<JsonSchema> subschemas) {
+    public JsonSchemaBuilder withItemsArray(JsonSchema... subschemas) {
+        requireNonNull(subschemas, "subschemas");
+        return withItemsArray(Arrays.asList(subschemas));
+    }
+    
+    @Override
+    public JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.items(subschemas));
@@ -360,6 +366,13 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         return nonemptyBuilder();
     }
     
+    @Override
+    public JsonSchemaBuilder withDependency(String name, String... requiredProperties) {
+        requireNonNull(name, "name");
+        requireNonNull(requiredProperties, "requiredProperties");
+        return withDependency(name, requireUnique(requiredProperties, "requiredProperties"));
+    }
+
     @Override
     public JsonSchemaBuilder withDependency(String name, Set<String> requiredProperties) {
         requireNonNull(name, "name");
