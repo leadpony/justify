@@ -15,38 +15,31 @@
  */
 package org.leadpony.justify.spi;
 
-import javax.json.JsonString;
+import javax.json.JsonNumber;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 
 /**
- * Format attribute representing "palindrome".
+ * Format attribute representing "int32".
  * 
  * @author leadpony
  */
-public class PalindromeFormatAttribute implements FormatAttribute {
+public class Int32FormatAttribute implements FormatAttribute {
 
     @Override
     public String name() {
-        return "palindrome";
+        return "int32";
     }
 
     @Override
     public InstanceType valueType() {
-        return InstanceType.STRING;
+        return InstanceType.INTEGER;
     }
 
     @Override
     public boolean test(JsonValue value) {
-        String string = ((JsonString)value).getString();
-        int i = 0;
-        int j = string.length() - 1;
-        while (i < j) {
-            if (string.charAt(i++) != string.charAt(j--)) {
-                return false;
-            }
-        }
-        return true;
+        long longValue = ((JsonNumber)value).longValue();
+        return Integer.MIN_VALUE <= longValue && longValue <= Integer.MAX_VALUE;
     }
 }

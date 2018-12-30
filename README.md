@@ -10,8 +10,9 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 * Compliant with [JSON Schema Specification] Draft 7.
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
-* Reports problems with original locations including line and column numbers.
+* Reports problems with the source locations including line and column numbers.
 * Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
+* Accepts custom formats for string and other instance types.
 * Supports Java 8, 9, 10 and 11, can be used as a modular jar in Java 9 and higher.
 * Internationalized problem messages, including Japanese language support.
 

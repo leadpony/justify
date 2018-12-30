@@ -1,0 +1,50 @@
+[
+    {
+        "description": "validation of palindrome word",
+        "schema": {
+            "type": "string",
+            "format": "palindrome"
+        },
+        "tests": [
+            {
+                "description": "a palindrome word",
+                "data": "kayak",
+                "valid": true
+            },
+            {
+                "description": "not a palindrome word",
+                "data": "canoe",
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "validation of int32",
+        "schema": {
+            "type": "integer",
+            "format": "int32"
+        },
+        "tests": [
+            {
+                "description": "valid int32",
+                "data": 42,
+                "valid": true
+            },
+            {
+                "description": "too big integer",
+                "data": 2147483648,
+                "valid": false
+            },
+            {
+                "description": "too small integer",
+                "data": -2147483649,
+                "valid": false
+            },
+            {
+                "description": "not an integer",
+                "data": 3.14,
+                "valid": false
+            }
+        ]
+    }
+]

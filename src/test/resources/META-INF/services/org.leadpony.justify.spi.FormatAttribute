@@ -1,1 +1,2 @@
 org.leadpony.justify.spi.PalindromeFormatAttribute
+org.leadpony.justify.spi.Int32FormatAttribute

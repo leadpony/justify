@@ -23,13 +23,15 @@ import org.leadpony.justify.api.BaseValidationTest;
 import org.leadpony.justify.api.ValidationFixture;
 
 /**
+ * Test for custom formats.
+ * 
  * @author leadpony
  */
 @EnabledOnJre(JRE.JAVA_8)
 public class CustomFormatTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
-            "/org/leadpony/justify/spi/palindrome.json",
+            "/org/leadpony/justify/spi/customFormat.json",
     };
 
     public static Stream<ValidationFixture> provideFixtures() {
