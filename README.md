@@ -172,7 +172,7 @@ $ mvn clean install
 There exist several JSON validator implementations conformant to the JSON Schema Specification, including those for other programming languages. [The list of implementations] is available on the JSON Schema web site.
 
 ## Copyright Notice
-Copyright &copy; 2018 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
+Copyright &copy; 2018-2019 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [JSON Schema Specification]: https://json-schema.org/
 [Java API for JSON Processing (JSR 374)]: https://javaee.github.io/jsonp/
