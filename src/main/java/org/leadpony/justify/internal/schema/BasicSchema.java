@@ -19,8 +19,9 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
@@ -55,9 +56,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
         super(builder.getKeywordMap(), builder.getBuilderFactory());
         this.id = this.originalId = builder.getId();
         this.schema = builder.getSchema();
-        this.evaluatables = builder.getKeywordMap().values().stream()
-                .filter(Keyword::canEvaluate)
-                .collect(Collectors.toList());
+        this.evaluatables = collectEvaluatables(builder.getKeywordMap());
     }
     
     @Override
@@ -120,6 +119,14 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
 
     public void setAbsoluteId(URI id) {
         this.id = id;
+    }
+    
+    private List<Keyword> collectEvaluatables(Map<String, Keyword> keywords) {
+        List<Keyword> evaluatables = new ArrayList<>();
+        for (Keyword keyword : keywords.values()) {
+            keyword.addToEvaluatables(evaluatables, keywords);
+        }
+        return evaluatables;
     }
     
     private Evaluator createCombinedEvaluator(InstanceType type) {

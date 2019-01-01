@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.List;
+import java.util.Map;
+
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -24,14 +27,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * @author leadpony
  */
 public interface Assertion extends Keyword {
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>All assertions can be evaluated.</p>
-     */
+
     @Override
-    default boolean canEvaluate() {
-        return true;
+    default void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        evaluatables.add(this);
     }
 }

@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
@@ -28,55 +29,53 @@ import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "If" conditional keyword.
- * 
+ *
  * @author leadpony
  */
 class If extends UnaryCombiner {
-    
+
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
 
     If(JsonSchema schema) {
         super(schema);
     }
-    
+
     @Override
     public String name() {
         return "if";
     }
 
     @Override
-    public boolean canEvaluate() {
-        return thenSchema != null || elseSchema != null;
-    }
-    
-    @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = thenSchema != null ?
-                thenSchema.createEvaluator(type) : JsonSchema.TRUE.createEvaluator(type);
-        Evaluator elseEvaluator = elseSchema != null ?
-                elseSchema.createEvaluator(type) : JsonSchema.TRUE.createEvaluator(type);
+        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(type)
+                : JsonSchema.TRUE.createEvaluator(type);
+        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(type)
+                : JsonSchema.TRUE.createEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = thenSchema != null ?
-                thenSchema.createNegatedEvaluator(type) : getSubschema().createNegatedEvaluator(type);
-        Evaluator elseEvaluator = elseSchema != null ?
-                elseSchema.createNegatedEvaluator(type) : getSubschema().createEvaluator(type);
+        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(type)
+                : getSubschema().createNegatedEvaluator(type);
+        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(type)
+                : getSubschema().createEvaluator(type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        if (siblings.containsKey("then")) {
-            thenSchema = ((UnaryCombiner)siblings.get("then")).getSubschema();
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        if (keywords.containsKey("then")) {
+            thenSchema = ((UnaryCombiner) keywords.get("then")).getSubschema();
         }
-        if (siblings.containsKey("else")) {
-            elseSchema = ((UnaryCombiner)siblings.get("else")).getSubschema();
+        if (keywords.containsKey("else")) {
+            elseSchema = ((UnaryCombiner) keywords.get("else")).getSubschema();
+        }
+        if (thenSchema != null || elseSchema != null) {
+            evaluatables.add(this);
         }
     }
 }

@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Map;
-
 import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -29,7 +27,6 @@ import org.leadpony.justify.internal.base.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Combiner representing "contains" keyword.
@@ -68,10 +65,6 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
         }
     }
 
-    @Override
-    public void link(Map<String, Keyword> siblings) {
-    }
-    
     private Evaluator createItemsEvaluator() {
         final JsonSchema subschema = getSubschema();
         return new AbstractDisjunctiveItemsEvaluator(this) {

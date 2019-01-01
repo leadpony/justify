@@ -16,10 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * The type representing "maxContains" keyword.
@@ -44,12 +48,11 @@ public class MaxContains extends AbstractKeyword {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        builder.add(name(), limit);
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), limit);
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

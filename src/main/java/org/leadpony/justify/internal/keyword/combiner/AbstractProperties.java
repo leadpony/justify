@@ -70,9 +70,9 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        if (siblings.containsKey("additionalProperties")) {
-            this.additionalProperties = (AdditionalProperties)siblings.get("additionalProperties");
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        if (keywords.containsKey("additionalProperties")) {
+            this.additionalProperties = (AdditionalProperties)keywords.get("additionalProperties");
         }
     }
     

@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,21 +35,15 @@ import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "additionalItems" keyword.
- * 
+ *
  * @author leadpony
  */
 class AdditionalProperties extends UnaryCombiner {
-    
-    static final AdditionalProperties DEFAULT = new AdditionalProperties(JsonSchema.TRUE);
-    private boolean enabled;
-    
-    AdditionalProperties(JsonSchema subschema) {
-        this(subschema, false);
-    }
 
-    AdditionalProperties(JsonSchema subschema, boolean enabled) {
+    static final AdditionalProperties DEFAULT = new AdditionalProperties(JsonSchema.TRUE);
+
+    AdditionalProperties(JsonSchema subschema) {
         super(subschema);
-        this.enabled = enabled;
     }
 
     @Override
@@ -56,11 +51,6 @@ class AdditionalProperties extends UnaryCombiner {
         return "additionalProperties";
     }
 
-    @Override
-    public boolean canEvaluate() {
-        return enabled;
-    }
-  
     @Override
     public boolean supportsType(InstanceType type) {
         return type == InstanceType.OBJECT;
@@ -70,20 +60,18 @@ class AdditionalProperties extends UnaryCombiner {
     public Set<InstanceType> getSupportedTypes() {
         return EnumSet.of(InstanceType.OBJECT);
     }
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        assert enabled;
         if (getSubschema() == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator();
         } else {
             return createPropertiesEvaluator();
         }
     }
-    
+
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        assert enabled;
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return createNegatedForbiddenPropertiesEvaluator();
@@ -95,28 +83,31 @@ class AdditionalProperties extends UnaryCombiner {
     /**
      * {@inheritDoc}
      * <p>
-     * If there are neither "properties" nor "patternProperties",
-     * make this keyword to be evaluated.
+     * If there are neither "properties" nor "patternProperties", make this keyword
+     * to be evaluated.
      * </p>
      */
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        enabled = !siblings.containsKey("properties") &&
-                  !siblings.containsKey("patternProperties");
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        if (!keywords.containsKey("properties") && !keywords.containsKey("patternProperties")) {
+            evaluatables.add(this);
+        }
     }
-    
+
     private Evaluator createSubschemaEvaluator(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         return getSubschema().createEvaluator(type);
     }
-     
+
     private Evaluator createNegatedSubschemaEvaluator(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         return getSubschema().createNegatedEvaluator(type);
     }
 
     /**
-     * Create an evaluator which evaluates the subschema for all properties in the object.
+     * Create an evaluator which evaluates the subschema for all properties in the
+     * object.
+     *
      * @return newly created evaluator.
      */
     private Evaluator createPropertiesEvaluator() {
@@ -131,7 +122,9 @@ class AdditionalProperties extends UnaryCombiner {
     }
 
     /**
-     * Create an evaluator which evaluates the negated subschema for all properties in the object.
+     * Create an evaluator which evaluates the negated subschema for all properties
+     * in the object.
+     *
      * @return newly created evaluator.
      */
     private Evaluator createNegatedPropertiesEvaluator() {
@@ -144,7 +137,7 @@ class AdditionalProperties extends UnaryCombiner {
             }
         };
     }
-    
+
     private Evaluator createForbiddenPropertiesEvaluator() {
         return new AbstractConjunctivePropertiesEvaluator(this) {
             @Override
@@ -155,7 +148,7 @@ class AdditionalProperties extends UnaryCombiner {
             }
         };
     }
-    
+
     private Evaluator createNegatedForbiddenPropertiesEvaluator() {
         return new AbstractDisjunctivePropertiesEvaluator(this) {
             @Override

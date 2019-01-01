@@ -192,10 +192,11 @@ abstract class Items extends Combiner implements ArrayKeyword {
         }
         
         @Override
-        public void link(Map<String, Keyword> siblings) {
-            if (siblings.containsKey("additionalItems")) {
-                this.additionalItems = (AdditionalItems)siblings.get("additionalItems");
+        public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+            if (keywords.containsKey("additionalItems")) {
+                this.additionalItems = (AdditionalItems)keywords.get("additionalItems");
             }
+            evaluatables.add(this);
         }
       
         @Override

@@ -17,30 +17,28 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * The type for combining subschemas.
- * 
+ *
  * @author leadpony
  */
 public abstract class Combiner extends AbstractKeyword {
 
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>Combiners can be evaluated.</p>
-     */
     @Override
-    public boolean canEvaluate() {
-        return true;
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        evaluatables.add(this);
     }
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>This method must be overridden.</p>
      */
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {

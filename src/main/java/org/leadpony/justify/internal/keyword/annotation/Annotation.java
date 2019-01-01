@@ -26,16 +26,11 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  * @author leadpony
  */
 public abstract class Annotation<T> extends AbstractKeyword {
-    
-    @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-    
+
     /**
      * Returns the value of this annotation.
      * 
-     * @return the value of this annotation. 
+     * @return the value of this annotation.
      */
     abstract T value();
 }

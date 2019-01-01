@@ -16,11 +16,15 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.List;
+import java.util.Map;
+
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "Else" conditional keyword.
- * 
+ *
  * @author leadpony
  */
 class Else extends UnaryCombiner {
@@ -36,10 +40,10 @@ class Else extends UnaryCombiner {
 
     /**
      * {@inheritDoc}
-     * Schema evaluation will be done in "if" keyword.
+     *
+     * Evaluation will be done by "if" keyword.
      */
     @Override
-    public boolean canEvaluate() {
-        return false;
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

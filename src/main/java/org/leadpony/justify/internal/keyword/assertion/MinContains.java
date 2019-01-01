@@ -16,10 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * The type representing "minContains" keyword.
@@ -27,13 +31,13 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  * @author leadpony
  */
 public class MinContains extends AbstractKeyword {
-    
+
     private final int limit;
-    
+
     MinContains(int limit) {
         this.limit = limit;
     }
-    
+
     public int value() {
         return limit;
     }
@@ -44,12 +48,11 @@ public class MinContains extends AbstractKeyword {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-    
-    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), limit);
+    }
+
+    @Override
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

@@ -15,10 +15,14 @@
  */
 package org.leadpony.justify.internal.keyword.assertion.content;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Content media type with an unknown value.
@@ -44,12 +48,11 @@ public class UnknownContentMediaType extends AbstractKeyword {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
+    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
+        builder.add(name(), value);
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value);
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

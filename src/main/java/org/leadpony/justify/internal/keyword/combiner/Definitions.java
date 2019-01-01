@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -25,14 +26,15 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * @author leadpony
  */
 public class Definitions extends Combiner {
-    
+
     private final Map<String, JsonSchema> definitionMap = new LinkedHashMap<>();
-    
+
     Definitions() {
     }
 
@@ -42,17 +44,16 @@ public class Definitions extends Combiner {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-    
-    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         JsonObjectBuilder childBuilder = builderFactory.createObjectBuilder();
         definitionMap.forEach((k, v)->childBuilder.add(k, v.toJson()));
         builder.add(name(), childBuilder.build());
     }
-   
+
+    @Override
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    }
+
     @Override
     public boolean hasSubschemas() {
         return !definitionMap.isEmpty();
@@ -62,7 +63,7 @@ public class Definitions extends Combiner {
     public Stream<JsonSchema> subschemas() {
         return this.definitionMap.values().stream();
     }
-    
+
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         if (jsonPointer.hasNext()) {

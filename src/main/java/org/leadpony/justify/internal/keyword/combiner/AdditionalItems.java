@@ -16,17 +16,21 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.List;
+import java.util.Map;
+
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "additionalItems" keyword.
- * 
+ *
  * @author leadpony
  */
 class AdditionalItems extends UnaryCombiner {
-    
+
     static final AdditionalItems DEFAULT = new AdditionalItems(JsonSchema.TRUE);
-    
+
     AdditionalItems(JsonSchema subschema) {
         super(subschema);
     }
@@ -37,7 +41,6 @@ class AdditionalItems extends UnaryCombiner {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

@@ -17,23 +17,26 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Unknown keyword containing subschema.
- * 
+ *
  * @author leadpony
  */
 class Unknown extends Combiner {
-    
+
     private final String name;
     private final JsonSchema subschema;
-    
+
     Unknown(String name, JsonSchema subschema) {
         this.name = name;
         this.subschema = subschema;
@@ -45,13 +48,12 @@ class Unknown extends Combiner {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-    
-    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), subschema.toJson());
+    }
+
+    @Override
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 
     @Override
@@ -63,7 +65,7 @@ class Unknown extends Combiner {
     public Stream<JsonSchema> subschemas() {
         return Stream.of(subschema);
     }
-    
+
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         return subschema;

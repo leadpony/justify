@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,11 +30,8 @@ import org.leadpony.justify.internal.keyword.Keyword;
  * @author leadpony
  */
 public class PatternProperties extends AbstractProperties<Pattern> {
-    
-    private boolean enabled;
-    
+
     PatternProperties() {
-        this.enabled = false;
     }
 
     @Override
@@ -42,16 +40,13 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return enabled;
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        super.addToEvaluatables(evaluatables, keywords);
+        if (!keywords.containsKey("properties")) {
+            evaluatables.add(this);
+        }
     }
-    
-    @Override
-    public void link(Map<String, Keyword> siblings) {
-        super.link(siblings);
-        enabled = !siblings.containsKey("properties");
-    }
-    
+
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         if (jsonPointer.hasNext()) {
@@ -64,7 +59,7 @@ public class PatternProperties extends AbstractProperties<Pattern> {
         }
         return null;
     }
-    
+
     @Override
     protected void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas) {
         subschemas.isEmpty();

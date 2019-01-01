@@ -105,7 +105,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
 
     @Override
     public JsonSchema build() {
-        linkAllKeywords();
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
@@ -564,15 +563,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
             keywords.put(name, keyword);
         }
         return keyword;
-    }
-
-    /**
-     * Links all keywords found in the schema.
-     */
-    private void linkAllKeywords() {
-        for (Keyword keyword : this.keywords.values()) {
-            keyword.link(this.keywords);
-        }
     }
 
     /**
