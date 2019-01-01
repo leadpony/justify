@@ -28,12 +28,16 @@ import javax.json.JsonValue;
  * The type for building a JSON schema programmatically.
  * 
  * <p>
- * Instances of this type can be created by the factory class {@link JsonSchemaBuilderFactory}.
- * </p> 
- * <p>
- * The following example shows how to build a JSON schema with this builder.
+ * Instances of this type can be created by the factory class
+ * {@link JsonSchemaBuilderFactory}.
  * </p>
- * <pre><code>
+ * <p>
+ * The following code sample shows how to build a JSON schema using this
+ * builder.
+ * </p>
+ * 
+ * <pre>
+ * <code>
  * JsonValidationService service = JsonValidationService.newInstance();
  * JsonSchemaBuilderFactory factory = service.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
@@ -50,27 +54,31 @@ import javax.json.JsonValue;
  *                 .build())
  *         .withRequired("firstName", "lastName")
  *         .build();
- * </code></pre>
+ * </code>
+ * </pre>
  * 
  * <p>
- * For more information about the keywords composing the JSON schema,
- * please see <a href="http://json-schema.org/">JSON Schema Specification</a>.
+ * For more information about the keywords composing the JSON schema, please see
+ * <a href="http://json-schema.org/">JSON Schema Specification</a>.
  * </p>
  * 
- * <p>Each instance of this type is NOT safe for use by multiple concurrent threads.</p>
+ * <p>
+ * Each instance of this type is NOT safe for use by multiple concurrent
+ * threads.
+ * </p>
  * 
  * @author leadpony
  * @see <a href="http://json-schema.org/">JSON Schema Specification</a>
  */
 public interface JsonSchemaBuilder {
-    
+
     /**
      * Builds a new instance of {@link JsonSchema}.
      * 
      * @return newly created instance of {@link JsonSchema}, never be {@code null}.
      */
     JsonSchema build();
-    
+
     /**
      * Adds the "$id" keyword to the schema.
      * 
@@ -79,12 +87,12 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code id} is {@code null}.
      */
     JsonSchemaBuilder withId(URI id);
-    
+
     /**
      * Adds the "$schema" keyword to the schema.
      * <p>
-     * The "$schema" keyword should be used in a root schema.
-     * It must not appear in subschemas.
+     * The "$schema" keyword should be used in a root schema. It must not appear in
+     * subschemas.
      * </p>
      * 
      * @param schema the version identifier of the schema.
@@ -94,51 +102,51 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withSchema(URI schema);
 
     /* Validation Keywords for Any Instance Type */
-    
+
     /**
-     * Adds the "type" keyword to the schema.
-     * The type are specified as an array.
+     * Adds the "type" keyword to the schema. The type are specified as an array.
      * 
-     * @param types the array of types. 
-     *              At least one element is needed and elements must be unique.
+     * @param types the array of types. At least one element is needed and elements
+     *              must be unique.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code types} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code types} is empty,
-     *                                  or some types are not unique.
+     * @throws NullPointerException     if the specified {@code types} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code types} is empty, or
+     *                                  some types are not unique.
      */
     JsonSchemaBuilder withType(InstanceType... types);
 
     /**
-     * Adds the "type" keyword to the schema.
-     * The type are specified as a set.
+     * Adds the "type" keyword to the schema. The type are specified as a set.
      * 
      * @param types the set of types. At least one element is needed.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code types} is {@code null}.
+     * @throws NullPointerException     if the specified {@code types} is
+     *                                  {@code null}.
      * @throws IllegalArgumentException if the specified {@code types} is empty.
      */
     JsonSchemaBuilder withType(Set<InstanceType> types);
 
     /**
-     * Adds the "enum" keyword to the schema.
-     * The values are specified as an array.
+     * Adds the "enum" keyword to the schema. The values are specified as an array.
      * 
-     * @param values the values in the enumeration. 
-     *               At least one element is needed and elements must be unique.
+     * @param values the values in the enumeration. At least one element is needed
+     *               and elements must be unique.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code values} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code values} is empty.
-     *                                  or some values are not unique.
+     * @throws NullPointerException     if the specified {@code values} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code values} is empty. or
+     *                                  some values are not unique.
      */
     JsonSchemaBuilder withEnum(JsonValue... values);
-    
+
     /**
-     * Adds the "enum" keyword to the schema.
-     * The values are specified as a set.
+     * Adds the "enum" keyword to the schema. The values are specified as a set.
      * 
      * @param values the values in the enumeration. At least one element is needed.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code values} is {@code null}.
+     * @throws NullPointerException     if the specified {@code values} is
+     *                                  {@code null}.
      * @throws IllegalArgumentException if the specified {@code values} is empty.
      */
     JsonSchemaBuilder withEnum(Set<JsonValue> values);
@@ -151,43 +159,47 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code value} is {@code null}.
      */
     JsonSchemaBuilder withConst(JsonValue value);
-    
+
     /* Validation Keywords for Numeric Instances (number and integer) */
 
     /**
-     * Adds the "multipleOf" keyword to the schema.
-     * The value is specified as long type.
+     * Adds the "multipleOf" keyword to the schema. The value is specified as long
+     * type.
      * 
      * @param value the value of the keyword. This must be greater than 0.
      * @return this builder.
-     * @throws IllegalArgumentException if the specified {@code value} is not greater than 0.
+     * @throws IllegalArgumentException if the specified {@code value} is not
+     *                                  greater than 0.
      */
     JsonSchemaBuilder withMultipleOf(long value);
 
     /**
-     * Adds the "multipleOf" keyword to the schema.
-     * The value is specified as double type.
+     * Adds the "multipleOf" keyword to the schema. The value is specified as double
+     * type.
      * 
      * @param value the value of the keyword. This must be greater than 0.
      * @return this builder.
-     * @throws IllegalArgumentException if the specified {@code value} is not greater than 0.
+     * @throws IllegalArgumentException if the specified {@code value} is not
+     *                                  greater than 0.
      */
     JsonSchemaBuilder withMultipleOf(double value);
 
     /**
-     * Adds the "multipleOf" keyword to the schema.
-     * The value is specified as {@link BigDecimal} type.
+     * Adds the "multipleOf" keyword to the schema. The value is specified as
+     * {@link BigDecimal} type.
      * 
      * @param value the value of the keyword. This must be greater than 0.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code value} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code value} is not greater than 0.
+     * @throws NullPointerException     if the specified {@code value} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code value} is not
+     *                                  greater than 0.
      */
     JsonSchemaBuilder withMultipleOf(BigDecimal value);
-    
+
     /**
-     * Adds the "maximum" keyword to the schema.
-     * The value is specified as long type.
+     * Adds the "maximum" keyword to the schema. The value is specified as long
+     * type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
      * </p>
@@ -200,8 +212,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "maximum" keyword to the schema.
-     * The value is specified as double type.
+     * Adds the "maximum" keyword to the schema. The value is specified as double
+     * type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
      * </p>
@@ -214,8 +226,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "maximum" keyword to the schema.
-     * The value is specified as {@link BigDecimal} type.
+     * Adds the "maximum" keyword to the schema. The value is specified as
+     * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
      * </p>
@@ -227,8 +239,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaximum(BigDecimal value);
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema.
-     * The value is specified as long type.
+     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * long type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
      * </p>
@@ -241,8 +253,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema.
-     * The value is specified as double type.
+     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * double type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
      * </p>
@@ -255,8 +267,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema.
-     * The value is specified as {@link BigDecimal} type.
+     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
      * </p>
@@ -268,8 +280,8 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withExclusiveMaximum(BigDecimal value);
 
     /**
-     * Adds the "minimum" keyword to the schema.
-     * The value is specified as long type.
+     * Adds the "minimum" keyword to the schema. The value is specified as long
+     * type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
      * </p>
@@ -282,8 +294,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "minimum" keyword to the schema.
-     * The value is specified as double type.
+     * Adds the "minimum" keyword to the schema. The value is specified as double
+     * type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
      * </p>
@@ -294,10 +306,10 @@ public interface JsonSchemaBuilder {
     default JsonSchemaBuilder withMinimum(double value) {
         return withMinimum(BigDecimal.valueOf(value));
     }
-    
+
     /**
-     * Adds the "minimum" keyword to the schema.
-     * The value is specified as {@link BigDecimal} type.
+     * Adds the "minimum" keyword to the schema. The value is specified as
+     * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
      * </p>
@@ -307,10 +319,10 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code value} is {@code null}.
      */
     JsonSchemaBuilder withMinimum(BigDecimal value);
-    
+
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema.
-     * The value is specified as long type.
+     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * long type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
      * </p>
@@ -323,8 +335,8 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema.
-     * The value is specified as double type.
+     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * double type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
      * </p>
@@ -335,10 +347,10 @@ public interface JsonSchemaBuilder {
     default JsonSchemaBuilder withExclusiveMinimum(double value) {
         return withExclusiveMinimum(BigDecimal.valueOf(value));
     }
-    
+
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema.
-     * The value is specified as {@link BigDecimal} type.
+     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
      * </p>
@@ -348,9 +360,9 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code value} is {@code null}.
      */
     JsonSchemaBuilder withExclusiveMinimum(BigDecimal value);
-    
+
     /* Validation Keywords for Strings */
-    
+
     /**
      * Adds the "maxLength" keyword to the schema.
      * <p>
@@ -378,58 +390,68 @@ public interface JsonSchemaBuilder {
     /**
      * Adds the "pattern" keyword to the schema.
      * <p>
-     * This keyword specifies the pattern of string instance as a regular expression.
+     * This keyword specifies the pattern of string instance as a regular
+     * expression.
      * </p>
      * 
-     * @param pattern the regular expression which will be tested against a string instance.
+     * @param pattern the regular expression which will be tested against a string
+     *                instance.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code pattern} is {@code null}.
-     * @throws PatternSyntaxException if the specified {@code pattern} is not a valid regular expression.
+     * @throws NullPointerException   if the specified {@code pattern} is
+     *                                {@code null}.
+     * @throws PatternSyntaxException if the specified {@code pattern} is not a
+     *                                valid regular expression.
      */
     JsonSchemaBuilder withPattern(String pattern);
-    
+
     /* Validation Keywords for Arrays */
-   
+
     /**
-     * Adds the "items" keyword to the schema.
-     * The specified single subschema is used for all array items.
+     * Adds the "items" keyword to the schema. The specified single subschema is
+     * used for all array items.
      * 
      * @param subschema the subschema as the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withItems(JsonSchema subschema);
 
     /**
-     * Adds the "items" keyword to the schema.
-     * The value is specified as an array of subschemas.
+     * Adds the "items" keyword to the schema. The value is specified as an array of
+     * subschemas.
      * 
-     * @param subschemas the array of subschemas as the value of the keyword. 
-     *                   At least one element is needed.
+     * @param subschemas the array of subschemas as the value of the keyword. At
+     *                   least one element is needed.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withItemsArray(JsonSchema... subschemas);
 
     /**
-     * Adds the "items" keyword to the schema.
-     * The value is specified as an ordered list of subschemas.
+     * Adds the "items" keyword to the schema. The value is specified as an ordered
+     * list of subschemas.
      * 
-     * @param subschemas the list of subschemas as the value of the keyword. 
-     *                   At least one element is needed.
+     * @param subschemas the list of subschemas as the value of the keyword. At
+     *                   least one element is needed.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas);
-    
+
     /**
      * Adds the "additionalItems" keyword to the schema.
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withAdditionalItems(JsonSchema subschema);
 
@@ -450,7 +472,7 @@ public interface JsonSchemaBuilder {
      * @throws IllegalArgumentException if the specified {@code value} is negative.
      */
     JsonSchemaBuilder withMinItems(int value);
-    
+
     /**
      * Adds the "uniqueItems" keyword to the schema.
      * <p>
@@ -461,16 +483,17 @@ public interface JsonSchemaBuilder {
      * @return this builder.
      */
     JsonSchemaBuilder withUniqueItems(boolean unique);
-    
+
     /**
      * Adds the "contains" keyword to the schema.
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withContains(JsonSchema subschema);
-    
+
     /**
      * Adds the "maxContains" keyword to the schema.
      * 
@@ -492,7 +515,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinContains(int value);
 
     /* Validation Keywords for Objects */
-    
+
     /**
      * Adds the "maxProperties" keyword to the schema.
      * 
@@ -510,7 +533,7 @@ public interface JsonSchemaBuilder {
      * @throws IllegalArgumentException if the specified {@code value} is negative.
      */
     JsonSchemaBuilder withMinProperties(int value);
-    
+
     /**
      * Adds the "required" keyword to the schema.
      * <p>
@@ -519,8 +542,10 @@ public interface JsonSchemaBuilder {
      * 
      * @param names the value of the keyword. The names must be unique.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code names} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code values} are not unique.
+     * @throws NullPointerException     if the specified {@code names} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code values} are not
+     *                                  unique.
      */
     JsonSchemaBuilder withRequired(String... names);
 
@@ -539,21 +564,24 @@ public interface JsonSchemaBuilder {
     /**
      * Adds an entry of the "properties" keyword to the schema.
      * 
-     * @param name the name of the property.
+     * @param name      the name of the property.
      * @param subschema the subschema for the property.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} or {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code name} or
+     *                              {@code subschema} is {@code null}.
      */
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
-    
+
     /**
      * Adds an entry of the "patternProperties" keyword to the schema.
      * 
-     * @param pattern the name pattern the property.
+     * @param pattern   the name pattern the property.
      * @param subschema the subschema for the property.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code pattern} or {@code subschema} is {@code null}.
-     * @throws PatternSyntaxException if the specified {@code pattern} is not a valid regular expression.
+     * @throws NullPointerException   if the specified {@code pattern} or
+     *                                {@code subschema} is {@code null}.
+     * @throws PatternSyntaxException if the specified {@code pattern} is not a
+     *                                valid regular expression.
      */
     JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema);
 
@@ -562,50 +590,57 @@ public interface JsonSchemaBuilder {
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema);
-   
+
     /**
      * Adds an entry of the "dependencies" keyword to the schema.
      * 
-     * @param name the name of the dependency property.
+     * @param name      the name of the dependency property.
      * @param subschema the schema to be evaluated against the entire object.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} or {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code name} or
+     *                              {@code subschema} is {@code null}.
      */
     JsonSchemaBuilder withDependency(String name, JsonSchema subschema);
-    
+
     /**
      * Adds an entry of the "dependencies" keyword to the schema.
      * 
-     * @param name the name of the dependency property.
+     * @param name               the name of the dependency property.
      * @param requiredProperties the required properties in the object.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} or {@code requiredProperties} is {@code null}.
-     * @throws IllegalArgumentException if any element in {@code requiredProperties} is not unique.
+     * @throws NullPointerException     if the specified {@code name} or
+     *                                  {@code requiredProperties} is {@code null}.
+     * @throws IllegalArgumentException if any element in {@code requiredProperties}
+     *                                  is not unique.
      */
     JsonSchemaBuilder withDependency(String name, String... requiredProperties);
 
     /**
      * Adds an entry of the "dependencies" keyword to the schema.
      * 
-     * @param name the name of the dependency property.
+     * @param name               the name of the dependency property.
      * @param requiredProperties the required properties in the object.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} or {@code requiredProperties} is {@code null}.
+     * @throws NullPointerException if the specified {@code name} or
+     *                              {@code requiredProperties} is {@code null}.
      */
     JsonSchemaBuilder withDependency(String name, Set<String> requiredProperties);
 
     /**
      * Adds the "propertyNames" keyword to the schema.
      * 
-     * @param subschema the subschema to be evaluated against all property names in an object.
+     * @param subschema the subschema to be evaluated against all property names in
+     *                  an object.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withPropertyNames(JsonSchema subschema);
-    
+
     /* Keywords for Applying Subschemas Conditionally */
 
     /**
@@ -613,7 +648,8 @@ public interface JsonSchemaBuilder {
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withIf(JsonSchema subschema);
 
@@ -625,7 +661,8 @@ public interface JsonSchemaBuilder {
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withThen(JsonSchema subschema);
 
@@ -637,75 +674,82 @@ public interface JsonSchemaBuilder {
      * 
      * @param subschema the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withElse(JsonSchema subschema);
-    
+
     /* Keywords for Applying Subschemas With Boolean Logic */
-    
+
     /**
-     * Adds the "allOf" keyword to the schema.
-     * The value is specifies as an array.
+     * Adds the "allOf" keyword to the schema. The value is specifies as an array.
      * 
      * @param subschemas the array of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "allOf" keyword to the schema.
-     * The value is specifies as a list.
+     * Adds the "allOf" keyword to the schema. The value is specifies as a list.
      * 
      * @param subschemas the list of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withAllOf(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "anyOf" keyword to the schema.
-     * The value is specifies as an array.
+     * Adds the "anyOf" keyword to the schema. The value is specifies as an array.
      * 
      * @param subschemas the array of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withAnyOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "anyOf" keyword to the schema.
-     * The value is specifies as a list.
+     * Adds the "anyOf" keyword to the schema. The value is specifies as a list.
      * 
      * @param subschemas the list of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withAnyOf(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "oneOf" keyword to the schema.
-     * The value is specifies as an array.
+     * Adds the "oneOf" keyword to the schema. The value is specifies as an array.
      * 
      * @param subschemas the array of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withOneOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "oneOf" keyword to the schema.
-     * The value is specifies as a list.
+     * Adds the "oneOf" keyword to the schema. The value is specifies as a list.
      * 
      * @param subschemas the list of the subschemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschemas} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code subschemas} is empty.
+     * @throws NullPointerException     if the specified {@code subschemas} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code subschemas} is
+     *                                  empty.
      */
     JsonSchemaBuilder withOneOf(List<JsonSchema> subschemas);
 
@@ -714,32 +758,54 @@ public interface JsonSchemaBuilder {
      * 
      * @param subschema the subschema to be negated.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code subschema} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withNot(JsonSchema subschema);
-    
+
     /**
      * Adds the "format" keyword to the schema.
      * 
      * @param attribute the format attribute such as "date-time".
      * @return this builder.
-     * @throws NullPointerException if the specified {@code attribute} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code attribute} is unknown.
+     * @throws NullPointerException     if the specified {@code attribute} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code attribute} is
+     *                                  unknown.
      */
     JsonSchemaBuilder withFormat(String attribute);
 
     /**
+     * Adds the "contentEncoding" keyword to the schema.
+     * 
+     * @param value the value of the keyword.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code value} is {@code null}.
+     */
+    JsonSchemaBuilder withContentEncoding(String value);
+
+    /**
+     * Adds the "contentMediaType" keyword to the schema.
+     * 
+     * @param value the value of the keyword.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code value} is {@code null}.
+     */
+    JsonSchemaBuilder withContentMediaType(String value);
+
+    /**
      * Adds an entry of "definitions" keyword to the schema.
      * 
-     * @param name the name of the definition to be added.
+     * @param name   the name of the definition to be added.
      * @param schema the schema to be defined.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} or {@code schema} is {@code null}.
+     * @throws NullPointerException if the specified {@code name} or {@code schema}
+     *                              is {@code null}.
      */
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
-    
+
     /* Keywords for annotation */
-    
+
     /**
      * Adds the "title" keyword to the schema.
      * 
@@ -748,16 +814,17 @@ public interface JsonSchemaBuilder {
      * @throws NullPointerException if the specified {@code title} is {@code null}.
      */
     JsonSchemaBuilder withTitle(String title);
-    
+
     /**
      * Adds the "description" keyword to the schema.
      * 
      * @param description the description of the schema.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code description} is {@code null}.
+     * @throws NullPointerException if the specified {@code description} is
+     *                              {@code null}.
      */
     JsonSchemaBuilder withDescription(String description);
-    
+
     /**
      * Adds the "default" keyword to the schema.
      * 

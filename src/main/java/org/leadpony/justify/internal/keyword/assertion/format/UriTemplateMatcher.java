@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.internal.base.AsciiCode;
+
 /**
  * Matcher for URI template conformant to RFC 6570.
  * 

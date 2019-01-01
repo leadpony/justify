@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.schema;
 import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
+import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 
 /**
@@ -27,18 +28,23 @@ import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeReg
  * @author leadpony
  */
 public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
-    
+
     private final JsonBuilderFactory builderFactory;
     private final FormatAttributeRegistry formatRegistry;
-    
+    private final ContentAttributeRegistry contentRegistry;
+
     /**
      * Constructs this factory.
      * 
-     * @param builderFactory the factory for producing builders of JSON values.
+     * @param builderFactory  the factory for producing builders of JSON values.
+     * @param formatRegistry  the registry managing all format attributes.
+     * @param contentRegistry the registry managing all content attributes.
      */
-    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry) {
+    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
+            ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
         this.formatRegistry = formatRegistry;
+        this.contentRegistry = contentRegistry;
     }
 
     /**
@@ -46,6 +52,6 @@ public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
      */
     @Override
     public DefaultSchemaBuilder createBuilder() {
-        return new DefaultSchemaBuilder(builderFactory, formatRegistry);
+        return new DefaultSchemaBuilder(builderFactory, formatRegistry, contentRegistry);
     }
 }

@@ -28,46 +28,60 @@ import org.leadpony.justify.spi.FormatAttribute;
  */
 @SuppressWarnings("serial")
 public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
+
+    private static final FormatAttribute DATE = new Date();
+    private static final FormatAttribute DATE_TIME = new DateTime();
+    private static final FormatAttribute EMAIL = new Email();
+    private static final FormatAttribute HOSTNAME = new Hostname();
+    private static final FormatAttribute IPV4 = new Ipv4();
+    private static final FormatAttribute IPV6 = new Ipv6();
+    private static final FormatAttribute IDN_EMAIL = new IdnEmail();
+    private static final FormatAttribute IDN_HOSTNAME =  new IdnHostname();
+    private static final FormatAttribute IRI = new Iri();
+    private static final FormatAttribute IRI_REFERENCE = new IriReference();
+    private static final FormatAttribute JSON_POINTER = new JsonPointer();
+    private static final FormatAttribute REGEX = new Regex();
+    private static final FormatAttribute RELATIVE_JSON_POINTER = new RelativeJsonPointer();
+    private static final FormatAttribute TIME = new Time();
+    private static final FormatAttribute URI = new Uri();
+    private static final FormatAttribute URI_REFERENCE = new UriReference();
+    private static final FormatAttribute URI_TEMPLATE = new UriTemplate();
     
     public FormatAttributeRegistry() {
-        registerAttributes();
-        registerDefaultAttributes();
     }
-    
-    private void registerAttributes() {
-        ServiceLoader<FormatAttribute> loader = ServiceLoader.load(FormatAttribute.class);
-        for (FormatAttribute attribute : loader) {
-            register(attribute);
-        }
-    }
-    
-    private void registerDefaultAttributes() {
-        registerIfNotExist(new Date());
-        registerIfNotExist(new DateTime());
-        registerIfNotExist(new Email());
-        registerIfNotExist(new Hostname());
-        registerIfNotExist(new Ipv4());
-        registerIfNotExist(new Ipv6());
-        registerIfNotExist(new IdnEmail());
-        registerIfNotExist(new IdnHostname());
-        registerIfNotExist(new Iri());
-        registerIfNotExist(new IriReference());
-        registerIfNotExist(new JsonPointer());
-        registerIfNotExist(new Regex());
-        registerIfNotExist(new RelativeJsonPointer());
-        registerIfNotExist(new Time());
-        registerIfNotExist(new Uri());
-        registerIfNotExist(new UriReference());
-        registerIfNotExist(new UriTemplate());
-    }
-    
-    private void registerIfNotExist(FormatAttribute attribute) {
-        if (!containsKey(attribute.name())) {
-            register(attribute);
-        }
-    }
-    
-    private void register(FormatAttribute attribute) {
+
+    public void registeFormatAttribute(FormatAttribute attribute) {
         put(attribute.name(), attribute);
+    }
+
+    /**
+     * Registers all builtin format attributes with this registry.
+     * 
+     * @return this registry.
+     */
+    public FormatAttributeRegistry registerDefault() {
+        registeFormatAttribute(DATE);
+        registeFormatAttribute(DATE_TIME);
+        registeFormatAttribute(EMAIL);
+        registeFormatAttribute(HOSTNAME);
+        registeFormatAttribute(IPV4);
+        registeFormatAttribute(IPV6);
+        registeFormatAttribute(IDN_EMAIL);
+        registeFormatAttribute(IDN_HOSTNAME);
+        registeFormatAttribute(IRI);
+        registeFormatAttribute(IRI_REFERENCE);
+        registeFormatAttribute(JSON_POINTER);
+        registeFormatAttribute(REGEX);
+        registeFormatAttribute(RELATIVE_JSON_POINTER);
+        registeFormatAttribute(TIME);
+        registeFormatAttribute(URI);
+        registeFormatAttribute(URI_REFERENCE);
+        registeFormatAttribute(URI_TEMPLATE);
+        return this;
+    }
+
+    public FormatAttributeRegistry registerProvidedFormatAttriutes() {
+        ServiceLoader.load(FormatAttribute.class).forEach(this::registeFormatAttribute);
+        return this;
     }
 }

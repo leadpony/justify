@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.util.BitSet;
 
+import org.leadpony.justify.internal.base.AsciiCode;
+
 /**
  * @author leadpony
  */

@@ -33,7 +33,7 @@ public class DefaultJsonValidationProvider extends JsonValidationProvider {
      */
     public DefaultJsonValidationProvider() {
     }
-    
+
     /**
      * {@inheritDoc}
      */

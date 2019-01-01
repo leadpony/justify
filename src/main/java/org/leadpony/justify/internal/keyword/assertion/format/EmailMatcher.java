@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.leadpony.justify.internal.keyword.assertion.format.AsciiCode.isAlphanumeric;
+import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
 
 import java.util.BitSet;
 

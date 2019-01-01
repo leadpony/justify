@@ -31,7 +31,7 @@ public class OptionalValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/optional/ecmascript-regex.json",
             "/org/json_schema/tests/draft7/optional/zeroTerminatedFloats.json",
     };
-    
+
     public static Stream<ValidationFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }

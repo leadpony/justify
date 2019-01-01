@@ -43,6 +43,11 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
+import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
+import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
+import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
+import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
+import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
@@ -57,44 +62,47 @@ import org.leadpony.justify.internal.keyword.combiner.Properties;
  * @author leadpony
  */
 class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
-    
+
     private final JsonBuilderFactory builderFactory;
     private final FormatAttributeRegistry formatRegistry;
-    
+    private final ContentAttributeRegistry contentRegistry;
+
     private boolean empty;
     private URI id;
     private URI schema;
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI ref;
-    
+
     /**
      * Constructs this builder.
      * 
      * @param builderFactory the factory for producing builders of JSON values.
-     * @param formatRegistry the registry containing format matchers.
+     * @param formatRegistry  the registry managing all format attributes.
+     * @param contentRegistry the registry managing all content attributes.
      */
-    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry) {
+    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry, ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
         this.formatRegistry = formatRegistry;
+        this.contentRegistry = contentRegistry;
         this.empty = true;
     }
-    
+
     URI getId() {
         return id;
     }
-    
+
     URI getSchema() {
         return schema;
     }
-    
+
     Map<String, Keyword> getKeywordMap() {
         return keywords;
     }
-    
+
     JsonBuilderFactory getBuilderFactory() {
         return builderFactory;
     }
-    
+
     @Override
     public JsonSchema build() {
         linkAllKeywords();
@@ -113,14 +121,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         this.id = id;
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withSchema(URI schema) {
         requireNonNull(schema, "schema");
         this.schema = schema;
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withType(InstanceType... types) {
         requireNonNull(types, "types");
@@ -128,7 +136,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         Set<InstanceType> set = requireUnique(types, "types");
         return withType(set);
     }
-    
+
     @Override
     public JsonSchemaBuilder withType(Set<InstanceType> types) {
         requireNonNull(types, "types");
@@ -136,7 +144,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.type(types));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withEnum(JsonValue... values) {
         requireNonNull(values, "values");
@@ -144,7 +152,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         Set<JsonValue> set = requireUnique(values, "values");
         return withEnum(set);
     }
-    
+
     @Override
     public JsonSchemaBuilder withEnum(Set<JsonValue> values) {
         requireNonNull(values, "values");
@@ -152,14 +160,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.enum_(values));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withConst(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.const_(value));
         return nonemptyBuilder();
     }
- 
+
     @Override
     public JsonSchemaBuilder withMultipleOf(long value) {
         requirePositive(value, "value");
@@ -171,7 +179,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requirePositive(value, "value");
         return withMultipleOf(BigDecimal.valueOf(value));
     }
-    
+
     @Override
     public JsonSchemaBuilder withMultipleOf(BigDecimal value) {
         requireNonNull(value, "value");
@@ -179,7 +187,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.multipleOf(value));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal value) {
         requireNonNull(value, "value");
@@ -221,7 +229,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.minLength(value));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withPattern(String pattern) {
         requireNonNull(pattern, "pattern");
@@ -229,9 +237,9 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.pattern(compiled));
         return nonemptyBuilder();
     }
-    
+
     /* Validation Keywords for Arrays */
-    
+
     @Override
     public JsonSchemaBuilder withItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
@@ -244,7 +252,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(subschemas, "subschemas");
         return withItemsArray(Arrays.asList(subschemas));
     }
-    
+
     @Override
     public JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
@@ -252,13 +260,13 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Combiners.items(subschemas));
         return nonemptyBuilder();
     }
-  
+
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.additionalItems(subschema));
         return nonemptyBuilder();
-    } 
+    }
 
     @Override
     public JsonSchemaBuilder withMaxItems(int value) {
@@ -273,7 +281,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.minItems(value));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withUniqueItems(boolean unique) {
         addKeyword(Assertions.uniqueItems(unique));
@@ -286,7 +294,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Combiners.contains(subschema));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withMaxContains(int value) {
         requireNonNegative(value, "value");
@@ -302,7 +310,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     }
 
     /* Validation Keywords for Objects */
-    
+
     @Override
     public JsonSchemaBuilder withMaxProperties(int value) {
         requireNonNegative(value, "value");
@@ -316,7 +324,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Assertions.minProperties(value));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withRequired(String... names) {
         requireNonNull(names, "names");
@@ -356,7 +364,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Combiners.additionalProperties(subschema));
         return nonemptyBuilder();
     }
-   
+
     @Override
     public JsonSchemaBuilder withDependency(String name, JsonSchema subschema) {
         requireNonNull(name, "name");
@@ -365,7 +373,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         keyword.addDependency(name, subschema);
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withDependency(String name, String... requiredProperties) {
         requireNonNull(name, "name");
@@ -381,16 +389,16 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         keyword.addDependency(name, requiredProperties);
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.propertyNames(subschema));
         return nonemptyBuilder();
     }
-  
+
     /* Keywords for Applying Subschemas Conditionally */
-    
+
     @Override
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
@@ -463,19 +471,40 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(Combiners.not(subschema));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
         if (formatRegistry.containsKey(attribute)) {
             addKeyword(new Format(formatRegistry.get(attribute)));
         } else {
-            throw new IllegalArgumentException(
-                    "\"" + attribute + "\" is an uknown format attribute.");
+            throw new IllegalArgumentException("\"" + attribute + "\" is an uknown format attribute.");
         }
         return nonemptyBuilder();
     }
-  
+
+    @Override
+    public JsonSchemaBuilder withContentEncoding(String value) {
+        requireNonNull(value, "value");
+        if (contentRegistry.containsEncodingScheme(value)) {
+            addKeyword(new ContentEncoding(contentRegistry.findEncodingScheme(value)));
+        } else {
+            addKeyword(new UnknownContentEncoding(value));
+        }
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withContentMediaType(String value) {
+        requireNonNull(value, "value");
+        if (contentRegistry.containsMimeType(value)) {
+            addKeyword(new ContentMediaType(contentRegistry.findMimeType(value), null));
+        } else {
+            addKeyword(new UnknownContentMediaType(value));
+        }
+        return nonemptyBuilder();
+    }
+
     @Override
     public JsonSchemaBuilder withDefinition(String name, JsonSchema schema) {
         requireNonNull(name, "name");
@@ -484,7 +513,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         definitions.addDefinition(name, schema);
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withTitle(String title) {
         requireNonNull(title, "title");
@@ -498,21 +527,21 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         addKeyword(new Description(description));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withDefault(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(new Default(value));
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withRef(URI ref) {
         requireNonNull(ref, "ref");
         this.ref = ref;
         return nonemptyBuilder();
     }
-    
+
     @Override
     public JsonSchemaBuilder withUnknown(String name, JsonSchema subschema) {
         requireNonNull(name, "name");
@@ -524,19 +553,19 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     private void addKeyword(Keyword keyword) {
         this.keywords.put(keyword.name(), keyword);
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T extends Keyword> T requireKeyword(String name, Supplier<T> supplier) {
         T keyword = null;
         if (keywords.containsKey(name)) {
-            keyword = (T)keywords.get(name);
+            keyword = (T) keywords.get(name);
         } else {
             keyword = supplier.get();
             keywords.put(name, keyword);
         }
         return keyword;
     }
-  
+
     /**
      * Links all keywords found in the schema.
      */

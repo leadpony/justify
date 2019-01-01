@@ -59,35 +59,35 @@ import org.leadpony.justify.internal.schema.EnhancedSchemaBuilder;
  * @author leadpony
  */
 public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactory {
-    
+
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
-    
+
     private final JsonParser parser;
     private final BasicSchemaBuilderFactory factory;
 
     private boolean alreadyRead;
     private boolean alreadyClosed;
-    
+
     private URI initialBaseURI = DEFAULT_INITIAL_BASE_URI;
-    
+
     private final Map<URI, JsonSchema> identified = new HashMap<>();
     private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
 
     private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
- 
+
     private List<Problem> problems = new ArrayList<>();
-    
+
     /**
      * Constructs this schema reader.
      * 
-     * @param parser the parser of JSON document.
+     * @param parser  the parser of JSON document.
      * @param factory the factory for producing schema builders.
      */
     public BasicSchemaReader(JsonParser parser, BasicSchemaBuilderFactory factory) {
         this.parser = parser;
         this.factory = factory;
     }
-    
+
     @Override
     public JsonSchema read() {
         if (alreadyRead || alreadyClosed) {
@@ -102,7 +102,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         dispatchProblems();
         return rootSchema;
     }
-    
+
     @Override
     public void close() {
         if (!this.alreadyClosed) {
@@ -110,7 +110,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             this.alreadyClosed = true;
         }
     }
-    
+
     @Override
     public JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver) {
         requireNonNull(resolver, "resolver");
@@ -120,11 +120,11 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         resolvers.add(resolver);
         return this;
     }
-    
+
     protected JsonLocation getLastCharLocation() {
         return SimpleJsonLocation.before(parser.getLocation());
     }
-    
+
     private JsonSchema rootSchema() {
         Event event = parser.next();
         switch (event) {
@@ -141,8 +141,8 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     /**
      * Checks if the input is empty or not.
      * <p>
-     * {@link JsonParser#hasNext()} in both RI and Apache Johnzon returns {@code false}
-     * if input is empty.
+     * {@link JsonParser#hasNext()} in both RI and Apache Johnzon returns
+     * {@code false} if input is empty.
      * </p>
      * 
      * @return {@code true} is the input is empty, {@code false} otherwise.
@@ -151,14 +151,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         if (parser.hasNext()) {
             return false;
         } else {
-            Problem p = createProblemBuilder(parser)
-                    .withMessage("schema.problem.empty")
-                    .build();
+            Problem p = createProblemBuilder(parser).withMessage("schema.problem.empty").build();
             addProblem(p);
             return true;
         }
     }
-    
+
     private JsonSchema objectSchema(boolean root) {
         EnhancedSchemaBuilder builder = this.factory.createBuilder();
         JsonLocation refLocation = null;
@@ -174,12 +172,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
         JsonSchema schema = builder.build();
         if (schema instanceof SchemaReference) {
-            SchemaReference reference = (SchemaReference)schema;
+            SchemaReference reference = (SchemaReference) schema;
             references.put(reference, SimpleJsonLocation.before(refLocation));
         }
         return schema;
     }
-    
+
     private JsonSchema literalSchema(Event event) {
         switch (event) {
         case VALUE_TRUE:
@@ -190,17 +188,17 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             return null;
         }
     }
-    
+
     private void populateSchema(String keyName, EnhancedSchemaBuilder builder) {
         switch (keyName) {
-        case "$schema":
-            addSchema(builder);
-            break;
         case "$id":
             addId(builder);
             break;
         case "$ref":
             addRef(builder);
+            break;
+        case "$schema":
+            addSchema(builder);
             break;
         case "additionalItems":
             addAdditionalItems(builder);
@@ -219,6 +217,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             break;
         case "contains":
             addContains(builder);
+            break;
+        case "contentEncoding":
+            addContentEncoding(builder);
+            break;
+        case "contentMediaType":
+            addContentMediaType(builder);
             break;
         case "default":
             addDefault(builder);
@@ -324,9 +328,9 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             break;
         }
     }
-    
+
     /* Core keywords */
-    
+
     private void addSchema(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -367,7 +371,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     }
 
     /* Validation keywords */
-    
+
     private void addType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -388,7 +392,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
- 
+
     private void addEnum(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -403,12 +407,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addConst(JsonSchemaBuilder builder) {
         parser.next();
         builder.withConst(parser.getValue());
     }
-    
+
     private void addMaximum(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -417,7 +421,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addExclusiveMaximum(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -444,7 +448,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addMultipleOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -468,7 +472,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addMinLength(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -480,7 +484,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addPattern(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -493,7 +497,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-   
+
     private void addItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -507,7 +511,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-   
+
     private void addAdditionalItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (canStartSchema(event)) {
@@ -540,7 +544,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
- 
+
     private void addUniqueItems(JsonSchemaBuilder builder) {
         Event event = parser.next();
         switch (event) {
@@ -555,7 +559,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             break;
         }
     }
-    
+
     private void addContains(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (canStartSchema(event)) {
@@ -564,7 +568,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-   
+
     private void addMaxContains(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -576,7 +580,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addMinContains(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -588,7 +592,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addMaxProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -600,7 +604,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
- 
+
     private void addMinProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_NUMBER) {
@@ -612,7 +616,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addRequired(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -629,7 +633,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-  
+
     private void addProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
@@ -639,7 +643,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
-                String name = parser.getString(); 
+                String name = parser.getString();
                 event = parser.next();
                 if (canStartSchema(event)) {
                     builder.withProperty(name, subschema(event));
@@ -651,7 +655,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             }
         }
     }
-    
+
     private void addPatternProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
@@ -677,7 +681,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             }
         }
     }
-    
+
     private void addAdditionalProperties(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (canStartSchema(event)) {
@@ -686,7 +690,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addDependencies(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event != Event.START_OBJECT) {
@@ -710,10 +714,10 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                             } else if (event == Event.END_ARRAY) {
                                 builder.withDependency(property, required);
                                 break;
-                            } 
+                            }
                         }
                     }
-                 }
+                }
             } else if (event == Event.END_OBJECT) {
                 break;
             }
@@ -728,34 +732,34 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-   
+
     private void addIf(JsonSchemaBuilder builder) {
         Event event = parser.next();
-        if (canStartSchema(event) ) {
+        if (canStartSchema(event)) {
             builder.withIf(subschema(event));
         } else {
             skipValue(event);
         }
     }
-    
+
     private void addThen(JsonSchemaBuilder builder) {
         Event event = parser.next();
-        if (canStartSchema(event) ) {
+        if (canStartSchema(event)) {
             builder.withThen(subschema(event));
         } else {
             skipValue(event);
         }
     }
-    
+
     private void addElse(JsonSchemaBuilder builder) {
         Event event = parser.next();
-        if (canStartSchema(event) ) {
+        if (canStartSchema(event)) {
             builder.withElse(subschema(event));
         } else {
             skipValue(event);
         }
     }
-    
+
     private void addAllOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -779,7 +783,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addOneOf(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
@@ -800,7 +804,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addFormat(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -810,6 +814,24 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             } catch (IllegalArgumentException e) {
                 handleUnknownFormatAttribute(attribute);
             }
+        } else {
+            skipValue(event);
+        }
+    }
+
+    private void addContentEncoding(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            builder.withContentEncoding(parser.getString());
+        } else {
+            skipValue(event);
+        }
+    }
+
+    private void addContentMediaType(JsonSchemaBuilder builder) {
+        Event event = parser.next();
+        if (event == Event.VALUE_STRING) {
+            builder.withContentMediaType(parser.getString());
         } else {
             skipValue(event);
         }
@@ -833,7 +855,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             }
         }
     }
-    
+
     private void addTitle(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -842,7 +864,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-  
+
     private void addDescription(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
@@ -851,12 +873,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
         }
     }
-    
+
     private void addDefault(JsonSchemaBuilder builder) {
         parser.next();
         builder.withDefault(parser.getValue());
     }
-    
+
     private void addUnknown(String name, EnhancedSchemaBuilder builder) {
         if (parser.hasNext()) {
             Event event = parser.next();
@@ -867,7 +889,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             }
         }
     }
-    
+
     private static void consumeType(String name, Consumer<InstanceType> consumer) {
         try {
             InstanceType type = InstanceType.valueOf(name.toUpperCase());
@@ -875,13 +897,11 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         } catch (IllegalArgumentException e) {
         }
     }
-    
+
     private static boolean canStartSchema(Event event) {
-        return event == Event.START_OBJECT || 
-               event == Event.VALUE_TRUE ||
-               event == Event.VALUE_FALSE;
+        return event == Event.START_OBJECT || event == Event.VALUE_TRUE || event == Event.VALUE_FALSE;
     }
-    
+
     private JsonSchema subschema(Event event) {
         switch (event) {
         case START_OBJECT:
@@ -893,7 +913,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             return null;
         }
     }
-    
+
     private List<JsonSchema> arrayOfSubschemas() {
         List<JsonSchema> subschemas = new ArrayList<>();
         Event event = null;
@@ -906,7 +926,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
         return subschemas;
     }
-    
+
     private void skipValue(Event event) {
         switch (event) {
         case START_ARRAY:
@@ -919,56 +939,53 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             break;
         }
     }
-    
+
     private void handleUnknownFormatAttribute(String attribute) {
-        Problem p = createProblemBuilder(parser)
-                .withMessage("schema.problem.format.unknown")
-                .withParameter("attribute", attribute)
-                .build();
+        Problem p = createProblemBuilder(parser).withMessage("schema.problem.format.unknown")
+                .withParameter("attribute", attribute).build();
         addProblem(p);
     }
-   
+
     private void addProblem(Problem problem) {
         this.problems.add(problem);
     }
-    
+
     protected void addProblems(List<Problem> problems) {
         this.problems.addAll(problems);
     }
-    
+
     private void postprocess(JsonSchema rootSchema) {
         if (rootSchema != null) {
             makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
             resolveAllReferences();
         }
     }
-    
+
     private void makeIdentifiersAbsoluteFromRoot(JsonSchema root, URI baseURI) {
         if (!root.hasId()) {
             addIdentifiedSchema(baseURI, root);
         }
         makeIdentifiersAbsolute(root, baseURI);
     }
-    
+
     private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
         if (schema.hasId()) {
             baseURI = baseURI.resolve(schema.id());
-            ((BasicSchema)schema).setAbsoluteId(baseURI);
+            ((BasicSchema) schema).setAbsoluteId(baseURI);
             addIdentifiedSchema(baseURI, schema);
         }
         if (schema instanceof SchemaReference) {
-            SchemaReference ref = (SchemaReference)schema;
+            SchemaReference ref = (SchemaReference) schema;
             ref.setTargetId(baseURI.resolve(ref.getTargetId()));
         }
         final URI nextURI = baseURI;
-        schema.subschemas().forEach(
-                subschema->makeIdentifiersAbsolute(subschema, nextURI));
+        schema.subschemas().forEach(subschema -> makeIdentifiersAbsolute(subschema, nextURI));
     }
-    
+
     private void addIdentifiedSchema(URI id, JsonSchema schema) {
         this.identified.put(URIs.withFragment(id), schema);
     }
-    
+
     private void resolveAllReferences() {
         for (SchemaReference reference : this.references.keySet()) {
             URI targetId = reference.getTargetId();
@@ -977,11 +994,8 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                 reference.setReferencedSchema(schema);
             } else {
                 JsonLocation location = this.references.get(reference);
-                Problem p = createProblemBuilder(location)
-                        .withMessage("schema.problem.reference")
-                        .withParameter("ref", reference.ref())
-                        .withParameter("targetId", targetId)
-                        .build();
+                Problem p = createProblemBuilder(location).withMessage("schema.problem.reference")
+                        .withParameter("ref", reference.ref()).withParameter("targetId", targetId).build();
                 addProblem(p);
             }
         }
@@ -1000,7 +1014,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             return resolveSchema(ref);
         }
     }
-    
+
     private JsonSchema resolveSchema(URI id) {
         JsonSchema schema = this.identified.get(id);
         if (schema != null) {
@@ -1014,7 +1028,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         }
         return null;
     }
-    
+
     private void dispatchProblems() {
         if (!problems.isEmpty()) {
             throw new JsonValidatingException(this.problems);

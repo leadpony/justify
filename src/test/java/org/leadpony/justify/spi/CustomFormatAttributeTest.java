@@ -28,7 +28,7 @@ import org.leadpony.justify.api.ValidationFixture;
  * @author leadpony
  */
 @EnabledOnJre(JRE.JAVA_8)
-public class CustomFormatTest extends BaseValidationTest {
+public class CustomFormatAttributeTest extends BaseValidationTest {
 
     private static final String[] TESTS = {
             "/org/leadpony/justify/spi/customFormat.json",

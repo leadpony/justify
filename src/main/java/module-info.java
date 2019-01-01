@@ -25,9 +25,10 @@ module org.leadpony.justify {
     requires java.logging;
     requires com.ibm.icu;
     
-    uses javax.json.spi.JsonProvider;
     uses org.leadpony.justify.spi.JsonValidationProvider; 
     uses org.leadpony.justify.spi.FormatAttribute; 
+    uses org.leadpony.justify.spi.ContentEncodingScheme;
+    uses org.leadpony.justify.spi.ContentMimeType;
     
     provides org.leadpony.justify.spi.JsonValidationProvider 
         with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;

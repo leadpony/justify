@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion.format;
+package org.leadpony.justify.internal.base;
 
 /**
  * Utility class operating on ASCII characters.
  * 
  * @author leadpony
  */
-final class AsciiCode {
+public final class AsciiCode {
 
     private AsciiCode() {
     }
