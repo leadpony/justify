@@ -30,14 +30,21 @@ public final class Arguments {
 
     private Arguments() {
     }
-    
+
     public static <T> T requireNonNull(T object, String name) {
         if (object == null) {
             throw new NullPointerException(name + " must not be null.");
         }
         return object;
     }
-    
+
+    public static String requireNonBlank(String object, String name) {
+        if (object.trim().isEmpty()) {
+            throw new IllegalArgumentException(name + " must not be blank.");
+        }
+        return object;
+    }
+
     public static <T> T[] requireNonEmpty(T[] array, String name) {
         if (array.length == 0) {
             throw new IllegalArgumentException(name + " must not be empty.");
@@ -51,14 +58,14 @@ public final class Arguments {
         }
         return collection;
     }
-    
+
     public static long requirePositive(long value, String name) {
         if (value <= 0) {
             throw new IllegalArgumentException(name + " must not be positive.");
         }
         return value;
     }
-    
+
     public static double requirePositive(double value, String name) {
         if (value <= 0.0) {
             throw new IllegalArgumentException(name + " must not be positive.");
@@ -79,7 +86,7 @@ public final class Arguments {
         }
         return value;
     }
-    
+
     public static <T> Set<T> requireUnique(T[] values, String name) {
         Set<T> set = new LinkedHashSet<>();
         for (T value : values) {

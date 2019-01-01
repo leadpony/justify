@@ -33,16 +33,16 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**
  * Content keyword representing "contentEncoding".
- * 
+ *
  * @author leadpony
  */
 public class ContentEncoding extends AbstractAssertion implements Evaluator {
 
     private final ContentEncodingScheme scheme;
-    
+
     /**
      * Constructs this encoding.
-     * 
+     *
      * @param scheme the scheme of this encoding.
      */
     public ContentEncoding(ContentEncodingScheme scheme) {
@@ -82,8 +82,8 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
 
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonString value = (JsonString) parser.getValue();
-        if (scheme.canDecode(value.getString())) {
+        String encoded = ((JsonString) parser.getValue()).getString();
+        if (scheme.canDecode(encoded)) {
             return Result.TRUE;
         } else {
             dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.contentEncoding"));
@@ -92,13 +92,21 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
     }
 
     public Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonString value = (JsonString) parser.getValue();
-        if (scheme.canDecode(value.getString())) {
+        String encoded = ((JsonString) parser.getValue()).getString();
+        if (scheme.canDecode(encoded)) {
             dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.not.contentEncoding"));
             return Result.FALSE;
-        } else {
-            return Result.TRUE;
         }
+        return Result.TRUE;
+    }
+
+    /**
+     * Returns the scheme of this content encoding.
+     *
+     * @return the scheme of this content encoding.
+     */
+    ContentEncodingScheme scheme() {
+        return scheme;
     }
 
     private Problem buildProblem(JsonParser parser, String messageKey) {

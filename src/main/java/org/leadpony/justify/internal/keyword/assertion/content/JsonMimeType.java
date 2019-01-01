@@ -17,6 +17,7 @@ package org.leadpony.justify.internal.keyword.assertion.content;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.util.Map;
 
 import javax.json.JsonException;
 import javax.json.spi.JsonProvider;
@@ -26,7 +27,7 @@ import org.leadpony.justify.spi.ContentMimeType;
 
 /**
  * MIME type for "applicaiton/json".
- * 
+ *
  * @author leadpony
  */
 class JsonMimeType implements ContentMimeType {
@@ -52,7 +53,7 @@ class JsonMimeType implements ContentMimeType {
     }
 
     @Override
-    public boolean test(byte[] decodedContent, String[] parameters) {
+    public boolean test(byte[] decodedContent, Map<String, String> parameters) {
         try (JsonParser parser = jsonProvider.createParser(new ByteArrayInputStream(decodedContent))) {
             return parseAllWith(parser);
         } catch (JsonException e) {

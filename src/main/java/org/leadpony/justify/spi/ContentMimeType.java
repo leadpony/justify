@@ -15,16 +15,18 @@
  */
 package org.leadpony.justify.spi;
 
+import java.util.Map;
+
 /**
  * MIME type of the content of the JSON string.
- * 
+ *
  * @author leadpony
  */
 public interface ContentMimeType {
 
     /**
      * Returns the string representation of this MIME type.
-     * 
+     *
      * @return the string representation of this MIME type.
      */
     @Override
@@ -32,8 +34,8 @@ public interface ContentMimeType {
 
     /**
      * Checks whether the specified content is of this MIME type or not.
-     * 
-     * @param content the content to check.
+     *
+     * @param content the content to check, never be {@code null}.
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
      * @throws NullPointerException if the specified {@code content} was
@@ -43,14 +45,14 @@ public interface ContentMimeType {
 
     /**
      * Checks whether the specified content is of this MIME type or not.
-     * 
-     * @param decodedContent the content to check.
-     * @param parameters     the parameters attached to this MIME type, may be
+     *
+     * @param decodedContent the content to check, never be {@code null}.
+     * @param parameters     the parameters attached to this MIME type, never
      *                       {@code null}.
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code decodedContent} was
-     *                              {@code null}.
+     * @throws NullPointerException if the specified {@code decodedContent} or
+     *                              {@code parameters} was {@code null}.
      */
-    boolean test(byte[] decodedContent, String[] parameters);
+    boolean test(byte[] decodedContent, Map<String, String> parameters);
 }

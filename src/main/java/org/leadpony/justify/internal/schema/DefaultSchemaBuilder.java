@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonBlank;
 import static org.leadpony.justify.internal.base.Arguments.requireNonEmpty;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNegative;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
@@ -38,6 +39,7 @@ import javax.json.JsonValue;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
+import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
@@ -58,7 +60,7 @@ import org.leadpony.justify.internal.keyword.combiner.Properties;
 
 /**
  * The default implementation of {@link EnhancedSchemaBuilder}.
- * 
+ *
  * @author leadpony
  */
 class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
@@ -75,7 +77,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
 
     /**
      * Constructs this builder.
-     * 
+     *
      * @param builderFactory the factory for producing builders of JSON values.
      * @param formatRegistry  the registry managing all format attributes.
      * @param contentRegistry the registry managing all content attributes.
@@ -485,6 +487,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
+        requireNonBlank(value, "value");
         if (contentRegistry.containsEncodingScheme(value)) {
             addKeyword(new ContentEncoding(contentRegistry.findEncodingScheme(value)));
         } else {
@@ -496,8 +499,11 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentMediaType(String value) {
         requireNonNull(value, "value");
-        if (contentRegistry.containsMimeType(value)) {
-            addKeyword(new ContentMediaType(contentRegistry.findMimeType(value), null));
+        requireNonBlank(value, "value");
+        MediaType mediaType = MediaType.valueOf(value);
+        String mimeType = mediaType.mimeType();
+        if (contentRegistry.containsMimeType(mimeType)) {
+            addKeyword(new ContentMediaType(contentRegistry.findMimeType(mimeType), mediaType.parameters()));
         } else {
             addKeyword(new UnknownContentMediaType(value));
         }
@@ -567,7 +573,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
 
     /**
      * Marks this builder as non-empty.
-     * 
+     *
      * @return this builder.
      */
     private JsonSchemaBuilder nonemptyBuilder() {
