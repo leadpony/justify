@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchemaReader;
@@ -112,7 +111,6 @@ public class SchemaValidationTest {
 
     @ParameterizedTest
     @MethodSource("provideValidFixtures")
-    @Disabled
     public void toJson_shouldProduceOriginalJson(SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchema schema = null;

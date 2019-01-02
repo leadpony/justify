@@ -639,17 +639,19 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
             return;
         }
+        Map<String, JsonSchema> subschemas = new HashMap<>();
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
                 String name = parser.getString();
                 event = parser.next();
                 if (canStartSchema(event)) {
-                    builder.withProperty(name, subschema(event));
+                    subschemas.put(name, subschema(event));
                 } else {
                     skipValue(event);
                 }
             } else if (event == Event.END_OBJECT) {
+                builder.withProperties(subschemas);
                 break;
             }
         }
@@ -661,21 +663,23 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
             return;
         }
+        Map<String, JsonSchema> subschemas = new HashMap<>();
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
                 String pattern = parser.getString();
                 event = parser.next();
                 if (canStartSchema(event)) {
-                    try {
-                        builder.withPatternProperty(pattern, subschema(event));
-                    } catch (PatternSyntaxException e) {
-                        // Do nothing.
-                    }
+                    subschemas.put(pattern, subschema(event));
                 } else {
                     skipValue(event);
                 }
             } else if (event == Event.END_OBJECT) {
+                try {
+                    builder.withPatternProperties(subschemas);
+                } catch (PatternSyntaxException e) {
+                    // Do nothing.
+                }
                 break;
             }
         }
@@ -696,6 +700,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
             return;
         }
+        Map<String, Object> values = new HashMap<>();
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
@@ -703,7 +708,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                 if (parser.hasNext()) {
                     event = parser.next();
                     if (canStartSchema(event)) {
-                        builder.withDependency(property, subschema(event));
+                        values.put(property, subschema(event));
                     } else if (event == Event.START_ARRAY) {
                         Set<String> required = new LinkedHashSet<>();
                         while (parser.hasNext()) {
@@ -711,13 +716,14 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
                             if (event == Event.VALUE_STRING) {
                                 required.add(parser.getString());
                             } else if (event == Event.END_ARRAY) {
-                                builder.withDependency(property, required);
+                                values.put(property, required);
                                 break;
                             }
                         }
                     }
                 }
             } else if (event == Event.END_OBJECT) {
+                builder.withDependencies(values);
                 break;
             }
         }
@@ -847,15 +853,20 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
             skipValue(event);
             return;
         }
-        while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
+        Map<String, JsonSchema> schemas = new HashMap<>();
+        while (parser.hasNext()) {
+            event = parser.next();
             if (event == Event.KEY_NAME) {
                 String name = parser.getString();
                 event = parser.next();
                 if (canStartSchema(event)) {
-                    builder.withDefinition(name, subschema(event));
+                    schemas.put(name, subschema(event));
                 } else {
                     skipValue(event);
                 }
+            } else if (event == Event.END_OBJECT) {
+                builder.withDefinitions(schemas);
+                break;
             }
         }
     }

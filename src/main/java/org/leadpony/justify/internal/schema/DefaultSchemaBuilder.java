@@ -25,6 +25,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireUnique;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -349,12 +350,32 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     }
 
     @Override
+    public JsonSchemaBuilder withProperties(Map<String, JsonSchema> subschemas) {
+        requireNonNull(subschemas, "subschemas");
+        Properties properties = requireKeyword("properties", Combiners::properties);
+        subschemas.forEach(properties::addProperty);
+        return nonemptyBuilder();
+    }
+
+    @Override
     public JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema) {
         requireNonNull(pattern, "pattern");
         requireNonNull(subschema, "subschema");
         Pattern compiled = Pattern.compile(pattern);
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
         properties.addProperty(compiled, subschema);
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withPatternProperties(Map<String, JsonSchema> subschemas) {
+        requireNonNull(subschemas, "subschemas");
+        Map<Pattern, JsonSchema> compiledMap = new HashMap<>();
+        subschemas.forEach((pattern, subschema)->{
+            compiledMap.put(Pattern.compile(pattern), subschema);
+        });
+        PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
+        compiledMap.forEach(properties::addProperty);
         return nonemptyBuilder();
     }
 
@@ -387,6 +408,22 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(requiredProperties, "requiredProperties");
         Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
         keyword.addDependency(name, requiredProperties);
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withDependencies(Map<String, Object> values) {
+        requireNonNull(values, "values");
+        Dependencies dependencies = requireKeyword("dependencies", Combiners::dependencies);
+        values.forEach((property, value)->{
+            if (value instanceof JsonSchema) {
+                dependencies.addDependency(property, (JsonSchema)value);
+            } else if (value instanceof Set) {
+                @SuppressWarnings("unchecked")
+                Set<String> requiredProperties = (Set<String>)value;
+                dependencies.addDependency(property, requiredProperties);
+            }
+        });
         return nonemptyBuilder();
     }
 
@@ -513,6 +550,14 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         requireNonNull(schema, "schema");
         Definitions definitions = requireKeyword("definitions", Combiners::definitions);
         definitions.addDefinition(name, schema);
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withDefinitions(Map<String, JsonSchema> schemas) {
+        requireNonNull(schemas, "schemas");
+        Definitions definitions = requireKeyword("definitions", Combiners::definitions);
+        schemas.forEach(definitions::addDefinition);
         return nonemptyBuilder();
     }
 

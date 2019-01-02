@@ -19,6 +19,7 @@ package org.leadpony.justify.api;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
@@ -573,6 +574,16 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
 
     /**
+     * Adds the "properties" keyword to the schema.
+     *
+     * @param subschemas the object mapping a property name to a subschema.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code subschemas} is
+     *                              {@code null}.
+     */
+    JsonSchemaBuilder withProperties(Map<String, JsonSchema> subschemas);
+
+    /**
      * Adds an entry of the "patternProperties" keyword to the schema.
      *
      * @param pattern   the name pattern the property.
@@ -584,6 +595,18 @@ public interface JsonSchemaBuilder {
      *                                valid regular expression.
      */
     JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema);
+
+    /**
+     * Adds the "patternProperties" keyword to the schema.
+     *
+     * @param subschemas the object mapping a name pattern to a subschema.
+     * @return this builder.
+     * @throws NullPointerException   if the specified {@code subschemas} is
+     *                                {@code null}.
+     * @throws PatternSyntaxException if any pattern is not a valid regular
+     *                                expression.
+     */
+    JsonSchemaBuilder withPatternProperties(Map<String, JsonSchema> subschemas);
 
     /**
      * Adds the "additionalProperties" keyword to the schema.
@@ -629,6 +652,17 @@ public interface JsonSchemaBuilder {
      *                              {@code requiredProperties} is {@code null}.
      */
     JsonSchemaBuilder withDependency(String name, Set<String> requiredProperties);
+
+    /**
+     * Adds the "dependencies" keyword to the schema.
+     *
+     * @param values the object mapping a property name to a value. Any value must
+     *               be of {@link JsonSchema} or {@link Set}.
+     * @return this builder.
+     * @throws NullPointerException     if the specified {@code values} is
+     *                                  {@code null}.
+     */
+    JsonSchemaBuilder withDependencies(Map<String, Object> values);
 
     /**
      * Adds the "propertyNames" keyword to the schema.
@@ -789,8 +823,10 @@ public interface JsonSchemaBuilder {
      *
      * @param value the value of the keyword.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code value} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code value} is not a media type.
+     * @throws NullPointerException     if the specified {@code value} is
+     *                                  {@code null}.
+     * @throws IllegalArgumentException if the specified {@code value} is not a
+     *                                  media type.
      */
     JsonSchemaBuilder withContentMediaType(String value);
 
@@ -798,12 +834,22 @@ public interface JsonSchemaBuilder {
      * Adds an entry of "definitions" keyword to the schema.
      *
      * @param name   the name of the definition to be added.
-     * @param schema the schema to be defined.
+     * @param schema the schema to define.
      * @return this builder.
      * @throws NullPointerException if the specified {@code name} or {@code schema}
      *                              is {@code null}.
      */
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
+
+    /**
+     * Adds the "definitions" keyword to the schema.
+     *
+     * @param schemas the object mapping a name to a schema.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code schemas} is
+     *                              {@code null}.
+     */
+    JsonSchemaBuilder withDefinitions(Map<String, JsonSchema> schemas);
 
     /* Keywords for annotation */
 
