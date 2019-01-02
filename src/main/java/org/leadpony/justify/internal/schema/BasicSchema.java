@@ -70,7 +70,7 @@ public class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFac
     }
     
     @Override
-    public URI schemaId() {
+    public URI schema() {
         return schema;
     }
 

@@ -73,7 +73,7 @@ public interface JsonSchema {
      * Returns the version identifier of this schema, specified with "$schema" keyword.
      * @return the version identifier of this schema, or {@code null}.
      */
-    default URI schemaId() {
+    default URI schema() {
         return null;
     }
     
