@@ -8,7 +8,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 
 ## Main Features
 
-* Compliant with [JSON Schema Specification] Draft 7.
+* Compliant with [JSON Schema Specification] Draft-07.
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
@@ -30,7 +30,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.9.1</version>
+  <version>0.10.0</version>
 </dependency>
 
 <dependency>
@@ -94,7 +94,7 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 ## Additional Resources
 
 * [API Reference in Javadoc]
-* [Justify Examples]
+* [Justify Examples] which show how to use this library.
 * [Justify CLI] which provides a command-line interface for this library
 
 ## Current Development Status
@@ -146,12 +146,12 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
   * iri/iri-reference (compliant with [RFC 3987])
   * uri-template (compliant with [RFC 6570])
   * regex (compliant with [ECMA 262])
+* contentEncoding, with built-in "base64" support.
+* contentMediaType, with built-in "application/json" support.
 
 ### Schema keywords not implemented yet
 
 * default
-* contentMediaType
-* contentEncoding
 
 ## Building from Source
 
