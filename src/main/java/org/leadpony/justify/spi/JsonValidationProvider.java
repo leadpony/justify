@@ -23,22 +23,22 @@ import javax.json.JsonException;
 import org.leadpony.justify.api.JsonValidationService;
 
 /**
- * Service provider for JSON validation objects. 
- * 
+ * Service provider for JSON validation objects.
+ *
  * <p>
  * All the public methods in this class are safe for use by multiple concurrent threads.
  * This type is not intended to be used directly by end users.
  * </p>
- * 
+ *
  * @author leadpony
  * @see ServiceLoader
  */
 public abstract class JsonValidationProvider {
-    
+
     /**
      * Returns an instance of this provider class.
-     * 
-     * @return the instance of this provider class.     
+     *
+     * @return the instance of this provider class.
      * @throws JsonException if there is no provider found.
      */
     public static JsonValidationProvider provider() {
@@ -50,18 +50,18 @@ public abstract class JsonValidationProvider {
             throw new JsonException("JSON validation provider was not found.");
         }
     }
-    
+
     /**
      * Constructs this provider.
      */
     protected JsonValidationProvider() {
     }
-    
+
     /**
      * Creates a new instance of {@link JsonValidationService}.
-     * 
+     *
      * @return newly created instance of {@link JsonValidationService}.
-     * @throws JsonException if an error was encountered while creating the instance.
+     * @throws JsonException if an error is encountered while creating the instance.
      */
     public abstract JsonValidationService createService();
 }

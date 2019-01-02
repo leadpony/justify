@@ -17,35 +17,35 @@ package org.leadpony.justify.spi;
 
 /**
  * Encoding scheme of the content of the JSON string.
- * 
+ *
  * @author leadpony
  */
 public interface ContentEncodingScheme {
 
     /**
      * Returns the name of this encoding scheme.
-     * 
+     *
      * @return the name of this encoding scheme, cannot be {@code null}.
      */
     String name();
 
     /**
      * Checks whether the specified string is encoded in this scheme or not.
-     * 
+     *
      * @param src the string to check.
      * @return {@code true} if the specified {@code src} is encoded in this scheme,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code src} was {@code null}.
+     * @throws NullPointerException if the specified {@code src} is {@code null}.
      */
     boolean canDecode(String src);
 
     /**
      * Decodes the encoded string into a newly allocated byte array using this
      * encoding scheme.
-     * 
+     *
      * @param src the string to decode.
      * @return newly allocated byte array containing the decoded bytes.
-     * @throws NullPointerException     if the specified {@code src} was
+     * @throws NullPointerException     if the specified {@code src} is
      *                                  {@code null}.
      * @throws IllegalArgumentException if the specified {@code src} cannot be
      *                                  decoded.

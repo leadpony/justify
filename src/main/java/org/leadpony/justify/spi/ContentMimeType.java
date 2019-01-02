@@ -38,7 +38,7 @@ public interface ContentMimeType {
      * @param content the content to check, never be {@code null}.
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code content} was
+     * @throws NullPointerException if the specified {@code content} is
      *                              {@code null}.
      */
     boolean test(String content);
@@ -52,7 +52,7 @@ public interface ContentMimeType {
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
      * @throws NullPointerException if the specified {@code decodedContent} or
-     *                              {@code parameters} was {@code null}.
+     *                              {@code parameters} is {@code null}.
      */
     boolean test(byte[] decodedContent, Map<String, String> parameters);
 }

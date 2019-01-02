@@ -22,7 +22,7 @@ import java.util.Objects;
 
 /**
  * Handler of problems found by a JSON validator.
- * 
+ *
  * @author leadpony
  */
 @FunctionalInterface
@@ -30,23 +30,23 @@ public interface ProblemHandler {
 
     /**
      * Handles the problems found while validating a JSON document.
-     * 
+     *
      * @param problems the problems found, cannot be {@code null}.
      */
     void handleProblems(List<Problem> problems);
-    
+
     /**
      * Creates a problem handler which will store problems into the specified collection.
-     * 
+     *
      * @param collection the collection into which problems will be stored.
      * @return newly created instance of problem handler.
-     * @throws NullPointerException if the specified {@code collection} was {@code null}.
+     * @throws NullPointerException if the specified {@code collection} is {@code null}.
      */
     static ProblemHandler collectingTo(Collection<Problem> collection) {
         Objects.requireNonNull(collection, "collection must not be null.");
         return collection::addAll;
     }
-    
+
     /**
      * Creates a problem handler which will throw a {@link JsonValidatingException} exception.
      * @return newly created instance of problem handler.

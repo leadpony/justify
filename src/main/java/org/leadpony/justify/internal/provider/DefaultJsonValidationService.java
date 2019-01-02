@@ -61,7 +61,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonReaderFactory;
 
 /**
  * Default implementation of {@link JsonValidationService}.
- * 
+ *
  * @author leadpony
  */
 class DefaultJsonValidationService implements JsonValidationService, JsonSchemaResolver {
@@ -77,9 +77,9 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
 
     /**
      * Constructs this object.
-     * 
+     *
      * @param jsonProvider the JSON provider.
-     * @throws JsonException if an error was encountered while reading the
+     * @throws JsonException if an error is encountered while reading the
      *                       metaschema.
      */
     DefaultJsonValidationService(JsonProvider jsonProvider) {
@@ -328,10 +328,10 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
 
     /**
      * Loads metaschema from the resource on classpath.
-     * 
+     *
      * @param name the name of the resource.
      * @return the loaded schema.
-     * @throws JsonException if an error was encountered while reading the
+     * @throws JsonException if an error is encountered while reading the
      *                       metaschema.
      */
     private JsonSchema loadMetaschema(String name) {
@@ -364,7 +364,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
 
     /**
      * {@link JsonProvider} with validation functionality.
-     * 
+     *
      * @author leadpony
      */
     private class ValidatingJsonProvider extends JsonProviderDecorator {

@@ -20,12 +20,12 @@ import java.util.Locale;
 
 /**
  * Interface for localizable strings.
- * 
+ *
  * @author leadpony
  */
 @FunctionalInterface
 public interface Localizable {
-    
+
     /**
      * Returns the string localized for the current default locale.
      * @return the localized string, never be {@code null}.
@@ -36,10 +36,10 @@ public interface Localizable {
 
     /**
      * Returns the string localized for the specified locale.
-     * @param locale the locale for which the source string to be localized. 
+     * @param locale the locale for which the source string to be localized.
      *        This cannot be {@code null}.
      * @return the localized string, never be {@code null}.
-     * @throws NullPointerException if the specified {@code locale} was {@code null}.
+     * @throws NullPointerException if the specified {@code locale} is {@code null}.
      */
     String getLocalized(Locale locale);
 }

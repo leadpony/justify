@@ -23,7 +23,7 @@ import javax.json.JsonValue;
 
 /**
  * Primitive types of JSON instances.
- * 
+ *
  * @author leadpony
  */
 public enum InstanceType {
@@ -42,7 +42,7 @@ public enum InstanceType {
     /** JSON number without fractional part. */
     INTEGER
     ;
-    
+
     /**
      * Checks if this type is numeric or not.
      * @return {@code true} if this type is numeric, {@code false} otherwise.
@@ -50,7 +50,7 @@ public enum InstanceType {
     public boolean isNumeric() {
         return this == NUMBER || this == INTEGER;
     }
-    
+
     /**
      * Checks if this type can contain other types or not.
      * A container is either JSON array or JSON object.
@@ -59,12 +59,12 @@ public enum InstanceType {
     public boolean isContainer() {
         return this == OBJECT || this == ARRAY;
     }
-    
+
     /**
      * Returns the type of the specified JSON value.
      * @param value the JSON value whose type will be returned.
      * @return the type of the JSON value.
-     * @throws NullPointerException if the specified {@code value} was {@code null}.
+     * @throws NullPointerException if the specified {@code value} is {@code null}.
      */
     public static InstanceType of(JsonValue value) {
         Objects.requireNonNull(value, "value must not be null");

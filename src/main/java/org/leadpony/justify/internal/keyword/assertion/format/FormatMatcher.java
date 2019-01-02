@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Format matcher.
- * 
+ *
  * @author leadpony
  */
 abstract class FormatMatcher {
@@ -28,10 +28,10 @@ abstract class FormatMatcher {
     private final CharSequence input;
     private final int length;
     private int index;
-   
+
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     protected FormatMatcher(CharSequence input) {
@@ -39,10 +39,10 @@ abstract class FormatMatcher {
         this.length = input.length();
         this.index = 0;
     }
-    
+
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      * @param start the start index, inclusive.
      * @param end the end index, exclusive.
@@ -52,10 +52,10 @@ abstract class FormatMatcher {
         this.length = end;
         this.index = start;
     }
-    
+
     /**
      * Checks if the input matches the format or not.
-     * 
+     *
      * @return {@code true} if the input matched, {@code false} otherwise.
      */
     boolean matches() {
@@ -65,18 +65,18 @@ abstract class FormatMatcher {
             return false;
         }
     }
-    
+
     /**
      * Tests the whole input.
-     * 
-     * @throws NoSuchElementException if unexpected end of input was detected.
+     *
+     * @throws NoSuchElementException if unexpected end of input is detected.
      * @throws FormatMismatchException if the input did not match the format.
      */
-    abstract boolean all(); 
-    
+    abstract boolean all();
+
     /**
      * Returns the input character sequence.
-     * 
+     *
      * @return the input character sequence.
      */
     final CharSequence input() {
@@ -85,7 +85,7 @@ abstract class FormatMatcher {
 
     /**
      * Returns the current position.
-     * 
+     *
      * @return the current position, zero or positive integer.
      */
     final int pos() {
@@ -94,7 +94,7 @@ abstract class FormatMatcher {
 
     /**
      * Backtracks to the specified position.
-     * 
+     *
      * @param pos the position at which the next read occurs.
      * @return always {@code false}.
      */
@@ -104,29 +104,29 @@ abstract class FormatMatcher {
     }
 
     /**
-     * Returns {@code true} if the input has more characters. 
-     * 
+     * Returns {@code true} if the input has more characters.
+     *
      * @return {@code true} if the input has more characters.
      */
     final boolean hasNext() {
         return index < length;
     }
-    
+
     /**
-     * Checks if the input has next character and 
+     * Checks if the input has next character and
      * the character is the same as the expected.
-     * 
+     *
      * @param expected the code point of the expected character.
      * @return {@code true} if the next character is the expected one.
      */
     final boolean hasNext(int expected) {
         return hasNext() && peek() == expected;
     }
-    
+
     /**
      * Returns the next character in the input.
      * Calling this method advances the current position.
-     * 
+     *
      * @return the code point of the next character.
      * @throws NoSuchElementException if the input has no more characters.
      */
@@ -139,11 +139,11 @@ abstract class FormatMatcher {
             throw new NoSuchElementException();
         }
     }
-    
+
     /**
      * Peeks the next character in the input.
      * Calling this method never change the current position.
-     * 
+     *
      * @return the code point of the next character.
      * @throws NoSuchElementException if the input has no more characters.
      */
@@ -154,11 +154,11 @@ abstract class FormatMatcher {
             throw new NoSuchElementException();
         }
     }
-    
+
     /**
      * Extracts a substring.
-     * 
-     * @param start the start index of the substring. 
+     *
+     * @param start the start index of the substring.
      * @return the extracted substring.
      */
     final String extract(int start) {
@@ -167,9 +167,9 @@ abstract class FormatMatcher {
 
     /**
      * Extracts a substring from the input character sequence.
-     * 
-     * @param start the start index of the substring. 
-     * @param end the end index of the substring. 
+     *
+     * @param start the start index of the substring.
+     * @param end the end index of the substring.
      * @return the extracted substring.
      */
     final String extract(int start, int end) {
@@ -178,7 +178,7 @@ abstract class FormatMatcher {
 
     /**
      * Returns the string representation of the currentinput.
-     * 
+     *
      * @return the string representation of the current input.
      */
     @Override
@@ -188,31 +188,31 @@ abstract class FormatMatcher {
 
     /**
      * Should be called when matching failed.
-     * 
+     *
      * @returns never return.
      * @throws FormatMismatchException always thrown.
      */
     static boolean fail() {
         throw new FormatMismatchException();
     }
-    
+
     /**
-     * Returns the code point at the given index of the input. 
-     * 
+     * Returns the code point at the given index of the input.
+     *
      * @param input the input character sequence.
      * @param index the index to the character in the input.
      *              This must be less than the length of the input.
      * @return the code point at the given index.
-     * @throws IndexOutOfBoundsException 
+     * @throws IndexOutOfBoundsException
      *         if the {@code index} is not less than the input length.
      */
     protected int codePointAt(CharSequence input, int index) {
         return Character.codePointAt(input, index);
     }
-    
+
     /**
      * Returns the next index offset by a character.
-     *  
+     *
      * @param input the input character sequence.
      * @param index the index to be offset.
      *              This must be less than the length of the input.
@@ -224,7 +224,7 @@ abstract class FormatMatcher {
 
     /**
      * Exception thrown when matching failed.
-     * 
+     *
      * @author leadpony
      */
     private static class FormatMismatchException extends RuntimeException {
