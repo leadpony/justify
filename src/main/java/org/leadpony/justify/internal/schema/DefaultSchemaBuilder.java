@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.schema;
 
-import static org.leadpony.justify.internal.base.Arguments.requireNonBlank;
 import static org.leadpony.justify.internal.base.Arguments.requireNonEmpty;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNegative;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
@@ -487,7 +486,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
-        requireNonBlank(value, "value");
         if (contentRegistry.containsEncodingScheme(value)) {
             addKeyword(new ContentEncoding(contentRegistry.findEncodingScheme(value)));
         } else {
@@ -499,7 +497,6 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentMediaType(String value) {
         requireNonNull(value, "value");
-        requireNonBlank(value, "value");
         MediaType mediaType = MediaType.valueOf(value);
         String mimeType = mediaType.mimeType();
         if (contentRegistry.containsMimeType(mimeType)) {

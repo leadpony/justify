@@ -46,7 +46,7 @@ class SchemaFixture extends Fixture {
         return schema;
     }
 
-    boolean getSchemaValidity() {
+    boolean hasValidSchema() {
         return validity;
     }
 

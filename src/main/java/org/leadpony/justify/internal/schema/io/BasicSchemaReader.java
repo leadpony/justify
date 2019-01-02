@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -55,7 +54,7 @@ import org.leadpony.justify.internal.schema.EnhancedSchemaBuilder;
 
 /**
  * Basic implementation of {@link JsonSchemaReader}.
- * 
+ *
  * @author leadpony
  */
 public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactory {
@@ -79,7 +78,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
 
     /**
      * Constructs this schema reader.
-     * 
+     *
      * @param parser  the parser of JSON document.
      * @param factory the factory for producing schema builders.
      */
@@ -144,7 +143,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
      * {@link JsonParser#hasNext()} in both RI and Apache Johnzon returns
      * {@code false} if input is empty.
      * </p>
-     * 
+     *
      * @return {@code true} is the input is empty, {@code false} otherwise.
      */
     private boolean checkEmptyInput() {
@@ -620,7 +619,7 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     private void addRequired(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.START_ARRAY) {
-            Set<String> names = new HashSet<>();
+            Set<String> names = new LinkedHashSet<>();
             while ((event = parser.next()) != Event.END_ARRAY) {
                 if (event == Event.VALUE_STRING) {
                     names.add(parser.getString());
@@ -831,7 +830,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     private void addContentMediaType(JsonSchemaBuilder builder) {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
-            builder.withContentMediaType(parser.getString());
+            String value = parser.getString();
+            try {
+                builder.withContentMediaType(value);
+            } catch (IllegalArgumentException e) {
+                handleInvalidMediaType();
+            }
         } else {
             skipValue(event);
         }
@@ -943,6 +947,11 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
     private void handleUnknownFormatAttribute(String attribute) {
         Problem p = createProblemBuilder(parser).withMessage("schema.problem.format.unknown")
                 .withParameter("attribute", attribute).build();
+        addProblem(p);
+    }
+
+    private void handleInvalidMediaType() {
+        Problem p = createProblemBuilder(parser).withMessage("schema.problem.contentMediaType.invalid").build();
         addProblem(p);
     }
 

@@ -1,0 +1,27 @@
+[
+    {
+        "description": "value is known",
+        "schema": { "contentMediaType": "application/json" },
+        "valid": true
+    },
+    {
+        "description": "value is known",
+        "schema": { "contentMediaType": "application/json; charset=utf-8" },
+        "valid": true
+    },
+    {
+        "description": "value is a number",
+        "schema": { "contentMediaType": 42 },
+        "valid": false
+    },
+    {
+        "description": "value is unknown",
+        "schema": { "contentMediaType": "nonexistent" },
+        "valid": true
+    },
+    {
+        "description": "value is not a media type",
+        "schema": { "contentMediaType": "application/json; charset" },
+        "valid": false
+    }
+]

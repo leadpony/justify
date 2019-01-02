@@ -781,7 +781,6 @@ public interface JsonSchemaBuilder {
      * @param value the value of the keyword.
      * @return this builder.
      * @throws NullPointerException if the specified {@code value} is {@code null}.
-     * @throws IllegalArgumentException if the specified {@code value} is blank.
      */
     JsonSchemaBuilder withContentEncoding(String value);
 

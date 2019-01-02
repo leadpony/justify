@@ -33,19 +33,23 @@ public class MediaType {
         if (tokens.length > 0) {
             String mimeType = tokens[0].trim();
             if (mimeType.isEmpty()) {
-                throw new IllegalArgumentException();
+                throw newInvalidMediaTypeException("value");
             }
             Map<String, String> parameters = new HashMap<>();
             for (int i = 1; i < tokens.length; ++i) {
                 String[] keyValue = tokens[i].split("\\s*=\\s*");
                 if (keyValue.length != 2) {
-                    throw new IllegalArgumentException();
+                    throw newInvalidMediaTypeException("value");
                 }
                 parameters.put(keyValue[0], keyValue[1]);
             }
             return new MediaType(mimeType, parameters);
         }
-        throw new IllegalArgumentException();
+        throw newInvalidMediaTypeException("value");
+    }
+
+    private static RuntimeException newInvalidMediaTypeException(String name) {
+        return new IllegalArgumentException(name + " must be a media type.");
     }
 
     private MediaType(String mimeType, Map<String, String> parameters) {

@@ -141,7 +141,11 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
      * @return the value of this media type.
      */
     String value() {
-        return mimeType.toString();
+        StringBuilder builder =  new StringBuilder(mimeType.toString());
+        parameters.forEach((key, value)->{
+            builder.append("; ").append(key).append('=').append(value);
+        });
+        return builder.toString();
     }
 
     private Problem buildProblem(JsonParser parser, String messageKey) {
