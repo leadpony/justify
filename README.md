@@ -93,9 +93,9 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 ## Additional Resources
 
-* [API Reference in Javadoc]
 * [Justify Examples] which show how to use this library.
 * [Justify CLI] which provides a command-line interface for this library
+* [API Reference in Javadoc]
 
 ## Current Development Status
 

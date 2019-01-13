@@ -5,5 +5,6 @@ For testing purposes, this product includes 3rd-party products with separate cop
 
 * Addressable (https://github.com/sporkmonger/addressable)
 * JSON-Schema-Test-Suite (https://github.com/json-schema-org/JSON-Schema-Test-Suite)
+* JSON Schema website (https://github.com/json-schema-org/json-schema-org.github.io)
 * RFC::RFC822::Address (https://github.com/Abigail/rfc--rfc822--address)
 * Test262: ECMAScript Test Suite (https://github.com/tc39/test262)

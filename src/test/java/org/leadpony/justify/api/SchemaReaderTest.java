@@ -36,16 +36,17 @@ import org.leadpony.justify.api.JsonValidationService;
  * @author leadpony
  */
 public class SchemaReaderTest {
-  
+
     private static final Logger log = Logger.getLogger(SchemaReaderTest.class.getName());
     private static final JsonValidationService service = JsonValidationService.newInstance();
-    
+
     public static Stream<Arguments> provideSchemas() {
         return Stream.of(
                 Arguments.of("", JsonValidatingException.class),
                 Arguments.of(" ", JsonValidatingException.class),
                 Arguments.of(" {}", null),
                 Arguments.of("{\"type\":", JsonParsingException.class),
+                Arguments.of("{\"type\":\"number\"", JsonParsingException.class),
                 Arguments.of("{\"type\":\"number\"},", null)
                 );
     }

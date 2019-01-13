@@ -36,6 +36,7 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
+import javax.json.stream.JsonParsingException;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -44,6 +45,7 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.SimpleJsonLocation;
 import org.leadpony.justify.internal.base.URIs;
@@ -89,8 +91,10 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
 
     @Override
     public JsonSchema read() {
-        if (alreadyRead || alreadyClosed) {
-            throw new IllegalStateException("already read");
+        if (alreadyClosed) {
+            throw new IllegalStateException("already closed.");
+        } else if (alreadyRead) {
+            throw new IllegalStateException("already read.");
         }
         JsonSchema rootSchema = null;
         if (!checkEmptyInput()) {
@@ -112,10 +116,12 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
 
     @Override
     public JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver) {
-        requireNonNull(resolver, "resolver");
-        if (alreadyRead || alreadyClosed) {
-            throw new IllegalStateException("already read");
+        if (alreadyClosed) {
+            throw new IllegalStateException("already closed.");
+        } else if (alreadyRead) {
+            throw new IllegalStateException("already read.");
         }
+        requireNonNull(resolver, "resolver");
         resolvers.add(resolver);
         return this;
     }
@@ -160,14 +166,20 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         EnhancedSchemaBuilder builder = this.factory.createBuilder();
         JsonLocation refLocation = null;
         Event event = null;
-        while (parser.hasNext() && (event = parser.next()) != Event.END_OBJECT) {
-            if (event == Event.KEY_NAME) {
+        while (parser.hasNext()) {
+            event = parser.next();
+            if (event == Event.END_OBJECT) {
+                break;
+            } else if (event == Event.KEY_NAME) {
                 String keyName = parser.getString();
                 populateSchema(keyName, builder);
                 if (keyName.equals("$ref")) {
                     refLocation = parser.getLocation();
                 }
             }
+        }
+        if (event != Event.END_OBJECT) {
+            throw newParsingException();
         }
         JsonSchema schema = builder.build();
         if (schema instanceof SchemaReference) {
@@ -1053,5 +1065,10 @@ public class BasicSchemaReader implements JsonSchemaReader, ProblemBuilderFactor
         if (!problems.isEmpty()) {
             throw new JsonValidatingException(this.problems);
         }
+    }
+
+    private JsonParsingException newParsingException() {
+        String message = Message.asString("schema.problem.eoi");
+        return new JsonParsingException(message, parser.getLocation());
     }
 }

@@ -23,16 +23,16 @@ import java.util.ResourceBundle;
 
 /**
  * Message contained in the resource bundle for this library.
- * 
+ *
  * @author leadpony
  */
 public class Message {
-    
+
     private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/messages";
 
     private final String pattern;
     private final ResourceBundle bundle;
-    
+
     public static Message get(String key) {
         return get(key, Locale.getDefault());
     }
@@ -45,7 +45,7 @@ public class Message {
             throw e;
         }
     }
-    
+
     public static String asString(String key) {
         return asString(key, Locale.getDefault());
     }
@@ -58,17 +58,22 @@ public class Message {
             throw e;
         }
     }
-    
+
     private Message(String pattern, ResourceBundle bundle) {
         this.pattern = pattern;
         this.bundle = bundle;
     }
-    
+
     public String format(Map<String, Object> arguments) {
         MessageFormatter formatter = new MessageFormatter(this.pattern, this.bundle);
         return formatter.format(arguments);
     }
-    
+
+    @Override
+    public String toString() {
+        return pattern;
+    }
+
     /*
      * Note that {@code ResourceBundle.Control} cannot be used in named modules.
      */
