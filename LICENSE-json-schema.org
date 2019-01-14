@@ -1,5 +1,5 @@
 The contents under the following directory are originally authored by json-schema.org.
-src/test/resources/org/json_schema/examples/
+/justify/src/test/resources/org/json_schema/examples/
 
 The original files can be obtained from:
 https://github.com/json-schema-org/json-schema-org.github.io

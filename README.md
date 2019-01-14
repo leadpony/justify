@@ -12,7 +12,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
-* Passes 1000+ test cases including official ones provided by [JSON Schema Test Suite].
+* Passes 1,000+ test cases including official ones provided by [JSON Schema Test Suite].
 * Accepts custom formats for string and other instance types.
 * Supports Java 8, 9, 10 and 11, can be used as a modular jar in Java 9 and higher.
 * Internationalized problem messages, including Japanese language support.
@@ -91,10 +91,28 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 }
 ```
 
+## Command-Line Interface
+
+[Justify CLI], a command-line utility for validating JSON documents without any coding is also available.
+The latest stable distribution can be downloaded from [Releases] in `tar.gz` or `zip` format, whichever you prefer.
+
+After unpacking the downloaded file, just typing the following command validates a JSON instance against a JSON schema.
+
+```bash
+$ ./justify.sh <path/to/JSON/schema> <path/to/JSON/instance>
+```
+
+Or for Windows:
+
+```bat
+> justify.bat <path/to/JSON/schema> <path/to/JSON/instance>
+```
+
+The utility is tested under Java 8 and higher.
+
 ## Additional Resources
 
 * [Justify Examples] which show how to use this library.
-* [Justify CLI] which provides a command-line interface for this library
 * [API Reference in Javadoc]
 
 ## Current Development Status
@@ -153,20 +171,6 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 * default
 
-## Building from Source
-
-The following tools are required to build this software.
-* [JDK 9] or higher
-* [Apache Maven] 3.6.0 or higher
-
-The commands below build the software and install it into your local Maven repository.
-
-```bash
-$ git clone https://github.com/leadpony/justify.git
-$ cd justify
-$ mvn clean install
-```
-
 ## Similar Solutions
 
 There exist several JSON validator implementations conformant to the JSON Schema Specification, including those for other programming languages. [The list of implementations] is available on the JSON Schema web site.
@@ -177,8 +181,6 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [JSON Schema Specification]: https://json-schema.org/
 [Java API for JSON Processing (JSR 374)]: https://javaee.github.io/jsonp/
 [Java API for JSON Binding (JSR 367)]: http://json-b.net/
-[JDK 9]: https://jdk.java.net/archive/
-[Apache Maven]: https://maven.apache.org/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
 [RFC 1034]: https://tools.ietf.org/html/rfc1034.html
@@ -199,3 +201,4 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
 [Apache Johnzon]: https://johnzon.apache.org/
 [The list of implementations]: https://json-schema.org/implementations.html  
+[Releases]: https://github.com/leadpony/justify-cli/releases/latest
