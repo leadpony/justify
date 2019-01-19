@@ -39,24 +39,24 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Skeletal implementation for "properties" and "patternProperties" keywords.
- * 
+ *
  * @author leadpony
  */
 public abstract class AbstractProperties<K> extends Combiner implements ObjectKeyword {
-    
+
     protected final Map<K, JsonSchema> propertyMap;
-    protected AdditionalProperties additionalProperties;
-    
+    private JsonSchema defaultSchema;
+
     protected AbstractProperties() {
         this.propertyMap = new LinkedHashMap<>();
-        this.additionalProperties = AdditionalProperties.DEFAULT;
+        this.defaultSchema = AdditionalProperties.DEFAULT.getSubschema();
     }
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         return new PropertiesEvaluator();
     }
-    
+
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         return new NegatedPropertiesEvaluator();
@@ -72,38 +72,38 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     @Override
     public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
         if (keywords.containsKey("additionalProperties")) {
-            this.additionalProperties = (AdditionalProperties)keywords.get("additionalProperties");
+            AdditionalProperties additionalProperties = (AdditionalProperties)keywords.get("additionalProperties");
+            this.defaultSchema = additionalProperties.getSubschema();
         }
     }
-    
+
     @Override
     public boolean hasSubschemas() {
         return !propertyMap.isEmpty();
     }
-    
+
     @Override
     public Stream<JsonSchema> subschemas() {
         return propertyMap.values().stream();
     }
-    
+
     public void addProperty(K key, JsonSchema subschema) {
         propertyMap.put(key, subschema);
     }
 
     protected abstract void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas);
-    
-    private JsonSchema getDefaultSchema() {
-        return additionalProperties.getSubschema();
+
+    protected JsonSchema getDefaultSchema() {
+        return defaultSchema;
     }
-    
+
     private class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
-        
+
         PropertiesEvaluator() {
-            super(AbstractProperties.this);
         }
-        
+
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
@@ -113,7 +113,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
                 appendEvaluators(type);
             }
         }
-        
+
         private void findSubschemaFor(String keyName) {
             AbstractProperties.this.findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
@@ -123,7 +123,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
                 subschemas.clear();
             }
         }
-        
+
         private void findDefaultSchemaFor(String keyName) {
             JsonSchema subschema = getDefaultSchema();
             if (subschema == JsonSchema.FALSE) {
@@ -132,7 +132,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
                 subschemas.add(subschema);
             }
         }
-        
+
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
                 append(subschema.createEvaluator(type));
@@ -148,11 +148,11 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator {
 
         private final List<JsonSchema> subschemas = new ArrayList<>();
-        
+
         NegatedPropertiesEvaluator() {
             super(AbstractProperties.this);
         }
-        
+
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
@@ -162,7 +162,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
                 appendEvaluators(type);
             }
         }
-        
+
         private void findSubschemaFor(String keyName) {
             AbstractProperties.this.findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
@@ -177,7 +177,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
                     });
             }
         }
-        
+
         private void findDefaultSchemaFor(String keyName) {
             JsonSchema subschema = getDefaultSchema();
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {

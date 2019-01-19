@@ -30,13 +30,13 @@ import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
 /**
  * Combiner representing "contains" keyword.
- * 
+ *
  * @author leadpony
  */
 class Contains extends UnaryCombiner implements ArrayKeyword {
-    
+
     private int min;
-    
+
     Contains(JsonSchema subschema) {
         super(subschema);
         this.min = 1;
@@ -46,7 +46,7 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
     public String name() {
         return "contains";
     }
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         if (this.min == 1) {
@@ -80,7 +80,7 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
 
     private Evaluator createNegatedItemsEvaluator() {
         final JsonSchema subschema = getSubschema();
-        return new AbstractConjunctiveItemsEvaluator(this) {
+        return new AbstractConjunctiveItemsEvaluator() {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {

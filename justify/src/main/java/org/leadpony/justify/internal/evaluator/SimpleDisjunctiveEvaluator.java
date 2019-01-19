@@ -31,18 +31,18 @@ import org.leadpony.justify.internal.base.ProblemList;
 
 /**
  * Evaluator for "anyOf" boolean logic.
- * 
+ *
  * @author leadpony
  */
-class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator 
+class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     implements Iterable<DeferredEvaluator> {
-    
+
     private final List<DeferredEvaluator> operands = new ArrayList<>();
     private List<ProblemList> problemLists;
-    
+
     SimpleDisjunctiveEvaluator() {
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         for (DeferredEvaluator operand : operands) {
@@ -60,7 +60,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     public void append(Evaluator evaluator) {
         this.operands.add(new DeferredEvaluator(evaluator));
     }
-    
+
     @Override
     public Iterator<DeferredEvaluator> iterator() {
         return operands.iterator();
@@ -72,7 +72,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         }
         problemLists.add(evaluator.problems());
     }
-    
+
     protected Result dispatchProblems(JsonParser parser, ProblemDispatcher dispatcher) {
         if (problemLists == null) {
             dispatchDefaultProblem(parser, dispatcher);
@@ -82,7 +82,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         }
         return Result.FALSE;
     }
-    
+
     private void dispatchProblemBranches(JsonParser parser, ProblemDispatcher dispatcher) {
         List<ProblemList> filterdLists = this.problemLists.stream()
             .filter(ProblemList::isResolvable)
@@ -99,7 +99,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
             dispatcher.dispatchProblem(builder.build());
         }
     }
-    
+
     protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {
         throw new IllegalStateException();
     }

@@ -112,7 +112,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
         } else if (ref != null) {
             return new SchemaReference(ref, this.keywords, getBuilderFactory());
         } else {
-            return new BasicSchema(this);
+            return BasicSchema.newSchema(this);
         }
     }
 

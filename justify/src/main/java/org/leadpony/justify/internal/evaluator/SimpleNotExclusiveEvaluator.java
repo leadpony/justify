@@ -36,7 +36,7 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
     private final List<DeferredEvaluator> operands = new ArrayList<>();
     private List<Problem> problemList;
     private int evaluationsAsFalse;
-    
+
     SimpleNotExclusiveEvaluator() {
     }
 
@@ -51,7 +51,7 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
         }
         return finalizeResult(dispatcher);
     }
-    
+
     @Override
     public void append(Evaluator evaluator) {
         if (evaluator.isAlwaysTrue()) {
@@ -64,14 +64,14 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
     public Iterator<DeferredEvaluator> iterator() {
         return operands.iterator();
     }
-    
+
     protected void addBadEvaluator(DeferredEvaluator evaluator) {
         if (this.problemList == null) {
             this.problemList = evaluator.problems();
         }
         ++evaluationsAsFalse;
     }
-    
+
     protected Result finalizeResult(ProblemDispatcher dispatcher) {
         if (evaluationsAsFalse == 1) {
             problemList.forEach(dispatcher::dispatchProblem);

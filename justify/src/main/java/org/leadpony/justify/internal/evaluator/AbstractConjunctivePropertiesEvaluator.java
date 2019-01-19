@@ -16,15 +16,92 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
+ * A skeletal implementation of {@link ChildrenEvaluator}
+ * specifialized for JSON objects.
+ *
  * @author leadpony
  */
-public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractConjunctiveChildrenEvaluator {
+public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLogicalEvaluator implements ChildrenEvaluator {
 
-    public AbstractConjunctivePropertiesEvaluator(ProblemBuilderFactory problemBuilderFactory) {
-        super(InstanceType.OBJECT, problemBuilderFactory);
+    private Result finalResult = Result.TRUE;
+    private Evaluator firstChildEvaluator;
+    private List<Evaluator> additionalChildEvaluators;
+
+    protected AbstractConjunctivePropertiesEvaluator() {
+    }
+
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        if (depth == 0 && event == Event.END_OBJECT) {
+            return finalResult;
+        }
+
+        if (depth == 1) {
+            updateChildren(event, parser);
+        }
+
+        if (firstChildEvaluator != null) {
+            final int childDepth = depth - 1;
+
+            if (!invokeChildEvaluator(firstChildEvaluator, event, parser, childDepth, dispatcher)) {
+                firstChildEvaluator = null;
+            }
+
+            if (additionalChildEvaluators != null) {
+                Iterator<Evaluator> it = additionalChildEvaluators.iterator();
+                while (it.hasNext()) {
+                    if (!invokeChildEvaluator(it.next(), event, parser, childDepth, dispatcher)) {
+                        it.remove();
+                    }
+                }
+                if (firstChildEvaluator == null && !additionalChildEvaluators.isEmpty()) {
+                    firstChildEvaluator = additionalChildEvaluators.remove(0);
+                }
+            }
+        }
+
+        return Result.PENDING;
+    }
+
+    @Override
+    public void append(Evaluator evaluator) {
+        if (evaluator.isAlwaysTrue()) {
+            return;
+        }
+        if (firstChildEvaluator == null) {
+            firstChildEvaluator = evaluator;
+        } else {
+            getAdditionalChildEvaluators().add(evaluator);
+        }
+    }
+
+    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        Result result = evalutor.evaluate(event, parser, depth, dispatcher);
+        if (result == Result.PENDING) {
+            return true;
+        } else {
+            if (result == Result.FALSE) {
+                finalResult = Result.FALSE;
+            }
+            return false;
+        }
+    }
+
+    private List<Evaluator> getAdditionalChildEvaluators() {
+        if (additionalChildEvaluators == null) {
+            additionalChildEvaluators = new ArrayList<>();
+        }
+        return additionalChildEvaluators;
     }
 }

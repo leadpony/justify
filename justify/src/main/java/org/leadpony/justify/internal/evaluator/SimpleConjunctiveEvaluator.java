@@ -28,26 +28,26 @@ import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Evaluator for "allOf" boolean logic.
- * 
+ *
  * @author leadpony
  */
-public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator 
+public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
     implements Iterable<Evaluator> {
 
     private final List<Evaluator> operands = new ArrayList<>();
-    
+
     SimpleConjunctiveEvaluator() {
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        int evaluationsAsFalse = 0;
+        Result finalResult = Result.TRUE;
         for (Evaluator operand : operands) {
             if (operand.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
-                evaluationsAsFalse++;
+                finalResult = Result.FALSE;
             }
         }
-        return (evaluationsAsFalse == 0) ? Result.TRUE : Result.FALSE;
+        return finalResult;
     }
 
     @Override

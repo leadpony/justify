@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "properties" subschema combiner.
- * 
+ *
  * @author leadpony
  */
 public class Properties extends AbstractProperties<String> {

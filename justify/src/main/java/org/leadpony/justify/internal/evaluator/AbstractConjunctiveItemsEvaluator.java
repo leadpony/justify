@@ -16,15 +16,55 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
+ * A skeletal implementation of {@link ChildrenEvaluator}
+ * specifialized for JSON arrays.
+ *
  * @author leadpony
  */
-public abstract class AbstractConjunctiveItemsEvaluator extends AbstractConjunctiveChildrenEvaluator {
+public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalEvaluator implements ChildrenEvaluator {
 
-    public AbstractConjunctiveItemsEvaluator(ProblemBuilderFactory problemBuilderFactory) {
-        super(InstanceType.ARRAY, problemBuilderFactory);
+    private Result finalResult = Result.TRUE;
+    private Evaluator childEvaluator;
+
+    protected AbstractConjunctiveItemsEvaluator() {
+    }
+
+    @Override
+    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        if (depth == 0 && event == Event.END_ARRAY) {
+            return finalResult;
+        }
+
+        if (depth == 1) {
+            updateChildren(event, parser);
+        }
+
+        if (childEvaluator != null) {
+            Result result = childEvaluator.evaluate(event, parser, depth - 1, dispatcher);
+            if (result != Result.PENDING) {
+                if (result == Result.FALSE) {
+                    finalResult = Result.FALSE;
+                }
+                childEvaluator = null;
+            }
+        }
+
+        return Result.PENDING;
+    }
+
+    @Override
+    public void append(Evaluator evaluator) {
+        if (evaluator.isAlwaysTrue()) {
+            return;
+        }
+        assert childEvaluator == null;
+        childEvaluator = evaluator;
     }
 }

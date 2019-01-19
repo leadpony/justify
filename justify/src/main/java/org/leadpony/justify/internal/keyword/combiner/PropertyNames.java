@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
 
 /**
  * Combiner representing "propertyNames" keyword.
- * 
+ *
  * @author leadpony
  */
 class PropertyNames extends UnaryCombiner {
@@ -57,7 +57,7 @@ class PropertyNames extends UnaryCombiner {
     public Set<InstanceType> getSupportedTypes() {
         return EnumSet.of(InstanceType.OBJECT);
     }
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonSchema subschema = getSubschema();
@@ -77,7 +77,7 @@ class PropertyNames extends UnaryCombiner {
             return createNegatedPropertiesEvaluator(subschema);
         }
     }
-    
+
     private Evaluator createForbiddenPropertyEvaluator(JsonSchema subschema) {
         return (event, parser, depth, dispatcher)->{
             ProblemBuilder b = createProblemBuilder(parser)
@@ -86,9 +86,9 @@ class PropertyNames extends UnaryCombiner {
             return Result.FALSE;
         };
     }
-    
+
     private Evaluator createForbiddenPropertiesEvaluator(JsonSchema subschema) {
-        return new AbstractConjunctivePropertiesEvaluator(this) {
+        return new AbstractConjunctivePropertiesEvaluator() {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
@@ -97,9 +97,9 @@ class PropertyNames extends UnaryCombiner {
             }
         };
     }
-    
+
     private Evaluator createPropertiesEvaluator(JsonSchema subschema) {
-        return new AbstractConjunctivePropertiesEvaluator(this) {
+        return new AbstractConjunctivePropertiesEvaluator() {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {

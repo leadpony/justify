@@ -111,7 +111,7 @@ class AdditionalProperties extends UnaryCombiner {
      * @return newly created evaluator.
      */
     private Evaluator createPropertiesEvaluator() {
-        return new AbstractConjunctivePropertiesEvaluator(this) {
+        return new AbstractConjunctivePropertiesEvaluator() {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -139,7 +139,7 @@ class AdditionalProperties extends UnaryCombiner {
     }
 
     private Evaluator createForbiddenPropertiesEvaluator() {
-        return new AbstractConjunctivePropertiesEvaluator(this) {
+        return new AbstractConjunctivePropertiesEvaluator() {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {

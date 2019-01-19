@@ -31,28 +31,28 @@ import org.leadpony.justify.api.ProblemDispatcher;
 class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
 
     private final InstanceMonitor monitor;
-    private int evaluationsAsFalse;
-   
+    private Result finalResult = Result.TRUE;
+
     ConjunctiveEvaluator(InstanceType type) {
         this.monitor = InstanceMonitor.of(type);
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         invokeOperandEvaluators(event, parser, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
-            return (evaluationsAsFalse == 0) ? Result.TRUE : Result.FALSE;
+            return finalResult;
         }
         return Result.PENDING;
     }
-    
+
     protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         Iterator<Evaluator> it = iterator();
         while (it.hasNext()) {
             Result result = it.next().evaluate(event, parser, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
-                    evaluationsAsFalse++;
+                    finalResult = Result.FALSE;
                 }
                 it.remove();
             }

@@ -38,29 +38,29 @@ import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * "items" combiner.
- * 
+ *
  * @author leadpony
  */
 abstract class Items extends Combiner implements ArrayKeyword {
-    
+
     @Override
     public String name() {
         return "items";
     }
-    
+
     protected Evaluator createRedundantItemEvaluator(int itemIndex, JsonSchema subschema) {
         return new RedundantItemEvaluator(itemIndex, subschema);
     }
 
     /**
      * "items" keyword with single schema.
-     * 
+     *
      * @author leadpony
      */
     static class BroadcastItems extends Items {
 
         private final JsonSchema subschema;
-        
+
         BroadcastItems(JsonSchema subschema) {
             this.subschema = subschema;
         }
@@ -87,7 +87,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
         public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
             builder.add(name(), subschema.toJson());
         }
-        
+
         @Override
         public boolean hasSubschemas() {
             return true;
@@ -102,14 +102,14 @@ abstract class Items extends Combiner implements ArrayKeyword {
         public JsonSchema getSubschema(Iterator<String> jsonPointer) {
             return subschema;
         }
-        
+
         private Evaluator createSubschemaEvaluator(Event event, JsonParser parser) {
             InstanceType type = ParserEvents.toInstanceType(event, parser);
             return subschema.createEvaluator(type);
         }
-        
+
         private Evaluator createItemsEvaluator() {
-            return new AbstractConjunctiveItemsEvaluator(this) {
+            return new AbstractConjunctiveItemsEvaluator() {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -118,7 +118,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 }
             };
         }
-        
+
         private Evaluator createNegatedSubschemaEvaluator(Event event, JsonParser parser) {
             InstanceType type = ParserEvents.toInstanceType(event, parser);
             return subschema.createNegatedEvaluator(type);
@@ -136,7 +136,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         private Evaluator createForbiddenItemsEvaluator() {
-            return new AbstractConjunctiveItemsEvaluator(this) {
+            return new AbstractConjunctiveItemsEvaluator() {
                 private int itemIndex;
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
@@ -146,7 +146,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 }
             };
         }
-        
+
         private Evaluator createNegatedForbiddenItemsEvaluator() {
             return new AbstractDisjunctiveItemsEvaluator(this) {
                 private int itemIndex;
@@ -159,17 +159,17 @@ abstract class Items extends Combiner implements ArrayKeyword {
             };
         }
     }
-    
+
     /**
      * "items" keyword with array of subschemas.
-     * 
+     *
      * @author leadpony
      */
     static class SeparateItems extends Items {
-        
+
         private final List<JsonSchema> subschemas;
         private AdditionalItems additionalItems = AdditionalItems.DEFAULT;
-        
+
         SeparateItems(List<JsonSchema> subschemas) {
             this.subschemas = subschemas;
         }
@@ -178,7 +178,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
         protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
             return createItemsEvaluator();
         }
-        
+
         @Override
         protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
             return createNegatedItemsEvaluator();
@@ -190,7 +190,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
             subschemas.stream().map(JsonSchema::toJson).forEachOrdered(itemsBuilder::add);
             builder.add(name(), itemsBuilder.build());
         }
-        
+
         @Override
         public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
             if (keywords.containsKey("additionalItems")) {
@@ -198,17 +198,17 @@ abstract class Items extends Combiner implements ArrayKeyword {
             }
             evaluatables.add(this);
         }
-      
+
         @Override
         public boolean hasSubschemas() {
             return !subschemas.isEmpty();
         }
-        
+
         @Override
         public Stream<JsonSchema> subschemas() {
             return this.subschemas.stream();
         }
-        
+
         @Override
         public JsonSchema getSubschema(Iterator<String> jsonPointer) {
             if (jsonPointer.hasNext()) {
@@ -222,7 +222,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
             }
             return null;
         }
-        
+
         private JsonSchema findSubschemaAt(int itemIndex) {
             if (itemIndex < subschemas.size()) {
                 return subschemas.get(itemIndex);
@@ -230,10 +230,10 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 return additionalItems.getSubschema();
             }
         }
-        
+
         private Evaluator createSubschemaEvaluator(int itemIndex, JsonSchema subschema, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return createRedundantItemEvaluator(itemIndex, subschema); 
+                return createRedundantItemEvaluator(itemIndex, subschema);
             } else {
                 return subschema.createEvaluator(type);
             }
@@ -241,14 +241,14 @@ abstract class Items extends Combiner implements ArrayKeyword {
 
         private Evaluator createNegatedSubschemaEvaluator(int itemIndex, JsonSchema subschema, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return createRedundantItemEvaluator(itemIndex, subschema); 
+                return createRedundantItemEvaluator(itemIndex, subschema);
             } else {
                 return subschema.createNegatedEvaluator(type);
             }
         }
 
         private Evaluator createItemsEvaluator() {
-            return new AbstractConjunctiveItemsEvaluator(this) {
+            return new AbstractConjunctiveItemsEvaluator() {
                 private int itemIndex;
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
@@ -261,7 +261,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 }
             };
         }
-        
+
         private Evaluator createNegatedItemsEvaluator() {
             return new AbstractDisjunctiveItemsEvaluator(this) {
                 private int itemIndex;
