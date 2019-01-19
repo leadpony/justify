@@ -22,20 +22,21 @@ import java.util.Objects;
 import javax.json.stream.JsonParser;
 
 /**
- * Dispatcher of problem found by a JSON validator.
- * 
+ * A dispatcher interface for dispatching the problems found
+ * while validating a JSON document.
+ *
  * <p>Note that this type is not intended to be used directly by end users.</p>
- * 
+ *
  * @author leadpony
  */
 public interface ProblemDispatcher {
-    
+
     /**
      * Dispatches the problem found.
      * @param problem the problem to dispatch, cannot be {@code null}.
      */
     void dispatchProblem(Problem problem);
-    
+
     /**
      * Dispatches all problems in the specified collection.
      * @param problems the collection of the problems to dispatch.
@@ -47,7 +48,7 @@ public interface ProblemDispatcher {
             dispatchProblem(problem);
         }
     }
-    
+
     /**
      * Dispatches an inevitable problem.
      * @param parser the parser which encountered the problem, cannot be {@code null}.

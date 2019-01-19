@@ -24,10 +24,10 @@ import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeReg
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
- * 
+ *
  * @author leadpony
  */
-public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
+public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     private final JsonBuilderFactory builderFactory;
     private final FormatAttributeRegistry formatRegistry;
@@ -35,12 +35,12 @@ public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     /**
      * Constructs this factory.
-     * 
+     *
      * @param builderFactory  the factory for producing builders of JSON values.
      * @param formatRegistry  the registry managing all format attributes.
      * @param contentRegistry the registry managing all content attributes.
      */
-    public BasicSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
+    public DefaultSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
             ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
         this.formatRegistry = formatRegistry;
@@ -51,7 +51,11 @@ public class BasicSchemaBuilderFactory implements JsonSchemaBuilderFactory {
      * {@inheritDoc}
      */
     @Override
-    public DefaultSchemaBuilder createBuilder() {
-        return new DefaultSchemaBuilder(builderFactory, formatRegistry, contentRegistry);
+    public Draft07SchemaBuilderImpl createBuilder() {
+        return createBuilderForDraft07();
+    }
+
+    public Draft07SchemaBuilderImpl createBuilderForDraft07() {
+        return new Draft07SchemaBuilderImpl(builderFactory, formatRegistry, contentRegistry);
     }
 }

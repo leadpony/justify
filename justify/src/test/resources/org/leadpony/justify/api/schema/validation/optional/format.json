@@ -1,5 +1,10 @@
 [
     {
+        "description": "value is a known attribute",
+        "schema": { "format": "email" },
+        "valid": true
+    },
+    {
         "description": "value is a number",
         "schema": { "format": 123 },
         "valid": false
@@ -7,6 +12,6 @@
     {
         "description": "value is an unknown attribute",
         "schema": { "format": "unknown" },
-        "valid": false
+        "valid": true
     }
 ]

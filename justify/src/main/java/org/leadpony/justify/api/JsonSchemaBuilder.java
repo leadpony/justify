@@ -26,7 +26,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.json.JsonValue;
 
 /**
- * The type for building a JSON schema programmatically.
+ * A builder interface for building a JSON schema programmatically.
  *
  * <p>
  * Instances of this type can be created by the factory class
@@ -81,7 +81,7 @@ public interface JsonSchemaBuilder {
     JsonSchema build();
 
     /**
-     * Adds the "$id" keyword to the schema.
+     * Adds a "$id" keyword to the schema.
      *
      * @param id the identifier of the schema.
      * @return this builder.
@@ -90,7 +90,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withId(URI id);
 
     /**
-     * Adds the "$schema" keyword to the schema.
+     * Adds a "$schema" keyword to the schema.
      * <p>
      * The "$schema" keyword should be used in a root schema. It must not appear in
      * subschemas.
@@ -102,10 +102,20 @@ public interface JsonSchemaBuilder {
      */
     JsonSchemaBuilder withSchema(URI schema);
 
+    /**
+     * Adds a "$comment" keyword to the schema.
+     *
+     * @param comment the comment for the schema.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code comment} is
+     *                              {@code null}.
+     */
+    JsonSchemaBuilder withComment(String comment);
+
     /* Validation Keywords for Any Instance Type */
 
     /**
-     * Adds the "type" keyword to the schema. The type are specified as an array.
+     * Adds a "type" keyword to the schema. The type are specified as an array.
      *
      * @param types the array of types. At least one element is needed and elements
      *              must be unique.
@@ -118,7 +128,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withType(InstanceType... types);
 
     /**
-     * Adds the "type" keyword to the schema. The type are specified as a set.
+     * Adds a "type" keyword to the schema. The type are specified as a set.
      *
      * @param types the set of types. At least one element is needed.
      * @return this builder.
@@ -129,7 +139,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withType(Set<InstanceType> types);
 
     /**
-     * Adds the "enum" keyword to the schema. The values are specified as an array.
+     * Adds an "enum" keyword to the schema. The values are specified as an array.
      *
      * @param values the values in the enumeration. At least one element is needed
      *               and elements must be unique.
@@ -142,7 +152,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withEnum(JsonValue... values);
 
     /**
-     * Adds the "enum" keyword to the schema. The values are specified as a set.
+     * Adds an "enum" keyword to the schema. The values are specified as a set.
      *
      * @param values the values in the enumeration. At least one element is needed.
      * @return this builder.
@@ -153,7 +163,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withEnum(Set<JsonValue> values);
 
     /**
-     * Adds the "const" keyword to the schema.
+     * Adds a "const" keyword to the schema.
      *
      * @param value the value of the keyword.
      * @return this builder.
@@ -164,7 +174,7 @@ public interface JsonSchemaBuilder {
     /* Validation Keywords for Numeric Instances (number and integer) */
 
     /**
-     * Adds the "multipleOf" keyword to the schema. The value is specified as long
+     * Adds a "multipleOf" keyword to the schema. The value is specified as long
      * type.
      *
      * @param value the value of the keyword. This must be greater than 0.
@@ -175,7 +185,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMultipleOf(long value);
 
     /**
-     * Adds the "multipleOf" keyword to the schema. The value is specified as double
+     * Adds a "multipleOf" keyword to the schema. The value is specified as double
      * type.
      *
      * @param value the value of the keyword. This must be greater than 0.
@@ -186,7 +196,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMultipleOf(double value);
 
     /**
-     * Adds the "multipleOf" keyword to the schema. The value is specified as
+     * Adds a "multipleOf" keyword to the schema. The value is specified as
      * {@link BigDecimal} type.
      *
      * @param value the value of the keyword. This must be greater than 0.
@@ -199,8 +209,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMultipleOf(BigDecimal value);
 
     /**
-     * Adds the "maximum" keyword to the schema. The value is specified as long
-     * type.
+     * Adds a "maximum" keyword to the schema. The value is specified as long type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
      * </p>
@@ -213,7 +222,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "maximum" keyword to the schema. The value is specified as double
+     * Adds a "maximum" keyword to the schema. The value is specified as double
      * type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
@@ -227,7 +236,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "maximum" keyword to the schema. The value is specified as
+     * Adds a "maximum" keyword to the schema. The value is specified as
      * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an inclusive upper limit for a numeric instance.
@@ -240,7 +249,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaximum(BigDecimal value);
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMaximum" keyword to the schema. The value is specified as
      * long type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
@@ -254,7 +263,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMaximum" keyword to the schema. The value is specified as
      * double type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
@@ -268,7 +277,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMaximum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMaximum" keyword to the schema. The value is specified as
      * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an exclusive upper limit for a numeric instance.
@@ -281,8 +290,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withExclusiveMaximum(BigDecimal value);
 
     /**
-     * Adds the "minimum" keyword to the schema. The value is specified as long
-     * type.
+     * Adds a "minimum" keyword to the schema. The value is specified as long type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
      * </p>
@@ -295,7 +303,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "minimum" keyword to the schema. The value is specified as double
+     * Adds a "minimum" keyword to the schema. The value is specified as double
      * type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
@@ -309,7 +317,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "minimum" keyword to the schema. The value is specified as
+     * Adds a "minimum" keyword to the schema. The value is specified as
      * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an inclusive lower limit for a numeric instance.
@@ -322,7 +330,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinimum(BigDecimal value);
 
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMinimum" keyword to the schema. The value is specified as
      * long type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
@@ -336,7 +344,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMinimum" keyword to the schema. The value is specified as
      * double type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
@@ -350,7 +358,7 @@ public interface JsonSchemaBuilder {
     }
 
     /**
-     * Adds the "exclusiveMinimum" keyword to the schema. The value is specified as
+     * Adds an "exclusiveMinimum" keyword to the schema. The value is specified as
      * {@link BigDecimal} type.
      * <p>
      * This keyword specifies an exclusive lower limit for a numeric instance.
@@ -365,7 +373,7 @@ public interface JsonSchemaBuilder {
     /* Validation Keywords for Strings */
 
     /**
-     * Adds the "maxLength" keyword to the schema.
+     * Adds a "maxLength" keyword to the schema.
      * <p>
      * This keyword specifies an upper limit of length for a string instance.
      * </p>
@@ -377,7 +385,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaxLength(int value);
 
     /**
-     * Adds the "minLength" keyword to the schema.
+     * Adds a "minLength" keyword to the schema.
      * <p>
      * This keyword specifies a lower limit of length for a string instance.
      * </p>
@@ -389,7 +397,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinLength(int value);
 
     /**
-     * Adds the "pattern" keyword to the schema.
+     * Adds a "pattern" keyword to the schema.
      * <p>
      * This keyword specifies the pattern of string instance as a regular
      * expression.
@@ -408,8 +416,8 @@ public interface JsonSchemaBuilder {
     /* Validation Keywords for Arrays */
 
     /**
-     * Adds the "items" keyword to the schema. The specified single subschema is
-     * used for all array items.
+     * Adds an "items" keyword to the schema. The specified single subschema is used
+     * for all array items.
      *
      * @param subschema the subschema as the value of the keyword.
      * @return this builder.
@@ -419,7 +427,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withItems(JsonSchema subschema);
 
     /**
-     * Adds the "items" keyword to the schema. The value is specified as an array of
+     * Adds an "items" keyword to the schema. The value is specified as an array of
      * subschemas.
      *
      * @param subschemas the array of subschemas as the value of the keyword. At
@@ -433,7 +441,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withItemsArray(JsonSchema... subschemas);
 
     /**
-     * Adds the "items" keyword to the schema. The value is specified as an ordered
+     * Adds an "items" keyword to the schema. The value is specified as an ordered
      * list of subschemas.
      *
      * @param subschemas the list of subschemas as the value of the keyword. At
@@ -447,7 +455,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "additionalItems" keyword to the schema.
+     * Adds an "additionalItems" keyword to the schema.
      *
      * @param subschema the value of the keyword.
      * @return this builder.
@@ -457,7 +465,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAdditionalItems(JsonSchema subschema);
 
     /**
-     * Adds the "maxItems" keyword to the schema.
+     * Adds a "maxItems" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -466,7 +474,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaxItems(int value);
 
     /**
-     * Adds the "minItems" keyword to the schema.
+     * Adds a "minItems" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -475,7 +483,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinItems(int value);
 
     /**
-     * Adds the "uniqueItems" keyword to the schema.
+     * Adds a "uniqueItems" keyword to the schema.
      * <p>
      * This keyword specifies whether elements in the array should be unique or not.
      * </p>
@@ -486,7 +494,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withUniqueItems(boolean unique);
 
     /**
-     * Adds the "contains" keyword to the schema.
+     * Adds a "contains" keyword to the schema.
      *
      * @param subschema the value of the keyword.
      * @return this builder.
@@ -496,7 +504,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withContains(JsonSchema subschema);
 
     /**
-     * Adds the "maxContains" keyword to the schema.
+     * Adds a "maxContains" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -506,7 +514,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaxContains(int value);
 
     /**
-     * Adds the "minContains" keyword to the schema.
+     * Adds a "minContains" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -518,7 +526,7 @@ public interface JsonSchemaBuilder {
     /* Validation Keywords for Objects */
 
     /**
-     * Adds the "maxProperties" keyword to the schema.
+     * Adds a "maxProperties" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -527,7 +535,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMaxProperties(int value);
 
     /**
-     * Adds the "minProperties" keyword to the schema.
+     * Adds a "minProperties" keyword to the schema.
      *
      * @param value the value of the keyword. This must be a non-negative integer.
      * @return this builder.
@@ -536,7 +544,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withMinProperties(int value);
 
     /**
-     * Adds the "required" keyword to the schema.
+     * Adds a "required" keyword to the schema.
      * <p>
      * This keyword specifies the required properties in an object.
      * </p>
@@ -551,7 +559,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withRequired(String... names);
 
     /**
-     * Adds the "required" keyword to the schema.
+     * Adds a "required" keyword to the schema.
      * <p>
      * This keyword specifies the required properties in an object.
      * </p>
@@ -574,7 +582,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withProperty(String name, JsonSchema subschema);
 
     /**
-     * Adds the "properties" keyword to the schema.
+     * Adds a "properties" keyword to the schema.
      *
      * @param subschemas the object mapping a property name to a subschema.
      * @return this builder.
@@ -597,7 +605,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema);
 
     /**
-     * Adds the "patternProperties" keyword to the schema.
+     * Adds a "patternProperties" keyword to the schema.
      *
      * @param subschemas the object mapping a name pattern to a subschema.
      * @return this builder.
@@ -609,7 +617,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withPatternProperties(Map<String, JsonSchema> subschemas);
 
     /**
-     * Adds the "additionalProperties" keyword to the schema.
+     * Adds an "additionalProperties" keyword to the schema.
      *
      * @param subschema the value of the keyword.
      * @return this builder.
@@ -654,18 +662,17 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withDependency(String name, Set<String> requiredProperties);
 
     /**
-     * Adds the "dependencies" keyword to the schema.
+     * Adds a "dependencies" keyword to the schema.
      *
      * @param values the object mapping a property name to a value. Any value must
      *               be of {@link JsonSchema} or {@link Set}.
      * @return this builder.
-     * @throws NullPointerException     if the specified {@code values} is
-     *                                  {@code null}.
+     * @throws NullPointerException if the specified {@code values} is {@code null}.
      */
     JsonSchemaBuilder withDependencies(Map<String, Object> values);
 
     /**
-     * Adds the "propertyNames" keyword to the schema.
+     * Adds a "propertyNames" keyword to the schema.
      *
      * @param subschema the subschema to be evaluated against all property names in
      *                  an object.
@@ -678,7 +685,7 @@ public interface JsonSchemaBuilder {
     /* Keywords for Applying Subschemas Conditionally */
 
     /**
-     * Adds the "if" keyword to the schema.
+     * Adds an "if" keyword to the schema.
      *
      * @param subschema the value of the keyword.
      * @return this builder.
@@ -688,7 +695,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withIf(JsonSchema subschema);
 
     /**
-     * Adds the "then" keyword to the schema.
+     * Adds a "then" keyword to the schema.
      * <p>
      * This keyword has no effect when "if" is absent.
      * </p>
@@ -701,7 +708,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withThen(JsonSchema subschema);
 
     /**
-     * Adds the "else" keyword to the schema.
+     * Adds an "else" keyword to the schema.
      * <p>
      * This keyword has no effect when "if" is absent.
      * </p>
@@ -716,7 +723,7 @@ public interface JsonSchemaBuilder {
     /* Keywords for Applying Subschemas With Boolean Logic */
 
     /**
-     * Adds the "allOf" keyword to the schema. The value is specifies as an array.
+     * Adds an "allOf" keyword to the schema. The value is specifies as an array.
      *
      * @param subschemas the array of the subschemas.
      * @return this builder.
@@ -728,7 +735,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAllOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "allOf" keyword to the schema. The value is specifies as a list.
+     * Adds an "allOf" keyword to the schema. The value is specifies as a list.
      *
      * @param subschemas the list of the subschemas.
      * @return this builder.
@@ -740,7 +747,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAllOf(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "anyOf" keyword to the schema. The value is specifies as an array.
+     * Adds an "anyOf" keyword to the schema. The value is specifies as an array.
      *
      * @param subschemas the array of the subschemas.
      * @return this builder.
@@ -752,7 +759,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAnyOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "anyOf" keyword to the schema. The value is specifies as a list.
+     * Adds an "anyOf" keyword to the schema. The value is specifies as a list.
      *
      * @param subschemas the list of the subschemas.
      * @return this builder.
@@ -764,7 +771,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withAnyOf(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "oneOf" keyword to the schema. The value is specifies as an array.
+     * Adds a "oneOf" keyword to the schema. The value is specifies as an array.
      *
      * @param subschemas the array of the subschemas.
      * @return this builder.
@@ -776,7 +783,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withOneOf(JsonSchema... subschemas);
 
     /**
-     * Adds the "oneOf" keyword to the schema. The value is specifies as a list.
+     * Adds a "oneOf" keyword to the schema. The value is specifies as a list.
      *
      * @param subschemas the list of the subschemas.
      * @return this builder.
@@ -788,7 +795,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withOneOf(List<JsonSchema> subschemas);
 
     /**
-     * Adds the "not" keyword to the schema.
+     * Adds a "not" keyword to the schema.
      *
      * @param subschema the subschema to be negated.
      * @return this builder.
@@ -798,19 +805,34 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withNot(JsonSchema subschema);
 
     /**
-     * Adds the "format" keyword to the schema.
+     * Adds a "format" keyword to the schema. This method throws an exception if the
+     * specified {@code attribute} is not recognized as a formate attribute.
      *
      * @param attribute the format attribute such as "date-time".
      * @return this builder.
      * @throws NullPointerException     if the specified {@code attribute} is
      *                                  {@code null}.
-     * @throws IllegalArgumentException if the specified {@code attribute} is
-     *                                  unknown.
+     * @throws IllegalArgumentException if the specified {@code attribute} is not
+     *                                  recogznied as a format attribute.
+     * @see #withLaxFormat
      */
     JsonSchemaBuilder withFormat(String attribute);
 
     /**
-     * Adds the "contentEncoding" keyword to the schema.
+     * Adds a "format" keyword to the schema. This method does not throw an
+     * exception even if the specified {@code attribute} is not recognized as a
+     * formate attribute.
+     *
+     * @param attribute the format attribute such as "date-time".
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code attribute} is
+     *                              {@code null}.
+     * @see #withFormat
+     */
+    JsonSchemaBuilder withLaxFormat(String attribute);
+
+    /**
+     * Adds a "contentEncoding" keyword to the schema.
      *
      * @param value the value of the keyword.
      * @return this builder.
@@ -819,7 +841,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withContentEncoding(String value);
 
     /**
-     * Adds the "contentMediaType" keyword to the schema.
+     * Adds a "contentMediaType" keyword to the schema.
      *
      * @param value the value of the keyword.
      * @return this builder.
@@ -842,7 +864,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withDefinition(String name, JsonSchema schema);
 
     /**
-     * Adds the "definitions" keyword to the schema.
+     * Adds a "definitions" keyword to the schema.
      *
      * @param schemas the object mapping a name to a schema.
      * @return this builder.
@@ -854,7 +876,7 @@ public interface JsonSchemaBuilder {
     /* Keywords for annotation */
 
     /**
-     * Adds the "title" keyword to the schema.
+     * Adds a "title" keyword to the schema.
      *
      * @param title the title of the schema.
      * @return this builder.
@@ -863,7 +885,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withTitle(String title);
 
     /**
-     * Adds the "description" keyword to the schema.
+     * Adds a "description" keyword to the schema.
      *
      * @param description the description of the schema.
      * @return this builder.
@@ -873,7 +895,7 @@ public interface JsonSchemaBuilder {
     JsonSchemaBuilder withDescription(String description);
 
     /**
-     * Adds the "default" keyword to the schema.
+     * Adds a "default" keyword to the schema.
      *
      * @param value the default value.
      * @return this builder.

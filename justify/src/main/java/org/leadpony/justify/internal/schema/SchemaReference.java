@@ -19,9 +19,7 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
-import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
@@ -33,11 +31,10 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.ProblemBuilderFactory;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Schema reference containing "$ref" keyword.
- * 
+ *
  * @author leadpony
  */
 public class SchemaReference extends AbstractJsonSchema {
@@ -48,18 +45,16 @@ public class SchemaReference extends AbstractJsonSchema {
 
     /**
      * Constructs this schema reference.
-     * 
+     *
+     * @param result the result of the schema builder.
      * @param ref the value of the "$ref" keyword.
-     * @param keywordMap the keywords contained in this schema.
-     * @param builderFactory the builder of JSON arrays and objects.
      */
-    public SchemaReference(URI ref, Map<String, Keyword> keywordMap, 
-            JsonBuilderFactory builderFactory) {
-        super(keywordMap, builderFactory);
+    public SchemaReference(JsonSchemaBuilderResult result, URI ref) {
+        super(result);
         this.targetId = this.ref = ref;
         this.referencedSchema = new NonexistentSchema();
     }
-    
+
     /**
      * Returns the original value of the keyword "$ref".
      * @return the value of the keyword "$ref".
@@ -67,29 +62,29 @@ public class SchemaReference extends AbstractJsonSchema {
     public URI ref() {
         return ref;
     }
-    
+
     /**
      * Returns the URI of the referenced schema.
-     * 
+     *
      * @return the URI of the referenced schema.
      */
     public URI getTargetId() {
         return targetId;
     }
-    
+
     /**
      * Assigns the URI of the referenced schema.
-     * 
+     *
      * @param targetId the URI of the referenced schema, cannot be {@code null}.
      */
     public void setTargetId(URI targetId) {
         requireNonNull(targetId, "targetId");
         this.targetId = targetId;
     }
-    
+
     /**
      * Assigns the referenced schema.
-     * 
+     *
      * @param schema the referenced schema, cannot be {@code null}.
      */
     public void setReferencedSchema(JsonSchema schema) {
@@ -112,10 +107,10 @@ public class SchemaReference extends AbstractJsonSchema {
         builder.add("$ref", this.ref.toString());
         super.addToJson(builder);
     }
-    
+
     /**
      * Nonexistent JSON Schema.
-     * 
+     *
      * @author leadpony
      */
     private class NonexistentSchema implements JsonSchema, Evaluator {

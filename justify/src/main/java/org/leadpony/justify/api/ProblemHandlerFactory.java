@@ -19,8 +19,8 @@ package org.leadpony.justify.api;
 import javax.json.stream.JsonParser;
 
 /**
- * Factory for producing problem handlers for validating JSON parsers.
- * 
+ * A factory interface for creating {@link ProblemHandler} instances.
+ *
  * @author leadpony
  */
 @FunctionalInterface
@@ -28,9 +28,9 @@ public interface ProblemHandlerFactory {
 
     /**
      * Returns a problem handler for a JSON parser.
-     * 
+     *
      * @param parser the JSON parser for which problem handler will be returned.
-     *               This cannot be {@code null}. 
+     *               This cannot be {@code null}.
      * @return the problem handler for the specified JSON parser, cannot be {@code null}.
      */
     ProblemHandler createProblemHandler(JsonParser parser);

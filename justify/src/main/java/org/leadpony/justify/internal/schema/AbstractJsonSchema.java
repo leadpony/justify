@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.schema;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -31,24 +32,46 @@ import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Skeletal implementation of {@link JsonSchema}.
- * 
+ *
  * @author leadpony
  */
 abstract class AbstractJsonSchema implements JsonSchema {
-   
+
+    private URI id;
+    private final URI originalId;
+    private final URI schema;
+    private final String comment;
+
     private final Map<String, Keyword> keywordMap;
     private final JsonBuilderFactory builderFactory;
 
-    protected AbstractJsonSchema(Map<String, Keyword> keywordMap, JsonBuilderFactory builderFactory) {
-        this.keywordMap = keywordMap;
-        this.builderFactory = builderFactory;
+    protected AbstractJsonSchema(JsonSchemaBuilderResult result) {
+        this.keywordMap = result.getKeywords();
+        this.builderFactory = result.getBuilderFactory();
         keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
+        this.id = this.originalId = result.getId();
+        this.schema = result.getSchema();
+        this.comment = result.getComment();
     }
 
-    protected AbstractJsonSchema(AbstractJsonSchema other, Map<String, Keyword> keywordMap) {
-        this.keywordMap = keywordMap;
-        this.builderFactory = other.builderFactory;
-        keywordMap.forEach((k, v)->v.setEnclosingSchema(other));
+    @Override
+    public boolean hasId() {
+        return id != null;
+    }
+
+    @Override
+    public URI id() {
+        return id;
+    }
+
+    @Override
+    public URI schema() {
+        return schema;
+    }
+
+    @Override
+    public String comment() {
+        return comment;
     }
 
     @Override
@@ -57,14 +80,14 @@ abstract class AbstractJsonSchema implements JsonSchema {
         addToJson(builder);
         return builder.build();
     }
-    
+
     @Override
     public Stream<JsonSchema> subschemas() {
         return keywordMap.values().stream()
                 .filter(Keyword::hasSubschemas)
                 .flatMap(Keyword::subschemas);
     }
-    
+
     @Override
     public JsonSchema subschemaAt(String jsonPointer) {
         requireNonNull(jsonPointer, "jsonPointer");
@@ -73,35 +96,56 @@ abstract class AbstractJsonSchema implements JsonSchema {
         }
         return searchKeywordsForSubschema(jsonPointer);
     }
-    
+
     @Override
     public String toString() {
         return toJson().toString();
     }
-    
-    protected Map<String, Keyword> getKeywordMap() {
+
+    public void setAbsoluteId(URI id) {
+        this.id = id;
+    }
+
+    protected boolean containsKeyword(String name) {
+        return keywordMap.containsKey(name);
+    }
+
+    protected Keyword getKeyword(String name) {
+        return keywordMap.get(name);
+    }
+
+    protected Map<String, Keyword> getKeywordsAsMap() {
         return keywordMap;
     }
-    
+
     /**
      * Returns the factory for producing builders of JSON instances.
-     * 
+     *
      * @return the JSON builder factory.
      */
     protected JsonBuilderFactory getBuilderFactory() {
         return builderFactory;
     }
-    
+
     /**
      * Adds this schema to the JSON representation.
-     * 
+     *
      * @param builder the builder for building JSON object, never be {@code null}.
      */
     protected void addToJson(JsonObjectBuilder builder) {
+        if (this.originalId != null) {
+            builder.add("$id", this.originalId.toString());
+        }
+        if (this.schema != null) {
+            builder.add("$schema", this.schema.toString());
+        }
+        if (this.comment != null) {
+            builder.add("$comment", this.comment);
+        }
         for (Keyword keyword : this.keywordMap.values()) {
             keyword.addToJson(builder, builderFactory);
         }
-    } 
+    }
 
     private JsonSchema searchKeywordsForSubschema(String jsonPointer) {
         JsonPointerTokenizer tokenizer = new JsonPointerTokenizer(jsonPointer);

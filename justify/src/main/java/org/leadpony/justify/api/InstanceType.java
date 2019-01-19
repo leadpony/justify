@@ -22,7 +22,7 @@ import javax.json.JsonNumber;
 import javax.json.JsonValue;
 
 /**
- * Primitive types of JSON instances.
+ * The primitive types of JSON instances.
  *
  * @author leadpony
  */

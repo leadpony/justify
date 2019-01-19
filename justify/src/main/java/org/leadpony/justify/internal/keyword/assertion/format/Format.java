@@ -16,32 +16,25 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
+import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
-import org.leadpony.justify.spi.FormatAttribute;
 
 /**
- * Assertion representing "format" keyword.
- * 
+ * An assertion representing "format" keyword.
+ *
  * @author leadpony
  */
-public class Format extends AbstractAssertion implements Evaluator {
-    
-    private final FormatAttribute attribute;
-    
-    public Format(FormatAttribute attribute) {
+public class Format extends AbstractAssertion {
+
+    private final String attribute;
+
+    public Format(String attribute) {
         this.attribute = attribute;
     }
 
@@ -49,61 +42,13 @@ public class Format extends AbstractAssertion implements Evaluator {
     public String name() {
         return "format";
     }
-    
-    @Override
-    public boolean supportsType(InstanceType type) {
-        return type == attribute.valueType();
-    }
-
-    @Override
-    public Set<InstanceType> getSupportedTypes() {
-        return EnumSet.of(attribute.valueType());
-    }
-
-    @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this;
-    }
-    
-    @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this::evaluateNegated;
-    }
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), attribute.name());
-    }
-    
-    @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonValue value = parser.getValue();
-        if (attribute.test(value)) {
-            return Result.TRUE;
-        } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.format");
-            dispatcher.dispatchProblem(builder.build());
-            return Result.FALSE;
-        }
-    }
-
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonValue value = parser.getValue();
-        if (attribute.test(value)) {
-            ProblemBuilder builder = createProblemBuilder(parser)
-                    .withMessage("instance.problem.not.format");
-            dispatcher.dispatchProblem(builder.build());
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+        builder.add(name(), attribute);
     }
 
     @Override
-    public ProblemBuilder createProblemBuilder(JsonParser parser) {
-        return super.createProblemBuilder(parser)
-                    .withParameter("attribute", attribute.name())
-                    .withParameter("localizedAttribute", attribute.localizedName());
+    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
     }
 }

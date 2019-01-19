@@ -17,8 +17,8 @@
 package org.leadpony.justify.api;
 
 /**
- * Factory for creating {@link JsonSchemaBuilder} instances.
- * 
+ * A factory interface for creating {@link JsonSchemaBuilder} instances.
+ *
  * <p>
  * The following example shows how to create an instance of {@link JsonSchemaBuilder}.
  * </p>
@@ -27,19 +27,19 @@ package org.leadpony.justify.api;
  * JsonSchemaBuilderFactory factory = service.createSchemaBuilderFactory();
  * JsonSchemaBuilder builder = factory.createBuilder();
  * </code></pre>
- * 
+ *
  * <p>
  * Any instance of this class is safe for use by multiple concurrent threads.
  * For most use cases, only one instance of this class is required within the application.
  * </p>
- * 
+ *
  * @author leadpony
  */
 public interface JsonSchemaBuilderFactory {
 
     /**
      * Creates a new instance of JSON schema builder.
-     * 
+     *
      * @return the newly created instance of JSON schema builder.
      */
     JsonSchemaBuilder createBuilder();

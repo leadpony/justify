@@ -22,12 +22,13 @@ import java.util.ServiceLoader;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
- * Registry of format attributes.
- * 
+ * The registry of format attributes.
+ *
  * @author leadpony
  */
-@SuppressWarnings("serial")
 public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
+
+    private static final long serialVersionUID = 1L;
 
     private static final FormatAttribute DATE = new Date();
     private static final FormatAttribute DATE_TIME = new DateTime();
@@ -46,42 +47,42 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
     private static final FormatAttribute URI = new Uri();
     private static final FormatAttribute URI_REFERENCE = new UriReference();
     private static final FormatAttribute URI_TEMPLATE = new UriTemplate();
-    
+
     public FormatAttributeRegistry() {
     }
 
-    public void registeFormatAttribute(FormatAttribute attribute) {
+    public void registerFormatAttribute(FormatAttribute attribute) {
         put(attribute.name(), attribute);
     }
 
     /**
      * Registers all builtin format attributes with this registry.
-     * 
+     *
      * @return this registry.
      */
     public FormatAttributeRegistry registerDefault() {
-        registeFormatAttribute(DATE);
-        registeFormatAttribute(DATE_TIME);
-        registeFormatAttribute(EMAIL);
-        registeFormatAttribute(HOSTNAME);
-        registeFormatAttribute(IPV4);
-        registeFormatAttribute(IPV6);
-        registeFormatAttribute(IDN_EMAIL);
-        registeFormatAttribute(IDN_HOSTNAME);
-        registeFormatAttribute(IRI);
-        registeFormatAttribute(IRI_REFERENCE);
-        registeFormatAttribute(JSON_POINTER);
-        registeFormatAttribute(REGEX);
-        registeFormatAttribute(RELATIVE_JSON_POINTER);
-        registeFormatAttribute(TIME);
-        registeFormatAttribute(URI);
-        registeFormatAttribute(URI_REFERENCE);
-        registeFormatAttribute(URI_TEMPLATE);
+        registerFormatAttribute(DATE);
+        registerFormatAttribute(DATE_TIME);
+        registerFormatAttribute(EMAIL);
+        registerFormatAttribute(HOSTNAME);
+        registerFormatAttribute(IPV4);
+        registerFormatAttribute(IPV6);
+        registerFormatAttribute(IDN_EMAIL);
+        registerFormatAttribute(IDN_HOSTNAME);
+        registerFormatAttribute(IRI);
+        registerFormatAttribute(IRI_REFERENCE);
+        registerFormatAttribute(JSON_POINTER);
+        registerFormatAttribute(REGEX);
+        registerFormatAttribute(RELATIVE_JSON_POINTER);
+        registerFormatAttribute(TIME);
+        registerFormatAttribute(URI);
+        registerFormatAttribute(URI_REFERENCE);
+        registerFormatAttribute(URI_TEMPLATE);
         return this;
     }
 
-    public FormatAttributeRegistry registerProvidedFormatAttriutes() {
-        ServiceLoader.load(FormatAttribute.class).forEach(this::registeFormatAttribute);
+    public FormatAttributeRegistry registerProvidedFormatAttributes() {
+        ServiceLoader.load(FormatAttribute.class).forEach(this::registerFormatAttribute);
         return this;
     }
 }

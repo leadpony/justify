@@ -19,7 +19,7 @@ package org.leadpony.justify.api;
 import java.util.Locale;
 
 /**
- * Interface for localizable strings.
+ * A localizable string.
  *
  * @author leadpony
  */
@@ -27,7 +27,7 @@ import java.util.Locale;
 public interface Localizable {
 
     /**
-     * Returns the string localized for the current default locale.
+     * Returns the string localized for the current locale.
      * @return the localized string, never be {@code null}.
      */
     default String getLocalized() {

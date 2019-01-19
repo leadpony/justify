@@ -18,13 +18,11 @@ package org.leadpony.justify.internal.schema;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.api.Evaluator;
@@ -35,6 +33,8 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.annotation.Description;
+import org.leadpony.justify.internal.keyword.annotation.Title;
 
 /**
  * JSON Schema with keywords.
@@ -43,66 +43,48 @@ import org.leadpony.justify.internal.keyword.Keyword;
  */
 public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    private URI id;
-    private final URI originalId;
-    private final URI schema;
-
-    static JsonSchema newSchema(DefaultSchemaBuilder builder) {
-        List<Keyword> evaluatables = collectEvaluatables(builder.getKeywordMap());
+    static JsonSchema newSchema(JsonSchemaBuilderResult result) {
+        List<Keyword> evaluatables = collectEvaluatables(result.getKeywords());
         if (evaluatables.isEmpty()) {
-            return new None(builder);
+            return new None(result);
         } else if (evaluatables.size() == 1) {
-            return new One(builder, evaluatables.get(0));
+            return new One(result, evaluatables.get(0));
         } else {
-            return new Many(builder, evaluatables);
+            return new Many(result, evaluatables);
         }
     }
 
     /**
      * Constructs this schema.
      *
-     * @param builder the builder of this schema.
+     * @param result the result of the schema builder.
      */
-    protected BasicSchema(DefaultSchemaBuilder builder) {
-        super(builder.getKeywordMap(), builder.getBuilderFactory());
-        this.id = this.originalId = builder.getId();
-        this.schema = builder.getSchema();
+    protected BasicSchema(JsonSchemaBuilderResult result) {
+        super(result);
     }
 
     @Override
-    public boolean hasId() {
-        return id != null;
-    }
-
-    @Override
-    public URI id() {
-        return id;
-    }
-
-    @Override
-    public URI schema() {
-        return schema;
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder) {
-        if (this.originalId != null) {
-            builder.add("$id", this.originalId.toString());
+    public String title() {
+        if (!containsKeyword("title")) {
+            return null;
         }
-        if (this.schema != null) {
-            builder.add("$schema", this.schema.toString());
+        Title keyword = (Title) getKeyword("title");
+        return keyword.value();
+    }
+
+    @Override
+    public String description() {
+        if (!containsKeyword("description")) {
+            return null;
         }
-        super.addToJson(builder);
+        Description keyword = (Description) getKeyword("description");
+        return keyword.value();
     }
 
     @Override
     public ProblemBuilder createProblemBuilder(JsonParser parser) {
         return ProblemBuilderFactory.super.createProblemBuilder(parser)
                 .withSchema(this);
-    }
-
-    public void setAbsoluteId(URI id) {
-        this.id = id;
     }
 
     private static List<Keyword> collectEvaluatables(Map<String, Keyword> keywords) {
@@ -118,8 +100,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class None extends BasicSchema {
 
-        private None(DefaultSchemaBuilder builder) {
-            super(builder);
+        private None(JsonSchemaBuilderResult result) {
+            super(result);
         }
 
         @Override
@@ -142,8 +124,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final Keyword evaluatable;
 
-        private One(DefaultSchemaBuilder builder, Keyword evaluatable) {
-            super(builder);
+        private One(JsonSchemaBuilderResult result, Keyword evaluatable) {
+            super(result);
             this.evaluatable = evaluatable;
         }
 
@@ -167,8 +149,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final List<Keyword> evaluatables;
 
-        private Many(DefaultSchemaBuilder builder, List<Keyword> evaluatables) {
-            super(builder);
+        private Many(JsonSchemaBuilderResult result, List<Keyword> evaluatables) {
+            super(result);
             this.evaluatables = evaluatables;
         }
 

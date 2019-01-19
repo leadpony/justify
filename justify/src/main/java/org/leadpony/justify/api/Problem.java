@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.json.stream.JsonLocation;
 
 /**
- * Problem found in the process of validation.
+ * A problem found during the validation.
  * <p>
  * If the problem represents alternative groups of problems,
  * actual type will be extended to be {@link BranchProblem}.

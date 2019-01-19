@@ -19,15 +19,15 @@ package org.leadpony.justify.api;
 import java.net.URI;
 
 /**
- * The type which resolves external JSON schemas.
- * 
+ * A resolver interface for resolving referenced external JSON schemas.
+ *
  * @author leadpony
  */
 public interface JsonSchemaResolver {
 
     /**
      * Returns the JSON schema identified with given {@code id}.
-     * 
+     *
      * @param id the identifier of the schema to return.
      * @return the schema if found, or {@code null} if not found.
      * @throws NullPointerException if {@code id} is {@code null}.

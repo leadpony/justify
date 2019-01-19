@@ -22,15 +22,15 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
 
 /**
- * Enhanced version of {@link JsonSchemaBuilder}.
- * 
+ * A JSON schema builder interface based on JSON Schema Specification Draft-07.
+ *
  * @author leadpony
  */
-public interface EnhancedSchemaBuilder extends JsonSchemaBuilder {
-    
+public interface Draft07SchemaBuilder extends JsonSchemaBuilder {
+
     /**
      * Adds the "$ref" keyword to the schema.
-     * 
+     *
      * @param ref the URI of the referenced schema.
      * @return this builder.
      * @throws NullPointerException if the specified {@code ref} is {@code null}.
@@ -39,11 +39,12 @@ public interface EnhancedSchemaBuilder extends JsonSchemaBuilder {
 
     /**
      * Adds an unknown property to the schema.
-     * 
-     * @param name the name of the unknown property.
+     *
+     * @param name      the name of the unknown property.
      * @param subschema the subschema defined for the property.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code name} of {@code subschema} is {@code null}.
+     * @throws NullPointerException if the specified {@code name} of
+     *                              {@code subschema} is {@code null}.
      */
     JsonSchemaBuilder withUnknown(String name, JsonSchema subschema);
 }

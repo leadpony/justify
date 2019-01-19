@@ -20,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
+import java.net.URI;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParsingException;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,6 +35,8 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 
 /**
+ * Tests for {@link JsonSchemaReader}.
+ *
  * @author leadpony
  */
 public class SchemaReaderTest {
@@ -40,27 +44,99 @@ public class SchemaReaderTest {
     private static final Logger log = Logger.getLogger(SchemaReaderTest.class.getName());
     private static final JsonValidationService service = JsonValidationService.newInstance();
 
-    public static Stream<Arguments> provideSchemas() {
-        return Stream.of(
-                Arguments.of("", JsonValidatingException.class),
-                Arguments.of(" ", JsonValidatingException.class),
-                Arguments.of(" {}", null),
+    private static void print(Throwable thrown) {
+        log.info(thrown.toString());
+    }
+
+    public static Stream<Arguments> schemas() {
+        return Stream.of(Arguments.of("", JsonValidatingException.class),
+                Arguments.of(" ", JsonValidatingException.class), Arguments.of(" {}", null),
                 Arguments.of("{\"type\":", JsonParsingException.class),
                 Arguments.of("{\"type\":\"number\"", JsonParsingException.class),
-                Arguments.of("{\"type\":\"number\"},", null)
-                );
+                Arguments.of("{\"type\":\"number\"},", null));
     }
 
     @ParameterizedTest(name = "{index}")
-    @MethodSource("provideSchemas")
-    public void testInvalidSchema(String schemaJson, Class<?> exceptionClass) {
+    @MethodSource("schemas")
+    public void read_shouldThrowIfSchemaIsInvalid(String schemaJson, Class<?> exceptionClass) {
         JsonSchemaReader reader = service.createSchemaReader(new StringReader(schemaJson));
-        Throwable thrown = catchThrowable(()->reader.read());
+        Throwable thrown = catchThrowable(() -> reader.read());
         if (exceptionClass != null) {
             assertThat(thrown).isInstanceOf(exceptionClass);
-            log.info(thrown.toString());
-        }  else {
+            print(thrown);
+        } else {
             assertThat(thrown).isNull();
         }
+    }
+
+    @Test
+    public void read_shouldReadSchemaMetadata() {
+        String source = "{" +
+                "\"$schema\": \"http://json-schema.org/draft-07/schema#\"," +
+                "\"$id\": \"http://example.com/product.schema.json\"," +
+                "\"title\": \"Product\"," +
+                "\"description\": \"A product from Acme's catalog\"," +
+                "\"$comment\": \"As an example.\"" +
+                "}";
+        JsonSchema schema = service.readSchema(new StringReader(source));
+
+        assertThat(schema.hasId()).isTrue();
+        assertThat(schema.schema()).isEqualTo(URI.create("http://json-schema.org/draft-07/schema#"));
+        assertThat(schema.id()).isEqualTo(URI.create("http://example.com/product.schema.json"));
+        assertThat(schema.comment()).isEqualTo("As an example.");
+        assertThat(schema.title()).isEqualTo("Product");
+        assertThat(schema.description()).isEqualTo("A product from Acme's catalog");
+
+        JsonAssertions.assertThat(schema.toJson()).isEqualTo(source);
+    }
+
+    private static final String SCHEMA_INCLUDING_UNKNOWN_KEYWORD = "{ \"type\": \"string\", \"foo\": 42 }";
+
+    @Test
+    public void read_shouldThrowIfStrictWithKeywords() {
+        String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
+        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(true)
+                .build();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
+        Throwable thrown = catchThrowable(() -> reader.read());
+        assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        assertThat(e.getProblems()).hasSize(1);
+        print(thrown);
+    }
+
+    @Test
+    public void read_shouldNotThrowIfNotStrictWithKeywords() {
+        String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
+        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(false)
+                .build();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
+        Throwable thrown = catchThrowable(() -> reader.read());
+        assertThat(thrown).isNull();
+    }
+
+    private static final String SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE = "{ \"type\": \"string\", \"format\": \"foo\" }";
+
+    @Test
+    public void read_shouldThrowIfStrictWithFormats() {
+        String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
+        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithFormats(true)
+                .build();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
+        Throwable thrown = catchThrowable(() -> reader.read());
+        assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        assertThat(e.getProblems()).hasSize(1);
+        print(thrown);
+    }
+
+    @Test
+    public void read_shouldNotThrowIfNotStrictWithFormats() {
+        String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
+        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithFormats(false)
+                .build();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
+        Throwable thrown = catchThrowable(() -> reader.read());
+        assertThat(thrown).isNull();
     }
 }

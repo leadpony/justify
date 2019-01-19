@@ -38,11 +38,11 @@ import org.leadpony.justify.internal.base.JsonParserDecorator;
 
 /**
  * JSON parser with validation functionality.
- * 
+ *
  * @author leadpony
  */
 public class ValidatingJsonParser extends JsonParserDecorator implements DefaultProblemDispatcher {
-    
+
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;
     private BiConsumer<Event, JsonParser> eventHandler;
@@ -53,21 +53,21 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
 
     /**
      * Constructs this parser.
-     * 
+     *
      * @param real the underlying JSON parser.
      * @param rootSchema the root JSON schema to be evaluated during validation.
      * @param builderFactory the JSON builder factory.
      */
-    ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonBuilderFactory builderFactory) {
+    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonBuilderFactory builderFactory) {
         super(real, builderFactory);
         this.rootSchema = rootSchema;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
     }
-    
+
     /**
      * Assigns a problem handler this this parser.
-     * 
+     *
      * @param problemHandler the problem handler to be assigned.
      * @return this parser.
      */
@@ -75,7 +75,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
         this.problemHandler = problemHandler;
         return this;
     }
-    
+
     @Override
     public Event next() {
         currentProblems.clear();
@@ -86,13 +86,13 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
         }
         return event;
     }
-  
+
     @Override
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         this.currentProblems.add(problem);
     }
-    
+
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         this.evaluator = rootSchema.createEvaluator(type);
@@ -127,11 +127,11 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
 
     private void handleNone(Event event, JsonParser parser) {
     }
-    
+
     private void dispatchProblems(Event event) {
         this.problemHandler.handleProblems(currentProblems);
     }
-    
+
     private void throwProblems(List<Problem> problems) {
         assert !problems.isEmpty();
         throw new JsonValidatingException(problems);

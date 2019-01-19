@@ -22,7 +22,7 @@ import javax.json.JsonException;
 import javax.json.stream.JsonParsingException;
 
 /**
- * Reads a JSON schema from an input source.
+ * A reader interface for reading a JSON schema from an input source.
  *
  * <p>
  * The following example shows how to read a JSON schema from a string:

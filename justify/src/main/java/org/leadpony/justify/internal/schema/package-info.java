@@ -15,8 +15,8 @@
  */
 
 /**
- * Provides JSON schema objects.
- * 
+ * Provides JSON schema types and builders.
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.schema;

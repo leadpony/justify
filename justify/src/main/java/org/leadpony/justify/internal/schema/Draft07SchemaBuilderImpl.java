@@ -50,6 +50,7 @@ import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
+import org.leadpony.justify.internal.keyword.assertion.format.EvaluatableFormat;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
@@ -59,11 +60,11 @@ import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
 
 /**
- * The default implementation of {@link EnhancedSchemaBuilder}.
+ * The default implementation of {@link Draft07SchemaBuilder}.
  *
  * @author leadpony
  */
-class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
+class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilderResult {
 
     private final JsonBuilderFactory builderFactory;
     private final FormatAttributeRegistry formatRegistry;
@@ -72,45 +73,62 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     private boolean empty;
     private URI id;
     private URI schema;
+    private String comment;
+
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI ref;
 
     /**
      * Constructs this builder.
      *
-     * @param builderFactory the factory for producing builders of JSON values.
+     * @param builderFactory  the factory for producing builders of JSON values.
      * @param formatRegistry  the registry managing all format attributes.
      * @param contentRegistry the registry managing all content attributes.
      */
-    public DefaultSchemaBuilder(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry, ContentAttributeRegistry contentRegistry) {
+    public Draft07SchemaBuilderImpl(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
+            ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
         this.formatRegistry = formatRegistry;
         this.contentRegistry = contentRegistry;
         this.empty = true;
     }
 
-    URI getId() {
+    /* JsonSchemaBuilderResult interface */
+
+    @Override
+    public URI getId() {
         return id;
     }
 
-    URI getSchema() {
+    @Override
+    public URI getSchema() {
         return schema;
     }
 
-    Map<String, Keyword> getKeywordMap() {
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public Map<String, Keyword> getKeywords() {
         return keywords;
     }
 
-    JsonBuilderFactory getBuilderFactory() {
+    @Override
+    public JsonBuilderFactory getBuilderFactory() {
         return builderFactory;
     }
+
+
+    /* Draft07SchemaBuilder interface */
 
     @Override
     public JsonSchema build() {
         if (empty) {
             return JsonSchema.EMPTY;
         } else if (ref != null) {
-            return new SchemaReference(ref, this.keywords, getBuilderFactory());
+            return new SchemaReference(this, ref);
         } else {
             return BasicSchema.newSchema(this);
         }
@@ -127,6 +145,13 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withSchema(URI schema) {
         requireNonNull(schema, "schema");
         this.schema = schema;
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withComment(String comment) {
+        requireNonNull(comment, "comment");
+        this.comment = comment;
         return nonemptyBuilder();
     }
 
@@ -371,7 +396,7 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withPatternProperties(Map<String, JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         Map<Pattern, JsonSchema> compiledMap = new HashMap<>();
-        subschemas.forEach((pattern, subschema)->{
+        subschemas.forEach((pattern, subschema) -> {
             compiledMap.put(Pattern.compile(pattern), subschema);
         });
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
@@ -415,12 +440,12 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withDependencies(Map<String, Object> values) {
         requireNonNull(values, "values");
         Dependencies dependencies = requireKeyword("dependencies", Combiners::dependencies);
-        values.forEach((property, value)->{
+        values.forEach((property, value) -> {
             if (value instanceof JsonSchema) {
-                dependencies.addDependency(property, (JsonSchema)value);
+                dependencies.addDependency(property, (JsonSchema) value);
             } else if (value instanceof Set) {
                 @SuppressWarnings("unchecked")
-                Set<String> requiredProperties = (Set<String>)value;
+                Set<String> requiredProperties = (Set<String>) value;
                 dependencies.addDependency(property, requiredProperties);
             }
         });
@@ -513,10 +538,24 @@ class DefaultSchemaBuilder implements EnhancedSchemaBuilder {
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
         if (formatRegistry.containsKey(attribute)) {
-            addKeyword(new Format(formatRegistry.get(attribute)));
+            Format format = new EvaluatableFormat(formatRegistry.get(attribute));
+            addKeyword(format);
         } else {
-            throw new IllegalArgumentException("\"" + attribute + "\" is an uknown format attribute.");
+            throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
         }
+        return nonemptyBuilder();
+    }
+
+    @Override
+    public JsonSchemaBuilder withLaxFormat(String attribute) {
+        requireNonNull(attribute, "attribute");
+        Format format = null;
+        if (formatRegistry.containsKey(attribute)) {
+            format = new EvaluatableFormat(formatRegistry.get(attribute));
+        } else {
+            format = new Format(attribute);
+        }
+        addKeyword(format);
         return nonemptyBuilder();
     }
 

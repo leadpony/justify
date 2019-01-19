@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Handler of problems found by a JSON validator.
+ * A handler interface for handling the problems found
+ * while validating a JSON document.
  *
  * @author leadpony
  */

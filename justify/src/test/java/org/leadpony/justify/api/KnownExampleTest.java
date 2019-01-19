@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
@@ -69,6 +70,7 @@ public class KnownExampleTest {
         }
         assertThat(value).isNotNull();
         assertThat(problems.isEmpty()).isEqualTo(valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
     }
 
     private static String getSchemaNameFor(String instanceName) {
@@ -86,6 +88,12 @@ public class KnownExampleTest {
     private JsonSchema readSchemaFromResource(String name) throws IOException {
         try (InputStream in = getResourceAsStream(name)) {
             return service.readSchema(in);
+        }
+    }
+
+    private JsonValue readJsonFromResource(String name) throws IOException {
+        try (JsonReader reader = Json.createReader(getResourceAsStream(name))) {
+            return reader.readValue();
         }
     }
 
