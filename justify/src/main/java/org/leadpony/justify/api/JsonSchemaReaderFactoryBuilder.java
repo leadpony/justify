@@ -73,4 +73,14 @@ public interface JsonSchemaReaderFactoryBuilder {
      * @return this builder.
      */
     JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict);
+
+    /**
+     * Adds a resolver of external JSON schemas to this builder.
+     * Multiple resolvers can be added to a builder.
+     *
+     * @param resolver the resolver of external JSON schemas.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code resolver} is {@code null}.
+     */
+    JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver);
 }

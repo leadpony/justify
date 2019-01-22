@@ -61,14 +61,4 @@ public interface JsonSchemaReader extends Closeable {
      */
     @Override
     void close();
-
-    /**
-     * Assigns a resolver of external JSON schemas to this reader.
-     *
-     * @param resolver the resolver of external JSON schemas.
-     * @return this reader.
-     * @throws NullPointerException if the specified {@code resolver} is {@code null}.
-     * @throws IllegalStateException if {@link #read()} or {@link #close()} method is already called.
-     */
-    JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver);
 }

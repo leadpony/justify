@@ -36,23 +36,27 @@ import org.leadpony.justify.api.JsonSchemaReader;
  * @author leadpony
  */
 public class RemoteSchemaTest extends BaseValidationTest {
-    
+
     private static final Logger log = Logger.getLogger(RemoteSchemaTest.class.getName());
 
-    private static final String[] TESTS = {
-            "/org/json_schema/tests/draft7/refRemote.json",
-        };
-    
+    private static final String[] TESTS = { "/org/json_schema/tests/draft7/refRemote.json", };
+
     private static Server server;
-  
+
+    private static JsonSchemaReaderFactory readerFactory;
+
     public static Stream<ValidationFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }
-    
+
     @BeforeAll
     public static void setUpOnce() throws Exception {
+
+        readerFactory = service.createSchemaReaderFactoryBuilder().withSchemaResolver(RemoteSchemaTest::resolveSchema)
+                .build();
+
         server = new Server(1234);
-        
+
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
         Path basePath = TestResources.pathToResource("/org/json_schema/remotes");
@@ -61,21 +65,20 @@ public class RemoteSchemaTest extends BaseValidationTest {
         handlers.addHandler(resourceHandler);
         handlers.addHandler(new DefaultHandler());
         server.setHandler(handlers);
-        
+
         server.start();
     }
-    
+
     @AfterAll
     public static void tearDownOnce() throws Exception {
         server.stop();
     }
-    
+
     @Override
     protected JsonSchemaReader createSchemaReader(Reader reader) {
-        return super.createSchemaReader(reader)
-                .withSchemaResolver(RemoteSchemaTest::resolveSchema);
+        return readerFactory.createSchemaReader(reader);
     }
-    
+
     private static JsonSchema resolveSchema(URI id) {
         try (InputStream in = id.toURL().openStream()) {
             return service.readSchema(in);

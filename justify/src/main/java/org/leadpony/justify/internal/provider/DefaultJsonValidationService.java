@@ -21,6 +21,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -44,6 +45,7 @@ import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
+import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
@@ -63,7 +65,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonReaderFactory;
  *
  * @author leadpony
  */
-class DefaultJsonValidationService implements JsonValidationService {
+class DefaultJsonValidationService implements JsonValidationService, JsonSchemaResolver {
 
     private final JsonProvider jsonProvider;
     private final JsonBuilderFactory jsonBuilderFactory;
@@ -89,7 +91,7 @@ class DefaultJsonValidationService implements JsonValidationService {
         this.formatRegistry = createFormatAttributeRegistry();
         this.contentRegistry = createContentAttributeRegistry(jsonProvider);
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
-        this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
+        this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().withSchemaResolver(this).build();
     }
 
     /**
@@ -104,7 +106,8 @@ class DefaultJsonValidationService implements JsonValidationService {
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, formatRegistry, contentRegistry, metaschema);
+        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, formatRegistry, contentRegistry, metaschema)
+                .withSchemaResolver(this);
     }
 
     /**
@@ -144,7 +147,7 @@ class DefaultJsonValidationService implements JsonValidationService {
      */
     @Override
     public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
-        return createBasicSchemaBuilderFactory();
+        return createDefaultSchemaBuilderFactory();
     }
 
     /**
@@ -300,6 +303,18 @@ class DefaultJsonValidationService implements JsonValidationService {
         return new ProblemPrinter(lineConsumer, locale);
     }
 
+    /* JsonSchemaResolver interface */
+
+    @Override
+    public JsonSchema resolveSchema(URI id) {
+        requireNonNull(id, "id");
+        if (id.equals(metaschema.id())) {
+            return metaschema;
+        } else {
+            return null;
+        }
+    }
+
     protected FormatAttributeRegistry createFormatAttributeRegistry() {
         return new FormatAttributeRegistry().registerDefault().registerProvidedFormatAttributes();
     }
@@ -320,12 +335,12 @@ class DefaultJsonValidationService implements JsonValidationService {
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
         JsonParser realParser = jsonProvider.createParser(in);
-        try (JsonSchemaReader reader = new Draft07SchemaReader(realParser, createBasicSchemaBuilderFactory())) {
+        try (JsonSchemaReader reader = new Draft07SchemaReader(realParser, createDefaultSchemaBuilderFactory())) {
             return reader.read();
         }
     }
 
-    private DefaultSchemaBuilderFactory createBasicSchemaBuilderFactory() {
+    private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
         return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry, contentRegistry);
     }
 

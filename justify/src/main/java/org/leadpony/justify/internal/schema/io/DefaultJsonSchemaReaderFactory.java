@@ -20,7 +20,6 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -50,7 +49,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonParser;
  *
  * @author leadpony
  */
-public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory, JsonSchemaResolver {
+public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private final JsonParserFactory jsonParserFactory;
     private final JsonBuilderFactory jsonBuilderFactory;
@@ -113,16 +112,6 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory, 
         }
     }
 
-    @Override
-    public JsonSchema resolveSchema(URI id) {
-        requireNonNull(id, "id");
-        if (id.equals(metaschema.id())) {
-            return metaschema;
-        } else {
-            return null;
-        }
-    }
-
     private ValidatingJsonParser createParser(JsonParser realParser) {
         return new ValidatingJsonParser(realParser, metaschema, jsonBuilderFactory);
     }
@@ -131,10 +120,9 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory, 
         return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry, contentRegistry);
     }
 
-    @SuppressWarnings("resource")
     private JsonSchemaReader createSchemaReaderWith(ValidatingJsonParser parser) {
         DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory();
-        return new Draft07SchemaReader(parser, schemaBuilder, configuration).withSchemaResolver(this);
+        return new Draft07SchemaReader(parser, schemaBuilder, configuration);
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, String key, Path path) {

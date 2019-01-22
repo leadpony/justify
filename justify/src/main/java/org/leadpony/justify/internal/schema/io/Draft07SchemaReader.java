@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.schema.io;
 
-import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
-
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -79,7 +77,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     private final Map<URI, JsonSchema> identified = new HashMap<>();
     private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
 
-    private final List<JsonSchemaResolver> resolvers = new ArrayList<>();
+    private final List<JsonSchemaResolver> resolvers;
 
     private List<Problem> problems = new ArrayList<>();
 
@@ -105,6 +103,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         this.factory = factory;
         this.strictWithKeywords = config.strictWithKeywords;
         this.strictWithFormats = config.strictWithFormats;
+        this.resolvers = config.resolvers;
     }
 
     /**
@@ -142,18 +141,6 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
             this.parser.close();
             this.alreadyClosed = true;
         }
-    }
-
-    @Override
-    public JsonSchemaReader withSchemaResolver(JsonSchemaResolver resolver) {
-        if (alreadyClosed) {
-            throw new IllegalStateException("already closed.");
-        } else if (alreadyRead) {
-            throw new IllegalStateException("already read.");
-        }
-        requireNonNull(resolver, "resolver");
-        resolvers.add(resolver);
-        return this;
     }
 
     protected JsonLocation getLastCharLocation() {

@@ -15,8 +15,14 @@
  */
 package org.leadpony.justify.internal.schema.io;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
+import org.leadpony.justify.api.JsonSchemaResolver;
 
 /**
  * A configuration for schema readers.
@@ -29,6 +35,7 @@ class SchemaReaderConfiguration implements JsonSchemaReaderFactoryBuilder {
 
     boolean strictWithKeywords = false;
     boolean strictWithFormats = false;
+    List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
     protected SchemaReaderConfiguration() {
     }
@@ -49,6 +56,14 @@ class SchemaReaderConfiguration implements JsonSchemaReaderFactoryBuilder {
     public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
         checkState();
         strictWithFormats = strict;
+        return this;
+    }
+
+    @Override
+    public JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver) {
+        checkState();
+        requireNonNull(resolver, "resolver");
+        resolvers.add(resolver);
         return this;
     }
 
