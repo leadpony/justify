@@ -1,7 +1,12 @@
 language: java
 jdk:
     - oraclejdk8
-    - openjdk11
 script:
     - cd justify
     - mvn install
+    - cd ../justify-cli
+    - mvn package
+    - cd target
+    - tar xzf justify-cli-*.tar.gz
+    - cd justify-cli
+    - ./justify.sh person.schema.json person.json

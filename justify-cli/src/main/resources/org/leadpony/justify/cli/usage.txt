@@ -1,0 +1,3 @@
+Justify CLI ${project.version}
+Usage: justify.sh <path/to/JSON schema> <path/to/JSON instance>
+  or   justify.sh <path/to/JSON schema>

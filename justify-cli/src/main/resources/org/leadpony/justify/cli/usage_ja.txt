@@ -1,0 +1,3 @@
+Justify CLI ${project.version}
+使用方法: justify.sh <JSONスキーマへのパス> <JSONインスタンスへのパス>
+　または  justify.sh <JSONスキーマへのパス>
