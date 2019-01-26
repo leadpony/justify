@@ -32,10 +32,10 @@ import org.leadpony.justify.internal.base.ProblemList;
 
 /**
  * Evaluator for "oneOf" boolean logic.
- * 
+ *
  * @author leadpony
  */
-public class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
+class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
 
     private final List<DeferredEvaluator> operands;
     private final List<DeferredEvaluator> negated;
@@ -43,13 +43,13 @@ public class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private List<ProblemList> negatedProblemLists;
     private long evaluationsAsTrue;
     private final InstanceMonitor monitor;
-    
+
     ExclusiveEvaluator(InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
         this.operands = createEvaluators(operands);
         this.negated = createEvaluators(negated);
         this.monitor = InstanceMonitor.of(type);
     }
-    
+
     @Override
     public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         if (evaluationsAsTrue == 0) {
@@ -98,14 +98,14 @@ public class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
             }
         }
     }
-    
+
     private void addBadEvaluator(DeferredEvaluator evaluator) {
         if (this.problemLists == null) {
             this.problemLists = new ArrayList<>();
         }
         this.problemLists.add(evaluator.problems());
     }
-    
+
     private void addBadNegatedEvaluator(DeferredEvaluator evaluator) {
         if (this.negatedProblemLists == null) {
             this.negatedProblemLists = new ArrayList<>();

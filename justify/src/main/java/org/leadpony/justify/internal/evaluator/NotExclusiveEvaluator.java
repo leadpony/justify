@@ -27,10 +27,10 @@ import org.leadpony.justify.api.ProblemDispatcher;
 /**
  * @author leadpony
  */
-public class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
+class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
     private final InstanceMonitor monitor;
-    
+
     NotExclusiveEvaluator(InstanceType type) {
         this.monitor = InstanceMonitor.of(type);
     }
