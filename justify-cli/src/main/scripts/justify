@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -n "$JAVA_HOME" ]; then
+  java="$JAVA_HOME/bin/java"
+else
+  java="java"
+fi
+
+dir=$(dirname "$BASH_SOURCE[0]")
+
+"$java" -jar "${dir}/lib/justify-cli-${project.version}.jar" $*

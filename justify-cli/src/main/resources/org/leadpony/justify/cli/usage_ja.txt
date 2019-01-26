@@ -1,3 +1,9 @@
 Justify CLI ${project.version}
-使用方法: justify.sh <JSONスキーマへのパス> <JSONインスタンスへのパス>
-　または  justify.sh <JSONスキーマへのパス>
+
+使用方法: justify [オプション] <JSONスキーマへのパス> <JSONインスタンスへのパス> ...
+　または  justify [オプション] <JSONスキーマへのパス>
+
+オプション:
+    -h              このヘルプを表示します。
+    -strict         スキーマを検証中に認識されないキーワードやフォーマット属性を見つけ
+                    た場合に問題として報告します。

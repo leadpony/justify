@@ -1,3 +1,9 @@
 Justify CLI ${project.version}
-Usage: justify.sh <path/to/JSON schema> <path/to/JSON instance>
-  or   justify.sh <path/to/JSON schema>
+
+Usage: justify [options] <path/to/JSON-schema> <path/to/JSON-instance> ...
+  or   justify [options] <path/to/JSON-schema>
+
+Options:
+    -h              Displays this help message.
+    -strict         Reports a problem if a keyword or a format attribute is
+                    not recognized while validating a schema.

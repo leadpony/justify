@@ -12,8 +12,8 @@
         <fileSet>
             <directory>src/main/scripts</directory>
             <includes>
-                <include>*.bat</include>
-                <include>*.sh</include>
+                <include>justify</include>
+                <include>justify.bat</include>
             </includes>
             <outputDirectory></outputDirectory>
             <fileMode>755</fileMode>
@@ -22,6 +22,7 @@
         <fileSet>
             <directory>src/test/resources</directory>
             <includes>
+                <include>NOTICE.md</include>
                 <include>person.schema.json</include>
                 <include>person.json</include>
                 <include>person-invalid.json</include>
