@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.cli;
 
 /**
- * Provides the command-line validator.
+ * The entry class of this program.
  *
  * @author leadpony
  */
-package org.leadpony.justify.cli;
+public class Launcher {
+
+    /**
+     * The entry point of this program.
+     *
+     * @param args the arguments given to this program.
+     */
+    public static void main(String[] args) {
+        int exitCode = new Validator().run(args);
+        System.exit(exitCode);
+    }
+}

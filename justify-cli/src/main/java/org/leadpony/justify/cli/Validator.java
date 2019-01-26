@@ -15,177 +15,193 @@
  */
 package org.leadpony.justify.cli;
 
-import java.io.BufferedReader;
+import static org.leadpony.justify.cli.Message.*;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.json.JsonException;
 import javax.json.JsonReader;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
+import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 
-import com.ibm.icu.text.MessageFormat;
-
 /**
- * Validator of JSON instances and schemas.
+ * A command-line validator for validating JSON instances and schemas.
  *
  * @author leadpony
  */
-public class Validator {
-
-    private static final String BUNDLE_NAME = Validator.class.getPackage().getName() + ".messages";
+class Validator {
 
     private final JsonValidationService service = JsonValidationService.newInstance();
-    private final ProblemHandler handler;
-    private final ResourceBundle bundle;
-    private int errors;
+
+    private int exitCode;
+
+    private final Printer out = new Printer(System.out);
+    private final ProblemHandler problemPrinter;
+
+    private final Set<Option> options = EnumSet.noneOf(Option.class);
 
     /**
      * Constructs this object.
      */
     public Validator() {
-        handler = service.createProblemPrinter(this::printProblem);
-        bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+        this.problemPrinter = service.createProblemPrinter(out::print);
     }
 
     /**
-     * Validates a JSON schema and a JSON instance.
-     * @param args the command line arguments.
-     * @return {@code true} if all of them are valid.
-     *         {@code false} if one of them is invalid.
+     * Runs this validator with command-line arguments.
+     *
+     * @param args the arguments specified on command line.
+     * @return exit code.
      */
-    public boolean validate(String... args) {
-        switch (args.length) {
-        case 1:
-            return validateSchema(Paths.get(args[0]));
-        case 2:
-            return validateInstance(Paths.get(args[0]), Paths.get(args[1]));
-        default:
-            printUsage();
-            return true;
-        }
-    }
-
-    /**
-     * Return the number of lines in the standard error.
-     * @return the number of lines in the standard error.
-     */
-    public int getNumberOfErrors() {
-        return errors;
-    }
-
-    private boolean validateSchema(Path path) {
+    public int run(String... args) {
+        List<Path> paths;
         try {
-            readSchema(path);
-            printMessage("json.schema.valid", path.getFileName());
-            return true;
-        } catch (IOException | JsonException e) {
-            return false;
+            paths = parseCommandLine(args);
+        } catch (Exception e) {
+            setExitCode(1);
+            return exitCode;
+        }
+
+        if (options.contains(Option.HELP) || paths.isEmpty()) {
+            out.printUsage();
+            out.print();
+        } else {
+            validateAll(paths);
+        }
+
+        return exitCode;
+    }
+
+    private void validateAll(List<Path> paths) {
+        Iterator<Path> it = paths.iterator();
+        JsonSchema schema;
+        try {
+            schema = validateSchema(it.next());
+        } catch (Exception e) {
+            setExitCode(1);
+            return;
+        }
+        while (it.hasNext()) {
+            validateInstance(it.next(), schema);
         }
     }
 
-    private JsonSchema readSchema(Path path) throws IOException {
-        try (InputStream in = Files.newInputStream(path);
-             JsonSchemaReader reader = service.createSchemaReader(in)){
+    /**
+     * Validates a JSON schema.
+     *
+     * @param path the path to the JSON schema.
+     * @return the schema read.
+     * @throws JsonValidatingException if the schema is invalid.
+     * @throws JsonException           if the input is corrupt.
+     * @throws IOException             if an I/O error has occurred.
+     */
+    private JsonSchema validateSchema(Path path) throws IOException {
+        JsonSchemaReaderFactory factory = createSchemaReaderFactory();
+
+        out.print(JSON_SCHEMA_START, path.getFileName());
+        final long offset = out.linesPrinted();
+
+        try (InputStream in = Files.newInputStream(path); JsonSchemaReader reader = factory.createSchemaReader(in)) {
             return reader.read();
         } catch (IOException e) {
-            printErrorMessage("json.schema.not.found", path);
+            out.print(JSON_SCHEMA_NOT_FOUND, path);
             throw e;
         } catch (JsonValidatingException e) {
-            handler.handleProblems(e.getProblems());
+            problemPrinter.handleProblems(e.getProblems());
             throw e;
         } catch (JsonException e) {
-            printError(e);
+            out.print(e);
             throw e;
-        }
-    }
+        } finally {
+            final long lines = out.linesPrinted() - offset;
+            out.print(VALIDATION_DONE, lines);
+            out.print();
 
-    private boolean validateInstance(Path schemaPath, Path instancePath) {
-        try {
-            JsonSchema schema = readSchema(schemaPath);
-            boolean result = validateInstanceAgainstSchema(instancePath, schema);
-            if (result) {
-                printMessage("json.instance.valid", instancePath.getFileName());
-            }
-            return result;
-        } catch (IOException | JsonException e) {
-            return false;
-        }
-    }
-
-    private boolean validateInstanceAgainstSchema(Path path, JsonSchema schema) {
-        try (InputStream in = Files.newInputStream(path);
-             JsonReader reader = service.createReader(in, schema, handler)) {
-            reader.readValue();
-        } catch (IOException e) {
-            printErrorMessage("json.instance.not.found", path);
-        } catch (JsonException e) {
-            printError(e);
-        }
-        return (errors == 0);
-    }
-
-    private void printMessage(String key, Object... arguments) {
-        System.out.println(formatMessage(key, arguments));
-    }
-
-    private void printErrorMessage(String key, Object... arguments) {
-        System.err.println(formatMessage(key, arguments));
-        ++errors;
-    }
-
-    private void printError(Exception e) {
-        System.err.println(e.getLocalizedMessage());
-        ++errors;
-    }
-
-    private void printProblem(String line) {
-        System.err.println(line);
-        ++errors;
-    }
-
-    private String formatMessage(String key, Object... arguments) {
-        String pattern = bundle.getString(key);
-        return MessageFormat.format(pattern, arguments);
-    }
-
-    private void printUsage() {
-        InputStream in = findUsageResourceAsStream();
-        if (in != null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                reader.lines().forEach(System.out::println);
-            } catch (IOException e) {
+            if (lines > 0) {
+                setExitCode(1);
             }
         }
     }
 
-    private InputStream findUsageResourceAsStream() {
-        Locale locale = Locale.getDefault();
-        String name = "usage_" + locale.getLanguage() + ".txt";
-        InputStream stream = getClass().getResourceAsStream(name);
-        if (stream != null) {
-            return stream;
-        }
-        return getClass().getResourceAsStream("usage.txt");
+    private JsonSchemaReaderFactory createSchemaReaderFactory() {
+        final boolean strict = options.contains(Option.STRICT);
+        return service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(strict).withStrictWithFormats(strict)
+                .build();
     }
 
     /**
-     * The entry point of this program.
-     * @param args the arguments given to this program.
+     * Validates a JSON instance.
+     *
+     * @param path   the path to the JSON instance.
+     * @param schema the JSON schema against which the instance to be validated.
      */
-    public static void main(String[] args) {
-        boolean result = new Validator().validate(args);
-        System.exit(result ? 0 : 1);
+    private void validateInstance(Path path, JsonSchema schema) {
+        out.print(JSON_INSTANCE_START, path.getFileName());
+        final long offset = out.linesPrinted();
+
+        try (InputStream in = Files.newInputStream(path);
+                JsonReader reader = service.createReader(in, schema, problemPrinter)) {
+            reader.readValue();
+        } catch (IOException e) {
+            out.print(JSON_INSTANCE_NOT_FOUND, path);
+        } catch (JsonException e) {
+            out.print(e);
+        }
+
+        final long lines = out.linesPrinted() - offset;
+        out.print(VALIDATION_DONE, lines);
+        out.print();
+
+        if (lines > 0) {
+            setExitCode(1);
+        }
+    }
+
+    /**
+     * Assigns the exit code of this program.
+     *
+     * @param exitCode the exit code of this program.
+     */
+    private void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
+    }
+
+    private List<Path> parseCommandLine(String[] args) {
+        List<Path> paths = new ArrayList<>();
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.startsWith("-")) {
+                parseOptionArgument(arg);
+            } else {
+                paths.add(Paths.get(arg));
+            }
+        }
+        return paths;
+    }
+
+    private void parseOptionArgument(String arg) {
+        String name = arg.substring(1);
+        try {
+            Option option = Option.byName(name);
+            options.add(option);
+        } catch (NoSuchElementException e) {
+            out.print(UNRECOGNIZED_OPTION, arg);
+            throw e;
+        }
     }
 }

@@ -17,10 +17,10 @@ package org.leadpony.justify.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,61 +32,51 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class ValidatorTest {
 
-    /**
-     * Returns JSON schemas to test.
-     * @return JSON schemas to test.
-     */
-    public static Stream<Arguments> schemas() {
+    public static Stream<Arguments> fixtures() {
         return Stream.of(
-                Arguments.of("arrays.schema.json", 0),
-                Arguments.of("geographical-location.schema.json", 0),
-                Arguments.of("person.schema.json", 0),
-                Arguments.of("person-invalid.schema.json", 4),
-                Arguments.of("nonexistent.schema.json", 1)
-                );
+            // Validates JSON schemas
+            Arguments.of(args("arrays.schema.json"), 0),
+            Arguments.of(args("person.schema.json"), 0),
+            Arguments.of(args("person-invalid.schema.json"), 1),
+            Arguments.of(args("person-lax.schema.json"), 0),
+            Arguments.of(args("-strict", "person-lax.schema.json"), 1),
+            Arguments.of(args("person-corrupt.schema.json"), 1),
+            Arguments.of(args("nonexistent.schema.json"), 1),
+            // Validates JSON instances
+            Arguments.of(args("arrays.schema.json", "arrays.json"), 0),
+            Arguments.of(args("arrays.schema.json", "arrays-invalid.json"), 1),
+            Arguments.of(args("geographical-location.schema.json", "geographical-location.json"), 0),
+            Arguments.of(args("geographical-location.schema.json", "geographical-location-invalid.json"), 1),
+            Arguments.of(args("person.schema.json", "person.json"), 0),
+            Arguments.of(args("person.schema.json", "person-invalid.json"), 1),
+            Arguments.of(args("person.schema.json", "person-corrupt.json"), 1),
+            Arguments.of(args("person.schema.json", "nonexistent.json"), 1),
+            Arguments.of(args("nonexistent.schema.json", "person.json"), 1),
+            Arguments.of(args("person.schema.json", "person.json", "person-invalid.json"), 1),
+            // Without arguments
+            Arguments.of(args(), 0),
+            Arguments.of(args("-h"), 0),
+            Arguments.of(args("-unknown"), 1)
+            );
     }
 
-    @ParameterizedTest(name="[{index}] {0}")
-    @MethodSource("schemas")
-    public void testSchemaValidation(String path, int expected) {
+    @ParameterizedTest
+    @MethodSource("fixtures")
+    public void test(String[] args, int expectedCode) {
         Validator validator = new Validator();
-        validator.validate(path(path));
-        assertThat(validator.getNumberOfErrors()).isEqualTo(expected);
+        int exitCode = validator.run(args);
+        assertThat(exitCode).isEqualTo(expectedCode);
     }
 
-    /**
-     * Returns JSON instances to test.
-     * @return JSON instances to test.
-     */
-    public static Stream<Arguments> instances() {
-        return Stream.of(
-                Arguments.of("arrays.schema.json", "arrays.json", 0),
-                Arguments.of("arrays.schema.json", "arrays-invalid.json", 2),
-                Arguments.of("geographical-location.schema.json", "geographical-location.json", 0),
-                Arguments.of("geographical-location.schema.json", "geographical-location-invalid.json", 1),
-                Arguments.of("person.schema.json", "person.json", 0),
-                Arguments.of("person.schema.json", "person-invalid.json", 3),
-                Arguments.of("person.schema.json", "nonexistent.json", 1),
-                Arguments.of("nonexistent.schema.json", "person.json", 1)
-                );
-    }
+    private static final Path baseDir = Paths.get("target", "test-classes");
 
-    @ParameterizedTest(name="[{index}] {1}")
-    @MethodSource("instances")
-    public void testInstanceValidation(String schemaPath, String instancePath, int expected) {
-        Validator validator = new Validator();
-        validator.validate(path(schemaPath), path(instancePath));
-        assertThat(validator.getNumberOfErrors()).isEqualTo(expected);
-    }
-
-    @Test
-    public void testNoArguments() {
-        Validator validator = new Validator();
-        validator.validate();
-        assertThat(validator.getNumberOfErrors()).isEqualTo(0);
-    }
-
-    private String path(String name) {
-        return Paths.get("target", "test-classes", name).toString();
+    private static String[] args(String... strings) {
+        for (int i = 0; i < strings.length; i++) {
+            String item = strings[i];
+            if (!item.startsWith("-")) {
+                strings[i] = baseDir.resolve(item).toString();
+            }
+        }
+        return strings;
     }
 }

@@ -129,7 +129,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.leadpony.justify.cli.Validator</mainClass>
+                            <mainClass>org.leadpony.justify.cli.Launcher</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>
                     </archive>

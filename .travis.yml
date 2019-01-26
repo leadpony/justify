@@ -9,4 +9,4 @@ script:
     - cd target
     - tar xzf justify-cli-*.tar.gz
     - cd justify-cli
-    - ./justify.sh person.schema.json person.json
+    - ./justify.sh examples/person.schema.json examples/person.json

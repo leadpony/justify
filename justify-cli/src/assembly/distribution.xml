@@ -22,10 +22,11 @@
         <fileSet>
             <directory>src/test/resources</directory>
             <includes>
-                <include>person.json</include>
                 <include>person.schema.json</include>
+                <include>person.json</include>
+                <include>person-invalid.json</include>
             </includes>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>examples</outputDirectory>
         </fileSet>
         <fileSet>
             <includes>
