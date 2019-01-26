@@ -20,24 +20,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import org.leadpony.justify.api.BranchProblem;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * An object to print validation problems.
- * 
+ *
  * @author leadpony
  */
 public class ProblemPrinter implements ProblemHandler {
 
     private final Consumer<String> lineConsumer;
     private final Locale locale;
-    
+
     /**
      * Constructs this object.
      * @param lineConsumer the object which will output the line to somewhere.
-     * @param locale the locale for which the problem messages will be localized. 
+     * @param locale the locale for which the problem messages will be localized.
      */
     public ProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
         this.lineConsumer = lineConsumer;
@@ -55,41 +54,41 @@ public class ProblemPrinter implements ProblemHandler {
     }
 
     private void printProblem(Problem problem) {
-        if (problem instanceof BranchProblem) {
+        if (problem.hasBranches()) {
             lineConsumer.accept(problem.getMessage(locale));
-            printAllProblemGroups((BranchProblem)problem, "");
+            printAllProblemGroups(problem, "");
         } else {
             lineConsumer.accept(problem.getContextualMessage(locale));
         }
     }
-    
-    private void printAllProblemGroups(BranchProblem problem, String prefix) {
+
+    private void printAllProblemGroups(Problem problem, String prefix) {
         for (int i = 0; i < problem.countBranches(); i++) {
-            List<Problem> branch = problem.getBranch(i); 
+            List<Problem> branch = problem.getBranch(i);
             printProblemGroup(i, branch, prefix);
         }
     }
-    
-    private void printProblemGroup(int groupIndex, List<Problem> group, String prefix) {
+
+    private void printProblemGroup(int groupIndex, List<Problem> branch, String prefix) {
         final String firstPrefix = prefix + (groupIndex + 1) + ") ";
         final String laterPrefix = repeat(' ', firstPrefix.length());
         boolean isFirst = true;
-        for (Problem problem : group) {
+        for (Problem problem : branch) {
             String currentPrefix = isFirst ? firstPrefix : laterPrefix;
-            if (problem instanceof BranchProblem) {
+            if (problem.hasBranches()) {
                 putLine(currentPrefix + problem.getMessage(locale));
-                printAllProblemGroups((BranchProblem)problem, laterPrefix);
+                printAllProblemGroups(problem, laterPrefix);
             } else {
                 putLine(currentPrefix + problem.getContextualMessage(locale));
             }
             isFirst = false;
         }
     }
-    
+
     private void putLine(String line) {
         this.lineConsumer.accept(line);
     }
-    
+
     private static String repeat(char c, int count) {
         StringBuilder b = new StringBuilder();
         while (count-- > 0) {

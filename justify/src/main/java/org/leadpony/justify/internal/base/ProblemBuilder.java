@@ -27,13 +27,12 @@ import java.util.Map;
 
 import javax.json.stream.JsonLocation;
 
-import org.leadpony.justify.api.BranchProblem;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 
 /**
  * This class builds problems detected in validation process.
- * 
+ *
  * @author leadpony
  */
 public class ProblemBuilder {
@@ -45,19 +44,19 @@ public class ProblemBuilder {
     private String messageKey;
     private final Map<String, Object> parameters = new HashMap<>();
     private List<List<Problem>> branches;
-    
+
     /**
      * Constructs this builder.
-     * 
+     *
      * @param location the location where problem occurred, cannot be {@code null}.
      */
     ProblemBuilder(JsonLocation location) {
         this.location = location;
     }
-    
+
     /**
      * Specifies the keyword which supplies the constraint the problem violated.
-     * 
+     *
      * @param keyword the keyword supplying the constraint.
      * @return this builder.
      */
@@ -65,10 +64,10 @@ public class ProblemBuilder {
         this.keyword = keyword;
         return this;
     }
-    
+
     /**
      * Specifies the schema whose evaluation caused this problem.
-     * 
+     *
      * @param schema the schema whose evaluation caused this problem.
      * @return this builder.
      */
@@ -76,10 +75,10 @@ public class ProblemBuilder {
         this.schema = schema;
         return this;
     }
-    
+
     /**
      * Specifies the resolvability of the problem.
-     * 
+     *
      * @param resolvable the resolvability of the problem.
      * @return this builder.
      */
@@ -90,7 +89,7 @@ public class ProblemBuilder {
 
     /**
      * Specifies the key name of the message used for the problem.
-     * 
+     *
      * @param messageKey the key name of the message.
      * @return this builder.
      */
@@ -101,8 +100,8 @@ public class ProblemBuilder {
 
     /**
      * Specifies the parameter which will be added to the problem.
-     * 
-     * @param name the name of the parameter.
+     *
+     * @param name  the name of the parameter.
      * @param value the value of the parameter.
      * @return this builder.
      */
@@ -110,11 +109,12 @@ public class ProblemBuilder {
         this.parameters.put(name, value);
         return this;
     }
-    
+
     /**
      * Specifies the child problems of the problem to be built.
-     * 
-     * @param branch the list of problems which are children of the problem to be built.
+     *
+     * @param branch the list of problems which are children of the problem to be
+     *               built.
      * @return this builder.
      */
     public ProblemBuilder withBranch(ProblemList branch) {
@@ -124,17 +124,17 @@ public class ProblemBuilder {
         this.branches.add(Collections.unmodifiableList(branch));
         return this;
     }
-    
+
     public ProblemBuilder withBranches(List<ProblemList> branches) {
         for (ProblemList branch : branches) {
             withBranch(branch);
         }
         return this;
     }
-    
+
     /**
      * Builds a problem.
-     * 
+     *
      * @return built problem.
      */
     public Problem build() {
@@ -147,7 +147,7 @@ public class ProblemBuilder {
 
     /**
      * Problem without child problems.
-     * 
+     *
      * @author leadpony
      */
     private static class SimpleProblem implements Problem {
@@ -158,10 +158,10 @@ public class ProblemBuilder {
         private final boolean resolvable;
         private final String messageKey;
         private final Map<String, Object> parameters;
-    
+
         /**
          * Constructs this problem.
-         * 
+         *
          * @param builder the builder of the problem.
          */
         protected SimpleProblem(ProblemBuilder builder) {
@@ -172,7 +172,7 @@ public class ProblemBuilder {
             this.messageKey = builder.messageKey;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -181,7 +181,7 @@ public class ProblemBuilder {
             requireNonNull(locale, "locale");
             return buildMessage(locale);
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -191,7 +191,7 @@ public class ProblemBuilder {
             String message = buildMessage(locale);
             return buildContextualMessage(message, locale);
         }
-    
+
         /**
          * {@inheritDoc}
          */
@@ -199,7 +199,7 @@ public class ProblemBuilder {
         public JsonLocation getLocation() {
             return location;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -215,7 +215,7 @@ public class ProblemBuilder {
         public String getKeyword() {
             return keyword;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -223,7 +223,7 @@ public class ProblemBuilder {
         public Map<String, ?> parametersAsMap() {
             return parameters;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -231,7 +231,7 @@ public class ProblemBuilder {
         public boolean isResolvable() {
             return resolvable;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -239,22 +239,22 @@ public class ProblemBuilder {
         public String toString() {
             return getContextualMessage();
         }
-        
+
         /**
          * Builds a message for the specified locale.
-         * 
-         * @param locale the locale for which the message will be localized. 
+         *
+         * @param locale the locale for which the message will be localized.
          * @return the built message.
          */
         private String buildMessage(Locale locale) {
             return Message.get(messageKey, locale).format(parameters);
         }
-        
+
         /**
          * Builds a message including the location at which this problem occurred.
-         * 
+         *
          * @param message the original message.
-         * @param locale the locale for which the message will be localized. 
+         * @param locale  the locale for which the message will be localized.
          * @return the built message.
          */
         private String buildContextualMessage(String message, Locale locale) {
@@ -263,12 +263,12 @@ public class ProblemBuilder {
             parameters.put("location", buildLocation(getLocation(), locale));
             return Message.get("line", locale).format(parameters);
         }
-        
+
         /**
          * Builds a message containing the location at which this problem occurred.
-         * 
+         *
          * @param location the location at which this problem occurred.
-         * @param locale the locale for which the message will be localized. 
+         * @param locale   the locale for which the message will be localized.
          * @return the built message.
          */
         private String buildLocation(JsonLocation location, Locale locale) {
@@ -282,22 +282,22 @@ public class ProblemBuilder {
             }
         }
     }
-    
+
     /**
-     * Problem with child problems.
-     * 
+     * A problem with branch problems.
+     *
      * @author leadpony
      */
-    private static class CompositeProblem extends SimpleProblem implements BranchProblem {
-        
+    private static class CompositeProblem extends SimpleProblem {
+
         /**
-         * Lists of subproblems.
+         * The lists of branches.
          */
         private final List<List<Problem>> branches;
 
         /**
          * Constructs this problem.
-         * 
+         *
          * @param builder the builder of the problem.
          */
         CompositeProblem(ProblemBuilder builder) {
@@ -309,6 +309,11 @@ public class ProblemBuilder {
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
             return super.getMessage(locale);
+        }
+
+        @Override
+        public boolean hasBranches() {
+            return true;
         }
 
         @Override
