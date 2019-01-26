@@ -6,7 +6,7 @@
 
 Justify is a JSON validator based on [JSON Schema Specification] and [Java API for JSON Processing (JSR 374)].
 
-## Main Features
+## Key Features
 
 * Compliant with [JSON Schema Specification] Draft-07.
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
@@ -30,7 +30,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.10.0</version>
+  <version>0.11.0</version>
 </dependency>
 
 <dependency>
@@ -93,22 +93,28 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 ## Command-Line Interface
 
-[Justify CLI], a command-line utility for validating JSON documents without any coding is also available.
-The latest stable distribution can be downloaded from [Releases] in `tar.gz` or `zip` format, whichever you prefer.
+Justify CLI is a command-line utility for validating JSON documents based on the JSON Schema specification.
+
+### Downloads
+
+Check the [Releases] page to get the latest distribution in `tar.gz` or `zip` format,
+whichever you prefer. The software requires Java 8 or higher to run.
+
+### Usage
 
 After unpacking the downloaded file, just typing the following command validates a JSON instance against a JSON schema.
 
 ```bash
-$ ./justify.sh <path/to/JSON/schema> <path/to/JSON/instance>
+$ ./justify <path/to/JSON-schema> <path/to/JSON-instance>
 ```
 
-Or for Windows:
+For validating a JSON schema only:
 
-```bat
-> justify.bat <path/to/JSON/schema> <path/to/JSON/instance>
+```bash
+$ ./justify <path/to/JSON-schema>
 ```
 
-The utility is tested under Java 8 and higher.
+Invoking the utility with `-h` option shows the syntax and available options for the utility.
 
 ## Additional Resources
 
@@ -201,4 +207,4 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
 [Apache Johnzon]: https://johnzon.apache.org/
 [The list of implementations]: https://json-schema.org/implementations.html  
-[Releases]: https://github.com/leadpony/justify-cli/releases/latest
+[Releases]: https://github.com/leadpony/justify/releases/latest
