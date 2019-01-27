@@ -29,6 +29,7 @@ import javax.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.annotation.Default;
 
 /**
  * Skeletal implementation of {@link JsonSchema}.
@@ -75,10 +76,19 @@ abstract class AbstractJsonSchema implements JsonSchema {
     }
 
     @Override
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
-        addToJson(builder);
-        return builder.build();
+    public JsonValue defaultValue() {
+        if (containsKeyword("default")) {
+            Default keyword = (Default)getKeyword("default");
+            return keyword.value();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean containsKeyword(String keyword) {
+        requireNonNull(keyword, "keyword");
+        return keywordMap.containsKey(keyword);
     }
 
     @Override
@@ -98,16 +108,19 @@ abstract class AbstractJsonSchema implements JsonSchema {
     }
 
     @Override
+    public JsonValue toJson() {
+        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
+        addToJson(builder);
+        return builder.build();
+    }
+
+    @Override
     public String toString() {
         return toJson().toString();
     }
 
     public void setAbsoluteId(URI id) {
         this.id = id;
-    }
-
-    protected boolean containsKeyword(String name) {
-        return keywordMap.containsKey(name);
     }
 
     protected Keyword getKeyword(String name) {

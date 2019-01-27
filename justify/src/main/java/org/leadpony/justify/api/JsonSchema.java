@@ -71,7 +71,7 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the identifier of this schema, which is specified with "$id" keyword.
+     * Returns the identifier of this schema, which is supplied by "$id" keyword.
      *
      * @return the identifier of this schema, or {@code null} if not exists.
      */
@@ -80,8 +80,8 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the version identifier of this schema, which is specified with
-     * "$schema" keyword.
+     * Returns the version identifier of this schema, which is supplied by "$schema"
+     * keyword.
      *
      * @return the version identifier of this schema, or {@code null} if not exists.
      */
@@ -90,8 +90,7 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the comment for this schema, which is specified with
-     * "$comment" keyword.
+     * Returns the comment for this schema, which is supplied by "$comment" keyword.
      *
      * @return the comment for this schema, or {@code null} if not exists.
      */
@@ -100,7 +99,7 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the title of this schema, which is specified with "title" keyword.
+     * Returns the title of this schema, which is supplied by "title" keyword.
      *
      * @return the title of this schema, or {@code null} if not exists.
      */
@@ -109,12 +108,22 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the description of this schema, which is specified with "description"
+     * Returns the description of this schema, which is supplied by "description"
      * keyword.
      *
      * @return the description of this schema, or {@code null} if not exists.
      */
     default String description() {
+        return null;
+    }
+
+    /**
+     * Returns the default value of this schema, which is supplied by "default"
+     * keyword.
+     *
+     * @return the default value of this schema. or {@code null} if not exists.
+     */
+    default JsonValue defaultValue() {
         return null;
     }
 
@@ -125,6 +134,18 @@ public interface JsonSchema {
      *         otherwise.
      */
     default boolean isBoolean() {
+        return false;
+    }
+
+    /**
+     * Checks if this schema contains the specified keyword or not.
+     *
+     * @param keyword the name of the keyword.
+     * @return {@code true} if this schema contains the specified keyword,
+     *         {@code false} otherwise.
+     * @throws NullPointerException if the specified {@code keyword} is {@code null}.
+     */
+    default boolean containsKeyword(String keyword) {
         return false;
     }
 
