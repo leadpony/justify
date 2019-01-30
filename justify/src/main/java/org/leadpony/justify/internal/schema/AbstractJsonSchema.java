@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
  *
  * @author leadpony
  */
-abstract class AbstractJsonSchema implements JsonSchema {
+abstract class AbstractJsonSchema implements IdentifiableJsonSchema {
 
     private URI id;
     private final URI originalId;
@@ -119,6 +119,7 @@ abstract class AbstractJsonSchema implements JsonSchema {
         return toJson().toString();
     }
 
+    @Override
     public void setAbsoluteId(URI id) {
         this.id = id;
     }

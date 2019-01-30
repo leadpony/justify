@@ -49,10 +49,10 @@ import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.base.SimpleJsonLocation;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.validator.ValidatingJsonParser;
 import org.leadpony.justify.internal.schema.Draft07SchemaBuilder;
+import org.leadpony.justify.internal.schema.IdentifiableJsonSchema;
 
 /**
  * Basic implementation of {@link JsonSchemaReader}.
@@ -98,7 +98,8 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param factory the factory for producing schema builders.
      * @param config  the configuration for this schema reader.
      */
-    public Draft07SchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory, SchemaReaderConfiguration config) {
+    public Draft07SchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory,
+            SchemaReaderConfiguration config) {
         this.parser = parser;
         this.factory = factory;
         this.strictWithKeywords = config.strictWithKeywords;
@@ -109,12 +110,14 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     /**
      * Constructs this schema reader.
      *
-     * @param parser  the parser of JSON document, which has the validation capability.
+     * @param parser  the parser of JSON document, which has the validation
+     *                capability.
      * @param factory the factory for producing schema builders.
      * @param config  the configuration for this schema reader.
      */
-    public Draft07SchemaReader(ValidatingJsonParser parser, DefaultSchemaBuilderFactory factory, SchemaReaderConfiguration config) {
-        this((JsonParser)parser, factory, config);
+    public Draft07SchemaReader(ValidatingJsonParser parser, DefaultSchemaBuilderFactory factory,
+            SchemaReaderConfiguration config) {
+        this((JsonParser) parser, factory, config);
         parser.withHandler(this::addProblems);
     }
 
@@ -1035,7 +1038,9 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
         if (schema.hasId()) {
             baseURI = baseURI.resolve(schema.id());
-            ((BasicSchema) schema).setAbsoluteId(baseURI);
+            if (schema instanceof IdentifiableJsonSchema) {
+                ((IdentifiableJsonSchema) schema).setAbsoluteId(baseURI);
+            }
             addIdentifiedSchema(baseURI, schema);
         }
         if (schema instanceof SchemaReference) {
