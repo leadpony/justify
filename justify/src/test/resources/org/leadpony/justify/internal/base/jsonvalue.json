@@ -1,0 +1,94 @@
+[
+    {
+        "description": "a simple object",
+        "value": {
+            "a": "abc",
+            "b": 42,
+            "c": true,
+            "d": false,
+            "e": null
+        },
+        "events": [
+            "KEY_NAME",
+            "VALUE_STRING",
+            "KEY_NAME",
+            "VALUE_NUMBER",
+            "KEY_NAME",
+            "VALUE_TRUE",
+            "KEY_NAME",
+            "VALUE_FALSE",
+            "KEY_NAME",
+            "VALUE_NULL",
+            "END_OBJECT"
+        ]
+    },
+    {
+        "description": "a simple array",
+        "value": [ "abc", 42, true, false, null ],
+        "events": [
+            "VALUE_STRING",
+            "VALUE_NUMBER",
+            "VALUE_TRUE",
+            "VALUE_FALSE",
+            "VALUE_NULL",
+            "END_ARRAY"
+        ]
+    },
+    {
+        "description": "a nested object",
+        "value": {
+            "a": {
+                "aa": "abc",
+                "ab": 42
+            },
+            "b": [ "abc", 42 ]
+        },
+        "events": [
+            "KEY_NAME",
+            "START_OBJECT",
+                "KEY_NAME",
+                "VALUE_STRING",
+                "KEY_NAME",
+                "VALUE_NUMBER",
+            "END_OBJECT",
+            "KEY_NAME",
+            "START_ARRAY",
+                "VALUE_STRING",
+                "VALUE_NUMBER",
+            "END_ARRAY",
+            "END_OBJECT"
+        ]
+    },
+    {
+        "description": "a nested array",
+        "value": [ {
+                "a": "abc",
+                "b": 42
+            },
+            [ "abc", 42 ]
+        ],
+        "events": [
+            "START_OBJECT",
+                "KEY_NAME",
+                "VALUE_STRING",
+                "KEY_NAME",
+                "VALUE_NUMBER",
+            "END_OBJECT",
+            "START_ARRAY",
+                "VALUE_STRING",
+                "VALUE_NUMBER",
+            "END_ARRAY",
+            "END_ARRAY"
+        ]
+    },
+    {
+        "description": "an empty object",
+        "value": {},
+        "events": [ "END_OBJECT" ]
+    },
+    {
+        "description": "an empty array",
+        "value": [],
+        "events": [ "END_ARRAY" ]
+    }
+]

@@ -21,6 +21,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -42,7 +43,7 @@ public final class ParserEvents {
         put(Event.VALUE_FALSE, InstanceType.BOOLEAN);
         put(Event.VALUE_NULL, InstanceType.NULL);
     }};
-    
+
     private static final EnumSet<Event> valueEvents = EnumSet.of(
             Event.START_ARRAY,
             Event.START_OBJECT,
@@ -54,12 +55,12 @@ public final class ParserEvents {
 
     /**
      * Converts given parser event to {@link InstanceType}.
-     * 
+     *
      * <p>
      * According to the JSON Schema Test Suite, 1.0 must be treated as an integer
      * rather than a number.
      * </p>
-     * 
+     *
      * @param event the event to convert.
      * @param parser the parser which produced the event.
      * @return the instance of {@link InstanceType} or {@code null}.
@@ -78,7 +79,7 @@ public final class ParserEvents {
         }
         return type;
     }
-    
+
     public static boolean isStartOfContainer(Event event) {
         return event == Event.START_ARRAY || event == Event.START_OBJECT;
     }
@@ -86,11 +87,37 @@ public final class ParserEvents {
     public static boolean isEndOfContainer(Event event) {
         return event == Event.END_ARRAY || event == Event.END_OBJECT;
     }
-    
+
     public static boolean isValue(Event event) {
         return valueEvents.contains(event);
     }
-    
+
+    /**
+     * Returns the parser event producing the specified JSON value.
+     *
+     * @param value the JSON value in the instance, cannot be {@code null}.
+     * @return the parser event.
+     */
+    public static Event fromValue(JsonValue value) {
+        switch (value.getValueType()) {
+        case ARRAY:
+            return Event.START_ARRAY;
+        case OBJECT:
+            return Event.START_OBJECT;
+        case STRING:
+            return Event.VALUE_STRING;
+        case NUMBER:
+            return Event.VALUE_NUMBER;
+        case TRUE:
+            return Event.VALUE_TRUE;
+        case FALSE:
+            return Event.VALUE_FALSE;
+        case NULL:
+            return Event.VALUE_NULL;
+        }
+        throw new IllegalStateException();
+    }
+
     private ParserEvents() {
     }
 }

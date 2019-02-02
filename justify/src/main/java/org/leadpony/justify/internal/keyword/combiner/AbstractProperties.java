@@ -54,12 +54,12 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
 
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new PropertiesEvaluator();
+        return new PropertiesEvaluator(defaultSchema);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new NegatedPropertiesEvaluator();
+        return new NegatedPropertiesEvaluator(defaultSchema);
     }
 
     @Override
@@ -93,29 +93,27 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
 
     protected abstract void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas);
 
-    protected JsonSchema getDefaultSchema() {
-        return defaultSchema;
-    }
+    protected class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator {
 
-    private class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator {
-
+        private final JsonSchema defaultSchema;
         private final List<JsonSchema> subschemas = new ArrayList<>();
 
-        PropertiesEvaluator() {
+        PropertiesEvaluator(JsonSchema defaultSchema) {
+            this.defaultSchema = defaultSchema;
         }
 
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
-                findSubschemaFor(parser.getString());
+                processKeyName(parser.getString());
             } else if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 appendEvaluators(type);
             }
         }
 
-        private void findSubschemaFor(String keyName) {
-            AbstractProperties.this.findSubschemasFor(keyName, subschemas);
+        protected void processKeyName(String keyName) {
+            findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
                 findDefaultSchemaFor(keyName);
             } else if (subschemas.contains(JsonSchema.FALSE)) {
@@ -125,7 +123,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         }
 
         private void findDefaultSchemaFor(String keyName) {
-            JsonSchema subschema = getDefaultSchema();
+            JsonSchema subschema = this.defaultSchema;
             if (subschema == JsonSchema.FALSE) {
                 appendRedundantPropertyEvaluator(keyName);
             } else {
@@ -145,26 +143,28 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         }
     }
 
-    private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator {
+    protected class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator {
 
+        private final JsonSchema defaultSchema;
         private final List<JsonSchema> subschemas = new ArrayList<>();
 
-        NegatedPropertiesEvaluator() {
+        NegatedPropertiesEvaluator(JsonSchema defaultSchema) {
             super(AbstractProperties.this);
+            this.defaultSchema = defaultSchema;
         }
 
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
-                findSubschemaFor(parser.getString());
+                processKeyName(parser.getString());
             } else if (ParserEvents.isValue(event)) {
                 InstanceType type = ParserEvents.toInstanceType(event, parser);
                 appendEvaluators(type);
             }
         }
 
-        private void findSubschemaFor(String keyName) {
-            AbstractProperties.this.findSubschemasFor(keyName, subschemas);
+        protected void processKeyName(String keyName) {
+            findSubschemasFor(keyName, subschemas);
             if (subschemas.isEmpty()) {
                 findDefaultSchemaFor(keyName);
             } else {
@@ -179,7 +179,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         }
 
         private void findDefaultSchemaFor(String keyName) {
-            JsonSchema subschema = getDefaultSchema();
+            JsonSchema subschema = this.defaultSchema;
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 appendRedundantPropertyEvaluator(keyName, subschema);
             } else {

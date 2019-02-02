@@ -17,21 +17,25 @@
 package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.json.JsonValue;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * "properties" subschema combiner.
+ * An assertion keyword representing "properties".
  *
  * @author leadpony
  */
 public class Properties extends AbstractProperties<String> {
 
     private PatternProperties patternProperties;
+    private Map<String, JsonValue> defaultValues;
 
     Properties() {
     }
@@ -60,8 +64,19 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
+    public void addProperty(String key, JsonSchema subschema) {
+        super.addProperty(key, subschema);
+        if (subschema.containsKeyword("default")) {
+            if (defaultValues == null) {
+                defaultValues = new HashMap<>();
+            }
+            defaultValues.put(key, subschema.defaultValue());
+        }
+    }
+
+    @Override
     protected void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas) {
-        subschemas.isEmpty();
+        assert subschemas.isEmpty();
         if (propertyMap.containsKey(keyName)) {
             subschemas.add(propertyMap.get(keyName));
         }

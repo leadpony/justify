@@ -19,22 +19,34 @@ package org.leadpony.justify.internal.base;
 import javax.json.stream.JsonLocation;
 
 /**
- * Simple implementation of {@link JsonLocation}. 
- * 
+ * A simple implementation of {@link JsonLocation}.
+ *
  * @author leadpony
  */
 public class SimpleJsonLocation implements JsonLocation {
-    
+
+    /**
+     * An unknown location.
+     */
+    public static final JsonLocation UNKNOWN = new SimpleJsonLocation(-1, -1, -1);
+
     private final long lineNumber;
     private final long columnNumber;
     private final long streamOffset;
-    
+
+    /**
+     * Constructs this location.
+     *
+     * @param lineNumber the line number which starts with 1 for the first line.
+     * @param columnNumber the column number which starts with 1 for the first column.
+     * @param streamOffset the stream offset in the input source.
+     */
     public SimpleJsonLocation(long lineNumber, long columnNumber, long streamOffset) {
         this.lineNumber = lineNumber;
         this.columnNumber = columnNumber;
         this.streamOffset = streamOffset;
     }
-    
+
     public static JsonLocation before(JsonLocation other) {
         long lineNumber = other.getLineNumber();
         long columnNumber = other.getColumnNumber();
@@ -62,7 +74,7 @@ public class SimpleJsonLocation implements JsonLocation {
     public long getStreamOffset() {
         return streamOffset;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
