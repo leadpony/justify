@@ -25,19 +25,19 @@ import org.leadpony.justify.internal.base.SilentProblemDispatcher;
 
 /**
  * Combination evaluator of if/then/else.
- * 
+ *
  * @author leadpony
  */
 public class ConditionalEvaluator implements Evaluator {
-    
+
     private final Evaluator ifEvaluator;
     private final DeferredEvaluator thenEvaluator;
     private final DeferredEvaluator elseEvaluator;
-    
+
     private Result ifResult;
     private Result thenResult;
     private Result elseResult;
-    
+
     public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         assert ifEvaluator != null;
         assert thenEvaluator != null;
@@ -67,9 +67,9 @@ public class ConditionalEvaluator implements Evaluator {
             thenResult = updateEvaluation(thenResult, thenEvaluator, event, parser, depth, dispatcher);
             elseResult = updateEvaluation(elseResult, elseEvaluator, event, parser, depth, dispatcher);
         }
-        return null;
+        return Result.PENDING;
     }
-    
+
     private Result updateEvaluation(Result result, Evaluator evaluator, Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
         if (result == Result.PENDING) {
             return evaluator.evaluate(event, parser, depth, dispatcher);
@@ -77,7 +77,7 @@ public class ConditionalEvaluator implements Evaluator {
             return result;
         }
     }
-    
+
     private Result finalizeEvaluation(Result result, DeferredEvaluator evaluator, JsonParser parser, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
             evaluator.problems().forEach(problem->dispatcher.dispatchProblem(problem));

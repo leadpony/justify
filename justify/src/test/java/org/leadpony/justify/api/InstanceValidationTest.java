@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 /**
  * Test suite provided by json-schema.org.
- * 
+ *
  * @author leadpony
  */
 public class InstanceValidationTest extends BaseValidationTest {
@@ -60,8 +60,10 @@ public class InstanceValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/required.json",
             "/org/json_schema/tests/draft7/type.json",
             "/org/json_schema/tests/draft7/uniqueItems.json",
+
+            "/org/leadpony/justify/api/instance/if-then-else.json"
     };
-    
+
     public static Stream<ValidationFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }

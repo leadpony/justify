@@ -1,0 +1,57 @@
+[
+    {
+        "description": "if with required keyword",
+        "schema": {
+            "type": "object",
+            "if": {
+                "required": [ "foo" ]
+            },
+            "then": {
+                "properties": {
+                    "foo": {
+                        "type": "string"
+                    }
+                },
+                "required": [ "foo" ]
+            },
+            "else": {
+                "properties": {
+                    "bar": {
+                        "type": "number"
+                    }
+                },
+                "required": [ "bar" ]
+            } 
+        },
+        "tests": [
+            {
+                "description": "object has valid \"foo\" property",
+                "data": {
+                    "foo": "baz"
+                },
+                "valid": true
+            },
+            {
+                "description": "object has invalid \"foo\" property",
+                "data": {
+                    "foo": 42
+                },
+                "valid": false
+            },
+            {
+                "description": "object has valid \"bar\" property",
+                "data": {
+                    "bar": 42
+                },
+                "valid": true
+            },
+            {
+                "description": "object has invalid \"bar\" property",
+                "data": {
+                    "bar": "baz"
+                },
+                "valid": false
+            }
+        ]
+    }
+]
