@@ -63,11 +63,22 @@ public interface JsonSchema {
     /**
      * Checks if this schema has an identifier assigned or not.
      *
-     * @return {@code true} if this schema has an identifier, {@code false}
-     *         otherwise.
+     * @return {@code true} if this schema has an identifier. {@code false} if this
+     *         schema does not have an identifier.
      */
     default boolean hasId() {
         return false;
+    }
+
+    /**
+     * Checks if this schema has an identifier and the identifier is absolute.
+     *
+     * @return {@code true} if this schema has an absolute identifier. {@code false}
+     *         if this schema does not have an absolute identifier.
+     * @see #hasId()
+     */
+    default boolean hasAbsoluteId() {
+        return hasId() && id().isAbsolute();
     }
 
     /**
@@ -143,7 +154,8 @@ public interface JsonSchema {
      * @param keyword the name of the keyword.
      * @return {@code true} if this schema contains the specified keyword,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code keyword} is {@code null}.
+     * @throws NullPointerException if the specified {@code keyword} is
+     *                              {@code null}.
      */
     default boolean containsKeyword(String keyword) {
         return false;

@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -52,7 +53,7 @@ import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.validator.ValidatingJsonParser;
 import org.leadpony.justify.internal.schema.Draft07SchemaBuilder;
-import org.leadpony.justify.internal.schema.IdentifiableJsonSchema;
+import org.leadpony.justify.internal.schema.Resolvable;
 
 /**
  * Basic implementation of {@link JsonSchemaReader}.
@@ -72,9 +73,10 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     private boolean alreadyRead;
     private boolean alreadyClosed;
 
-    private URI initialBaseURI = DEFAULT_INITIAL_BASE_URI;
+    private URI initialBaseUri = DEFAULT_INITIAL_BASE_URI;
 
-    private final Map<URI, JsonSchema> identified = new HashMap<>();
+    private final Set<JsonSchema> identified = new HashSet<>();
+    private final Map<URI, JsonSchema> idSchemaMap = new HashMap<>();
     private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
 
     private final List<JsonSchemaResolver> resolvers;
@@ -201,6 +203,9 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
             throw newParsingException();
         }
         JsonSchema schema = builder.build();
+        if (schema.hasId()) {
+            identified.add(schema);
+        }
         if (schema instanceof SchemaReference) {
             SchemaReference reference = (SchemaReference) schema;
             references.put(reference, SimpleJsonLocation.before(refLocation));
@@ -1023,36 +1028,27 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private void postprocess(JsonSchema rootSchema) {
         if (rootSchema != null) {
-            makeIdentifiersAbsoluteFromRoot(rootSchema, initialBaseURI);
+            makeIdentifiersAbsolute(rootSchema, initialBaseUri);
             resolveAllReferences();
         }
     }
 
-    private void makeIdentifiersAbsoluteFromRoot(JsonSchema root, URI baseURI) {
-        if (!root.hasId()) {
-            addIdentifiedSchema(baseURI, root);
+    private void makeIdentifiersAbsolute(JsonSchema root, URI baseUri) {
+        if (root instanceof Resolvable) {
+            ((Resolvable)root).resolve(baseUri);
         }
-        makeIdentifiersAbsolute(root, baseURI);
-    }
 
-    private void makeIdentifiersAbsolute(JsonSchema schema, URI baseURI) {
-        if (schema.hasId()) {
-            baseURI = baseURI.resolve(schema.id());
-            if (schema instanceof IdentifiableJsonSchema) {
-                ((IdentifiableJsonSchema) schema).setAbsoluteId(baseURI);
-            }
-            addIdentifiedSchema(baseURI, schema);
+        for (JsonSchema schema: this.identified) {
+            addIdentifiedSchema(schema.id(), schema);
         }
-        if (schema instanceof SchemaReference) {
-            SchemaReference ref = (SchemaReference) schema;
-            ref.setTargetId(baseURI.resolve(ref.getTargetId()));
+
+        if (!this.identified.contains(root)) {
+            addIdentifiedSchema(baseUri, root);
         }
-        final URI nextURI = baseURI;
-        schema.subschemas().forEach(subschema -> makeIdentifiersAbsolute(subschema, nextURI));
     }
 
     private void addIdentifiedSchema(URI id, JsonSchema schema) {
-        this.identified.put(URIs.withFragment(id), schema);
+        this.idSchemaMap.put(URIs.withFragment(id), schema);
     }
 
     private void resolveAllReferences() {
@@ -1084,7 +1080,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private JsonSchema resolveSchema(URI id) {
-        JsonSchema schema = this.identified.get(id);
+        JsonSchema schema = this.idSchemaMap.get(id);
         if (schema != null) {
             return schema;
         }

@@ -51,8 +51,13 @@ public class SchemaReference extends AbstractJsonSchema {
      */
     public SchemaReference(JsonSchemaBuilderResult result, URI ref) {
         super(result);
-        this.targetId = this.ref = ref;
+        this.ref = ref;
         this.referencedSchema = new NonexistentSchema();
+        if (hasId() && id().isAbsolute()) {
+            this.targetId = id().resolve(ref);
+        } else {
+            this.targetId = ref;
+        }
     }
 
     /**
@@ -70,16 +75,6 @@ public class SchemaReference extends AbstractJsonSchema {
      */
     public URI getTargetId() {
         return targetId;
-    }
-
-    /**
-     * Assigns the URI of the referenced schema.
-     *
-     * @param targetId the URI of the referenced schema, cannot be {@code null}.
-     */
-    public void setTargetId(URI targetId) {
-        requireNonNull(targetId, "targetId");
-        this.targetId = targetId;
     }
 
     /**
@@ -106,6 +101,19 @@ public class SchemaReference extends AbstractJsonSchema {
     protected void addToJson(JsonObjectBuilder builder) {
         builder.add("$ref", this.ref.toString());
         super.addToJson(builder);
+    }
+
+    /* Resolvable interface */
+
+    @Override
+    public void resolve(URI baseUri) {
+        super.resolve(baseUri);
+        if (!this.targetId.isAbsolute()) {
+            if (hasId()) {
+                baseUri = id();
+            }
+            this.targetId = baseUri.resolve(this.targetId);
+        }
     }
 
     /**

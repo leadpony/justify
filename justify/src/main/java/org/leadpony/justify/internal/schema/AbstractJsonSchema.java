@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
  *
  * @author leadpony
  */
-abstract class AbstractJsonSchema implements IdentifiableJsonSchema {
+abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     private URI id;
     private final URI originalId;
@@ -53,6 +53,9 @@ abstract class AbstractJsonSchema implements IdentifiableJsonSchema {
         this.id = this.originalId = result.getId();
         this.schema = result.getSchema();
         this.comment = result.getComment();
+        if (hasAbsoluteId()) {
+            resolveSubschemas(id());
+        }
     }
 
     @Override
@@ -119,9 +122,21 @@ abstract class AbstractJsonSchema implements IdentifiableJsonSchema {
         return toJson().toString();
     }
 
+    /* Resolvable interface */
+
     @Override
-    public void setAbsoluteId(URI id) {
-        this.id = id;
+    public void resolve(URI baseUri) {
+        if (hasAbsoluteId()) {
+            return;
+        } else if (hasId()) {
+            this.id = baseUri.resolve(this.id);
+            baseUri = this.id;
+        }
+        resolveSubschemas(baseUri);
+    }
+
+    public boolean hasAbsoluteId() {
+        return hasId() && id().isAbsolute();
     }
 
     protected Keyword getKeyword(String name) {
@@ -175,5 +190,12 @@ abstract class AbstractJsonSchema implements IdentifiableJsonSchema {
             }
         }
         return null;
+    }
+
+    private void resolveSubschemas(URI baseUri) {
+        subschemas()
+            .filter(s->!s.hasAbsoluteId())
+            .filter(s->s instanceof Resolvable)
+            .forEach(s->((Resolvable)s).resolve(baseUri));
     }
 }

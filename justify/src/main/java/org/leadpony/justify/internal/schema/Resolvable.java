@@ -17,19 +17,18 @@ package org.leadpony.justify.internal.schema;
 
 import java.net.URI;
 
-import org.leadpony.justify.api.JsonSchema;
-
 /**
- * A JSON schema which is identifiable.
+ * A interface for resolving identifiers.
  *
  * @author leadpony
  */
-public interface IdentifiableJsonSchema extends JsonSchema {
+public interface Resolvable {
 
     /**
-     * Assigns the absolute URI to the identifier of this schema.
+     * Resolves the identifier of this object.
      *
-     * @param id the absolute URI to assign.
+     * @param baseUri the base URI by which the identifier will be resolved, cannot
+     *                be {@code null}.
      */
-    void setAbsoluteId(URI id);
+    void resolve(URI baseUri);
 }

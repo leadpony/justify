@@ -120,7 +120,6 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         return builderFactory;
     }
 
-
     /* Draft07SchemaBuilder interface */
 
     @Override
