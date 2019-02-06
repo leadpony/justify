@@ -115,6 +115,17 @@ public interface Keyword {
     }
 
     /**
+     * Checks whether the subschemas provided by this keyword will be applied to the
+     * same location as the owner schema or not.
+     *
+     * @return {@code true} if the subschemas will be applied to the same location
+     *         as the owner schema, {@code false} otherwise.
+     */
+    default boolean isInPlace() {
+        return false;
+    }
+
+    /**
      * Checks whether this keyword has any subschemas or not.
      *
      * @return {@code true} if this keyword contains any subschemas, {@code false}
@@ -129,7 +140,7 @@ public interface Keyword {
      *
      * @return the stream of subschemas.
      */
-    default Stream<JsonSchema> subschemas() {
+    default Stream<JsonSchema> getSubschemas() {
         return Stream.empty();
     }
 

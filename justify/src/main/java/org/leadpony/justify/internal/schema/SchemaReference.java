@@ -77,6 +77,19 @@ public class SchemaReference extends AbstractJsonSchema {
         return targetId;
     }
 
+    public boolean hasReferencedSchema() {
+        return referencedSchema != null;
+    }
+
+    /**
+     * Returns the referenced schema.
+     *
+     * @return the referenced schema.
+     */
+    public JsonSchema getReferencedSchema() {
+        return referencedSchema;
+    }
+
     /**
      * Assigns the referenced schema.
      *
@@ -86,6 +99,8 @@ public class SchemaReference extends AbstractJsonSchema {
         requireNonNull(schema, "schema");
         this.referencedSchema = schema;
     }
+
+    /* JsonSchema interface */
 
     @Override
     public Evaluator createEvaluator(InstanceType type) {

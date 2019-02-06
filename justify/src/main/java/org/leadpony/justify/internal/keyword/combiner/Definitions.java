@@ -60,7 +60,7 @@ public class Definitions extends Combiner {
     }
 
     @Override
-    public Stream<JsonSchema> subschemas() {
+    public Stream<JsonSchema> getSubschemas() {
         return this.definitionMap.values().stream();
     }
 

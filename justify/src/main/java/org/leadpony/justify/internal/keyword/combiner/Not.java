@@ -24,11 +24,11 @@ import org.leadpony.justify.api.JsonSchema;
 
 /**
  * Type representing "not" boolean logic.
- * 
+ *
  * @author leadpony
  */
 class Not extends UnaryCombiner {
-    
+
     Not(JsonSchema subschema) {
         super(subschema);
     }
@@ -36,6 +36,11 @@ class Not extends UnaryCombiner {
     @Override
     public String name() {
         return "not";
+    }
+
+    @Override
+    public boolean isInPlace() {
+        return true;
     }
 
     @Override

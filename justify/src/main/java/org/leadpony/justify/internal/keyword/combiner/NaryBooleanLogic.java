@@ -34,13 +34,13 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 /**
  * N-ary boolean logic.
  * This class is the abstract base class for {@link AllOf}, {@link AnyOf} and {@link OneOf}.
- * 
+ *
  * @author leadpony
  */
 abstract class NaryBooleanLogic extends Combiner {
-   
+
     private final List<JsonSchema> subschemas;
-    
+
     protected NaryBooleanLogic(Collection<JsonSchema> subschemas) {
         this.subschemas = new ArrayList<>(subschemas);
     }
@@ -65,15 +65,20 @@ abstract class NaryBooleanLogic extends Combiner {
     }
 
     @Override
+    public boolean isInPlace() {
+        return true;
+    }
+
+    @Override
     public boolean hasSubschemas() {
         return !subschemas.isEmpty();
     }
 
     @Override
-    public Stream<JsonSchema> subschemas() {
+    public Stream<JsonSchema> getSubschemas() {
         return this.subschemas.stream();
     }
-   
+
     @Override
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         if (jsonPointer.hasNext()) {
@@ -87,7 +92,7 @@ abstract class NaryBooleanLogic extends Combiner {
         }
         return null;
     }
-    
+
     /**
      * Creates a new evaluator for this boolean logic.
      * @param type the type of the instance to validate.

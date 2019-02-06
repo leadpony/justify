@@ -42,7 +42,7 @@ class AnyOf extends NaryBooleanLogic {
     @Override
     protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(type);
-        subschemas().distinct()
+        getSubschemas().distinct()
                 .map(s->s.createEvaluator(type))
                 .forEach(evaluator::append);
         return evaluator;
@@ -51,7 +51,7 @@ class AnyOf extends NaryBooleanLogic {
     @Override
     protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-        subschemas().distinct()
+        getSubschemas().distinct()
                 .map(s->s.createNegatedEvaluator(type))
                 .forEach(evaluator::append);
         return evaluator;

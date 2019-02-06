@@ -162,11 +162,21 @@ public interface JsonSchema {
     }
 
     /**
-     * Returns the all subschemas contained in this schema.
+     * Returns all of the subschemas contained in this schema.
      *
      * @return the stream of subschemas contained in this schema.
      */
-    default Stream<JsonSchema> subschemas() {
+    default Stream<JsonSchema> getSubschemas() {
+        return Stream.empty();
+    }
+
+    /**
+     * Returns all of the subschemas of this schema which will be applied to the
+     * same instance location as this one.
+     *
+     * @return the stream of subschemas.
+     */
+    default Stream<JsonSchema> getInPlaceSubschemas() {
         return Stream.empty();
     }
 
@@ -175,13 +185,14 @@ public interface JsonSchema {
      *
      * @param jsonPointer the valid escaped JSON Pointer string. It must be an empty
      *                    string or a sequence of '/' prefixed tokens.
-     * @return the subschema found or {@code null} if the subschema does not exist.
+     * @return the subschema found or {@code null} if the specified subschema does
+     *         not exist.
      * @throws NullPointerException if the specified {@code jsonPointer} is
      *                              {@code null}.
      * @throws JsonException        if the specified {@code jsonPointer} is not a
      *                              valid JSON Pointer.
      */
-    default JsonSchema subschemaAt(String jsonPointer) {
+    default JsonSchema getSubschemaAt(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         return jsonPointer.isEmpty() ? this : null;
     }

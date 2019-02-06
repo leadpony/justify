@@ -13,37 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.List;
-import java.util.Map;
-
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * "Else" conditional keyword.
+ * A conditional keyword. This class is the abstract base class for {@link If},
+ * {@link Then} and {@link Else}.
  *
  * @author leadpony
  */
-class Else extends Conditional {
+abstract class Conditional extends UnaryCombiner {
 
-    Else(JsonSchema schema) {
-        super(schema);
+    protected Conditional(JsonSchema subschema) {
+        super(subschema);
     }
 
     @Override
-    public String name() {
-        return "else";
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Evaluation will be done by "if" keyword.
-     */
-    @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public boolean isInPlace() {
+        return true;
     }
 }

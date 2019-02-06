@@ -100,8 +100,8 @@ public class SchemaValidationTest {
             reader.read();
             assertThat(true).isEqualTo(fixture.hasValidSchema());
         } catch (JsonValidatingException e) {
-            assertThat(false).isEqualTo(fixture.hasValidSchema());
             printProblems(fixture, e.getProblems());
+            assertThat(false).isEqualTo(fixture.hasValidSchema());
         }
     }
 

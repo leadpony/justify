@@ -62,7 +62,7 @@ class Unknown extends Combiner {
     }
 
     @Override
-    public Stream<JsonSchema> subschemas() {
+    public Stream<JsonSchema> getSubschemas() {
         return Stream.of(subschema);
     }
 

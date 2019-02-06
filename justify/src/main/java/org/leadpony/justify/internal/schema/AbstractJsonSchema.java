@@ -95,14 +95,22 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     }
 
     @Override
-    public Stream<JsonSchema> subschemas() {
+    public Stream<JsonSchema> getSubschemas() {
         return keywordMap.values().stream()
                 .filter(Keyword::hasSubschemas)
-                .flatMap(Keyword::subschemas);
+                .flatMap(Keyword::getSubschemas);
     }
 
     @Override
-    public JsonSchema subschemaAt(String jsonPointer) {
+    public Stream<JsonSchema> getInPlaceSubschemas() {
+        return keywordMap.values().stream()
+                .filter(Keyword::hasSubschemas)
+                .filter(Keyword::isInPlace)
+                .flatMap(Keyword::getSubschemas);
+    }
+
+    @Override
+    public JsonSchema getSubschemaAt(String jsonPointer) {
         requireNonNull(jsonPointer, "jsonPointer");
         if (jsonPointer.isEmpty()) {
             return this;
@@ -183,7 +191,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
             JsonSchema candidate = keyword.getSubschema(tokenizer);
             if (candidate != null) {
                 if (tokenizer.hasNext()) {
-                    return candidate.subschemaAt(tokenizer.remaining());
+                    return candidate.getSubschemaAt(tokenizer.remaining());
                 } else {
                     return candidate;
                 }
@@ -193,7 +201,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     }
 
     private void resolveSubschemas(URI baseUri) {
-        subschemas()
+        getSubschemas()
             .filter(s->!s.hasAbsoluteId())
             .filter(s->s instanceof Resolvable)
             .forEach(s->((Resolvable)s).resolve(baseUri));

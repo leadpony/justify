@@ -32,7 +32,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class If extends UnaryCombiner {
+class If extends Conditional {
 
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;

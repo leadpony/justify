@@ -1030,15 +1030,16 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         if (rootSchema != null) {
             makeIdentifiersAbsolute(rootSchema, initialBaseUri);
             resolveAllReferences();
+            checkInfiniteRecursiveLoop();
         }
     }
 
     private void makeIdentifiersAbsolute(JsonSchema root, URI baseUri) {
         if (root instanceof Resolvable) {
-            ((Resolvable)root).resolve(baseUri);
+            ((Resolvable) root).resolve(baseUri);
         }
 
-        for (JsonSchema schema: this.identified) {
+        for (JsonSchema schema : this.identified) {
             addIdentifiedSchema(schema.id(), schema);
         }
 
@@ -1071,7 +1072,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         if (fragment.startsWith("/")) {
             JsonSchema schema = resolveSchema(URIs.withEmptyFragment(ref));
             if (schema != null) {
-                return schema.subschemaAt(fragment);
+                return schema.getSubschemaAt(fragment);
             }
             return null;
         } else {
@@ -1091,6 +1092,16 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
             }
         }
         return null;
+    }
+
+    private void checkInfiniteRecursiveLoop() {
+        InfiniteLoopDetector detector = new InfiniteLoopDetector();
+        for (SchemaReference reference : this.references.keySet()) {
+            if (detector.detectInfiniteLoop(reference)) {
+                JsonLocation location = this.references.get(reference);
+                addProblem(createProblemBuilder(location).withMessage("schema.problem.reference.loop"));
+            }
+        }
     }
 
     private void dispatchProblems() {

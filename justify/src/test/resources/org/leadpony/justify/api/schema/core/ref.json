@@ -6,7 +6,13 @@
     },
     {
         "description": "value is a relative-ref",
-        "schema": { "$ref": "#" },
+        "schema": { 
+            "definitions": {
+                "foo": {
+                    "$ref": "#" 
+                }
+            }
+        },
         "valid": true
     },
     {
@@ -38,5 +44,19 @@
             "$ref": "http://json-schema.org/draft-07/schema#" 
         },
         "valid": true
+    },
+    {
+        "description": "infinite recursive looping",
+        "schema": {
+            "definitions": {
+                "alice": {
+                    "allOf": [ { "$ref": "#/definitions/bob" } ]
+                },
+                "bob": {
+                    "allOf": [ { "$ref": "#/definitions/alice" } ]
+                }
+            }
+        },
+        "valid": false
     }
 ]

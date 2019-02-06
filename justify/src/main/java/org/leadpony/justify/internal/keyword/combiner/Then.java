@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class Then extends UnaryCombiner {
+class Then extends Conditional {
 
     Then(JsonSchema schema) {
         super(schema);

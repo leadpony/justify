@@ -83,7 +83,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     }
 
     @Override
-    public Stream<JsonSchema> subschemas() {
+    public Stream<JsonSchema> getSubschemas() {
         return propertyMap.values().stream();
     }
 
