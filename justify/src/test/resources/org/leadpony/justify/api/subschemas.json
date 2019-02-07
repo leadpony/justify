@@ -1,0 +1,71 @@
+[
+    {
+        "schema": {
+            "$id": "http://example.com/subschemas.json",
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "string"
+        },
+        "subschemas": [],
+        "inPlaceSubschemas": []
+    },
+    {
+        "schema": {
+            "$id": "http://example.com/subschemas.json",
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": {
+                "p1": {
+                    "title": "property"
+                }
+            },
+            "items": {
+                "title": "item"
+            },
+            "contains": {
+                "title": "contains"
+            },
+            "definitions": {
+                "d1": {
+                    "title": "definition"
+                }
+            },
+            "if": {
+                "title": "if"
+            },
+            "then": {
+                "title": "then"
+            },
+            "else": {
+                "title": "else"
+            },
+            "allOf": [ { "title": "allOf" } ],
+            "anyOf": [ { "title": "anyOf" } ],
+            "oneOf": [ { "title": "oneOf" } ],
+            "not": {
+                "title": "not"
+            }
+        },
+        "subschemas": [
+            "/properties/p1",
+            "/items",
+            "/contains",
+            "/definitions/d1",
+            "/if",
+            "/then",
+            "/else",
+            "/allOf/0",
+            "/anyOf/0",
+            "/oneOf/0",
+            "/not"
+        ],
+        "inPlaceSubschemas": [
+            "/if",
+            "/then",
+            "/else",
+            "/allOf/0",
+            "/anyOf/0",
+            "/oneOf/0",
+            "/not"
+        ]
+    }
+]

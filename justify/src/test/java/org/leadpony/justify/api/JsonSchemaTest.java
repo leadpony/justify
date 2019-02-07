@@ -18,13 +18,22 @@ package org.leadpony.justify.api;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.json.Json;
 import javax.json.JsonNumber;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.justify.api.JsonSchema;
 
@@ -92,6 +101,59 @@ public class JsonSchemaTest {
         JsonSchema schema = fromString(SCHEMA);
         boolean actual = schema.containsKeyword(keyword);
         assertThat(actual).isFalse();
+    }
+
+    private static final String SUBSCHEMAS_JSON = "/org/leadpony/justify/api/subschemas.json";
+
+    private static Stream<Arguments> subschemaFixtures(String keyName) {
+        InputStream in = JsonSchemaTest.class.getResourceAsStream(SUBSCHEMAS_JSON);
+        try (JsonParser parser = Json.createParser(in)) {
+            parser.next();
+            return parser.getArrayStream()
+                .map(JsonValue::asJsonObject)
+                .map(object->{
+                    String schema = object.get("schema").toString();
+                    List<String> subschemas = object.get(keyName).asJsonArray()
+                           .stream()
+                           .map(v->((JsonString)v).getString())
+                           .collect(Collectors.toList());
+                    return Arguments.of(schema, subschemas);
+               });
+        }
+    }
+
+    public static Stream<Arguments> subschemasFixtures() {
+        return subschemaFixtures("subschemas");
+    }
+
+    @ParameterizedTest
+    @MethodSource("subschemasFixtures")
+    public void getSubschemas_shouldReturnSubschemas(String json, List<String> jsonPointers) {
+        JsonSchema schema = fromString(json);
+        List<JsonSchema> expected = jsonPointers.stream()
+                .map(schema::getSubschemaAt)
+                .collect(Collectors.toList());
+
+        Stream<JsonSchema> actual = schema.getSubschemas();
+
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    public static Stream<Arguments> inPlaceSubschemasFixtures() {
+        return subschemaFixtures("inPlaceSubschemas");
+    }
+
+    @ParameterizedTest
+    @MethodSource("inPlaceSubschemasFixtures")
+    public void getInPlaceSubschemas_shouldReturnSubschemas(String json, List<String> jsonPointers) {
+        JsonSchema schema = fromString(json);
+        List<JsonSchema> expected = jsonPointers.stream()
+                .map(schema::getSubschemaAt)
+                .collect(Collectors.toList());
+
+        Stream<JsonSchema> actual = schema.getInPlaceSubschemas();
+
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     private static JsonSchema fromString(String string) {
