@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.12.0 - 2019-02-08
+### Added
+- JsonSchema#containsKeyword() which tests whether a schema contains the specified keyword or not.
+- JsonSchema#defaultValue() which returns the value of the "default" keyword.
+- JsonSchema#hasAbsoluteId() which tests whether a schema has an "$id" whose  value is an absolute URI.
+- JsonSchema#getInPlaceSubschemas() which returns the subschemas which will be applied to the same instance location as the owning schema.
+- Detection of infinite recursive looping while reading schemas.
+
+### Changed
+- JsonSchema#subschemas() and subschemaAt() were renamed to getSubschemas() and getSubschemaAt(), respectively.
+
+### Fixed
+- A bug which was causing JsonSchemaReader to throw a ClassCastExpcetion when the schema has both "$id" and "$ref" keywords. (Issue #2 reported by @avstp)
+- A bug which was causing the evaluation result of "if"/"then"/"else" keywords to be ignored when the instance is a JSON object or a JSON array.
+
 ## 0.11.0 - 2019-01-26
 ### Added
 - comment(), title() and description() methods to JsonSchema interface

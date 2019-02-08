@@ -30,7 +30,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.11.0</version>
+  <version>0.12.0</version>
 </dependency>
 
 <dependency>
@@ -120,6 +120,7 @@ Invoking the utility with `-h` option shows the syntax and available options for
 
 * [Justify Examples] which show how to use this library.
 * [API Reference in Javadoc]
+* [Changelog]
 
 ## Current Development Status
 
@@ -208,3 +209,4 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [Apache Johnzon]: https://johnzon.apache.org/
 [The list of implementations]: https://json-schema.org/implementations.html  
 [Releases]: https://github.com/leadpony/justify/releases/latest
+[Changelog]: CHANGELOG.md
