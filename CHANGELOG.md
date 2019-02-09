@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JsonSchema#subschemas() and subschemaAt() were renamed to getSubschemas() and getSubschemaAt(), respectively.
 
 ### Fixed
-- A bug which was causing JsonSchemaReader to throw a ClassCastExpcetion when the schema has both "$id" and "$ref" keywords. (Issue #2 reported by @avstp)
+- A bug which was causing JsonSchemaReader to throw a ClassCastException when the schema has both "$id" and "$ref" keywords. (Issue #2 reported by @avstp)
 - A bug which was causing the evaluation result of "if"/"then"/"else" keywords to be ignored when the instance is a JSON object or a JSON array.
 
 ## 0.11.0 - 2019-01-26
