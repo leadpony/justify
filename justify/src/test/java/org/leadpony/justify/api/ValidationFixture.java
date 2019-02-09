@@ -16,24 +16,28 @@
 
 package org.leadpony.justify.api;
 
+import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
  * Test fixture.
- * 
+ *
  * @author leadpony
  */
 public class ValidationFixture extends Fixture {
-    
+
     private final JsonValue schema;
-    private final String schemaDescription; 
+    private final String schemaDescription;
     private final JsonValue data;
     private final String dataDescription;
     private boolean dataValidity;
-    
+
     private ValidationFixture(String name, int index, JsonValue schema, String schemaDescription, JsonValue data, String dataDescription, boolean valid) {
         super(name, index);
         this.schema = schema;
@@ -42,7 +46,7 @@ public class ValidationFixture extends Fixture {
         this.dataDescription = dataDescription;
         this.dataValidity = valid;
     }
-    
+
     @Override
     public String description() {
         return dataDescription();
@@ -67,10 +71,10 @@ public class ValidationFixture extends Fixture {
     public boolean hasValidData() {
         return dataValidity;
     }
-    
+
     public static Stream<ValidationFixture> newStream(String name) {
         AtomicInteger counter = new AtomicInteger();
-        return TestResources.readJsonArray(name).stream()
+        return readJsonArray(name).stream()
                 .map(JsonValue::asJsonObject)
                 .flatMap(schema->{
                     return schema.getJsonArray("tests").stream()
@@ -85,5 +89,12 @@ public class ValidationFixture extends Fixture {
                                 test.getBoolean("valid")
                                 ));
                 });
+    }
+
+    private static JsonArray readJsonArray(String name) {
+        InputStream in = ValidationFixture.class.getResourceAsStream(name);
+        try (JsonReader reader = Json.createReader(in)) {
+            return reader.readArray();
+        }
     }
 }

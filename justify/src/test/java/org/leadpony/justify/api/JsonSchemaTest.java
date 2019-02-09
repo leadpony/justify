@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonNumber;
+import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -107,9 +107,8 @@ public class JsonSchemaTest {
 
     private static Stream<Arguments> subschemaFixtures(String keyName) {
         InputStream in = JsonSchemaTest.class.getResourceAsStream(SUBSCHEMAS_JSON);
-        try (JsonParser parser = Json.createParser(in)) {
-            parser.next();
-            return parser.getArrayStream()
+        try (JsonReader reader = Json.createReader(in)) {
+            return reader.readArray().stream()
                 .map(JsonValue::asJsonObject)
                 .map(object->{
                     String schema = object.get("schema").toString();

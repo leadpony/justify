@@ -16,9 +16,13 @@
 
 package org.leadpony.justify.api;
 
+import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
@@ -52,7 +56,7 @@ class SchemaFixture extends Fixture {
 
     static Stream<SchemaFixture> newStream(String name) {
         AtomicInteger counter = new AtomicInteger();
-        return TestResources.readJsonArray(name).stream()
+        return readJsonArray(name).stream()
                 .map(JsonValue::asJsonObject)
                 .map(object->new SchemaFixture(
                         name,
@@ -61,5 +65,12 @@ class SchemaFixture extends Fixture {
                         object.get("schema"),
                         object.getBoolean("valid")
                         ));
+    }
+
+    private static JsonArray readJsonArray(String name) {
+        InputStream in = ValidationFixture.class.getResourceAsStream(name);
+        try (JsonReader reader = Json.createReader(in)) {
+            return reader.readArray();
+        }
     }
 }

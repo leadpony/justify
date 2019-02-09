@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -59,7 +60,7 @@ public class RemoteSchemaTest extends BaseValidationTest {
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
-        Path basePath = TestResources.pathToResource("/org/json_schema/remotes");
+        Path basePath = Paths.get("target/test-classes", "org/json_schema/remotes");
         resourceHandler.setResourceBase(basePath.toString());
         HandlerList handlers = new HandlerList();
         handlers.addHandler(resourceHandler);
