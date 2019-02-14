@@ -24,16 +24,32 @@ import com.ibm.icu.text.MessageFormat;
  *
  * @author leadpony
  */
-public enum Message {
-    JSON_SCHEMA_START,
-    JSON_SCHEMA_NOT_FOUND,
+enum Message {
+    VALIDATE_SCHEMA,
+    VALIDATE_REFERENCED_SCHEMA,
+    VALIDATE_INSTANCE,
+    INSPECT_SCHEMA,
 
-    JSON_INSTANCE_START,
-    JSON_INSTANCE_NOT_FOUND,
+    SCHEMA_ID_MISSING,
+    SCHEMA_ID_INVALID,
 
-    VALIDATION_DONE,
+    SCHEMA_VALID,
+    SCHEMA_INVALID,
+    INSTANCE_VALID,
+    INSTANCE_INVALID,
 
-    UNRECOGNIZED_OPTION,
+    OPTION_UNRECOGNIZED,
+    OPTION_MISSING,
+    OPTION_ARGUMENT_MISSING,
+    OPTION_ARGUMENT_INVALID,
+
+    SCHEMA_NOT_FOUND,
+    INSTANCE_NOT_FOUND,
+    SCHEMA_MALFORMED,
+    INSTANCE_MALFORMED,
+    READING_FAILED,
+
+    WARNING
     ;
 
     private static final String BUNDLE_NAME = Message.class.getPackage().getName() + ".messages";

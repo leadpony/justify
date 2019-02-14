@@ -19,93 +19,46 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 
 /**
- * A printer for printing messages.
+ * A command implementation for "help" command.
  *
  * @author leadpony
  */
-class Printer {
-
-    private final PrintStream stream;
-    private long lines;
+class Help extends AbstractCommand {
 
     /**
-     * Constructs this printer.
+     * Constructs this command.
      *
-     * @param stream the stream to output characters.
+     * @param console the console to which messages will be outputted.
      */
-    Printer(PrintStream stream) {
-        this.stream = stream;
+    Help(Console console) {
+        super(console);
     }
 
     /**
-     * Returns the number of lines this printer printed.
-     *
-     * @return the number of lines this printer printed.
+     * {@inheritDoc}
      */
-    long linesPrinted() {
-        return lines;
+    @Override
+    public Status execute(List<String> args) {
+        printUsage();
+        return Status.VALID;
     }
 
     /**
-     * Prints a blank line.
+     * Prints the help message which explains the usage of this program.
      */
-    void print() {
-        stream.println();
-        ++lines;
-    }
-
-    /**
-     * Prints a line.
-     *
-     * @param line the string to print.
-     */
-    void print(String line) {
-        stream.println(line);
-        ++lines;
-    }
-
-    /**
-     * Prints a message.
-     *
-     * @param message the message to print.
-     */
-    void print(Message message) {
-        print(message.get());
-    }
-
-    /**
-     * Prints a message formatted with arguments.
-     *
-     * @param message the message to print.
-     * @param arguments the arguments filling the format.
-     */
-    void print(Message message, Object... arguments) {
-        print(message.get(arguments));
-    }
-
-    /**
-     * Prints an exception.
-     *
-     * @param exception the exception to print.
-     */
-    void print(Exception exception) {
-        print(exception.getLocalizedMessage());
-    }
-
-    /**
-     * Prints messages explaining the usage of this program.
-     */
-    void printUsage() {
+     private void printUsage() {
         InputStream in = findUsageResourceAsStream();
         if (in != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                reader.lines().forEach(this::print);
+                reader.lines().forEach(console::info);
             } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
         }
     }

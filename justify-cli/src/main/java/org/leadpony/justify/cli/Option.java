@@ -15,45 +15,43 @@
  */
 package org.leadpony.justify.cli;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 /**
- * Options which can be specified on the command line.
+ * An command-line option interface.
  *
  * @author leadpony
  */
-enum Option {
-    HELP("h"),
-    STRICT("strict");
-
-    private final String name;
-
-    private static final Map<String, Option> names = new HashMap<>();
-
-    static {
-        for (Option value : values()) {
-            names.put(value.name, value);
-        }
-    }
-
-    private Option(String name) {
-        this.name = name;
-    }
+interface Option {
 
     /**
-     * Returns the option specified by the name.
+     * Returns the preferred name for this option.
      *
-     * @param name the name of the option.
-     * @return the found option.
-     * @throws NoSuchElementException if no such option exists.
+     * @return the preferred name for this option.
      */
-    static Option byName(String name) {
-        if (names.containsKey(name)) {
-            return names.get(name);
-        } else {
-            throw new NoSuchElementException();
-        }
+    String preferredName();
+
+    /**
+     * Checks whether this option requires an argument or not.
+     *
+     * @return {@code true} if this option requires any argument, {@code false}
+     *         otherwise.
+     */
+    boolean requiresArgument();
+
+    /**
+     * Checks whether this option can take multiple arguments or not.
+     *
+     * @return {@code true} if this option can take multiple arguments,
+     *         {@code false} otherwise.
+     */
+    boolean takesMultipleArguments();
+
+    /**
+     * Returns the typed argument.
+     *
+     * @param string the original argument.
+     * @return the typed argument.
+     */
+    default Object getTyped(String string) {
+        return string;
     }
 }

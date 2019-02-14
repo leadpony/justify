@@ -15,6 +15,10 @@
  */
 package org.leadpony.justify.cli;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * The entry class of this program.
  *
@@ -22,13 +26,38 @@ package org.leadpony.justify.cli;
  */
 public class Launcher {
 
+    private final Console console = new Console(System.out, System.err);
+
+    public Status launch(String[] args) {
+        return launch(new LinkedList<>(Arrays.asList(args)));
+    }
+
+    private Status launch(List<String> args) {
+        try {
+            Command command = createCommand(args);
+            return command.execute(args);
+        } catch (CommandException e) {
+            console.error(e);
+            return Status.FAILED;
+        } catch (Exception e) {
+            console.error(e);
+            return Status.FAILED;
+        }
+    }
+
+    private Command createCommand(List<String> args) {
+        if (args.isEmpty() || args.contains("-h")) {
+            return new Help(console);
+        }
+        return new Validate(console);
+    }
+
     /**
      * The entry point of this program.
      *
      * @param args the arguments given to this program.
      */
     public static void main(String[] args) {
-        int exitCode = new Validator().run(args);
-        System.exit(exitCode);
+        System.exit(new Launcher().launch(args).code());
     }
 }
