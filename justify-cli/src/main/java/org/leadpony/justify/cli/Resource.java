@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
 
 /**
  * A resource interface.
@@ -38,14 +38,17 @@ interface Resource {
      * @throws IllegalArgumentException if the specified {@code location} is invalid.
      */
     static Resource at(String location) {
-        try {
-            Path path = Paths.get(location);
-            return new LocalResource(path);
-        } catch (InvalidPathException e) {
+        Matcher m = RemoteResource.URL_PATTERN.matcher(location);
+        if (m.lookingAt()) {
             try {
-                URL url = new URL(location);
-                return new RemoteResource(url);
-            } catch (MalformedURLException e2) {
+                return new RemoteResource(new URL(location));
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException();
+            }
+        } else {
+            try {
+                return new LocalResource(Paths.get(location));
+            } catch (InvalidPathException e) {
                 throw new IllegalArgumentException();
             }
         }

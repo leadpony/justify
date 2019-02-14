@@ -18,11 +18,14 @@ package org.leadpony.justify.cli;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * @author leadpony
  */
 class RemoteResource implements Resource {
+
+    public static final Pattern URL_PATTERN = Pattern.compile("^.+://");
 
     private final URL url;
 
