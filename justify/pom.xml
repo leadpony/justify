@@ -27,7 +27,6 @@
         <jsonb.impl.version>1.0.2</jsonb.impl.version>
         <junit.jupiter.version>5.3.2</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
-        <javadoc.link>http://docs.oracle.com/javase/8/docs/api/</javadoc.link>
     </properties>
 
     <dependencies>
@@ -123,13 +122,15 @@
                         </additionalJOptions>
                         <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
                         <detectJavaApiLink>false</detectJavaApiLink>
-                        <links>
-                            <link>${javadoc.link}</link>
-                        </links>
                         <offlineLinks>
                             <offlineLink>
-                                <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.3</url>
-                                <location>${basedir}/src/main/javadoc/javax/json/</location>
+                                <url>https://docs.oracle.com/en/java/javase/11/docs/api/</url>
+                                <location>${basedir}/src/main/javadoc/java.base/</location>
+                            </offlineLink>
+                            <offlineLink>
+                                <!-- Notice: Javadoc for java.json module should be fixed with JDK 11. -->
+                                <url>https://static.javadoc.io/javax.json/javax.json-api/1.1.4</url>
+                                <location>${basedir}/src/main/javadoc/java.json/</location>
                             </offlineLink>
                         </offlineLinks>
                     </configuration>

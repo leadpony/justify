@@ -5,8 +5,8 @@
 ### Maven
 
 The following tools are required to build this software.
-* [JDK 9] or higher
-* [Apache Maven] 3.6.0 or higher
+* [JDK] 11
+* [Apache Maven] 3.6.0
 
 The commands below build the software and install it into your local Maven repository.
 
@@ -24,5 +24,5 @@ The following Maven profiles should be activated or deactivated manually after i
 * `jdk9-or-higher` (deactivate)
 * `verbose` (activate)
 
-[JDK 9]: https://jdk.java.net/archive/
+[JDK]: https://jdk.java.net/
 [Apache Maven]: https://maven.apache.org/

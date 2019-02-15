@@ -1,0 +1,5 @@
+module:java.base
+java.lang
+java.util
+java.util.function
+java.util.stream
