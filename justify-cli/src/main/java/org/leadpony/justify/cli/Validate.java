@@ -182,7 +182,7 @@ class Validate extends AbstractCommand {
                     switch (parser.next()) {
                     case KEY_NAME:
                         if (parser.getString().equals("$id")) {
-                            return getIdValue(parser);
+                            return extractSchemaId(parser);
                         }
                         break;
                     case START_ARRAY:
@@ -203,7 +203,7 @@ class Validate extends AbstractCommand {
         }
     }
 
-    private Optional<URI> getIdValue(JsonParser parser) {
+    private Optional<URI> extractSchemaId(JsonParser parser) {
         if (parser.next() == Event.VALUE_STRING) {
             try {
                 return Optional.of(new URI(parser.getString()));
@@ -220,7 +220,7 @@ class Validate extends AbstractCommand {
         } catch (NoSuchFileException e) {
             throw new CommandException(SCHEMA_NOT_FOUND, resource);
         } catch (IOException e) {
-            throw new CommandException(READING_FAILED, resource);
+            throw new CommandException(ACCESS_FAILED, resource);
         }
     }
 
@@ -230,7 +230,7 @@ class Validate extends AbstractCommand {
         } catch (NoSuchFileException e) {
             throw new CommandException(INSTANCE_NOT_FOUND, resource);
         } catch (IOException e) {
-            throw new CommandException(READING_FAILED, resource);
+            throw new CommandException(ACCESS_FAILED, resource);
         }
     }
 

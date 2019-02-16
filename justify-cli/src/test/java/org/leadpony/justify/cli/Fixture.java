@@ -15,9 +15,9 @@
  */
 package org.leadpony.justify.cli;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,19 +29,13 @@ import java.util.stream.Stream;
 class Fixture {
 
     private static final Path BASE_DIR = Paths.get("target", "test-classes");
+    private static final URI BASE_URL = URI.create("http://localhost:1234/");
 
     private final Status status;
     private final String[] args;
 
     static Fixture of(Status status, String... args) {
-        String[] copied = Arrays.copyOf(args, args.length);
-        for (int i = 0; i < args.length; i++) {
-            String arg = copied[i];
-            if (!arg.startsWith("-")) {
-                copied[i] = BASE_DIR.resolve(arg).toString();
-            }
-        }
-        return new Fixture(status, copied);
+        return new Fixture(status, args);
     }
 
     private Fixture(Status status, String[] args) {
@@ -54,7 +48,29 @@ class Fixture {
     }
 
     String[] args() {
-        return args;
+        String[] result = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.startsWith("-")) {
+                result[i] = arg;
+            } else {
+                result[i] = BASE_DIR.resolve(arg).toString();
+            }
+        }
+        return result;
+    }
+
+    String[] remoteArgs() {
+        String[] result = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.startsWith("-")) {
+                result[i] = arg;
+            } else {
+                result[i] = BASE_URL.resolve(arg).toString();
+            }
+        }
+        return result;
     }
 
     @Override

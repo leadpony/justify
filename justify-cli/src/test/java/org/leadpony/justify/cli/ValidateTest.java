@@ -29,6 +29,11 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class ValidateTest {
 
+    /**
+     * Provides test fixgtures.
+     *
+     * @return the stream of test fixtures.
+     */
     public static Stream<Fixture> fixtures() {
         return Stream.of(
                 // Invalid arguments
