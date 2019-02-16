@@ -47,6 +47,7 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
+import org.leadpony.justify.cli.Console.Color;
 
 /**
  * A command implementation for "validate" command.
@@ -68,7 +69,7 @@ class Validate extends AbstractCommand {
      */
     Validate(Console console) {
         super(console);
-        this.problemPrinter = service.createProblemPrinter(console::info);
+        this.problemPrinter = service.createProblemPrinter(console::print);
         this.catalog = new Catalog();
     }
 
@@ -94,7 +95,7 @@ class Validate extends AbstractCommand {
     }
 
     private Optional<JsonSchema> readSchema(Resource resource) {
-        console.info(VALIDATE_SCHEMA, resource);
+        console.print(VALIDATE_SCHEMA, resource);
         return validateSchema(resource);
     }
 
@@ -108,12 +109,12 @@ class Validate extends AbstractCommand {
         JsonSchemaReaderFactory factory = createSchemaReaderFactory();
         try (JsonSchemaReader reader = factory.createSchemaReader(openSchema(resource))) {
             JsonSchema schema = reader.read();
-            console.info(SCHEMA_VALID, resource);
+            console.withColor(Color.SUCCESS).print(SCHEMA_VALID, resource);
             return Optional.of(schema);
         } catch (JsonValidatingException e) {
             List<Problem> problems = e.getProblems();
             problemPrinter.handleProblems(problems);
-            console.info(SCHEMA_INVALID, resource, Problems.countLeast(problems));
+            console.withColor(Color.DANGER).print(SCHEMA_INVALID, resource, Problems.countLeast(problems));
             setStatus(Status.INVALID);
         } catch (JsonParsingException e) {
             throw new CommandException(SCHEMA_MALFORMED, e);
@@ -136,7 +137,7 @@ class Validate extends AbstractCommand {
      * @param schema   the JSON schema against which the instance to be validated.
      */
     private void validateInstance(Resource resource, JsonSchema schema) {
-        console.info(VALIDATE_INSTANCE, resource);
+        console.print(VALIDATE_INSTANCE, resource);
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = found -> {
@@ -153,9 +154,9 @@ class Validate extends AbstractCommand {
         }
 
         if (problems.isEmpty()) {
-            console.info(INSTANCE_VALID, resource);
+            console.withColor(Color.SUCCESS).print(INSTANCE_VALID, resource);
         } else {
-            console.info(INSTANCE_INVALID, resource, Problems.countLeast(problems));
+            console.withColor(Color.DANGER).print(INSTANCE_INVALID, resource, Problems.countLeast(problems));
             setStatus(Status.INVALID);
         }
     }
@@ -171,7 +172,7 @@ class Validate extends AbstractCommand {
     }
 
     private void addReferencedSchema(Resource resource) {
-        console.info(INSPECT_SCHEMA, resource);
+        console.print(INSPECT_SCHEMA, resource);
         identifySchema(resource).ifPresent(id -> catalog.put(id, resource));
     }
 
@@ -194,7 +195,7 @@ class Validate extends AbstractCommand {
                     }
                 }
             }
-            console.warn(SCHEMA_ID_MISSING);
+            console.withColor(Color.WARNING).print(SCHEMA_ID_MISSING);
             return Optional.empty();
         } catch (JsonParsingException e) {
             throw new CommandException(SCHEMA_MALFORMED, e);
@@ -210,7 +211,7 @@ class Validate extends AbstractCommand {
             } catch (URISyntaxException e) {
             }
         }
-        console.warn(SCHEMA_ID_INVALID);
+        console.withColor(Color.WARNING).print(SCHEMA_ID_INVALID);
         return Optional.empty();
     }
 
@@ -287,7 +288,7 @@ class Validate extends AbstractCommand {
         }
 
         private Optional<JsonSchema> readReferencedSchema(Resource resource) {
-            console.info(VALIDATE_REFERENCED_SCHEMA, resource);
+            console.print(VALIDATE_REFERENCED_SCHEMA, resource);
             return validateSchema(resource);
         }
     }

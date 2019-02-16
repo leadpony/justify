@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.regex.Pattern;
 
 /**
+ * A remote resource whose location is specified with a {@code URI}.
+ *
  * @author leadpony
  */
 class RemoteResource implements Resource {
@@ -29,6 +31,11 @@ class RemoteResource implements Resource {
 
     private final URL url;
 
+    /**
+     * Constructs this resource.
+     *
+     * @param url the URL where this resource resides.
+     */
     RemoteResource(URL url) {
         this.url = url;
     }

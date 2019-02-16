@@ -24,6 +24,29 @@ import java.io.PrintStream;
  */
 class Console {
 
+    /**
+     * Color of messages.
+     *
+     * @author leadpony
+     */
+    enum Color {
+        DEFAULT(""),
+        SUCCESS("\u001b[92m"),
+        WARNING("\u001b[93m"),
+        DANGER("\u001b[91m"),
+        ;
+
+        private final String code;
+
+        private Color(String code) {
+            this.code = code;
+        }
+
+        String code() {
+            return code;
+        }
+    }
+
     private final PrintStream stdout;
     private final PrintStream stderr;
 
@@ -39,28 +62,43 @@ class Console {
     }
 
     /**
-     * Prints a blank line.
+     * Specifies the color of the next line.
+     *
+     * @param color the color of the next line, cannot be {@code null}.
+     * @return this console.
      */
-    void info() {
+    Console withColor(Color color) {
+        return this;
+    }
+
+    /**
+     * Prints a blank line.
+     * @return this console.
+     */
+    Console info() {
         stdout.println();
+        return this;
     }
 
     /**
      * Prints a line.
      *
-     * @param line the string to print.
+     * @param line the line to print.
+     * @return this console.
      */
-    void info(String line) {
-        stdout.println(line);
+    Console print(String line) {
+        stdout.println(decorate(line));
+        return this;
     }
 
     /**
      * Prints a message.
      *
      * @param message the message to print.
+     * @return this console.
      */
-    void info(Message message) {
-        info(message.get());
+    Console print(Message message) {
+        return print(message.get());
     }
 
     /**
@@ -68,31 +106,39 @@ class Console {
      *
      * @param message the message to print.
      * @param arguments the arguments filling the format.
+     * @return this console.
      */
-    void info(Message message, Object... arguments) {
-        info(message.get(arguments));
+    Console print(Message message, Object... arguments) {
+        return print(message.get(arguments));
     }
 
     /**
      * Prints an exception.
      *
      * @param exception the exception to print.
+     * @return this console.
      */
-    void info(Exception exception) {
-        info(exception.getLocalizedMessage());
+    Console print(Exception exception) {
+        print(exception.getLocalizedMessage());
+        return this;
     }
 
-    void error(String line) {
-        stderr.println(line);
+    /**
+     * Prints an error line.
+     *
+     * @param line the line to print.
+     * @return this console.
+     */
+    Console error(String line) {
+        stderr.println(decorate(line));
+        return this;
     }
 
-    void error(Exception exception) {
-        error(exception.getLocalizedMessage());
+    Console error(Exception exception) {
+        return error(exception.getLocalizedMessage());
     }
 
-    void warn(Message message, Object... arguments) {
-        StringBuilder b = new StringBuilder(Message.WARNING.get());
-        b.append(message.get(arguments));
-        info(b.toString());
+    protected String decorate(String line) {
+        return line;
     }
 }

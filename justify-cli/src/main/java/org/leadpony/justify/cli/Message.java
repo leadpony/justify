@@ -49,8 +49,6 @@ enum Message {
     INSTANCE_MALFORMED,
 
     ACCESS_FAILED,
-
-    WARNING
     ;
 
     private static final String BUNDLE_NAME = Message.class.getPackage().getName() + ".messages";

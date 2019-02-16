@@ -23,12 +23,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
+ * A local resource whose location is specified with a {@code Path}.
+ *
  * @author leadpony
  */
 class LocalResource implements Resource {
 
     private final Path path;
 
+    /**
+     * Constructs this resource.
+     *
+     * @param path the path where this resource resides.
+     */
     LocalResource(Path path) {
         this.path = path;
     }

@@ -56,7 +56,7 @@ class Help extends AbstractCommand {
         InputStream in = findUsageResourceAsStream();
         if (in != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                reader.lines().forEach(console::info);
+                reader.lines().forEach(console::print);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

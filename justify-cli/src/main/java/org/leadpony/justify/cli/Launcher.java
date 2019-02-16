@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.leadpony.justify.cli.Console.Color;
+
 /**
  * The entry class of this program.
  *
@@ -26,26 +28,29 @@ import java.util.List;
  */
 public class Launcher {
 
-    private final Console console = new Console(System.out, System.err);
-
     public Status launch(String[] args) {
         return launch(new LinkedList<>(Arrays.asList(args)));
     }
 
     private Status launch(List<String> args) {
+        Console console = createConsole();
         try {
-            Command command = createCommand(args);
+            Command command = createCommand(args, console);
             return command.execute(args);
         } catch (CommandException e) {
-            console.error(e);
+            console.withColor(Color.DANGER).error(e);
             return Status.FAILED;
         } catch (Exception e) {
-            console.error(e);
+            console.withColor(Color.DANGER).error(e);
             return Status.FAILED;
         }
     }
 
-    private Command createCommand(List<String> args) {
+    private static Console createConsole() {
+        return new ColorConsole(System.out, System.err);
+    }
+
+    private static Command createCommand(List<String> args, Console console) {
         if (args.isEmpty() || args.contains("-h")) {
             return new Help(console);
         }
