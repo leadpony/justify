@@ -23,6 +23,13 @@ package org.leadpony.justify.cli;
 interface Option {
 
     /**
+     * Returns whether this option is mandatory or not.
+     *
+     * @return {@code true} if this option is mandatory, {@code false} otherwise.
+     */
+    boolean isRequired();
+
+    /**
      * Returns the preferred name for this option.
      *
      * @return the preferred name for this option.

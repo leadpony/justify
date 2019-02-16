@@ -15,14 +15,12 @@
  */
 package org.leadpony.justify.cli;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * A command implementation for "help" command.
@@ -31,6 +29,9 @@ import java.util.Locale;
  */
 class Help extends AbstractCommand {
 
+    private static final String BUNDLE_BASE_NAME = "org.leadpony.justify.cli.usage";
+    private final ResourceBundle bundle;
+
     /**
      * Constructs this command.
      *
@@ -38,6 +39,7 @@ class Help extends AbstractCommand {
      */
     Help(Console console) {
         super(console);
+        this.bundle = ResourceBundle.getBundle(BUNDLE_BASE_NAME, Locale.getDefault());
     }
 
     /**
@@ -49,27 +51,56 @@ class Help extends AbstractCommand {
         return Status.VALID;
     }
 
-    /**
-     * Prints the help message which explains the usage of this program.
-     */
-     private void printUsage() {
-        InputStream in = findUsageResourceAsStream();
-        if (in != null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-                reader.lines().forEach(console::print);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
+    private String getMessage(String key) {
+        return bundle.getString(key);
+    }
+
+    private void printUsage() {
+        console.print(getMessage("title"));
+        console.print(getMessage("usage"));
+        console.print("  " + getMessage("command"));
+        console.print();
+        printAllOptions();
+    }
+
+    private void printAllOptions() {
+        console.print(getMessage("options"));
+        List<Option> options = sortOptions(ValidateOption.values());
+        for (Option option : options) {
+            printOption(option);
         }
     }
 
-    private InputStream findUsageResourceAsStream() {
-        Locale locale = Locale.getDefault();
-        String name = "usage_" + locale.getLanguage() + ".txt";
-        InputStream stream = getClass().getResourceAsStream(name);
-        if (stream != null) {
-            return stream;
+    private void printOption(Option option) {
+        String name = option.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("  ").append(option.preferredName());
+        if (option.requiresArgument()) {
+            String arg = getMessage(name + ".arg");
+            builder.append(" <").append(arg).append(">");
+            if (option.takesMultipleArguments()) {
+                builder.append(" ...");
+            }
         }
-        return getClass().getResourceAsStream("usage.txt");
+        if (option.isRequired()) {
+            builder.append(" *").append(getMessage("required"));
+        }
+        console.print(builder.toString());
+        console.print(formatDescription(getMessage(name)));
+    }
+
+    private static String formatDescription(String description) {
+        String replaced = description.replaceAll("\n", "\n      ");
+        return "      " + replaced;
+    }
+
+    private static List<Option> sortOptions(Option[] options) {
+        List<Option> sorted = new ArrayList<>(Arrays.asList(options));
+        Collections.sort(sorted, Help::compareOption);
+        return sorted;
+    }
+
+    private static int compareOption(Option a, Option b) {
+        return a.preferredName().compareTo(b.preferredName());
     }
 }

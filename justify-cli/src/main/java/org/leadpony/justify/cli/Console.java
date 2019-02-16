@@ -75,7 +75,7 @@ class Console {
      * Prints a blank line.
      * @return this console.
      */
-    Console info() {
+    Console print() {
         stdout.println();
         return this;
     }

@@ -25,10 +25,11 @@ import java.util.NoSuchElementException;
  * @author leadpony
  */
 enum ValidateOption implements Option {
+    HELP("-h"),
     SCHEMA("-s"),
     INSTANCE("-i"),
+    REFERENCE("-r"),
     STRICT("-strict"),
-    REFERENCE("-r")
     ;
 
     private final String[] names;
@@ -50,6 +51,11 @@ enum ValidateOption implements Option {
      */
     private ValidateOption(String... names) {
         this.names = names;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return this == SCHEMA;
     }
 
     @Override
