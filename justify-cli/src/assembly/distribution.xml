@@ -20,7 +20,7 @@
             <filtered>true</filtered>
         </fileSet>
         <fileSet>
-            <directory>src/test/resources</directory>
+            <directory>src/test/schemas/org/json-schema</directory>
             <includes>
                 <include>NOTICE.md</include>
                 <include>person.schema.json</include>

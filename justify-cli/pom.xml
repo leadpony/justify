@@ -94,6 +94,17 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/schemas/org/json-schema</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/schemas/org/leadpony</directory>
+            </testResource>
+        </testResources>
         <pluginManagement>
             <plugins>
                 <plugin>

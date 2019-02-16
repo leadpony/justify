@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -42,7 +41,6 @@ import javax.json.stream.JsonParsingException;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
-import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
@@ -266,28 +264,15 @@ class Validate extends AbstractCommand {
      *
      * @author leadpony
      */
-    private class Catalog extends HashMap<URI, Resource> implements JsonSchemaResolver {
+    private class Catalog extends SchemaCatalog {
 
+        /**
+         *
+         */
         private static final long serialVersionUID = 1L;
 
         @Override
-        public JsonSchema resolveSchema(URI id) {
-            Resource resource = get(id);
-            if (resource == null) {
-                return null;
-            }
-            return readReferencedSchema(resource).orElse(null);
-        }
-
-        @Override
-        public Resource put(URI key, Resource value) {
-            if (key.getFragment() == null) {
-                key = key.resolve("#");
-            }
-            return super.put(key, value);
-        }
-
-        private Optional<JsonSchema> readReferencedSchema(Resource resource) {
+        protected Optional<JsonSchema> readReferencedSchema(Resource resource) {
             console.print(VALIDATE_REFERENCED_SCHEMA, resource);
             return validateSchema(resource);
         }

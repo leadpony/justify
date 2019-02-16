@@ -60,6 +60,7 @@ public class ValidateTest {
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "true.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "false.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "invalid-id.schema.json"),
+                Fixture.of(Status.VALID, "-s", "company.schema.json", "-r", "person.schema.json"),
 
                 // Validates an instance against a schema.
                 Fixture.of(Status.VALID, "-s", "arrays.schema.json", "-i", "arrays.json"),

@@ -21,8 +21,17 @@ package org.leadpony.justify.cli;
  * @author leadpony
  */
 enum Status {
+    /**
+     * All of the schemas and instances turn to be valid.
+     */
     VALID(0),
+    /**
+     * Any of the schemas and instances turns to be invalid.
+     */
     INVALID(1),
+    /**
+     * Program stopped unexpectedly.
+     */
     FAILED(2);
 
     private final int code;
@@ -31,6 +40,11 @@ enum Status {
         this.code = code;
     }
 
+    /**
+     * Returns the code of this status.
+     *
+     * @return the code of this status.
+     */
     public int code() {
         return code;
     }
