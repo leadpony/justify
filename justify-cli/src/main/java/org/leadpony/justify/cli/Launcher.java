@@ -15,10 +15,12 @@
  */
 package org.leadpony.justify.cli;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.fusesource.jansi.AnsiConsole;
 import org.leadpony.justify.cli.Console.Color;
 
 /**
@@ -33,7 +35,7 @@ public class Launcher {
     }
 
     private Status launch(List<String> args) {
-        Console console = createConsole();
+        Console console = createConsole(args);
         try {
             Command command = createCommand(args, console);
             return command.execute(args);
@@ -46,8 +48,10 @@ public class Launcher {
         }
     }
 
-    private static Console createConsole() {
-        return new ColorConsole(System.out, System.err);
+    private static Console createConsole(List<String> args) {
+        PrintStream stdout = AnsiConsole.out();
+        PrintStream stderr = AnsiConsole.err();
+        return new ColorConsole(stdout, stderr);
     }
 
     private static Command createCommand(List<String> args, Console console) {

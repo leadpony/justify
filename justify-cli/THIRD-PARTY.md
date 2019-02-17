@@ -6,6 +6,12 @@
 
   > Copyright (c) 2010-2016, International Business Machines Corporation and others. All Rights Reserved.
 
+- Jansi
+  > Copyright (C) 2009-2017 the original author(s).
+    Licensed under the Apache License, Version 2.0 (the "License");
+    You may obtain a copy of the License at
+    <http://www.apache.org/licenses/LICENSE-2.0>
+
 - JSR 374 (JSON Processing) API
   > Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
     This program and the accompanying materials are made available under the
