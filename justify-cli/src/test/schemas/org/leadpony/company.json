@@ -1,0 +1,14 @@
+{
+    "ceo": {
+        "firstName": "Sundar",
+        "lastName": "Pichai"
+    },
+    "cfo": {
+        "firstName": "Ruth",
+        "lastName": " Porat"
+    },
+    "location": {
+        "latitude": 37.422222,
+        "longitude": -122.084444
+    }
+}

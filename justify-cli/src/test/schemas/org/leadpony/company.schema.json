@@ -5,7 +5,10 @@
     "ceo": {
         "$ref": "https://example.com/person.schema.json"
     },
-    "cio": {
+    "cfo": {
         "$ref": "https://example.com/person.schema.json"
+    },
+    "location": {
+        "$ref": "https://example.com/geographical-location.schema.json"
     }
 }

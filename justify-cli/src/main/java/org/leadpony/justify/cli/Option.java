@@ -58,7 +58,7 @@ interface Option {
      * @param string the original argument.
      * @return the typed argument.
      */
-    default Object getTyped(String string) {
+    default Object getTypedArgument(String string) {
         return string;
     }
 }

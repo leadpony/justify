@@ -138,10 +138,7 @@ class Validate extends AbstractCommand {
         console.print(VALIDATE_INSTANCE, resource);
 
         List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = found -> {
-            problems.addAll(found);
-            problemPrinter.handleProblems(found);
-        };
+        ProblemHandler handler = createProblemHandler(problems);
 
         try (JsonReader reader = service.createReader(openInstance(resource), schema, handler)) {
             reader.readValue();
@@ -160,11 +157,75 @@ class Validate extends AbstractCommand {
     }
 
     private void populateCatalog() {
+        Resource catalog = (Resource) getOptionValue(ValidateOption.CATALOG);
+        if (catalog != null) {
+            loadCatalog(catalog);
+        }
         @SuppressWarnings("unchecked")
         List<Resource> refs = (List<Resource>) getOptionValues(ValidateOption.REFERENCE);
         if (refs != null) {
             for (Resource ref : refs) {
                 addReferencedSchema(ref);
+            }
+        }
+    }
+
+    private void loadCatalog(Resource resource) {
+        console.print(PARSE_CATALOG, resource);
+        JsonSchema schema = readSchemaFromResource("catalog.schema.json");
+        List<Problem> problems = new ArrayList<>();
+        ProblemHandler handler = createProblemHandler(problems);
+        try (JsonParser parser = service.createParser(openCatalog(resource), schema, handler)) {
+            parseCatalog(parser);
+            if (!problems.isEmpty()) {
+                throw new CommandException(CATALOG_INVALID, resource, Problems.countLeast(problems));
+            }
+        } catch (JsonValidatingException e) {
+            throw new CommandException(e);
+        } catch (JsonParsingException e) {
+            throw new CommandException(CATALOG_MALFORMED, e);
+        } catch (JsonException e) {
+            throw new CommandException(e);
+        }
+    }
+
+    private JsonSchema readSchemaFromResource(String name) {
+        try (InputStream in = getClass().getResourceAsStream(name)) {
+            return service.readSchema(in);
+        } catch (IOException e) {
+            throw new CommandException(e);
+        }
+    }
+
+    private void parseCatalog(JsonParser parser) {
+        if (!parser.hasNext() || parser.next() != Event.START_OBJECT) {
+            return;
+        }
+        URI id = null;
+        while (parser.hasNext()) {
+            switch (parser.next()) {
+            case KEY_NAME:
+                try {
+                    id = new URI(parser.getString());
+                } catch (URISyntaxException e) {
+                    id = null;
+                }
+                break;
+            case VALUE_STRING:
+                try {
+                    Resource value = Resource.at(parser.getString());
+                    if (id != null) {
+                        catalog.put(id, value);
+                    }
+                } catch (IllegalArgumentException e) {
+                }
+                break;
+            case START_ARRAY:
+                parser.skipArray();
+            case START_OBJECT:
+                parser.skipObject();
+            default:
+                break;
             }
         }
     }
@@ -233,6 +294,23 @@ class Validate extends AbstractCommand {
         }
     }
 
+    private static InputStream openCatalog(Resource resource) {
+        try {
+            return resource.openStream();
+        } catch (NoSuchFileException e) {
+            throw new CommandException(CATALOG_NOT_FOUND, resource);
+        } catch (IOException e) {
+            throw new CommandException(ACCESS_FAILED, resource);
+        }
+    }
+
+    private ProblemHandler createProblemHandler(List<Problem> problems) {
+        return found->{
+            problems.addAll(found);
+            this.problemPrinter.handleProblems(found);
+        };
+    }
+
     @Override
     protected Option findOptionByName(String arg) {
         try {
@@ -246,7 +324,7 @@ class Validate extends AbstractCommand {
     protected void processNonOptionArguments(List<String> args) {
         List<Object> tyepd = args.stream().map(arg -> {
             try {
-                return ValidateOption.INSTANCE.getTyped(arg);
+                return ValidateOption.INSTANCE.getTypedArgument(arg);
             } catch (IllegalArgumentException e) {
                 throw new CommandException(OPTION_ARGUMENT_INVALID, ValidateOption.INSTANCE, arg);
             }

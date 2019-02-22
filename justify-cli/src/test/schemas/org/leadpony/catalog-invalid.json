@@ -1,0 +1,4 @@
+{
+    "https://example.com/person.schema.json": 42,
+    "https:///[]": "target/test-classes/geographical-location.schema.json"
+}

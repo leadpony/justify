@@ -29,6 +29,7 @@ enum ValidateOption implements Option {
     SCHEMA("-s"),
     INSTANCE("-i"),
     REFERENCE("-r"),
+    CATALOG("-catalog"),
     STRICT("-strict"),
     ;
 
@@ -69,6 +70,7 @@ enum ValidateOption implements Option {
         case SCHEMA:
         case INSTANCE:
         case REFERENCE:
+        case CATALOG:
             return true;
         default:
             return false;
@@ -87,8 +89,16 @@ enum ValidateOption implements Option {
     }
 
     @Override
-    public Object getTyped(String string) {
-        return Resource.at(string);
+    public Object getTypedArgument(String string) {
+        switch (this) {
+        case SCHEMA:
+        case INSTANCE:
+        case REFERENCE:
+        case CATALOG:
+            return Resource.at(string);
+        default:
+            return string;
+        }
     }
 
     /**

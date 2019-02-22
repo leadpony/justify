@@ -60,7 +60,12 @@ public class ValidateTest {
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "true.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "false.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "invalid-id.schema.json"),
-                Fixture.of(Status.VALID, "-s", "company.schema.json", "-r", "person.schema.json"),
+                Fixture.of(Status.VALID, "-s", "company.schema.json", "-r", "person.schema.json", "geographical-location.schema.json"),
+                Fixture.of(Status.VALID, "-s", "company.schema.json", "-catalog", "catalog.json"),
+                Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "nonexistent.json"),
+                Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "malformed.json"),
+                Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "true.schema.json"),
+                Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "catalog-invalid.json"),
 
                 // Validates an instance against a schema.
                 Fixture.of(Status.VALID, "-s", "arrays.schema.json", "-i", "arrays.json"),
@@ -77,7 +82,8 @@ public class ValidateTest {
                 // Validates an instance against a schema with referenced schemas.
                 Fixture.of(Status.VALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product.json"),
                 Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product-invalid.json"),
-                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product-invalid.json", "product.json")
+                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product-invalid.json", "product.json"),
+                Fixture.of(Status.VALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i", "company.json")
             );
     }
 

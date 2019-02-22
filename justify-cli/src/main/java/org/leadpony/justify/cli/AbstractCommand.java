@@ -58,7 +58,8 @@ abstract class AbstractCommand implements Command {
     }
 
     Object getOptionValue(Option option) {
-        return getOptionValues(option).get(0);
+        List<?> values = getOptionValues(option);
+        return (values != null) ? values.get(0) : null;
     }
 
     List<?> getOptionValues(Option option) {
@@ -122,7 +123,7 @@ abstract class AbstractCommand implements Command {
             }
             remaining.remove(0);
             try {
-                args.add(option.getTyped(arg));
+                args.add(option.getTypedArgument(arg));
             } catch (IllegalArgumentException e) {
                 throw new CommandException(OPTION_ARGUMENT_INVALID, option.preferredName(), arg);
             }
