@@ -16,13 +16,15 @@
 
 package org.leadpony.justify.spi;
 
+import java.util.Locale;
+
 import javax.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Localizable;
 
 /**
- * Service provider interface for providing a format attribute.
+ * A Service Provider Interface for format attribute.
  *
  * @author leadpony
  *
@@ -43,7 +45,7 @@ public interface FormatAttribute {
      * @return the localized name of this attribute, never be {@code null}.
      */
     default Localizable localizedName() {
-        return l->name();
+        return (Locale locale)->name();
     }
 
     /**

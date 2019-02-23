@@ -104,9 +104,9 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
             SchemaReaderConfiguration config) {
         this.parser = parser;
         this.factory = factory;
-        this.strictWithKeywords = config.strictWithKeywords;
-        this.strictWithFormats = config.strictWithFormats;
-        this.resolvers = config.resolvers;
+        this.strictWithKeywords = config.isStrictWithKeywords();
+        this.strictWithFormats = config.isStrictWithFormats();
+        this.resolvers = config.getResolvers();
     }
 
     /**

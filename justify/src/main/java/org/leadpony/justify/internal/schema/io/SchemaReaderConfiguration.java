@@ -15,58 +15,29 @@
  */
 package org.leadpony.justify.internal.schema.io;
 
-import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
-
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.leadpony.justify.api.JsonSchemaReaderFactory;
-import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 
 /**
- * A configuration for schema readers.
+ * A SchemaReaderConfiguration interface.
  *
  * @author leadpony
  */
-class SchemaReaderConfiguration implements JsonSchemaReaderFactoryBuilder {
+interface SchemaReaderConfiguration {
 
-    static final SchemaReaderConfiguration DEFAULT = new SchemaReaderConfiguration();
+    public static final SchemaReaderConfiguration DEFAULT = new SchemaReaderConfiguration() {};
 
-    boolean strictWithKeywords = false;
-    boolean strictWithFormats = false;
-    List<JsonSchemaResolver> resolvers = new ArrayList<>();
-
-    protected SchemaReaderConfiguration() {
+    default boolean isStrictWithKeywords() {
+        return false;
     }
 
-    @Override
-    public JsonSchemaReaderFactory build() {
-        throw new UnsupportedOperationException();
+    default boolean isStrictWithFormats() {
+        return false;
     }
 
-    @Override
-    public JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict) {
-        checkState();
-        strictWithKeywords = strict;
-        return this;
-    }
-
-    @Override
-    public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
-        checkState();
-        strictWithFormats = strict;
-        return this;
-    }
-
-    @Override
-    public JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver) {
-        checkState();
-        requireNonNull(resolver, "resolver");
-        resolvers.add(resolver);
-        return this;
-    }
-
-    protected void checkState() {
+    default List<JsonSchemaResolver> getResolvers() {
+        return Collections.emptyList();
     }
 }

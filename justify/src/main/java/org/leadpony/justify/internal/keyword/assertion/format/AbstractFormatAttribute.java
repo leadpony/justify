@@ -26,16 +26,16 @@ import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * Skeletal implementation for {@link FormatAttribute}.
- * 
+ *
  * @author leadpony
  */
 public abstract class AbstractFormatAttribute implements FormatAttribute {
-    
+
     private final Localizable LOCALIZED_NAME = (locale)->{
         String key = "format." + name();
         return Message.asString(key, locale);
     };
-    
+
     /**
      * {@inheritDoc}
      */
@@ -51,19 +51,19 @@ public abstract class AbstractFormatAttribute implements FormatAttribute {
     public InstanceType valueType() {
         return InstanceType.STRING;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean test(JsonValue value) {
-        String string = ((JsonString)value).getString(); 
+        String string = ((JsonString)value).getString();
         return test(string);
     }
-    
+
     /**
      * Checks if the string value conforms to this format.
-     * 
+     *
      * @param value the string value to check, which cannot be {@code null}.
      * @return {@code true} if the value conforms to the format, or {@code false}.
      */

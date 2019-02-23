@@ -21,14 +21,14 @@ module org.leadpony.justify {
     exports org.leadpony.justify.api;
     exports org.leadpony.justify.spi;
     
+    requires com.ibm.icu;
     requires transitive java.json;
     requires java.logging;
-    requires com.ibm.icu;
     
-    uses org.leadpony.justify.spi.JsonValidationProvider; 
-    uses org.leadpony.justify.spi.FormatAttribute; 
     uses org.leadpony.justify.spi.ContentEncodingScheme;
     uses org.leadpony.justify.spi.ContentMimeType;
+    uses org.leadpony.justify.spi.FormatAttribute; 
+    uses org.leadpony.justify.spi.JsonValidationProvider; 
     
     provides org.leadpony.justify.spi.JsonValidationProvider 
         with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;

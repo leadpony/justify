@@ -16,8 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.leadpony.justify.spi.FormatAttribute;
 
@@ -26,9 +30,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
-
-    private static final long serialVersionUID = 1L;
+public abstract class FormatAttributeRegistry {
 
     private static final FormatAttribute DATE = new Date();
     private static final FormatAttribute DATE_TIME = new DateTime();
@@ -48,41 +50,124 @@ public class FormatAttributeRegistry extends HashMap<String, FormatAttribute> {
     private static final FormatAttribute URI_REFERENCE = new UriReference();
     private static final FormatAttribute URI_TEMPLATE = new UriTemplate();
 
-    public FormatAttributeRegistry() {
+    private static final FormatAttribute[] INTERNAL = {
+            DATE,
+            DATE_TIME,
+            EMAIL,
+            HOSTNAME,
+            IPV4,
+            IPV6,
+            IDN_EMAIL,
+            IDN_HOSTNAME,
+            IRI,
+            IRI_REFERENCE,
+            JSON_POINTER,
+            REGEX,
+            RELATIVE_JSON_POINTER,
+            TIME,
+            URI,
+            URI_REFERENCE,
+            URI_TEMPLATE
+    };
+
+    protected final Set<FormatAttribute> external;
+
+    public static FormatAttributeRegistry getDefault() {
+        return new DefaultFormatAttributeRegistry();
     }
 
-    public void registerFormatAttribute(FormatAttribute attribute) {
-        put(attribute.name(), attribute);
+    protected FormatAttributeRegistry(Set<FormatAttribute> external) {
+        this.external = external;
     }
 
-    /**
-     * Registers all builtin format attributes with this registry.
-     *
-     * @return this registry.
-     */
-    public FormatAttributeRegistry registerDefault() {
-        registerFormatAttribute(DATE);
-        registerFormatAttribute(DATE_TIME);
-        registerFormatAttribute(EMAIL);
-        registerFormatAttribute(HOSTNAME);
-        registerFormatAttribute(IPV4);
-        registerFormatAttribute(IPV6);
-        registerFormatAttribute(IDN_EMAIL);
-        registerFormatAttribute(IDN_HOSTNAME);
-        registerFormatAttribute(IRI);
-        registerFormatAttribute(IRI_REFERENCE);
-        registerFormatAttribute(JSON_POINTER);
-        registerFormatAttribute(REGEX);
-        registerFormatAttribute(RELATIVE_JSON_POINTER);
-        registerFormatAttribute(TIME);
-        registerFormatAttribute(URI);
-        registerFormatAttribute(URI_REFERENCE);
-        registerFormatAttribute(URI_TEMPLATE);
-        return this;
+    public Map<String, FormatAttribute> createMap() {
+        return merge(INTERNAL, this.external);
     }
 
-    public FormatAttributeRegistry registerProvidedFormatAttributes() {
-        ServiceLoader.load(FormatAttribute.class).forEach(this::registerFormatAttribute);
-        return this;
+    public abstract FormatAttributeRegistry withCustomFormatAttributes(boolean active);
+
+    protected Map<String, FormatAttribute> internalAsMap() {
+        Map<String, FormatAttribute> map = new HashMap<>();
+        for (FormatAttribute attribute : INTERNAL) {
+            map.put(attribute.name(), attribute);
+        }
+        return map;
+    }
+
+    protected Map<String, FormatAttribute> allAsMap() {
+        Map<String, FormatAttribute> map = internalAsMap();
+        for (FormatAttribute attribute: this.external) {
+            map.put(attribute.name(), attribute);
+        }
+        return map;
+    }
+
+    private static Map<String, FormatAttribute> merge(FormatAttribute[] internal, Set<FormatAttribute> external) {
+        Map<String, FormatAttribute> map = new HashMap<>();
+        for (FormatAttribute attribute : internal) {
+            map.put(attribute.name(), attribute);
+        }
+        for (FormatAttribute attribute : external) {
+            map.put(attribute.name(), attribute);
+        }
+        return map;
+    }
+
+    private static class DefaultFormatAttributeRegistry extends FormatAttributeRegistry {
+
+        private final Map<String, FormatAttribute> defaultMap;
+
+        DefaultFormatAttributeRegistry() {
+            super(findExternal());
+            this.defaultMap = Collections.unmodifiableMap(allAsMap());
+        }
+
+        @Override
+        public Map<String, FormatAttribute> createMap() {
+            return defaultMap;
+        }
+
+        @Override
+        public FormatAttributeRegistry withCustomFormatAttributes(boolean active) {
+            if (active) {
+                return this;
+            } else {
+                return custom().withCustomFormatAttributes(active);
+            }
+        }
+
+        private static Set<FormatAttribute> findExternal() {
+            Set<FormatAttribute> external = new HashSet<>();
+            ServiceLoader<FormatAttribute> loader = ServiceLoader.load(FormatAttribute.class);
+            for (FormatAttribute loaded : loader) {
+                external.add(loaded);
+            }
+            return Collections.unmodifiableSet(external);
+        }
+
+        private FormatAttributeRegistry custom() {
+            return new CustomFormatAttributeRegistry(external);
+        }
+    }
+
+    private static class CustomFormatAttributeRegistry extends FormatAttributeRegistry {
+
+        private boolean cutsomFormatAttributes = true;
+
+        CustomFormatAttributeRegistry(Set<FormatAttribute> external) {
+            super(external);
+        }
+
+        @Override
+        public Map<String, FormatAttribute> createMap() {
+            Map<String, FormatAttribute> map = cutsomFormatAttributes ? allAsMap() : internalAsMap();
+            return Collections.unmodifiableMap(map);
+        }
+
+        @Override
+        public FormatAttributeRegistry withCustomFormatAttributes(boolean active) {
+            this.cutsomFormatAttributes = active;
+            return this;
+        }
     }
 }

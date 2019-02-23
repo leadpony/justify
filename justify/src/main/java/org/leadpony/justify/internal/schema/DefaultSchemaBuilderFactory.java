@@ -16,11 +16,13 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.Map;
+
 import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
-import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
@@ -30,20 +32,20 @@ import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeReg
 public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     private final JsonBuilderFactory builderFactory;
-    private final FormatAttributeRegistry formatRegistry;
+    private final Map<String, FormatAttribute> formatAttributeMap;
     private final ContentAttributeRegistry contentRegistry;
 
     /**
      * Constructs this factory.
      *
      * @param builderFactory  the factory for producing builders of JSON values.
-     * @param formatRegistry  the registry managing all format attributes.
+     * @param formatAttributeMap  the map containing all available format attributes.
      * @param contentRegistry the registry managing all content attributes.
      */
-    public DefaultSchemaBuilderFactory(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
+    public DefaultSchemaBuilderFactory(JsonBuilderFactory builderFactory, Map<String, FormatAttribute> formatAttributeMap,
             ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
-        this.formatRegistry = formatRegistry;
+        this.formatAttributeMap = formatAttributeMap;
         this.contentRegistry = contentRegistry;
     }
 
@@ -56,6 +58,6 @@ public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
     }
 
     public Draft07SchemaBuilderImpl createBuilderForDraft07() {
-        return new Draft07SchemaBuilderImpl(builderFactory, formatRegistry, contentRegistry);
+        return new Draft07SchemaBuilderImpl(builderFactory, formatAttributeMap, contentRegistry);
     }
 }

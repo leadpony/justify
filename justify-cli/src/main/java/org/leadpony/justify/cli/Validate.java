@@ -124,7 +124,10 @@ class Validate extends AbstractCommand {
 
     private JsonSchemaReaderFactory createSchemaReaderFactory() {
         final boolean strict = containsOption(ValidateOption.STRICT);
-        return service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(strict).withStrictWithFormats(strict)
+        return service.createSchemaReaderFactoryBuilder()
+                .withCustomFormatAttributes(false)
+                .withStrictWithKeywords(strict)
+                .withStrictWithFormats(strict)
                 .withSchemaResolver(this.catalog).build();
     }
 
@@ -305,7 +308,7 @@ class Validate extends AbstractCommand {
     }
 
     private ProblemHandler createProblemHandler(List<Problem> problems) {
-        return found->{
+        return found -> {
             problems.addAll(found);
             this.problemPrinter.handleProblems(found);
         };

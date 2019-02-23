@@ -24,7 +24,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
@@ -117,7 +120,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     }
 
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry, contentRegistry);
+        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry.createMap(), contentRegistry);
     }
 
     private JsonSchemaReader createSchemaReaderWith(ValidatingJsonParser parser) {
@@ -132,13 +135,17 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new JsonException(message, e);
     }
 
-    private static class Builder extends SchemaReaderConfiguration {
+    private static class Builder implements JsonSchemaReaderFactoryBuilder, SchemaReaderConfiguration {
 
         private final JsonProvider jsonProvider;
-        private final FormatAttributeRegistry formatRegistry;
+        private FormatAttributeRegistry formatRegistry;
         private final ContentAttributeRegistry contentRegistry;
         private final JsonSchema metaschema;
         private boolean alreadyBuilt = false;
+
+        private boolean strictWithKeywords = false;
+        private boolean strictWithFormats = false;
+        private List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
         private Builder(JsonProvider jsonProvider, FormatAttributeRegistry formatRegistry,
                 ContentAttributeRegistry contentRegistry, JsonSchema metaschema) {
@@ -148,6 +155,8 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             this.metaschema = metaschema;
         }
 
+        /* JsonSchemaReaderFactoryBuilder */
+
         @Override
         public JsonSchemaReaderFactory build() {
             checkState();
@@ -156,9 +165,54 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
 
         @Override
-        protected void checkState() {
+        public JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict) {
+            checkState();
+            strictWithKeywords = strict;
+            return this;
+        }
+
+        @Override
+        public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
+            checkState();
+            strictWithFormats = strict;
+            return this;
+        }
+
+        @Override
+        public JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver) {
+            checkState();
+            requireNonNull(resolver, "resolver");
+            resolvers.add(resolver);
+            return this;
+        }
+
+        @Override
+        public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active) {
+            checkState();
+            formatRegistry = formatRegistry.withCustomFormatAttributes(active);
+            return this;
+        }
+
+        /* SchemaReaderConfiguration */
+
+        @Override
+        public boolean isStrictWithKeywords() {
+            return strictWithKeywords;
+        }
+
+        @Override
+        public boolean isStrictWithFormats() {
+            return strictWithFormats;
+        }
+
+        @Override
+        public List<JsonSchemaResolver> getResolvers() {
+            return Collections.unmodifiableList(resolvers);
+        }
+
+        private void checkState() {
             if (alreadyBuilt) {
-                throw new IllegalStateException("alreay built.");
+                throw new IllegalStateException("already built.");
             }
         }
     }

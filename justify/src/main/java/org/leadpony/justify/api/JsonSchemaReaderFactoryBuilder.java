@@ -22,13 +22,16 @@ package org.leadpony.justify.api;
  * The following code sample shows how to build a JSON schema reader factory
  * using this interface.
  * </p>
- * <pre><code>
+ *
+ * <pre>
+ * <code>
  * JsonValidationService service = JsonValidationService.newInstance();
  * JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
  *     .withStrictWithKeywords(true)
  *     .build();
- * </code></pre>
-
+ * </code>
+ * </pre>
+ *
  * <p>
  * Each instance of this type is NOT safe for use by multiple concurrent
  * threads.
@@ -50,8 +53,7 @@ public interface JsonSchemaReaderFactoryBuilder {
      * Specifies whether the schema reader is strict with keywords or not.
      * <p>
      * If the reader is strict with keywords, it will report a problem when it
-     * encountered an unknown keyword.
-     * This value is {@code false} by default.
+     * encountered an unknown keyword. This value is {@code false} by default.
      * </p>
      *
      * @param strict {@code true} if the schema reader is strict with keywords,
@@ -64,8 +66,8 @@ public interface JsonSchemaReaderFactoryBuilder {
      * Specifies whether the schema reader is strict with formats or not.
      * <p>
      * If the reader is strict with formats, it will report a problem when it
-     * encountered an unknown format attribute.
-     * This value is {@code false} by default.
+     * encountered an unknown format attribute. This value is {@code false} by
+     * default.
      * </p>
      *
      * @param strict {@code true} if the schema reader is strict with formats,
@@ -75,12 +77,23 @@ public interface JsonSchemaReaderFactoryBuilder {
     JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict);
 
     /**
-     * Adds a resolver of external JSON schemas to this builder.
-     * Multiple resolvers can be added to a builder.
+     * Adds a resolver of external JSON schemas to this builder. Multiple resolvers
+     * can be added to a builder.
      *
      * @param resolver the resolver of external JSON schemas.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code resolver} is {@code null}.
+     * @throws NullPointerException if the specified {@code resolver} is
+     *                              {@code null}.
      */
     JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver);
+
+    /**
+     * Activates or deactivates the custom format attributes provided through
+     * Service Provider Interface. By default, they are activated.
+     *
+     * @param active {@code true} to activate the custom format attributes,
+     *               {@code false} to deactivate them.
+     * @return this builder.
+     */
+    JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active);
 }

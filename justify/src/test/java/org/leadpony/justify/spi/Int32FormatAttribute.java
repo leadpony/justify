@@ -22,7 +22,7 @@ import org.leadpony.justify.api.InstanceType;
 
 /**
  * Format attribute representing "int32".
- * 
+ *
  * @author leadpony
  */
 public class Int32FormatAttribute implements FormatAttribute {

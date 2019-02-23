@@ -22,7 +22,7 @@ import org.leadpony.justify.api.InstanceType;
 
 /**
  * Format attribute representing "palindrome".
- * 
+ *
  * @author leadpony
  */
 public class PalindromeFormatAttribute implements FormatAttribute {

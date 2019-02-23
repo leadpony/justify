@@ -52,12 +52,12 @@ import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEnc
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.format.EvaluatableFormat;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
-import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.keyword.combiner.Combiners;
 import org.leadpony.justify.internal.keyword.combiner.Definitions;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
 import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link Draft07SchemaBuilder}.
@@ -67,7 +67,7 @@ import org.leadpony.justify.internal.keyword.combiner.Properties;
 class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilderResult {
 
     private final JsonBuilderFactory builderFactory;
-    private final FormatAttributeRegistry formatRegistry;
+    private final Map<String, FormatAttribute> formatAttributeMap;
     private final ContentAttributeRegistry contentRegistry;
 
     private boolean empty;
@@ -82,13 +82,13 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
      * Constructs this builder.
      *
      * @param builderFactory  the factory for producing builders of JSON values.
-     * @param formatRegistry  the registry managing all format attributes.
+     * @param formatAttributeMap  the map containing all avaiable format attributes.
      * @param contentRegistry the registry managing all content attributes.
      */
-    public Draft07SchemaBuilderImpl(JsonBuilderFactory builderFactory, FormatAttributeRegistry formatRegistry,
+    public Draft07SchemaBuilderImpl(JsonBuilderFactory builderFactory, Map<String, FormatAttribute> formatAttributeMap,
             ContentAttributeRegistry contentRegistry) {
         this.builderFactory = builderFactory;
-        this.formatRegistry = formatRegistry;
+        this.formatAttributeMap = formatAttributeMap;
         this.contentRegistry = contentRegistry;
         this.empty = true;
     }
@@ -536,8 +536,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     @Override
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
-        if (formatRegistry.containsKey(attribute)) {
-            Format format = new EvaluatableFormat(formatRegistry.get(attribute));
+        if (formatAttributeMap.containsKey(attribute)) {
+            Format format = new EvaluatableFormat(formatAttributeMap.get(attribute));
             addKeyword(format);
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
@@ -549,8 +549,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withLaxFormat(String attribute) {
         requireNonNull(attribute, "attribute");
         Format format = null;
-        if (formatRegistry.containsKey(attribute)) {
-            format = new EvaluatableFormat(formatRegistry.get(attribute));
+        if (formatAttributeMap.containsKey(attribute)) {
+            format = new EvaluatableFormat(formatAttributeMap.get(attribute));
         } else {
             format = new Format(attribute);
         }

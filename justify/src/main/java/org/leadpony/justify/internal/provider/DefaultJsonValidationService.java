@@ -69,7 +69,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
 
     private final JsonProvider jsonProvider;
     private final JsonBuilderFactory jsonBuilderFactory;
-    private final FormatAttributeRegistry formatRegistry;
+    private final FormatAttributeRegistry defaultFormatAttributeRegistry;
     private final ContentAttributeRegistry contentRegistry;
     private final JsonSchema metaschema;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
@@ -88,7 +88,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     DefaultJsonValidationService(JsonProvider jsonProvider) {
         this.jsonProvider = jsonProvider;
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
-        this.formatRegistry = createFormatAttributeRegistry();
+        this.defaultFormatAttributeRegistry = FormatAttributeRegistry.getDefault();
         this.contentRegistry = createContentAttributeRegistry(jsonProvider);
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().withSchemaResolver(this).build();
@@ -106,7 +106,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, formatRegistry, contentRegistry, metaschema)
+        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, defaultFormatAttributeRegistry, contentRegistry, metaschema)
                 .withSchemaResolver(this);
     }
 
@@ -314,11 +314,6 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             return null;
         }
     }
-
-    protected FormatAttributeRegistry createFormatAttributeRegistry() {
-        return new FormatAttributeRegistry().registerDefault().registerProvidedFormatAttributes();
-    }
-
     protected ContentAttributeRegistry createContentAttributeRegistry(JsonProvider jsonProvider) {
         return new ContentAttributeRegistry(jsonProvider).registerProvidedEncodingSchemes().registerProvidedMimeTypes()
                 .registerDefault();
@@ -341,7 +336,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     }
 
     private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry, contentRegistry);
+        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, defaultFormatAttributeRegistry.createMap(), contentRegistry);
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, String key, Path path) {
