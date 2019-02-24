@@ -98,7 +98,7 @@ class Console {
      * @return this console.
      */
     Console print(Message message) {
-        return print(message.get());
+        return print(message.toString());
     }
 
     /**
@@ -109,7 +109,7 @@ class Console {
      * @return this console.
      */
     Console print(Message message, Object... arguments) {
-        return print(message.get(arguments));
+        return print(message.format(arguments));
     }
 
     /**

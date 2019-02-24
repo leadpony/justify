@@ -5,6 +5,7 @@
         "format": "uri"
     },
     "additionalProperties": {
-        "type": "string"
+        "type": "string",
+        "format": "pathOrUrl"
     }
 }

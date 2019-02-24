@@ -19,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaResolver;
@@ -29,7 +28,7 @@ import org.leadpony.justify.api.JsonSchemaResolver;
  *
  * @author leadpony
  */
-abstract class SchemaCatalog extends HashMap<URI, Resource> implements JsonSchemaResolver {
+abstract class SchemaCatalog extends HashMap<URI, Location> implements JsonSchemaResolver {
 
     private static final long serialVersionUID = 1L;
 
@@ -55,13 +54,12 @@ abstract class SchemaCatalog extends HashMap<URI, Resource> implements JsonSchem
         if (schema != null) {
             return schema;
         }
-        Resource resource = get(id);
+        Location resource = get(id);
         if (resource == null) {
             return null;
         }
-        Optional<JsonSchema> read = readReferencedSchema(resource);
-        if (read.isPresent()) {
-            schema = read.get();
+        schema = readReferencedSchema(resource);
+        if (schema != null) {
             cache.put(id, schema);
             return schema;
         } else {
@@ -77,5 +75,5 @@ abstract class SchemaCatalog extends HashMap<URI, Resource> implements JsonSchem
         }
     }
 
-    protected abstract Optional<JsonSchema> readReferencedSchema(Resource resource);
+    protected abstract JsonSchema readReferencedSchema(Location location);
 }

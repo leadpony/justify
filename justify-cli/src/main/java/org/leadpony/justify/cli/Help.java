@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * A command implementation for "help" command.
+ * A command implementation executing "help" command.
  *
  * @author leadpony
  */

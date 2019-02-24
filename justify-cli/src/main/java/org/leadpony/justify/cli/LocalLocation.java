@@ -23,20 +23,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * A local resource whose location is specified with a {@code Path}.
+ * A local location which can be specified with a {@code Path}.
  *
  * @author leadpony
  */
-class LocalResource implements Resource {
+class LocalLocation implements Location {
 
     private final Path path;
 
     /**
-     * Constructs this resource.
+     * Constructs this loaction.
      *
-     * @param path the path where this resource resides.
+     * @param path the path of this location.
      */
-    LocalResource(Path path) {
+    LocalLocation(Path path) {
         this.path = path;
     }
 
@@ -46,8 +46,31 @@ class LocalResource implements Resource {
     }
 
     @Override
+    public Location resolve(Location other) {
+        if (other instanceof LocalLocation) {
+            Path otherPath = ((LocalLocation) other).path();
+            if (otherPath.isAbsolute()) {
+                return other;
+            } else {
+                Path parent = path.getParent();
+                if (parent == null) {
+                    return other;
+                }
+                Path resolved = parent.resolve(otherPath);
+                return new LocalLocation(resolved);
+            }
+        } else {
+            return other;
+        }
+    }
+
+    @Override
     public URL toURL() throws MalformedURLException {
         return path.toUri().toURL();
+    }
+
+    public Path path() {
+        return path;
     }
 
     @Override

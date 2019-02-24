@@ -1,4 +1,4 @@
 {
-    "https://example.com/person.schema.json": "target/test-classes/person.schema.json",
-    "https://example.com/geographical-location.schema.json": "target/test-classes/geographical-location.schema.json"
+    "https://example.com/person.schema.json": "person.schema.json",
+    "https://example.com/geographical-location.schema.json": "geographical-location.schema.json"
 }

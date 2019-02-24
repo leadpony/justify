@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * @author leadpony
  */
-public class ResourceTest {
+public class LocationTest {
 
     public static Stream<Arguments> validLocal() {
         return Stream.of(
@@ -43,7 +43,7 @@ public class ResourceTest {
     @ParameterizedTest
     @MethodSource("validLocal")
     public void at_shouldReturnLocalResource(String string) throws MalformedURLException {
-        Resource actual = Resource.at(string);
+        Location actual = Location.at(string);
         assertThat(actual).isNotNull();
         assertThat(actual.toURL().getProtocol()).isEqualTo("file");
     }
@@ -58,13 +58,13 @@ public class ResourceTest {
     @ParameterizedTest
     @MethodSource("validRemote")
     public void at_shouldReturnRemoteResource(String string, URL expected) throws MalformedURLException {
-        Resource actual = Resource.at(string);
+        Location actual = Location.at(string);
         assertThat(actual.toURL()).isEqualTo(expected);
     }
 
     public static Stream<Arguments> invalidRemote() throws MalformedURLException {
         return Stream.of(
-                Arguments.of("invalid://example.org/")
+                Arguments.of("")
         );
     }
 
@@ -72,7 +72,7 @@ public class ResourceTest {
     @MethodSource("invalidRemote")
     public void at_shouldThrowException(String string) {
         Throwable thrown = catchThrowable(()->{
-            Resource.at(string);
+            Location.at(string);
         });
         assertThat(thrown).isNotNull().isInstanceOf(IllegalArgumentException.class);
     }

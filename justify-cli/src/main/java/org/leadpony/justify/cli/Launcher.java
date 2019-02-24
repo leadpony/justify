@@ -30,6 +30,8 @@ import org.leadpony.justify.cli.Console.Color;
  */
 public class Launcher {
 
+    public static final String PROPERTY_USE_JANSI = "org.leadpony.justify.cli.use.jansi";
+
     public Status launch(String[] args) {
         return launch(new LinkedList<>(Arrays.asList(args)));
     }
@@ -49,8 +51,13 @@ public class Launcher {
     }
 
     private static Console createConsole(List<String> args) {
-        PrintStream stdout = AnsiConsole.out();
-        PrintStream stderr = AnsiConsole.err();
+        String useJansi = System.getProperty(PROPERTY_USE_JANSI, "true");
+        PrintStream stdout = System.out;
+        PrintStream stderr = System.err;
+        if (useJansi.equals("true")) {
+            stdout = AnsiConsole.out();
+            stderr = AnsiConsole.err();
+        }
         return new ColorConsole(stdout, stderr);
     }
 

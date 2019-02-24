@@ -21,41 +21,46 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
- * A resource interface.
+ * A location interface.
  *
  * @author leadpony
  */
-interface Resource {
+interface Location {
 
     /**
-     * Returns the resource at the specified location.
+     * Returns a location.
      *
-     * @param location the path or URL of the resource.
-     * @return newly created resource.
+     * @param location the path or URL.
+     * @return newly created location.
      * @throws IllegalArgumentException if the specified {@code location} is invalid.
      */
-    static Resource at(String location) {
-        Matcher m = RemoteResource.URL_PATTERN.matcher(location);
+    static Location at(String location) {
+        Objects.requireNonNull(location, "location must not be null.");
+        if (location.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        Matcher m = RemoteLocation.URL_PATTERN.matcher(location);
         if (m.lookingAt()) {
             try {
-                return new RemoteResource(new URL(location));
+                return new RemoteLocation(new URL(location));
             } catch (MalformedURLException e) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(e);
             }
         } else {
             try {
-                return new LocalResource(Paths.get(location));
+                return new LocalLocation(Paths.get(location));
             } catch (InvalidPathException e) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(e);
             }
         }
     }
 
     /**
-     * Opens an input stream from this resource,
+     * Opens an input stream from this location,
      *
      * @return newly created input stream.
      * @throws IOException if an I/O error has occurred.
@@ -63,10 +68,20 @@ interface Resource {
     InputStream openStream() throws IOException;
 
     /**
-     * Returns the URL of this resource.
+     * Resolves the other location against this location.
      *
-     * @return the URL of this resource.
-     * @throws MalformedURLException if this resource does not have a valid URL.
+     * @param other the location to resolve.
+     * @return the resolved location.
+     */
+    default Location resolve(Location other) {
+        return other;
+    }
+
+    /**
+     * Returns this location as a URL.
+     *
+     * @return the URL of this location.
+     * @throws MalformedURLException if this location does not have a valid URL.
      */
     URL toURL() throws MalformedURLException;
 }

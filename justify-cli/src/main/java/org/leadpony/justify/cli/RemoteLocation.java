@@ -17,32 +17,54 @@ package org.leadpony.justify.cli;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 /**
- * A remote resource whose location is specified with a {@code URI}.
+ * A remote location which can be specified with a {@code URI}.
  *
  * @author leadpony
  */
-class RemoteResource implements Resource {
+class RemoteLocation implements Location {
 
-    public static final Pattern URL_PATTERN = Pattern.compile("^.+://");
+    public static final Pattern URL_PATTERN = Pattern.compile("^(https?|file|jar):");
 
     private final URL url;
 
     /**
-     * Constructs this resource.
+     * Constructs this location.
      *
-     * @param url the URL where this resource resides.
+     * @param url the URL of this location.
      */
-    RemoteResource(URL url) {
+    RemoteLocation(URL url) {
         this.url = url;
     }
 
     @Override
     public InputStream openStream() throws IOException {
         return url.openStream();
+    }
+
+    @Override
+    public Location resolve(Location other) {
+        if (other instanceof LocalLocation) {
+            Path otherPath = ((LocalLocation) other).path();
+            if (otherPath.isAbsolute()) {
+                return other;
+            } else {
+                try {
+                    URL resolved = url.toURI().resolve(otherPath.toString()).toURL();
+                    return new RemoteLocation(resolved);
+                } catch (MalformedURLException | URISyntaxException e) {
+                    return other;
+                }
+            }
+        } else {
+            return other;
+        }
     }
 
     @Override

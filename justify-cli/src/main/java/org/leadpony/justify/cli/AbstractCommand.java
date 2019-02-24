@@ -59,11 +59,15 @@ abstract class AbstractCommand implements Command {
 
     Object getOptionValue(Option option) {
         List<?> values = getOptionValues(option);
-        return (values != null) ? values.get(0) : null;
+        return (values.isEmpty()) ? null : values.get(0);
     }
 
     List<?> getOptionValues(Option option) {
-        return options.get(option);
+        if (options.containsKey(option)) {
+            return options.get(option);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

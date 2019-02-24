@@ -29,7 +29,7 @@ enum Message {
     VALIDATE_REFERENCED_SCHEMA,
     VALIDATE_INSTANCE,
     INSPECT_SCHEMA,
-    PARSE_CATALOG,
+    READ_CATALOG,
 
     SCHEMA_ID_MISSING,
     SCHEMA_ID_INVALID,
@@ -40,6 +40,16 @@ enum Message {
     INSTANCE_INVALID,
     CATALOG_INVALID,
 
+    SCHEMA_MALFORMED,
+    INSTANCE_MALFORMED,
+    CATALOG_MALFORMED,
+
+    PATH_OR_URL,
+
+    /*
+     * The following messages are error messages which will terminate the problem.
+     */
+
     OPTION_UNRECOGNIZED,
     OPTION_MISSING,
     OPTION_ARGUMENT_MISSING,
@@ -49,9 +59,8 @@ enum Message {
     INSTANCE_NOT_FOUND,
     CATALOG_NOT_FOUND,
 
-    SCHEMA_MALFORMED,
-    INSTANCE_MALFORMED,
-    CATALOG_MALFORMED,
+    SCHEMA_FAILED,
+    CATALOG_FAILED,
 
     ACCESS_FAILED,
     ;
@@ -64,7 +73,8 @@ enum Message {
      *
      * @return this message as a string.
      */
-    public String get() {
+    @Override
+    public String toString() {
         return bundle.getString(name());
     }
 
@@ -74,7 +84,7 @@ enum Message {
      * @param arguments the arguments to format the message.
      * @return this message as a formatted string.
      */
-    public String get(Object... arguments) {
-        return MessageFormat.format(get(), arguments);
+    public String format(Object... arguments) {
+        return MessageFormat.format(toString(), arguments);
     }
 }

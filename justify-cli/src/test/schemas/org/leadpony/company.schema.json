@@ -2,13 +2,16 @@
     "$id": "https://example.com/company.schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
-    "ceo": {
-        "$ref": "https://example.com/person.schema.json"
+    "properties": {
+        "ceo": {
+            "$ref": "https://example.com/person.schema.json"
+        },
+        "cfo": {
+            "$ref": "https://example.com/person.schema.json"
+        },
+        "location": {
+            "$ref": "https://example.com/geographical-location.schema.json"
+        }
     },
-    "cfo": {
-        "$ref": "https://example.com/person.schema.json"
-    },
-    "location": {
-        "$ref": "https://example.com/geographical-location.schema.json"
-    }
+    "required": ["ceo"]
 }

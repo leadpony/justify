@@ -25,7 +25,7 @@ class CommandException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     CommandException(Message message, Object... arguments) {
-        super(message.get(arguments));
+        super(message.format(arguments));
     }
 
     CommandException(Throwable cause) {
@@ -33,6 +33,6 @@ class CommandException extends RuntimeException {
     }
 
     CommandException(Message message, Throwable cause) {
-        super(message.get(cause.getLocalizedMessage()), cause);
+        super(message.format(cause.getLocalizedMessage()), cause);
     }
 }

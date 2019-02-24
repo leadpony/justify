@@ -95,7 +95,7 @@ enum ValidateOption implements Option {
         case INSTANCE:
         case REFERENCE:
         case CATALOG:
-            return Resource.at(string);
+            return Location.at(string);
         default:
             return string;
         }

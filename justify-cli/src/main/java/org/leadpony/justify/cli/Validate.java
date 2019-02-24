@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.cli.Console.Color;
 
 /**
- * A command implementation for "validate" command.
+ * A command implementation executing "validate" command.
  *
  * @author leadpony
  */
@@ -80,46 +79,49 @@ class Validate extends AbstractCommand {
     }
 
     private void validateAll() {
-        Resource location = (Resource) getOptionValue(ValidateOption.SCHEMA);
-        readSchema(location).ifPresent(schema -> {
-            @SuppressWarnings("unchecked")
-            List<Resource> instances = (List<Resource>) getOptionValues(ValidateOption.INSTANCE);
-            if (instances != null) {
-                for (Resource instance : instances) {
-                    validateInstance(instance, schema);
-                }
+        Location location = (Location) getOptionValue(ValidateOption.SCHEMA);
+        @SuppressWarnings("unchecked")
+        List<Location> instances = (List<Location>) getOptionValues(ValidateOption.INSTANCE);
+        JsonSchema schema = readSchemaAt(location);
+        if (schema != null) {
+            for (Location instance : instances) {
+                validateInstanceAt(instance, schema);
             }
-        });
+        } else if (!instances.isEmpty()) {
+            throw new CommandException(SCHEMA_FAILED);
+        }
     }
 
-    private Optional<JsonSchema> readSchema(Resource resource) {
-        console.print(VALIDATE_SCHEMA, resource);
-        return validateSchema(resource);
+    private JsonSchema readSchemaAt(Location location) {
+        console.print(VALIDATE_SCHEMA, location);
+        return validateSchemaAt(location);
     }
 
     /**
-     * Validates a JSON schema.
+     * Reads and validates a JSON schema.
      *
-     * @param resource the resource from which the JSON schema will be read.
-     * @return the schema read if it is valid.
+     * @param location the location of the JSON schema to be read and validated.
+     * @return the schema read if successful, or {@code null} if errors occcured.
      */
-    private Optional<JsonSchema> validateSchema(Resource resource) {
+    private JsonSchema validateSchemaAt(Location location) {
         JsonSchemaReaderFactory factory = createSchemaReaderFactory();
-        try (JsonSchemaReader reader = factory.createSchemaReader(openSchema(resource))) {
+        try (JsonSchemaReader reader = factory.createSchemaReader(openSchema(location))) {
             JsonSchema schema = reader.read();
-            console.withColor(Color.SUCCESS).print(SCHEMA_VALID, resource);
-            return Optional.of(schema);
+            console.withColor(Color.SUCCESS).print(SCHEMA_VALID, location);
+            return schema;
         } catch (JsonValidatingException e) {
             List<Problem> problems = e.getProblems();
             problemPrinter.handleProblems(problems);
-            console.withColor(Color.DANGER).print(SCHEMA_INVALID, resource, Problems.countLeast(problems));
+            console.withColor(Color.DANGER).print(SCHEMA_INVALID, location, Problems.countLeast(problems));
             setStatus(Status.INVALID);
+            return null;
         } catch (JsonParsingException e) {
-            throw new CommandException(SCHEMA_MALFORMED, e);
+            console.withColor(Color.DANGER).print(SCHEMA_MALFORMED, e);
+            setStatus(Status.INVALID);
+            return null;
         } catch (JsonException e) {
             throw new CommandException(e);
         }
-        return Optional.empty();
     }
 
     private JsonSchemaReaderFactory createSchemaReaderFactory() {
@@ -134,59 +136,61 @@ class Validate extends AbstractCommand {
     /**
      * Validates a JSON instance.
      *
-     * @param resource the resource representing the JSON instance.
+     * @param location the location of the JSON instance to be validated.
      * @param schema   the JSON schema against which the instance to be validated.
      */
-    private void validateInstance(Resource resource, JsonSchema schema) {
-        console.print(VALIDATE_INSTANCE, resource);
+    private void validateInstanceAt(Location location, JsonSchema schema) {
+        console.print(VALIDATE_INSTANCE, location);
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = createProblemHandler(problems);
 
-        try (JsonReader reader = service.createReader(openInstance(resource), schema, handler)) {
+        try (JsonReader reader = service.createReader(openInstance(location), schema, handler)) {
             reader.readValue();
         } catch (JsonParsingException e) {
-            throw new CommandException(INSTANCE_MALFORMED, e);
+            console.withColor(Color.DANGER).print(INSTANCE_MALFORMED, e);
+            setStatus(Status.INVALID);
+            return;
         } catch (JsonException e) {
             throw new CommandException(e);
         }
 
         if (problems.isEmpty()) {
-            console.withColor(Color.SUCCESS).print(INSTANCE_VALID, resource);
+            console.withColor(Color.SUCCESS).print(INSTANCE_VALID, location);
         } else {
-            console.withColor(Color.DANGER).print(INSTANCE_INVALID, resource, Problems.countLeast(problems));
+            console.withColor(Color.DANGER).print(INSTANCE_INVALID, location, Problems.countLeast(problems));
             setStatus(Status.INVALID);
         }
     }
 
     private void populateCatalog() {
-        Resource catalog = (Resource) getOptionValue(ValidateOption.CATALOG);
+        Location catalog = (Location) getOptionValue(ValidateOption.CATALOG);
         if (catalog != null) {
-            loadCatalog(catalog);
+            readSchemaCatalogAt(catalog);
         }
         @SuppressWarnings("unchecked")
-        List<Resource> refs = (List<Resource>) getOptionValues(ValidateOption.REFERENCE);
+        List<Location> refs = (List<Location>) getOptionValues(ValidateOption.REFERENCE);
         if (refs != null) {
-            for (Resource ref : refs) {
+            for (Location ref : refs) {
                 addReferencedSchema(ref);
             }
         }
     }
 
-    private void loadCatalog(Resource resource) {
-        console.print(PARSE_CATALOG, resource);
+    private void readSchemaCatalogAt(Location location) {
+        console.print(READ_CATALOG, location);
         JsonSchema schema = readSchemaFromResource("catalog.schema.json");
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = createProblemHandler(problems);
-        try (JsonParser parser = service.createParser(openCatalog(resource), schema, handler)) {
-            parseCatalog(parser);
+        try (JsonParser parser = service.createParser(openCatalog(location), schema, handler)) {
+            parseCatalog(parser, location);
             if (!problems.isEmpty()) {
-                throw new CommandException(CATALOG_INVALID, resource, Problems.countLeast(problems));
+                console.withColor(Color.DANGER).print(CATALOG_INVALID, location, Problems.countLeast(problems));
+                throw new CommandException(CATALOG_FAILED);
             }
-        } catch (JsonValidatingException e) {
-            throw new CommandException(e);
         } catch (JsonParsingException e) {
-            throw new CommandException(CATALOG_MALFORMED, e);
+            console.withColor(Color.DANGER).print(CATALOG_MALFORMED, e);
+            throw new CommandException(CATALOG_FAILED);
         } catch (JsonException e) {
             throw new CommandException(e);
         }
@@ -200,7 +204,7 @@ class Validate extends AbstractCommand {
         }
     }
 
-    private void parseCatalog(JsonParser parser) {
+    private void parseCatalog(JsonParser parser, Location location) {
         if (!parser.hasNext() || parser.next() != Event.START_OBJECT) {
             return;
         }
@@ -216,9 +220,9 @@ class Validate extends AbstractCommand {
                 break;
             case VALUE_STRING:
                 try {
-                    Resource value = Resource.at(parser.getString());
+                    Location value = Location.at(parser.getString());
                     if (id != null) {
-                        catalog.put(id, value);
+                        catalog.put(id, location.resolve(value));
                     }
                 } catch (IllegalArgumentException e) {
                 }
@@ -233,13 +237,16 @@ class Validate extends AbstractCommand {
         }
     }
 
-    private void addReferencedSchema(Resource resource) {
-        console.print(INSPECT_SCHEMA, resource);
-        identifySchema(resource).ifPresent(id -> catalog.put(id, resource));
+    private void addReferencedSchema(Location location) {
+        console.print(INSPECT_SCHEMA, location);
+        URI id = identifySchema(location);
+        if (id != null) {
+            catalog.put(id, location);
+        }
     }
 
-    private Optional<URI> identifySchema(Resource resource) {
-        try (JsonParser parser = parserFactory.createParser(openSchema(resource))) {
+    private URI identifySchema(Location location) {
+        try (JsonParser parser = parserFactory.createParser(openSchema(location))) {
             if (parser.hasNext() && parser.next() == Event.START_OBJECT) {
                 while (parser.hasNext()) {
                     switch (parser.next()) {
@@ -258,52 +265,53 @@ class Validate extends AbstractCommand {
                 }
             }
             console.withColor(Color.WARNING).print(SCHEMA_ID_MISSING);
-            return Optional.empty();
+            return null;
         } catch (JsonParsingException e) {
-            throw new CommandException(SCHEMA_MALFORMED, e);
+            console.withColor(Color.DANGER).print(SCHEMA_MALFORMED, e);
+            return null;
         } catch (JsonException e) {
             throw new CommandException(e);
         }
     }
 
-    private Optional<URI> extractSchemaId(JsonParser parser) {
+    private URI extractSchemaId(JsonParser parser) {
         if (parser.next() == Event.VALUE_STRING) {
             try {
-                return Optional.of(new URI(parser.getString()));
+                return new URI(parser.getString());
             } catch (URISyntaxException e) {
             }
         }
         console.withColor(Color.WARNING).print(SCHEMA_ID_INVALID);
-        return Optional.empty();
+        return null;
     }
 
-    private static InputStream openSchema(Resource resource) {
+    private static InputStream openSchema(Location location) {
         try {
-            return resource.openStream();
+            return location.openStream();
         } catch (NoSuchFileException e) {
-            throw new CommandException(SCHEMA_NOT_FOUND, resource);
+            throw new CommandException(SCHEMA_NOT_FOUND, location);
         } catch (IOException e) {
-            throw new CommandException(ACCESS_FAILED, resource);
+            throw new CommandException(ACCESS_FAILED, location);
         }
     }
 
-    private static InputStream openInstance(Resource resource) {
+    private static InputStream openInstance(Location location) {
         try {
-            return resource.openStream();
+            return location.openStream();
         } catch (NoSuchFileException e) {
-            throw new CommandException(INSTANCE_NOT_FOUND, resource);
+            throw new CommandException(INSTANCE_NOT_FOUND, location);
         } catch (IOException e) {
-            throw new CommandException(ACCESS_FAILED, resource);
+            throw new CommandException(ACCESS_FAILED, location);
         }
     }
 
-    private static InputStream openCatalog(Resource resource) {
+    private static InputStream openCatalog(Location location) {
         try {
-            return resource.openStream();
+            return location.openStream();
         } catch (NoSuchFileException e) {
-            throw new CommandException(CATALOG_NOT_FOUND, resource);
+            throw new CommandException(CATALOG_NOT_FOUND, location);
         } catch (IOException e) {
-            throw new CommandException(ACCESS_FAILED, resource);
+            throw new CommandException(ACCESS_FAILED, location);
         }
     }
 
@@ -353,9 +361,9 @@ class Validate extends AbstractCommand {
         private static final long serialVersionUID = 1L;
 
         @Override
-        protected Optional<JsonSchema> readReferencedSchema(Resource resource) {
-            console.print(VALIDATE_REFERENCED_SCHEMA, resource);
-            return validateSchema(resource);
+        protected JsonSchema readReferencedSchema(Location location) {
+            console.print(VALIDATE_REFERENCED_SCHEMA, location);
+            return validateSchemaAt(location);
         }
     }
 }

@@ -139,6 +139,7 @@
                         <argLine>
                         -Duser.language=en
                         -Duser.country=US
+                        -Dorg.leadpony.justify.cli.use.jansi=false
                         </argLine>
                         <excludes>
                             <exclude></exclude>
