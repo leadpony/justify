@@ -241,6 +241,7 @@ class Validate extends AbstractCommand {
         console.print(INSPECT_SCHEMA, location);
         URI id = identifySchema(location);
         if (id != null) {
+            console.print(SCHEMA_ID_FOUND, id);
             catalog.put(id, location);
         }
     }
