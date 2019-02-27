@@ -30,7 +30,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.12.0</version>
+  <version>0.13.0</version>
 </dependency>
 
 <dependency>
@@ -93,7 +93,8 @@ try (JsonReader reader = service.createReader(path, schema, handler)) {
 
 ## Command-Line Interface
 
-Justify CLI is a command-line utility for validating JSON documents based on the JSON Schema specification.
+Justify CLI is a command-line wrapper of Justify library.
+This utility can be used to validate JSON documents against JSON schemas without writing any code.
 
 ### Downloads
 
@@ -105,16 +106,34 @@ whichever you prefer. The software requires Java 8 or higher to run.
 After unpacking the downloaded file, just typing the following command validates a JSON instance against a JSON schema.
 
 ```bash
-$ ./justify <path/to/JSON-schema> <path/to/JSON-instance>
+$ ./justify -s <path/to/schema> -i <path/to/instance>
 ```
 
-For validating a JSON schema only:
+The following command validates a JSON schema against its metaschema.
 
 ```bash
-$ ./justify <path/to/JSON-schema>
+$ ./justify -s <path/to/schema>
 ```
 
-Invoking the utility with `-h` option shows the syntax and available options for the utility.
+#### Options
+
+##### -s _<path/to/schema>_
+
+Required option to specify a path to a JSON schema against which one or more JSON instances will be validated.
+
+##### -i _<path/to/instance>_ ...
+
+Optional option to specify a path to a JSON instance to be validated.
+Multiple instances can be specified using whitespace as a delimiter.
+
+##### -r _<path/to/schema>_ ...
+
+Optional option to specify a path to a JSON schema to be referenced by other JSON schemas.
+Multiple schemas can be specified using whitespace as a delimiter.
+
+##### -h
+
+Displays all available options including those shown above.
 
 ## Additional Resources
 

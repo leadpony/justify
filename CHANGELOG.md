@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.13.0 - 2019-02-27
+### Added
+- JsonSchemaReaderFactoryBuilder#withCustomFormatAttributes() method for deactivating custom format attributes.
+- [CLI] Options to resolve remote schema references. (Issue #4 proposed by @kerrykimbrough)
+
+### Changed
+- [CLI] Revised completely with new syntax.
+
 ## 0.12.0 - 2019-02-08
 ### Added
 - JsonSchema#containsKeyword() which tests whether a schema contains the specified keyword or not.
