@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
 
 /**
@@ -74,6 +75,17 @@ public interface Problem {
      *         the location is unknown.
      */
     JsonLocation getLocation();
+
+    /**
+     * Returns the JSON pointer where this problem is found in the input source.
+     *
+     * @return the JSON pointer where this problem occurred. This can be
+     *         {@code null} if the location is unknown.
+     * @since 0.14.0
+     */
+    default JsonPointer getPointer() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the JSON schema which provided the assertion.
