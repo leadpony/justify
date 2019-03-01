@@ -1,5 +1,10 @@
 module:java.base
+java.io
 java.lang
+java.math
+java.net
+java.nio.charset
+java.nio.file
 java.util
 java.util.function
 java.util.stream
