@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.problem;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
- * List specialized for {@link Problem}.
- * 
  * @author leadpony
  */
-public interface ProblemList extends List<Problem> {
+public class SilentProblemDispatcher implements ProblemDispatcher {
     
-    default boolean isResolvable() {
-        for (Problem problem : this) {
-            if (!problem.isResolvable()) {
-                return false;
-            }
-        }
-        return true;
+    public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
+    
+    private SilentProblemDispatcher() {
     }
     
-    /**
-     * Creates a new instance of this type.
-     * @return newly created list.
-     */
-    static ProblemList newList() {
-        @SuppressWarnings("serial")
-        class ArrayProblemList extends ArrayList<Problem> implements ProblemList {
-        };
-        return new ArrayProblemList();
+    @Override
+    public void dispatchProblem(Problem problem) {
+    }
+
+    @Override
+    public void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
     }
 }

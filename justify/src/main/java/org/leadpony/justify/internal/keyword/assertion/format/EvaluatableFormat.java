@@ -29,8 +29,8 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**

@@ -28,13 +28,13 @@ import javax.json.stream.JsonParser;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
+import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * JSON Schema with keywords.

@@ -30,7 +30,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Schema reference containing "$ref" keyword.

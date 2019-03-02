@@ -21,7 +21,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony

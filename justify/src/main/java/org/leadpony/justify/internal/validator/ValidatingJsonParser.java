@@ -26,6 +26,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -33,7 +34,6 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.Evaluator.Result;
-import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.base.JsonParserDecorator;
 
 /**

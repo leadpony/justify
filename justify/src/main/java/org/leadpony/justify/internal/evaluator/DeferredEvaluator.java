@@ -24,8 +24,8 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemList;
+import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
+import org.leadpony.justify.internal.problem.ProblemList;
 
 /**
  * Evaluator which retains the found problems and dispatches them later.

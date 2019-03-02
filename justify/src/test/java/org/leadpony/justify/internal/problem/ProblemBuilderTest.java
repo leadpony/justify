@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.problem;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -32,19 +32,19 @@ import org.leadpony.justify.api.Problem;
 
 /**
  * Test cases for {@link ProblemBuilder}.
- * 
+ *
  * @author leadpony
  */
 public class ProblemBuilderTest {
 
     private JsonParser parser;
-    
+
     @BeforeEach
     public void setUp() {
         StringReader reader = new StringReader("{}");
         this.parser = Json.createParser(reader);
     }
-    
+
     @AfterEach
     public void tearDown() {
         if (parser != null) {
@@ -52,7 +52,7 @@ public class ProblemBuilderTest {
             parser = null;
         }
     }
-    
+
     @Test
     public void build_shouldBuildProblem() {
         ProblemBuilderFactory factory = new ProblemBuilderFactory() {};
@@ -62,7 +62,7 @@ public class ProblemBuilderTest {
                 .withParameter("actual", InstanceType.STRING)
                 .withParameter("expected", InstanceType.INTEGER)
                 .build();
-        
+
         String expectedMessage = "The value must be of integer type, but actual type is string.";
         assertThat(problem.getMessage(Locale.ROOT)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())

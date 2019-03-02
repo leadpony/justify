@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.problem;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
@@ -29,6 +29,7 @@ import javax.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * This class builds problems detected in validation process.

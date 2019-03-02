@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.problem;
 
 import java.util.List;
 import java.util.Locale;

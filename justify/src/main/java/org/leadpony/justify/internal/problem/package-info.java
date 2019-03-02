@@ -13,30 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.leadpony.justify.internal.base;
-
-import javax.json.stream.JsonParser;
-
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
-
 /**
+ * Provides the implementation of Problem and its related types.
+ *
  * @author leadpony
  */
-public class SilentProblemDispatcher implements ProblemDispatcher {
-    
-    public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
-    
-    private SilentProblemDispatcher() {
-    }
-    
-    @Override
-    public void dispatchProblem(Problem problem) {
-    }
-
-    @Override
-    public void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
-    }
-}
+package org.leadpony.justify.internal.problem;

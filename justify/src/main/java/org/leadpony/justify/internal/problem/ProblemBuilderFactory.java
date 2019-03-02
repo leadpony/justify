@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.problem;
 
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
+
+import org.leadpony.justify.internal.base.SimpleJsonLocation;
 
 /**
  * Factory interface producing instances of {@link ProblemBuilder}.

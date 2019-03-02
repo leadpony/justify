@@ -36,11 +36,11 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.DefaultProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
+import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Combiner representing "dependencies" keyword.

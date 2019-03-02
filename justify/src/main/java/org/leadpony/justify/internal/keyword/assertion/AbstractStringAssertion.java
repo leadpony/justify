@@ -25,8 +25,8 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.keyword.StringKeyword;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Assertion on values of string type.

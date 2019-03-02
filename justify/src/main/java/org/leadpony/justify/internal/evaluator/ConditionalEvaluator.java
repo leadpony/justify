@@ -21,7 +21,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.SilentProblemDispatcher;
+import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
 
 /**
  * Combination evaluator of if/then/else.

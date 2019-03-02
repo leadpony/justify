@@ -20,8 +20,8 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ProblemBuilder;
-import org.leadpony.justify.internal.base.ProblemBuilderFactory;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
+import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony

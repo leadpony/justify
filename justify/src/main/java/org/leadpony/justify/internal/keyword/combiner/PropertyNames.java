@@ -27,10 +27,10 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator.Result;
-import org.leadpony.justify.internal.base.ProblemBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Combiner representing "propertyNames" keyword.
