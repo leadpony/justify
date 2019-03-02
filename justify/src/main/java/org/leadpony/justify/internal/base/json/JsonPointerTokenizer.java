@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.base.json;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

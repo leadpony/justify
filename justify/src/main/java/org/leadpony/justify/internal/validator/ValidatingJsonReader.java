@@ -31,7 +31,7 @@ import javax.json.stream.JsonParser.Event;
 import javax.json.stream.JsonParsingException;
 
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.SimpleJsonLocation;
+import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 
 /**
  * @author leadpony

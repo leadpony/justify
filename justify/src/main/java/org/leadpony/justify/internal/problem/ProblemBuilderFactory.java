@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.problem;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.internal.base.SimpleJsonLocation;
+import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 
 /**
  * Factory interface producing instances of {@link ProblemBuilder}.

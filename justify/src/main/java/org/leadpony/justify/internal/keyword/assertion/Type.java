@@ -29,7 +29,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.base.ParserEvents;
+import org.leadpony.justify.internal.base.json.ParserEvents;
 
 /**
  * Assertion representing "type" keyword.

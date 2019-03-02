@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.base.json;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -34,6 +34,7 @@ import javax.json.stream.JsonParser.Event;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.justify.internal.base.json.JsonValueParser;
 
 /**
  * @author leadpony

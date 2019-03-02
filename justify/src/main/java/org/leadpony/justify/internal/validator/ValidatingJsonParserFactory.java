@@ -28,7 +28,7 @@ import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemHandlerFactory;
-import org.leadpony.justify.internal.base.JsonParserFactoryDecorator;
+import org.leadpony.justify.internal.base.json.JsonParserFactoryDecorator;
 
 /**
  * Factory for creating JSON parsers which validate JSON document while parsing.

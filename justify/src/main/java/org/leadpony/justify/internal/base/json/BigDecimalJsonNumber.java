@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.base.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

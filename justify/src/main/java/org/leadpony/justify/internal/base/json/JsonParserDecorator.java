@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.base;
+package org.leadpony.justify.internal.base.json;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
@@ -39,6 +39,8 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParsingException;
+
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Decorator class of {@link JsonParser}.
