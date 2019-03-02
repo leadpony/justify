@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -41,11 +41,11 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            if (current.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
+            if (current.evaluate(event, context, depth, dispatcher) == Result.FALSE) {
                 addBadEvaluator(current);
             }
         }

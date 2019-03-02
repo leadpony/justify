@@ -22,19 +22,19 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator.Result;
 
 /**
  * Assertion specified with "enum" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class Enum extends AbstractEqualityAssertion {
-    
+
     private final Set<JsonValue> expected;
 
     Enum(Set<JsonValue> expected) {
@@ -45,20 +45,20 @@ class Enum extends AbstractEqualityAssertion {
     public String name() {
         return "enum";
     }
-    
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
         expected.forEach(arrayBuilder::add);
         builder.add("enum", arrayBuilder);
     }
-    
+
     @Override
-    protected Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result assertEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (contains(actual)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.enum")
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
@@ -69,9 +69,9 @@ class Enum extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (contains(actual)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.not.enum")
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
@@ -82,7 +82,7 @@ class Enum extends AbstractEqualityAssertion {
             return Result.TRUE;
         }
     }
-    
+
     private boolean contains(JsonValue value) {
         for (JsonValue expected : this.expected) {
             if (value.equals(expected)) {

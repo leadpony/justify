@@ -83,9 +83,7 @@ public interface Problem {
      *         {@code null} if the location is unknown.
      * @since 0.14.0
      */
-    default JsonPointer getPointer() {
-        throw new UnsupportedOperationException();
-    }
+    JsonPointer getPointer();
 
     /**
      * Returns the JSON schema which provided the assertion.

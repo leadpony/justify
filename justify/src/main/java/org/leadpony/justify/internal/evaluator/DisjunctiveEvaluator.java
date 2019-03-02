@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.Iterator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -30,27 +30,27 @@ import org.leadpony.justify.api.ProblemDispatcher;
 class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
 
     private final InstanceMonitor monitor;
-    
+
     DisjunctiveEvaluator(InstanceType type) {
         this.monitor = InstanceMonitor.of(type);
     }
-    
+
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        if (invokeOperandEvaluators(event, parser, depth, dispatcher) == Result.TRUE) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        if (invokeOperandEvaluators(event, context, depth, dispatcher) == Result.TRUE) {
             return Result.TRUE;
         }
         if (monitor.isCompleted(event, depth)) {
-            return dispatchProblems(parser, dispatcher);
+            return dispatchProblems(context, dispatcher);
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else if (result != Result.PENDING) {

@@ -19,9 +19,9 @@ package org.leadpony.justify.internal.keyword;
 import java.util.Set;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -32,14 +32,14 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Skeletal implementation of {@link Keyword}.
- * 
+ *
  * @author leadpony
  */
 public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory {
 
     // the schema enclosing this keyword.
     private JsonSchema schema;
-    
+
     @Override
     public JsonSchema getEnclosingSchema() {
         return schema;
@@ -49,7 +49,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     public void setEnclosingSchema(JsonSchema schema) {
         this.schema = schema;
     }
-    
+
     @Override
     public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         if (!supportsType(type)) {
@@ -65,7 +65,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
         }
         return doCreateNegatedEvaluator(type, builderFactory);
     }
-    
+
     /**
      * Creates an evaluator for this keyword.
      * @param type the type of the instance, cannot be {@code null}.
@@ -83,7 +83,7 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
-    
+
     protected Evaluator createAlwaysTrueEvaluator() {
         return Evaluators.alwaysTrue(getEnclosingSchema());
     }
@@ -91,32 +91,32 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     protected Evaluator createAlwaysFalseEvaluator() {
         return Evaluators.alwaysFalse(getEnclosingSchema());
     }
-    
+
     /**
      * Creates a new instance of problem builder for this keyword.
-     * 
-     * @param parser the JSON parser, cannot be {@code null}.
+     *
+     * @param context the context of the evaluator, cannot be {@code null}.
      * @return newly created instance of {@link ProblemBuilder}.
      */
     @Override
-    public ProblemBuilder createProblemBuilder(JsonParser parser) {
-        return ProblemBuilderFactory.super.createProblemBuilder(parser)
+    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
+        return ProblemBuilderFactory.super.createProblemBuilder(context)
                 .withSchema(schema)
                 .withKeyword(name());
     }
-    
+
     private class TypeMismatchEvaluator implements Evaluator {
-        
+
         private final InstanceType actual;
-        
+
         private TypeMismatchEvaluator(InstanceType actual) {
             this.actual = actual;
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             Set<InstanceType> expected = getSupportedTypes();
-            ProblemBuilder builder = createProblemBuilder(parser)
+            ProblemBuilder builder = createProblemBuilder(context)
                                     .withParameter("actual", actual);
             if (expected.size() > 1) {
                 builder.withMessage("instance.problem.type.plural")

@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -27,24 +27,24 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  * @author leadpony
  */
 abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
-    
+
     protected AbstractDisjunctiveChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
         super(type);
         withProblemBuilderFactory(problemBuilderFactory);
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (depth == 1) {
-            updateChildren(event, parser);
+            updateChildren(event, context.getParser());
         }
-        return super.evaluate(event, parser, depth, dispatcher);
+        return super.evaluate(event, context, depth, dispatcher);
     }
 
     @Override
-    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (depth > 0) {
-            return super.invokeOperandEvaluators(event, parser, depth - 1, dispatcher);
+            return super.invokeOperandEvaluators(event, context, depth - 1, dispatcher);
         }
         return Result.PENDING;
     }

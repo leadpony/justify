@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -32,13 +32,13 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Assertion specified with "minItems" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class MinItems extends AbstractAssertion implements ArrayKeyword {
 
     private final int limit;
-    
+
     MinItems(int limit) {
         this.limit = limit;
     }
@@ -47,12 +47,12 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
     public String name() {
         return "minItems";
     }
-   
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         return new AssertionEvaluator(limit, this);
     }
-    
+
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         if (limit > 0) {
@@ -66,23 +66,23 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), limit);
     }
-    
-    static class AssertionEvaluator implements ShallowEvaluator { 
-    
+
+    static class AssertionEvaluator implements ShallowEvaluator {
+
         private final int minItems;
         private final ProblemBuilderFactory factory;
         private int currentCount;
-        
+
         AssertionEvaluator(int minItems, ProblemBuilderFactory factory) {
             this.minItems = minItems;
             this.factory = factory;
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
-                    if (++currentCount >= minItems) { 
+                    if (++currentCount >= minItems) {
                         return Result.TRUE;
                     }
                 }
@@ -90,7 +90,7 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
                 if (currentCount >= minItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(parser)
+                    Problem p = factory.createProblemBuilder(context)
                             .withMessage("instance.problem.minItems")
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minItems)

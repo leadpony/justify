@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -40,10 +40,10 @@ public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Result finalResult = Result.TRUE;
         for (Evaluator operand : operands) {
-            if (operand.evaluate(event, parser, depth, dispatcher) == Result.FALSE) {
+            if (operand.evaluate(event, context, depth, dispatcher) == Result.FALSE) {
                 finalResult = Result.FALSE;
             }
         }

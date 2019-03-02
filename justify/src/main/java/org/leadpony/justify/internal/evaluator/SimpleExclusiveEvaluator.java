@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemList;
@@ -32,37 +32,37 @@ import org.leadpony.justify.internal.problem.ProblemList;
  * @author leadpony
  */
 class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
-    
+
     private final Stream<Evaluator> operands;
     private final Stream<Evaluator> negated;
-    
+
     SimpleExclusiveEvaluator(Stream<Evaluator> operands, Stream<Evaluator> negated) {
         this.operands = operands;
         this.negated = negated;
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        int evaluationsAsTrue = evaluateAll(event, parser, depth, dispatcher);
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        int evaluationsAsTrue = evaluateAll(event, context, depth, dispatcher);
         if (evaluationsAsTrue == 1) {
             return Result.TRUE;
         } else if (evaluationsAsTrue > 1) {
-            evaluateAllNegated(event, parser, depth, dispatcher);
+            evaluateAllNegated(event, context, depth, dispatcher);
         }
         return Result.FALSE;
     }
-    
+
     private static Iterator<DeferredEvaluator> iterator(Stream<Evaluator> stream) {
         return stream.map(DeferredEvaluator::new).iterator();
     }
 
-    private int evaluateAll(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    private int evaluateAll(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         List<ProblemList> problemLists = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(operands);
         int evaluationsAsTrue = 0;
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result == Result.TRUE) {
                 ++evaluationsAsTrue;
             } else if (result == Result.FALSE){
@@ -72,21 +72,21 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
             }
         }
         if (evaluationsAsTrue == 0) {
-            dispatchProblems(parser, dispatcher, problemLists);
+            dispatchProblems(context, dispatcher, problemLists);
         }
         return evaluationsAsTrue;
     }
-    
-    private void evaluateAllNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+
+    private void evaluateAllNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         List<ProblemList> problemLists = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(negated);
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result == Result.FALSE) {
                 problemLists.add(current.problems());
             }
         }
-        dispatchNegatedProblems(parser, dispatcher, problemLists);
+        dispatchNegatedProblems(context, dispatcher, problemLists);
     }
 }

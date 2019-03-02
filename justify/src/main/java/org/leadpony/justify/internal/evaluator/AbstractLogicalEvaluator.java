@@ -16,27 +16,26 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
-
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Skeletal implementation of {@link LogicalEvaluator}.
- * 
+ *
  * @author leadpony
  */
 abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
 
     private ProblemBuilderFactory problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
-        
+
     @Override
     public LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
         this.problemBuilderFactory = problemBuilderFactory;
         return this;
     }
-    
-    protected ProblemBuilder createProblemBuilder(JsonParser parser) {
-        return this.problemBuilderFactory.createProblemBuilder(parser);
+
+    protected ProblemBuilder createProblemBuilder(EvaluatorContext context) {
+        return this.problemBuilderFactory.createProblemBuilder(context);
     }
 }

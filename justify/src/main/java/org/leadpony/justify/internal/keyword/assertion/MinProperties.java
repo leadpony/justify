@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -31,13 +31,13 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Assertion specified with "minProperties" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class MinProperties extends AbstractAssertion implements ObjectKeyword {
-    
+
     private final int limit;
-    
+
     MinProperties(int limit) {
         this.limit = limit;
     }
@@ -65,20 +65,20 @@ class MinProperties extends AbstractAssertion implements ObjectKeyword {
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), limit);
     }
-    
+
     static class AssertionEvaluator implements ShallowEvaluator {
 
         private final int minProperties;
         private final ProblemBuilderFactory factory;
         private int currentCount;
-        
+
         AssertionEvaluator(int minProperties, ProblemBuilderFactory factory) {
             this.minProperties = minProperties;
             this.factory = factory;
         }
-        
+
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (event == Event.KEY_NAME && ++currentCount >= minProperties) {
                     return Result.TRUE;
@@ -87,7 +87,7 @@ class MinProperties extends AbstractAssertion implements ObjectKeyword {
                 if (currentCount >= minProperties) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(parser)
+                    Problem p = factory.createProblemBuilder(context)
                             .withMessage("instance.problem.minProperties")
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minProperties)

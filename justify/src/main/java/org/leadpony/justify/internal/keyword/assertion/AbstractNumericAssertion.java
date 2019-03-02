@@ -19,9 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.math.BigDecimal;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.keyword.NumericKeyword;
 
 /**
  * Assertion on a value of numeric type.
- * 
+ *
  * @author leadpony
  */
 abstract class AbstractNumericAssertion extends AbstractAssertion implements NumericKeyword, Evaluator {
@@ -45,33 +45,33 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Num
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         assert event == Event.VALUE_NUMBER;
-        return evaluateAgainst(parser.getBigDecimal(), parser, dispatcher);
+        return evaluateAgainst(context.getParser().getBigDecimal(), context, dispatcher);
     }
-    
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+
+    private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         assert event == Event.VALUE_NUMBER;
-        return evaluateNegatedAgainst(parser.getBigDecimal(), parser, dispatcher);
+        return evaluateNegatedAgainst(context.getParser().getBigDecimal(), context, dispatcher);
     }
 
     /**
      * Evaluates this assertion on a numeric value.
-     * 
+     *
      * @param value the value to apply this assertion.
-     * @param parser the JSON parser.
+     * @param context the evaluator context.
      * @param dispatcher the dispatcher by which detected problems will be dispatched.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher);
 
     /**
      * Evaluates the negated assertion on a numeric value.
-     * 
+     *
      * @param value the value to apply this assertion.
-     * @param parser the JSON parser.
+     * @param context the evaluator context.
      * @param dispatcher the dispatcher by which detected problems will be dispatched.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher);
 }

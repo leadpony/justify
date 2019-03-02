@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.JsonSchema;
@@ -39,6 +40,7 @@ import org.leadpony.justify.internal.base.Message;
 public class ProblemBuilder {
 
     private final JsonLocation location;
+    private final JsonPointer pointer;
     private JsonSchema schema;
     private String keyword;
     private boolean resolvable = true;
@@ -49,10 +51,14 @@ public class ProblemBuilder {
     /**
      * Constructs this builder.
      *
-     * @param location the location where problem occurred, cannot be {@code null}.
+     * @param location the source location where problem occurred in the instance,
+     *                 cannot be {@code null}.
+     * @param pointer  the JSON pointer to the location where problem occurred in
+     *                 the instance, may be {@code null}.
      */
-    ProblemBuilder(JsonLocation location) {
+    ProblemBuilder(JsonLocation location, JsonPointer pointer) {
         this.location = location;
+        this.pointer = pointer;
     }
 
     /**
@@ -146,27 +152,15 @@ public class ProblemBuilder {
         }
     }
 
-    /**
-     * Problem without child problems.
-     *
-     * @author leadpony
-     */
-    private static class SimpleProblem implements Problem {
+    private static abstract class AbstractProblem implements Problem {
 
-        private final JsonLocation location;
         private final JsonSchema schema;
         private final String keyword;
         private final boolean resolvable;
         private final String messageKey;
         private final Map<String, Object> parameters;
 
-        /**
-         * Constructs this problem.
-         *
-         * @param builder the builder of the problem.
-         */
-        protected SimpleProblem(ProblemBuilder builder) {
-            this.location = builder.location;
+        protected AbstractProblem(ProblemBuilder builder) {
             this.schema = builder.schema;
             this.keyword = builder.keyword;
             this.resolvable = builder.resolvable;
@@ -191,14 +185,6 @@ public class ProblemBuilder {
             requireNonNull(locale, "locale");
             String message = buildMessage(locale);
             return buildContextualMessage(message, locale);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public JsonLocation getLocation() {
-            return location;
         }
 
         /**
@@ -285,11 +271,49 @@ public class ProblemBuilder {
     }
 
     /**
+     * Problem without child problems.
+     *
+     * @author leadpony
+     */
+    private static class SimpleProblem extends AbstractProblem {
+
+        private final JsonLocation location;
+        private final JsonPointer pointer;
+
+        /**
+         * Constructs this problem.
+         *
+         * @param builder the builder of the problem.
+         */
+        protected SimpleProblem(ProblemBuilder builder) {
+            super(builder);
+            this.location = builder.location;
+            this.pointer = builder.pointer;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JsonLocation getLocation() {
+            return location;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JsonPointer getPointer() {
+            return pointer;
+        }
+    }
+
+    /**
      * A problem with branch problems.
      *
      * @author leadpony
      */
-    private static class CompositeProblem extends SimpleProblem {
+    private static class CompositeProblem extends AbstractProblem {
 
         /**
          * The lists of branches.
@@ -310,6 +334,16 @@ public class ProblemBuilder {
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
             return super.getMessage(locale);
+        }
+
+        @Override
+        public JsonLocation getLocation() {
+            return null;
+        }
+
+        @Override
+        public JsonPointer getPointer() {
+            return null;
         }
 
         @Override

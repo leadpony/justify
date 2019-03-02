@@ -19,8 +19,6 @@ package org.leadpony.justify.api;
 import java.util.Collection;
 import java.util.Objects;
 
-import javax.json.stream.JsonParser;
-
 /**
  * A dispatcher interface for dispatching the problems found
  * while validating a JSON document.
@@ -51,8 +49,10 @@ public interface ProblemDispatcher {
 
     /**
      * Dispatches an inevitable problem.
-     * @param parser the parser which encountered the problem, cannot be {@code null}.
-     * @param schema the JSON schema evaluated, cannot be {@code null}.
+     *
+     * @param context the evaluator context in which the problem was found, cannot
+     *                be {@code null}.
+     * @param schema  the JSON schema evaluated, cannot be {@code null}.
      */
-    void dispatchInevitableProblem(JsonParser parser, JsonSchema schema);
+    void dispatchInevitableProblem(EvaluatorContext context, JsonSchema schema);
 }

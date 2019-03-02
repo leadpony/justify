@@ -18,27 +18,26 @@ package org.leadpony.justify.internal.problem;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import javax.json.stream.JsonParser;
-
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Default implementation of {@link ProblemDispatcher}.
- * 
+ *
  * @author leadpony
  */
 public interface DefaultProblemDispatcher extends ProblemDispatcher {
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    default void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
-        requireNonNull(parser, "parser");
+    default void dispatchInevitableProblem(EvaluatorContext context, JsonSchema schema) {
+        requireNonNull(context, "context");
         requireNonNull(schema, "schema");
-        Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+        Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
                 .withMessage("instance.problem.unknown")
                 .withSchema(schema)
                 .withResolvability(false)

@@ -21,9 +21,9 @@ import java.util.Set;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -81,20 +81,20 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        String encoded = ((JsonString) parser.getValue()).getString();
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        String encoded = ((JsonString) context.getParser().getValue()).getString();
         if (scheme.canDecode(encoded)) {
             return Result.TRUE;
         } else {
-            dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.contentEncoding"));
+            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.contentEncoding"));
             return Result.FALSE;
         }
     }
 
-    public Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        String encoded = ((JsonString) parser.getValue()).getString();
+    public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        String encoded = ((JsonString) context.getParser().getValue()).getString();
         if (scheme.canDecode(encoded)) {
-            dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.not.contentEncoding"));
+            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.not.contentEncoding"));
             return Result.FALSE;
         }
         return Result.TRUE;
@@ -109,7 +109,7 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
         return scheme;
     }
 
-    private Problem buildProblem(JsonParser parser, String messageKey) {
-        return createProblemBuilder(parser).withMessage(messageKey).withParameter("encoding", scheme.name()).build();
+    private Problem buildProblem(EvaluatorContext context, String messageKey) {
+        return createProblemBuilder(context).withMessage(messageKey).withParameter("encoding", scheme.name()).build();
     }
 }

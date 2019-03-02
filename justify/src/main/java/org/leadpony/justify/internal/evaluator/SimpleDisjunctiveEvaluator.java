@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -44,16 +44,16 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         for (DeferredEvaluator operand : operands) {
-            Result result = operand.evaluate(event, parser, depth, dispatcher);
+            Result result = operand.evaluate(event, context, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else {
                 addBadEvaluator(operand);
             }
         }
-        return dispatchProblems(parser, dispatcher);
+        return dispatchProblems(context, dispatcher);
     }
 
     @Override
@@ -73,17 +73,17 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         problemLists.add(evaluator.problems());
     }
 
-    protected Result dispatchProblems(JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result dispatchProblems(EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (problemLists == null) {
-            dispatchDefaultProblem(parser, dispatcher);
+            dispatchDefaultProblem(context, dispatcher);
         } else {
             assert !problemLists.isEmpty();
-            dispatchProblemBranches(parser, dispatcher);
+            dispatchProblemBranches(context, dispatcher);
         }
         return Result.FALSE;
     }
 
-    private void dispatchProblemBranches(JsonParser parser, ProblemDispatcher dispatcher) {
+    private void dispatchProblemBranches(EvaluatorContext context, ProblemDispatcher dispatcher) {
         List<ProblemList> filterdLists = this.problemLists.stream()
             .filter(ProblemList::isResolvable)
             .collect(Collectors.toList());
@@ -93,14 +93,14 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         if (filterdLists.size() == 1) {
             dispatcher.dispatchAllProblems(filterdLists.get(0));
         } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
+            ProblemBuilder builder = createProblemBuilder(context)
                     .withMessage("instance.problem.anyOf")
                     .withBranches(filterdLists);
             dispatcher.dispatchProblem(builder.build());
         }
     }
 
-    protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {
+    protected void dispatchDefaultProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
         throw new IllegalStateException();
     }
 }

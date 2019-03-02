@@ -22,9 +22,9 @@ import java.util.Set;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -33,34 +33,34 @@ import org.leadpony.justify.internal.base.json.ParserEvents;
 
 /**
  * Assertion representing "type" keyword.
- *  
+ *
  * @author leadpony
  */
 abstract class Type extends AbstractAssertion {
-    
+
     @Override
     public String name() {
         return "type";
     }
-    
+
     /**
      * Type assertion specialized for single type.
-     * 
+     *
      * @author leadpony
      */
     static class Single extends Type implements Evaluator {
-        
+
         private final InstanceType type;
-        
+
         Single(InstanceType type) {
             this.type = type;
         }
-        
+
         @Override
         protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
             return this;
         }
-        
+
         @Override
         protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
             return this::evaluateNegated;
@@ -70,14 +70,14 @@ abstract class Type extends AbstractAssertion {
         public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
             builder.add("type", type.name().toLowerCase());
         }
-    
+
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
             if (type == null || testType(type)) {
                 return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(parser)
+                Problem p = createProblemBuilder(context)
                         .withMessage("instance.problem.type")
                         .withParameter("actual", type)
                         .withParameter("expected", this.type)
@@ -86,13 +86,13 @@ abstract class Type extends AbstractAssertion {
                 return Result.FALSE;
             }
         }
-        
-        private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
+
+        private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
             if (type == null || !testType(type)) {
-                return Result.TRUE; 
+                return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(parser)
+                Problem p = createProblemBuilder(context)
                         .withMessage("instance.problem.not.type")
                         .withParameter("expected", this.type)
                         .build();
@@ -100,7 +100,7 @@ abstract class Type extends AbstractAssertion {
                 return Result.FALSE;
             }
         }
-    
+
         private boolean testType(InstanceType type) {
             if (type == this.type) {
                 return true;
@@ -114,17 +114,17 @@ abstract class Type extends AbstractAssertion {
 
     /**
      * Type assertion specialized for multiple types.
-     * 
+     *
      * @author leadpony
      */
     static class Multiple extends Type implements Evaluator {
-        
+
         private final Set<InstanceType> typeSet;
-        
+
         Multiple(Set<InstanceType> types) {
             this.typeSet = new LinkedHashSet<>(types);
         }
-        
+
         @Override
         protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
             return this;
@@ -144,21 +144,21 @@ abstract class Type extends AbstractAssertion {
                 .forEach(arrayBuilder::add);
             builder.add("type", arrayBuilder);
         }
-        
+
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
             if (type != null) {
-                return assertTypeMatches(type, parser, dispatcher);
+                return assertTypeMatches(type, context, dispatcher);
             } else {
                 return Result.TRUE;
             }
         }
-        
-        private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
+
+        private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
             if (type != null) {
-                return assertTypeNotMatches(type, parser, dispatcher);
+                return assertTypeNotMatches(type, context, dispatcher);
             } else {
                 return Result.TRUE;
             }
@@ -169,11 +169,11 @@ abstract class Type extends AbstractAssertion {
                    (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
         }
 
-        private Result assertTypeMatches(InstanceType type, JsonParser parser, ProblemDispatcher dispatcher) {
+        private Result assertTypeMatches(InstanceType type, EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (contains(type)) {
                 return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(parser)
+                Problem p = createProblemBuilder(context)
                         .withMessage("instance.problem.type.plural")
                         .withParameter("actual", type)
                         .withParameter("expected", typeSet)
@@ -182,10 +182,10 @@ abstract class Type extends AbstractAssertion {
                 return Result.FALSE;
             }
         }
-        
-        private Result assertTypeNotMatches(InstanceType type, JsonParser parser, ProblemDispatcher dispatcher) {
+
+        private Result assertTypeNotMatches(InstanceType type, EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (contains(type)) {
-                Problem p = createProblemBuilder(parser)
+                Problem p = createProblemBuilder(context)
                         .withMessage("instance.problem.not.type.plural")
                         .withParameter("actual", type)
                         .withParameter("expected", typeSet)

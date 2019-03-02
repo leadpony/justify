@@ -16,14 +16,15 @@
 
 package org.leadpony.justify.internal.problem;
 
+import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 
 /**
  * Factory interface producing instances of {@link ProblemBuilder}.
- * 
+ *
  * @author leadpony
  */
 public interface ProblemBuilderFactory {
@@ -32,25 +33,26 @@ public interface ProblemBuilderFactory {
      * Default instance of this type.
      */
     static ProblemBuilderFactory DEFAULT = new ProblemBuilderFactory() {};
-    
+
     /**
      * Creates new instance of this builder.
-     * 
-     * @param parser the JSON parser, cannot be {@code null}.
+     *
+     * @param context the evaluator context, cannot be {@code null}.
      * @return newly created instance of {@link ProblemBuilder}.
      */
-    default ProblemBuilder createProblemBuilder(JsonParser parser) {
-        JsonLocation current = parser.getLocation();
-        return new ProblemBuilder(SimpleJsonLocation.before(current));
+    default ProblemBuilder createProblemBuilder(EvaluatorContext context) {
+        JsonLocation current = context.getParser().getLocation();
+        JsonPointer pointer = context.getPointer();
+        return new ProblemBuilder(SimpleJsonLocation.before(current), pointer);
     }
 
     /**
      * Creates new instance of this builder.
-     * 
+     *
      * @param location the location where problem occurred, cannot be {@code null}.
      * @return newly created instance of {@link ProblemBuilder}.
      */
     default ProblemBuilder createProblemBuilder(JsonLocation location) {
-        return new ProblemBuilder(location);
+        return new ProblemBuilder(location, null);
     }
 }

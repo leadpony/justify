@@ -16,8 +16,7 @@
 
 package org.leadpony.justify.internal.problem;
 
-import javax.json.stream.JsonParser;
-
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -26,17 +25,17 @@ import org.leadpony.justify.api.ProblemDispatcher;
  * @author leadpony
  */
 public class SilentProblemDispatcher implements ProblemDispatcher {
-    
+
     public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
-    
+
     private SilentProblemDispatcher() {
     }
-    
+
     @Override
     public void dispatchProblem(Problem problem) {
     }
 
     @Override
-    public void dispatchInevitableProblem(JsonParser parser, JsonSchema schema) {
+    public void dispatchInevitableProblem(EvaluatorContext context, JsonSchema schema) {
     }
 }

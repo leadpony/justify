@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -30,30 +30,30 @@ import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
  * @author leadpony
  */
 abstract class AbstractEqualityAssertion extends AbstractAssertion {
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
-        return (event, parser, depth, dispatcher)->{
-                if (builder.append(event, parser)) {
+        return (event, context, depth, dispatcher)->{
+                if (builder.append(event, context.getParser())) {
                     return Result.PENDING;
                 }
-                return assertEquals(builder.build(), parser, dispatcher);
+                return assertEquals(builder.build(), context, dispatcher);
             };
     }
-    
+
     @Override
     protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         final JsonInstanceBuilder builder = new JsonInstanceBuilder(builderFactory);
-        return (event, parser, depth, dispatcher)->{
-                if (builder.append(event, parser)) {
+        return (event, context, depth, dispatcher)->{
+                if (builder.append(event, context.getParser())) {
                     return Result.PENDING;
                 }
-                return assertNotEquals(builder.build(), parser, dispatcher);
+                return assertNotEquals(builder.build(), context, dispatcher);
             };
     }
 
-    protected abstract Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result assertEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher);
 
-    protected abstract Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher);
 }

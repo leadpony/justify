@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -28,12 +28,12 @@ import org.leadpony.justify.api.ProblemDispatcher;
  * @author leadpony
  */
 abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
-    
+
     private final int limit;
     private final String name;
     private final String messageKey;
     private final String negatedMessageKey;
-    
+
     protected AbstractStringLengthAssertion(
             int limit, String name, String messageKey, String negatedMessageKey) {
         this.limit = limit;
@@ -46,14 +46,14 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     public String name() {
         return name;
     }
-    
+
     @Override
-    protected Result evaluateAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.limit)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser, event)
+            Problem p = createProblemBuilder(context, event)
                     .withMessage(this.messageKey)
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
@@ -64,10 +64,10 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.limit)) {
-            Problem p = createProblemBuilder(parser, event)
+            Problem p = createProblemBuilder(context, event)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
@@ -83,6 +83,6 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), this.limit);
     }
-    
+
     protected abstract boolean testLength(int actualLength, int limit);
 }

@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.stream.Stream;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -44,7 +44,7 @@ public final class Evaluators {
     public static Evaluator alwaysTrue(JsonSchema schema) {
         return new Evaluator() {
             @Override
-            public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
                 return Result.TRUE;
             }
             @Override
@@ -62,8 +62,8 @@ public final class Evaluators {
     public static Evaluator alwaysFalse(JsonSchema schema) {
         return new Evaluator() {
             @Override
-            public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchInevitableProblem(parser, schema);
+            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchInevitableProblem(context, schema);
                 return Result.FALSE;
             }
             @Override

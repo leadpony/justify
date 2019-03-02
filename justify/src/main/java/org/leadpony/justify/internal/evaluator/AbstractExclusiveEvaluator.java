@@ -19,8 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonParser;
-
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemList;
@@ -31,7 +30,7 @@ import org.leadpony.justify.internal.problem.ProblemList;
  */
 abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    protected void dispatchProblems(JsonParser parser, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
+    protected void dispatchProblems(EvaluatorContext context, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
         List<ProblemList> filteredLists = problemLists.stream()
                 .filter(ProblemList::isResolvable)
                 .collect(Collectors.toList());
@@ -41,15 +40,15 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
         if (filteredLists.size() == 1) {
             dispatcher.dispatchAllProblems(filteredLists.get(0));
         } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
+            ProblemBuilder builder = createProblemBuilder(context)
                     .withMessage("instance.problem.oneOf.few")
                     .withBranches(filteredLists);
             dispatcher.dispatchProblem(builder.build());
         }
     }
 
-    protected void dispatchNegatedProblems(JsonParser parser, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
-        ProblemBuilder builder = createProblemBuilder(parser)
+    protected void dispatchNegatedProblems(EvaluatorContext context, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
+        ProblemBuilder builder = createProblemBuilder(context)
                 .withMessage("instance.problem.oneOf.many")
                 .withBranches(problemLists);
         dispatcher.dispatchProblem(builder.build());

@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -47,8 +47,8 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
     }
     
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        return evaluator.evaluate(event, parser, depth, this);
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        return evaluator.evaluate(event, context, depth, this);
     }
     
     @Override

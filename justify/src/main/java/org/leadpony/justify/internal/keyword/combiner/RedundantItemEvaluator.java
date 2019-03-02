@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
@@ -40,8 +40,8 @@ class RedundantItemEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
                 .withMessage("instance.problem.redundant.item")
                 .withParameter("index", itemIndex)
                 .withSchema(schema)

@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.Iterator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -36,11 +36,11 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadEvaluator(current);

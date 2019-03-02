@@ -20,20 +20,20 @@ import java.math.BigDecimal;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class MultipleOf extends AbstractNumericAssertion {
-    
+
     protected final BigDecimal factor;
-    
+
     MultipleOf(BigDecimal factor) {
         this.factor = factor;
     }
@@ -42,18 +42,18 @@ class MultipleOf extends AbstractNumericAssertion {
     public String name() {
         return "multipleOf";
     }
-    
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), factor);
     }
-    
+
     @Override
-    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.multipleOf")
                     .withParameter("actual", value)
                     .withParameter("factor", factor)
@@ -64,9 +64,9 @@ class MultipleOf extends AbstractNumericAssertion {
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.not.multipleOf")
                     .withParameter("actual", value)
                     .withParameter("factor", factor)
@@ -77,7 +77,7 @@ class MultipleOf extends AbstractNumericAssertion {
             return Result.TRUE;
         }
     }
-    
+
     private boolean testValue(BigDecimal value) {
         BigDecimal remainder = value.remainder(factor);
         return remainder.compareTo(BigDecimal.ZERO) == 0;

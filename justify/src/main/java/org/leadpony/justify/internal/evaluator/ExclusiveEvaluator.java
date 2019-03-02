@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -51,17 +51,17 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (evaluationsAsTrue == 0) {
-            evaluateAll(event, parser, depth, dispatcher);
+            evaluateAll(event, context, depth, dispatcher);
         }
-        evaluateAllNegated(event, parser, depth, dispatcher);
+        evaluateAllNegated(event, context, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
             if (evaluationsAsTrue == 0) {
-                dispatchProblems(parser, dispatcher, problemLists);
+                dispatchProblems(context, dispatcher, problemLists);
                 return Result.FALSE;
             } else if (evaluationsAsTrue > 1) {
-                dispatchNegatedProblems(parser, dispatcher, negatedProblemLists);
+                dispatchNegatedProblems(context, dispatcher, negatedProblemLists);
                 return Result.FALSE;
             }
             return Result.TRUE;
@@ -69,11 +69,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         return Result.PENDING;
     }
 
-    private void evaluateAll(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAll(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.TRUE) {
                     evaluationsAsTrue++;
@@ -85,11 +85,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         }
     }
 
-    private void evaluateAllNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAllNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = negated.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, parser, depth, dispatcher);
+            Result result = current.evaluate(event, context, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadNegatedEvaluator(current);

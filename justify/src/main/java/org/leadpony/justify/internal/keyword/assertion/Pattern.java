@@ -18,21 +18,21 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Assertion specified with "pattern" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class Pattern extends AbstractStringAssertion {
-    
-    private final java.util.regex.Pattern pattern; 
-    
+
+    private final java.util.regex.Pattern pattern;
+
     Pattern(java.util.regex.Pattern pattern) {
         this.pattern = pattern;
     }
@@ -46,13 +46,13 @@ class Pattern extends AbstractStringAssertion {
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), pattern.toString());
     }
-    
+
     @Override
-    protected Result evaluateAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser, event)
+            Problem p = createProblemBuilder(context, event)
                     .withMessage("instance.problem.pattern")
                     .withParameter("pattern", pattern.toString())
                     .build();
@@ -62,9 +62,9 @@ class Pattern extends AbstractStringAssertion {
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
-            Problem p = createProblemBuilder(parser, event)
+            Problem p = createProblemBuilder(context, event)
                     .withMessage("instance.problem.not.pattern")
                     .withParameter("pattern", pattern.toString())
                     .build();
@@ -74,7 +74,7 @@ class Pattern extends AbstractStringAssertion {
             return Result.TRUE;
         }
     }
-    
+
     private boolean testValue(String value) {
         return pattern.matcher(value).find();
     }

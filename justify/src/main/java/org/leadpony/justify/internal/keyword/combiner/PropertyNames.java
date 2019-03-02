@@ -79,8 +79,8 @@ class PropertyNames extends UnaryCombiner {
     }
 
     private Evaluator createForbiddenPropertyEvaluator(JsonSchema subschema) {
-        return (event, parser, depth, dispatcher)->{
-            ProblemBuilder b = createProblemBuilder(parser)
+        return (event, context, depth, dispatcher)->{
+            ProblemBuilder b = createProblemBuilder(context)
                 .withMessage("instance.problem.object.nonempty");
             dispatcher.dispatchProblem(b.build());
             return Result.FALSE;

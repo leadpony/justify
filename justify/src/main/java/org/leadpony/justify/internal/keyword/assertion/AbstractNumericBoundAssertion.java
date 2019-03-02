@@ -20,8 +20,8 @@ import java.math.BigDecimal;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -34,13 +34,13 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     private final String name;
     private final String messageKey;
     private final String negatedMessageKey;
-    
+
     /**
      * Constructs this assertion.
-     * 
+     *
      * @param limit the lower or upper limit.
      * @param name the name of this assertion.
-     * @param messageKey the error message for normal evaluation. 
+     * @param messageKey the error message for normal evaluation.
      * @param negatedMessageKey the error message for negated evaluation.
      */
     protected AbstractNumericBoundAssertion(
@@ -50,23 +50,23 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
         this.messageKey = messageKey;
         this.negatedMessageKey = negatedMessageKey;
     }
-    
+
     @Override
     public String name() {
         return name;
     }
-    
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), this.limit);
     }
 
     @Override
-    protected Result evaluateAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value, this.limit)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage(this.messageKey)
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)
@@ -77,9 +77,9 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(BigDecimal value, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value, this.limit)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage(this.negatedMessageKey)
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)

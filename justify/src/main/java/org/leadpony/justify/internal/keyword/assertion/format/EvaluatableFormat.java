@@ -23,9 +23,9 @@ import java.util.Set;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -73,22 +73,22 @@ public class EvaluatableFormat extends Format implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonValue value = parser.getValue();
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        JsonValue value = context.getParser().getValue();
         if (attribute.test(value)) {
             return Result.TRUE;
         } else {
-            ProblemBuilder builder = createProblemBuilder(parser)
+            ProblemBuilder builder = createProblemBuilder(context)
                     .withMessage("instance.problem.format");
             dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
         }
     }
 
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        JsonValue value = parser.getValue();
+    private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        JsonValue value = context.getParser().getValue();
         if (attribute.test(value)) {
-            ProblemBuilder builder = createProblemBuilder(parser)
+            ProblemBuilder builder = createProblemBuilder(context)
                     .withMessage("instance.problem.not.format");
             dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
@@ -98,8 +98,8 @@ public class EvaluatableFormat extends Format implements Evaluator {
     }
 
     @Override
-    public ProblemBuilder createProblemBuilder(JsonParser parser) {
-        return super.createProblemBuilder(parser)
+    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
+        return super.createProblemBuilder(context)
                     .withParameter("attribute", attribute.name())
                     .withParameter("localizedAttribute", attribute.localizedName());
     }

@@ -22,9 +22,9 @@ import java.util.Set;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -34,17 +34,17 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
  * Assertion specified with "required" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class Required extends AbstractAssertion implements ObjectKeyword {
-    
+
     protected final Set<String> names;
-    
+
     Required(Set<String> names) {
         this.names = new LinkedHashSet<>(names);
     }
-    
+
     @Override
     public String name() {
         return "required";
@@ -64,7 +64,7 @@ class Required extends AbstractAssertion implements ObjectKeyword {
         if (names.isEmpty()) {
             return createAlwaysFalseEvaluator();
         } else {
-            return new NegatedAssertionEvaluator(names);    
+            return new NegatedAssertionEvaluator(names);
         }
     }
 
@@ -76,31 +76,31 @@ class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     private class AssertionEvaluator implements ShallowEvaluator {
-        
+
         private final Set<String> missing;
-        
+
         private AssertionEvaluator(Set<String> required) {
             this.missing = new LinkedHashSet<>(required);
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
-                missing.remove(parser.getString());
-                return test(parser, dispatcher, false);
+                missing.remove(context.getParser().getString());
+                return test(context, dispatcher, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, dispatcher, true);
+                return test(context, dispatcher, true);
             } else {
                 return Result.PENDING;
             }
         }
-        
-        private Result test(JsonParser parser, ProblemDispatcher dispatcher, boolean last) {
+
+        private Result test(EvaluatorContext context, ProblemDispatcher dispatcher, boolean last) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else if (last) {
                 for (String property : missing) {
-                    Problem p = createProblemBuilder(parser)
+                    Problem p = createProblemBuilder(context)
                             .withMessage("instance.problem.required")
                             .withParameter("required", property)
                             .build();
@@ -114,7 +114,7 @@ class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     private class NegatedAssertionEvaluator implements ShallowEvaluator {
-        
+
         private final Set<String> missing;
 
         private NegatedAssertionEvaluator(Set<String> names) {
@@ -122,28 +122,28 @@ class Required extends AbstractAssertion implements ObjectKeyword {
         }
 
         @Override
-        public Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
-                missing.remove(parser.getString());
-                return test(parser, dispatcher, false);
+                missing.remove(context.getParser().getString());
+                return test(context, dispatcher, false);
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(parser, dispatcher, true);
+                return test(context, dispatcher, true);
             } else {
                 return Result.PENDING;
             }
         }
 
-        private Result test(JsonParser parser, ProblemDispatcher dispatcher, boolean last) {
+        private Result test(EvaluatorContext context, ProblemDispatcher dispatcher, boolean last) {
             if (missing.isEmpty()) {
                 Problem p = null;
                 if (names.size() == 1) {
                     String name = names.iterator().next();
-                    p = createProblemBuilder(parser)
+                    p = createProblemBuilder(context)
                             .withMessage("instance.problem.not.required")
                             .withParameter("required", name)
                             .build();
                 } else {
-                    p = createProblemBuilder(parser)
+                    p = createProblemBuilder(context)
                         .withMessage("instance.problem.not.required.plural")
                         .withParameter("required", names)
                         .build();

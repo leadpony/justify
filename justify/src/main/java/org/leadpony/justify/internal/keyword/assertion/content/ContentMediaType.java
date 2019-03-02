@@ -23,9 +23,9 @@ import java.util.Set;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
@@ -102,20 +102,20 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        String value = ((JsonString) parser.getValue()).getString();
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        String value = ((JsonString) context.getParser().getValue()).getString();
         if (testValue(value, true)) {
             return Result.TRUE;
         } else {
-            dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.contentMediaType"));
+            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.contentMediaType"));
             return Result.FALSE;
         }
     }
 
-    public Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        String value = ((JsonString) parser.getValue()).getString();
+    public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        String value = ((JsonString) context.getParser().getValue()).getString();
         if (testValue(value, false)) {
-            dispatcher.dispatchProblem(buildProblem(parser, "instance.problem.not.contentMediaType"));
+            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.not.contentMediaType"));
             return Result.FALSE;
         } else {
             return Result.TRUE;
@@ -148,7 +148,7 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
         return builder.toString();
     }
 
-    private Problem buildProblem(JsonParser parser, String messageKey) {
-        return createProblemBuilder(parser).withMessage(messageKey).withParameter("type", value()).build();
+    private Problem buildProblem(EvaluatorContext context, String messageKey) {
+        return createProblemBuilder(context).withMessage(messageKey).withParameter("type", value()).build();
     }
 }

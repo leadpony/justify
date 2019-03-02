@@ -37,6 +37,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 import javax.json.stream.JsonParsingException;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
@@ -1015,7 +1016,11 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private ProblemBuilder problemBuilder(String messageKey) {
-        return createProblemBuilder(parser).withMessage(messageKey);
+        if (!(parser instanceof ValidatingJsonParser)) {
+            throw new IllegalStateException();
+        }
+        EvaluatorContext context = (EvaluatorContext)parser;
+        return createProblemBuilder(context).withMessage(messageKey);
     }
 
     private void addProblem(ProblemBuilder problemBuilder) {

@@ -19,42 +19,42 @@ package org.leadpony.justify.internal.keyword.assertion;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator.Result;
 
 /**
  * Assertion specified with "const" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class Const extends AbstractEqualityAssertion {
 
     private final JsonValue expected;
-    
+
     Const(JsonValue expected) {
         this.expected = expected;
     }
-    
+
     @Override
     public String name() {
         return "const";
     }
-  
+
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add("const", this.expected);
     }
 
     @Override
-    protected Result assertEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result assertEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (actual.equals(expected)) {
             return Result.TRUE;
         } else {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)
@@ -66,9 +66,9 @@ class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result assertNotEquals(JsonValue actual, JsonParser parser, ProblemDispatcher dispatcher) {
+    protected Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (actual.equals(expected)) {
-            Problem p = createProblemBuilder(parser)
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.not.const")
                     .withParameter("actual", actual)
                     .withParameter("expected", expected)

@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.api;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 /**
@@ -34,7 +33,7 @@ abstract class SimpleJsonSchema implements JsonSchema {
         
         this.ALWAYS_TRUE = new Evaluator() {
             @Override
-            public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
                 return Result.TRUE;
             }
             
@@ -46,8 +45,8 @@ abstract class SimpleJsonSchema implements JsonSchema {
         
         this.ALWAYS_FALSE = new Evaluator() {
             @Override
-            public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchInevitableProblem(parser, self);
+            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchInevitableProblem(context, self);
                 return Result.FALSE;
             }
             

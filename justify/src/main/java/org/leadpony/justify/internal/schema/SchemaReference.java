@@ -22,9 +22,9 @@ import java.net.URI;
 
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -154,8 +154,8 @@ public class SchemaReference extends AbstractJsonSchema {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parser)
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
                     .withKeyword("$ref")
                     .withMessage("schema.problem.reference")
                     .withParameter("ref", ref())

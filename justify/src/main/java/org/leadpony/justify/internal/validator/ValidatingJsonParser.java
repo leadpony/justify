@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import javax.json.JsonPointer;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -29,6 +30,7 @@ import org.leadpony.justify.internal.base.json.JsonParserDecorator;
 import org.leadpony.justify.internal.base.json.JsonPointerBuilder;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -42,7 +44,7 @@ import org.leadpony.justify.api.Evaluator.Result;
  *
  * @author leadpony
  */
-public class ValidatingJsonParser extends JsonParserDecorator implements DefaultProblemDispatcher {
+public class ValidatingJsonParser extends JsonParserDecorator implements EvaluatorContext, DefaultProblemDispatcher {
 
     private final JsonSchema rootSchema;
     @SuppressWarnings("unused")
@@ -94,6 +96,20 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
         return event;
     }
 
+    /* Evaluator.Context */
+
+    @Override
+    public JsonParser getParser() {
+        return realParser();
+    }
+
+    @Override
+    public JsonPointer getPointer() {
+        return jsonProvider.createPointer(jsonPointerBuilder.toPointer());
+    }
+
+    /* DefaultProblemDispatcher */
+
     @Override
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
@@ -123,7 +139,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
                 this.eventHandler = this::handleNone;
             }
         }
-        Result result = evaluator.evaluate(event, parser, depth, this);
+        Result result = evaluator.evaluate(event, this, depth, this);
         if (ParserEvents.isStartOfContainer(event)) {
             ++depth;
         }

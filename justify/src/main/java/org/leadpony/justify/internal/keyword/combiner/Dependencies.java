@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -155,12 +155,12 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             this.active = false;
         }
 
-        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
+        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
 
-        protected Evaluator.Result dispatchMissingDependantProblem(JsonParser parser, ProblemDispatcher dispatcher) {
-            Problem p = createProblemBuilder(parser)
+        protected Evaluator.Result dispatchMissingDependantProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
+            Problem p = createProblemBuilder(context)
                     .withMessage("instance.problem.required")
                     .withParameter("required", property)
                     .build();
@@ -289,10 +289,10 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (!active) {
                 if (depth == 1 && event == Event.KEY_NAME) {
-                    String keyName = parser.getString();
+                    String keyName = context.getParser().getString();
                     if (keyName.equals(property)) {
                         active = true;
                         dispatchAllProblems(dispatcher);
@@ -300,13 +300,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 }
             }
             if (this.result == null) {
-                evaluateSubschema(event, parser, depth, dispatcher);
+                evaluateSubschema(event, context, depth, dispatcher);
             }
             if (active) {
                 return (result != null) ? result : Result.PENDING;
             } else {
                 if (depth == 0 && event == Event.END_OBJECT) {
-                    return getResultWithoutDependant(parser, dispatcher);
+                    return getResultWithoutDependant(context, dispatcher);
                 } else {
                     return Result.PENDING;
                 }
@@ -321,8 +321,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             problems.add(problem);
         }
 
-        private void evaluateSubschema(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-            Result result = subschemaEvaluator.evaluate(event, parser, depth, active ? dispatcher : this);
+        private void evaluateSubschema(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            Result result = subschemaEvaluator.evaluate(event, context, depth, active ? dispatcher : this);
             if (result != Result.PENDING) {
                 this.result = result;
             }
@@ -350,8 +350,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(parser, dispatcher);
+        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(context, dispatcher);
         }
     }
 
@@ -416,29 +416,29 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
-                String keyName = parser.getString();
+                String keyName = context.getParser().getString();
                 if (keyName.equals(property)) {
                     active = true;
                 }
                 missing.remove(keyName);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
-                    return test(parser, dispatcher);
+                    return test(context, dispatcher);
                 } else {
-                    return getResultWithoutDependant(parser, dispatcher);
+                    return getResultWithoutDependant(context, dispatcher);
                 }
             }
             return Result.PENDING;
         }
 
-        protected Result test(JsonParser parser, ProblemDispatcher dispatcher) {
+        protected Result test(EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
                 for (String entry : missing) {
-                    Problem p = createProblemBuilder(parser)
+                    Problem p = createProblemBuilder(context)
                             .withMessage("instance.problem.dependencies")
                             .withParameter("required", entry)
                             .withParameter("dependant", property)
@@ -457,21 +457,21 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(parser, dispatcher);
+        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(context, dispatcher);
         }
 
         @Override
-        protected Result test(JsonParser parser, ProblemDispatcher dispatcher) {
+        protected Result test(EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
-                Problem p = createProblemBuilder(parser)
+                Problem p = createProblemBuilder(context)
                         .withMessage("instance.problem.not.required")
                         .withParameter("required", this.property)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
-                ProblemBuilder b = createProblemBuilder(parser)
+                ProblemBuilder b = createProblemBuilder(context)
                         .withParameter("dependant", property);
                 if (required.size() == 1) {
                     b.withMessage("instance.problem.not.dependencies")
@@ -500,19 +500,19 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
-                if (parser.getString().equals(property)) {
-                    return dispatchProblem(parser, dispatcher);
+                if (context.getParser().getString().equals(property)) {
+                    return dispatchProblem(context, dispatcher);
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return getResultWithoutDependant(parser, dispatcher);
+                return getResultWithoutDependant(context, dispatcher);
             }
             return Result.PENDING;
         }
 
-        private Result dispatchProblem(JsonParser parser, ProblemDispatcher dispatcher) {
-            Problem problem = createProblemBuilder(parser)
+        private Result dispatchProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
+            Problem problem = createProblemBuilder(context)
                     .withMessage("instance.problem.not.required")
                     .withParameter("required", this.property)
                     .build();
@@ -528,8 +528,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        protected Result getResultWithoutDependant(JsonParser parser, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(parser, dispatcher);
+        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(context, dispatcher);
         }
     }
 }

@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -26,14 +26,14 @@ import org.leadpony.justify.api.ProblemDispatcher;
  * @author leadpony
  */
 public interface ShallowEvaluator extends Evaluator {
-    
+
     @Override
-    default Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    default Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (depth > 1) {
             return Result.PENDING;
         }
-        return evaluateShallow(event, parser, depth, dispatcher);
+        return evaluateShallow(event, context, depth, dispatcher);
     }
-    
-    Result evaluateShallow(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher);
+
+    Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher);
 }

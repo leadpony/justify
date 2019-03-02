@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -37,17 +37,17 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (depth == 0 && event == Event.END_ARRAY) {
             return finalResult;
         }
 
         if (depth == 1) {
-            updateChildren(event, parser);
+            updateChildren(event, context.getParser());
         }
 
         if (childEvaluator != null) {
-            Result result = childEvaluator.evaluate(event, parser, depth - 1, dispatcher);
+            Result result = childEvaluator.evaluate(event, context, depth - 1, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;

@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.Iterator;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -38,18 +38,18 @@ class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        invokeOperandEvaluators(event, parser, depth, dispatcher);
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        invokeOperandEvaluators(event, context, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
             return finalResult;
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Iterator<Evaluator> it = iterator();
         while (it.hasNext()) {
-            Result result = it.next().evaluate(event, parser, depth, dispatcher);
+            Result result = it.next().evaluate(event, context, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;

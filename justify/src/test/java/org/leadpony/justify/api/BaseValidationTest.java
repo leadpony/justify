@@ -75,9 +75,7 @@ public abstract class BaseValidationTest {
         }
         parser.close();
         assertThat(problems.isEmpty()).isEqualTo(fixture.hasValidData());
-        for (Problem problem : problems) {
-            assertThat(problem.getSchema()).isNotNull();
-        }
+        checkProblems(problems);
         printProblems(fixture, true, problems);
     }
 
@@ -93,14 +91,27 @@ public abstract class BaseValidationTest {
         }
         parser.close();
         assertThat(problems.isEmpty()).isEqualTo(!fixture.hasValidData());
-        for (Problem problem : problems) {
-            assertThat(problem.getSchema()).isNotNull();
-        }
+        checkProblems(problems);
         printProblems(fixture, false, problems);
     }
 
     @Disabled
     public void disabledTest() {
+    }
+
+    private static void checkProblems(List<Problem> problems) {
+        for (Problem problem : problems) {
+            assertThat(problem.getSchema()).isNotNull();
+            if (problem.hasBranches()) {
+                int index = 0;
+                while (index < problem.countBranches()) {
+                    checkProblems(problem.getBranch(index++));
+                }
+            } else {
+                assertThat(problem.getLocation()).isNotNull();
+                assertThat(problem.getPointer()).isNotNull();
+            }
+        }
     }
 
     private JsonSchema getSchema(JsonValue value) {

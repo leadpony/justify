@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -42,26 +42,26 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         if (depth == 0 && event == Event.END_OBJECT) {
             return finalResult;
         }
 
         if (depth == 1) {
-            updateChildren(event, parser);
+            updateChildren(event, context.getParser());
         }
 
         if (firstChildEvaluator != null) {
             final int childDepth = depth - 1;
 
-            if (!invokeChildEvaluator(firstChildEvaluator, event, parser, childDepth, dispatcher)) {
+            if (!invokeChildEvaluator(firstChildEvaluator, event, context, childDepth, dispatcher)) {
                 firstChildEvaluator = null;
             }
 
             if (additionalChildEvaluators != null) {
                 Iterator<Evaluator> it = additionalChildEvaluators.iterator();
                 while (it.hasNext()) {
-                    if (!invokeChildEvaluator(it.next(), event, parser, childDepth, dispatcher)) {
+                    if (!invokeChildEvaluator(it.next(), event, context, childDepth, dispatcher)) {
                         it.remove();
                     }
                 }
@@ -86,8 +86,8 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
         }
     }
 
-    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
-        Result result = evalutor.evaluate(event, parser, depth, dispatcher);
+    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        Result result = evalutor.evaluate(event, context, depth, dispatcher);
         if (result == Result.PENDING) {
             return true;
         } else {

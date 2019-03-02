@@ -16,8 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser;
-
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -33,8 +32,8 @@ public abstract class AbstractDisjunctiveItemsEvaluator extends AbstractDisjunct
     }
 
     @Override
-    protected void dispatchDefaultProblem(JsonParser parser, ProblemDispatcher dispatcher) {
-        ProblemBuilder b = createProblemBuilder(parser)
+    protected void dispatchDefaultProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        ProblemBuilder b = createProblemBuilder(context)
                 .withMessage("instance.problem.array.empty");
         dispatcher.dispatchProblem(b.build());
     }

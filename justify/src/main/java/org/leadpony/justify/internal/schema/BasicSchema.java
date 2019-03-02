@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -82,8 +82,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
     }
 
     @Override
-    public ProblemBuilder createProblemBuilder(JsonParser parser) {
-        return ProblemBuilderFactory.super.createProblemBuilder(parser)
+    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
+        return ProblemBuilderFactory.super.createProblemBuilder(context)
                 .withSchema(this);
     }
 

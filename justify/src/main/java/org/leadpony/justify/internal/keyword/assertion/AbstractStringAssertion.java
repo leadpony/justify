@@ -17,9 +17,9 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Localizable;
@@ -30,14 +30,14 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Assertion on values of string type.
- * 
+ *
  * @author leadpony
  */
 abstract class AbstractStringAssertion extends AbstractAssertion implements StringKeyword, Evaluator {
-  
+
     private static final Localizable LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
     private static final Localizable LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
-    
+
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
         return this;
@@ -49,47 +49,47 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Stri
     }
 
     @Override
-    public Result evaluate(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
-        return evaluateAgainst(parser.getString(), event, parser, dispatcher);
+        return evaluateAgainst(context.getParser().getString(), event, context, dispatcher);
     }
- 
-    public ProblemBuilder createProblemBuilder(JsonParser parser, Event event) {
-        ProblemBuilder builder = super.createProblemBuilder(parser);
+
+    public ProblemBuilder createProblemBuilder(EvaluatorContext context, Event event) {
+        ProblemBuilder builder = super.createProblemBuilder(context);
         if (event == Event.KEY_NAME) {
             builder.withParameter("subject", "key")
-                   .withParameter("localizedSubject", LOCALIZED_KEY); 
+                   .withParameter("localizedSubject", LOCALIZED_KEY);
         } else {
             builder.withParameter("subject", "value")
-                   .withParameter("localizedSubject", LOCALIZED_VALUE); 
+                   .withParameter("localizedSubject", LOCALIZED_VALUE);
         }
         return builder;
     }
-    
-    private Result evaluateNegated(Event event, JsonParser parser, int depth, ProblemDispatcher dispatcher) {
+
+    private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         assert event == Event.VALUE_STRING || event == Event.KEY_NAME;
-        return evaluateNegatedAgainst(parser.getString(), event, parser, dispatcher);
+        return evaluateNegatedAgainst(context.getParser().getString(), event, context, dispatcher);
     }
 
     /**
      * Evaluates this assertion on a string value.
-     * 
+     *
      * @param value the value to apply this assertion.
      * @param event the event which produced the string value.
-     * @param parser the JSON parser.
+     * @param context the evaluator context.
      * @param dispatcher the dispatcher by which detected problems will be dispatched.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result evaluateAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher);
 
     /**
      * Evaluates the negated assertion on a string value.
-     * 
+     *
      * @param value the value to apply this assertion.
      * @param event the event which produced the string value.
-     * @param parser the JSON parser.
+     * @param context the evaluator context.
      * @param dispatcher the dispatcher by which detected problems will be dispatched.
      * @return the result of the evaluation.
      */
-    protected abstract Result evaluateNegatedAgainst(String value, Event event, JsonParser parser, ProblemDispatcher dispatcher);
+    protected abstract Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher);
 }
