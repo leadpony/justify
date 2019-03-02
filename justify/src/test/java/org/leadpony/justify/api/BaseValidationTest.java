@@ -43,26 +43,26 @@ import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * Base type of validation test.
- * 
+ *
  * @author leadpony
  */
 public abstract class BaseValidationTest {
-    
+
     private static final Logger log = Logger.getLogger(BaseValidationTest.class.getName());
-    
+
     public static final JsonValidationService service = JsonValidationService.newInstance();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
     private static JsonValue lastValue;
     private static JsonSchema lastSchema;
-    
+
     private List<Problem> problems;
-    
+
     @BeforeEach
     public void setUp() {
         problems = new ArrayList<>();
     }
-    
+
     @ParameterizedTest
     @MethodSource("provideFixtures")
     public void testValidationWithSchema(ValidationFixture fixture) {
@@ -80,7 +80,7 @@ public abstract class BaseValidationTest {
         }
         printProblems(fixture, true, problems);
     }
-    
+
     @ParameterizedTest
     @MethodSource("provideFixtures")
     public void testValidationWithNegatedSchema(ValidationFixture fixture) {
@@ -113,7 +113,7 @@ public abstract class BaseValidationTest {
             return schema;
         }
     }
-    
+
     private JsonSchema readSchema(String value) {
         StringReader reader = new StringReader(value);
         try (JsonSchemaReader schemaReader = createSchemaReader(reader)) {
@@ -122,19 +122,19 @@ public abstract class BaseValidationTest {
             throw e;
         }
     }
-  
+
     private JsonParser createValidatingParser(JsonValue data, JsonSchema schema) {
         StringReader reader = new StringReader(data.toString());
         return service.createParser(reader, schema, problems::addAll);
     }
-    
+
     private static JsonSchema negate(JsonSchema original) {
         JsonSchemaBuilderFactory schemaBuilderFactory = service.createSchemaBuilderFactory();
         return schemaBuilderFactory.createBuilder()
                 .withNot(original)
                 .build();
     }
-    
+
     protected JsonSchemaReader createSchemaReader(Reader reader) {
         return service.createSchemaReader(reader);
     }
@@ -145,12 +145,13 @@ public abstract class BaseValidationTest {
         }
         StringBuilder b = new StringBuilder();
         if (affirmative) {
-            b.append("\n+ ");
+            b.append("+ ");
         } else {
-            b.append("\n- ");
+            b.append("- ");
         }
         b.append(fixture.displayName());
         log.info(b.toString());
         printer.handleProblems(problems);
+        log.info("");
     }
 }

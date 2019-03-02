@@ -54,6 +54,7 @@ import org.leadpony.justify.internal.validator.ValidatingJsonParser;
  */
 public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
+    private final JsonProvider jsonProvider;
     private final JsonParserFactory jsonParserFactory;
     private final JsonBuilderFactory jsonBuilderFactory;
 
@@ -68,7 +69,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     }
 
     private DefaultJsonSchemaReaderFactory(Builder builder) {
-        JsonProvider jsonProvider = builder.jsonProvider;
+        this.jsonProvider = builder.jsonProvider;
         this.jsonParserFactory = jsonProvider.createParserFactory(null);
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.formatRegistry = builder.formatRegistry;
@@ -116,7 +117,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     }
 
     private ValidatingJsonParser createParser(JsonParser realParser) {
-        return new ValidatingJsonParser(realParser, metaschema, jsonBuilderFactory);
+        return new ValidatingJsonParser(realParser, metaschema, jsonProvider);
     }
 
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory() {

@@ -44,19 +44,19 @@ import org.leadpony.justify.internal.base.Message;
 
 /**
  * Decorator class of {@link JsonParser}.
- * 
+ *
  * @author leadpony
  */
 public class JsonParserDecorator implements JsonParser {
-    
+
     private final JsonParser real;
     private final JsonBuilderFactory builderFactory;
     private Event currentEvent;
     private int depth;
-    
+
     /**
      * Constructs this object.
-     * 
+     *
      * @param real the underlying real JSON parser.
      * @param builderFactory the factory of builders to build JSON arrays and objects.
      */
@@ -66,16 +66,16 @@ public class JsonParserDecorator implements JsonParser {
         this.real = real;
         this.builderFactory = builderFactory;
     }
-    
+
     /**
      * Returns the underlying real JSON parser.
-     * 
+     *
      * @return the underlying JSON parser, never be {@code null}.
      */
-    public JsonParser realParser() {
+    public final JsonParser realParser() {
         return real;
     }
-    
+
     @Override
     public void close() {
         real.close();
@@ -127,7 +127,7 @@ public class JsonParserDecorator implements JsonParser {
         currentEvent = event;
         return event;
     }
-    
+
     @Override
     public JsonObject getObject() {
         if (this.currentEvent != Event.START_OBJECT) {
@@ -192,7 +192,7 @@ public class JsonParserDecorator implements JsonParser {
             }
         }
     }
-    
+
     @Override
     public Stream<JsonValue> getArrayStream() {
         if (currentEvent != Event.START_ARRAY) {
@@ -200,7 +200,7 @@ public class JsonParserDecorator implements JsonParser {
         }
         return StreamSupport.stream(new JsonArraySpliterator(), false);
     }
-    
+
     @Override
     public Stream<Map.Entry<String, JsonValue>> getObjectStream() {
         if (currentEvent != Event.START_OBJECT) {
@@ -208,7 +208,7 @@ public class JsonParserDecorator implements JsonParser {
         }
         return StreamSupport.stream(new JsonObjectSpliterator(), false);
     }
-    
+
     @Override
     public Stream<JsonValue> getValueStream() {
         if (depth > 0) {
@@ -216,16 +216,16 @@ public class JsonParserDecorator implements JsonParser {
         }
         return StreamSupport.stream(new JsonValueSpliterator(), false);
     }
-    
+
     /**
      * Returns the location of the last char.
-     * 
+     *
      * @return the location of the last char.
      */
     public JsonLocation getLastCharLocation() {
         return SimpleJsonLocation.before(getLocation());
     }
-    
+
     private JsonArray buildArray() {
         JsonArrayBuilder builder = builderFactory.createArrayBuilder();
         while (hasNext()) {
@@ -259,18 +259,18 @@ public class JsonParserDecorator implements JsonParser {
         }
         throw newParsingException(Event.KEY_NAME, Event.END_OBJECT);
     }
-    
+
     private JsonParsingException newParsingException(Event... expectedEvents) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expected", Arrays.asList(expectedEvents));
         String message = Message.get("parser.unexpected.eoi").format(parameters);
         return new JsonParsingException(message, getLastCharLocation());
     }
-    
+
     private JsonException newInternalError() {
         return new JsonException("Internal error");
     }
-    
+
     private static abstract class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
 
         protected AbstractSpliterator() {
@@ -283,7 +283,7 @@ public class JsonParserDecorator implements JsonParser {
             return null;
         }
     }
-    
+
     private class JsonArraySpliterator extends AbstractSpliterator<JsonValue> {
 
         @Override
@@ -327,11 +327,11 @@ public class JsonParserDecorator implements JsonParser {
                 return true;
             } else {
                 // This will never happen.
-                throw newInternalError(); 
+                throw newInternalError();
             }
         }
     }
-    
+
     private class JsonValueSpliterator extends AbstractSpliterator<JsonValue> {
 
         @Override

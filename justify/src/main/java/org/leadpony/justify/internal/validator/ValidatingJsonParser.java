@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import javax.json.JsonBuilderFactory;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.JsonParserDecorator;
+import org.leadpony.justify.internal.base.json.JsonPointerBuilder;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.Evaluator;
@@ -44,11 +45,14 @@ import org.leadpony.justify.api.Evaluator.Result;
 public class ValidatingJsonParser extends JsonParserDecorator implements DefaultProblemDispatcher {
 
     private final JsonSchema rootSchema;
+    @SuppressWarnings("unused")
+    private final JsonProvider jsonProvider;
     private ProblemHandler problemHandler;
     private BiConsumer<Event, JsonParser> eventHandler;
     private Evaluator evaluator;
     private int depth;
 
+    private JsonPointerBuilder jsonPointerBuilder;
     private List<Problem> currentProblems = new ArrayList<>();
 
     /**
@@ -56,13 +60,15 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
      *
      * @param real the underlying JSON parser.
      * @param rootSchema the root JSON schema to be evaluated during validation.
-     * @param builderFactory the JSON builder factory.
+     * @param jsonProvider the JSON provider.
      */
-    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonBuilderFactory builderFactory) {
-        super(real, builderFactory);
+    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
+        super(real, jsonProvider.createBuilderFactory(null));
         this.rootSchema = rootSchema;
+        this.jsonProvider = jsonProvider;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
+        this.jsonPointerBuilder = JsonPointerBuilder.newInstane();
     }
 
     /**
@@ -80,9 +86,10 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
     public Event next() {
         currentProblems.clear();
         Event event = super.next();
+        updateJsonPointer(event, realParser());
         eventHandler.accept(event, realParser());
         if (!currentProblems.isEmpty()) {
-            dispatchProblems(event);
+            dispatchProblems();
         }
         return event;
     }
@@ -91,6 +98,10 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         this.currentProblems.add(problem);
+    }
+
+    private void updateJsonPointer(Event event, JsonParser parser) {
+        jsonPointerBuilder = jsonPointerBuilder.withEvent(event, parser);
     }
 
     private void handleEventFirst(Event event, JsonParser parser) {
@@ -128,7 +139,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Default
     private void handleNone(Event event, JsonParser parser) {
     }
 
-    private void dispatchProblems(Event event) {
+    private void dispatchProblems() {
         this.problemHandler.handleProblems(currentProblems);
     }
 
