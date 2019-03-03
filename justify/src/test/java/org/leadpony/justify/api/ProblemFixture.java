@@ -30,12 +30,12 @@ import java.util.stream.Stream;
  * @author leadpony
  */
 class ProblemFixture extends Fixture {
-    
+
     private final String schema;
     private final String data;
     private final String description;
     private final List<ProblemSpec> problems;
-    
+
     /**
      * @param name
      * @param index
@@ -53,7 +53,7 @@ class ProblemFixture extends Fixture {
     public String description() {
         return description;
     }
-    
+
     String schema() {
         return schema;
     }
@@ -61,31 +61,31 @@ class ProblemFixture extends Fixture {
     String data() {
         return data;
     }
-    
+
     List<ProblemSpec> problems() {
         return problems;
     }
-    
+
     static Stream<ProblemFixture> newStream(String name) {
         InputStream in = ProblemFixture.class.getResourceAsStream(name);
         try (FixtureReader reader = new FixtureReader(name, in)) {
             return reader.read().stream();
         }
     }
-    
+
     private static class FixtureReader implements AutoCloseable {
-        
+
         private final String name;
         private final BufferedReader reader;
         private final List<ProblemFixture> fixtures = new ArrayList<>();
         private String line;
-        
+
         FixtureReader(String name, InputStream in) {
             this.name = name;
             this.reader = new BufferedReader(
                     new InputStreamReader(in, StandardCharsets.UTF_8));
         }
-        
+
         @Override
         public void close() {
             try {
@@ -101,7 +101,7 @@ class ProblemFixture extends Fixture {
             }
             return fixtures;
         }
-        
+
         private boolean readFixture() {
             String line = currentLine();
             if (line == null || !line.startsWith("===")) {
@@ -131,7 +131,7 @@ class ProblemFixture extends Fixture {
                     name, fixtures.size(), schema, data, description, problems));
             return true;
         }
-        
+
         private String readBlock() {
             StringBuilder builder = new StringBuilder();
             String line;
@@ -144,7 +144,7 @@ class ProblemFixture extends Fixture {
             }
             return builder.toString();
         }
-        
+
         private List<ProblemSpec> readProblems() {
             List<ProblemSpec> problems = new ArrayList<>();
             String line;
@@ -156,17 +156,18 @@ class ProblemFixture extends Fixture {
                 problems.add(new ProblemSpec(
                         Long.parseLong(tokens[0]),
                         Long.parseLong(tokens[1]),
-                        tokens[2]
+                        tokens[2],
+                        tokens[3]
                         ));
                 moveNext();
             }
             return problems;
         }
-        
+
         private String currentLine() {
             return this.line;
         }
-        
+
         private void moveNext() {
             try {
                 this.line = reader.readLine();

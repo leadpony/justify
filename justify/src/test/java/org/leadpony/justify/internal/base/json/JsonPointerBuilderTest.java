@@ -61,7 +61,7 @@ public class JsonPointerBuilderTest {
     public void testToPointer(JsonValue json, List<String> pointers) {
         String source = json.toString();
         List<String> actual = new ArrayList<>();
-        JsonPointerBuilder builder = JsonPointerBuilder.newInstane();
+        JsonPointerBuilder builder = JsonPointerBuilder.newInstance();
         try (JsonParser parser = Json.createParser(new StringReader(source))) {
             while (parser.hasNext()) {
                 Event event = parser.next();

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.JsonSchema;
@@ -40,7 +39,7 @@ import org.leadpony.justify.internal.base.Message;
 public class ProblemBuilder {
 
     private final JsonLocation location;
-    private final JsonPointer pointer;
+    private final String pointer;
     private JsonSchema schema;
     private String keyword;
     private boolean resolvable = true;
@@ -52,11 +51,11 @@ public class ProblemBuilder {
      * Constructs this builder.
      *
      * @param location the source location where problem occurred in the instance,
-     *                 cannot be {@code null}.
+     *                 may be {@code null}.
      * @param pointer  the JSON pointer to the location where problem occurred in
      *                 the instance, may be {@code null}.
      */
-    ProblemBuilder(JsonLocation location, JsonPointer pointer) {
+    ProblemBuilder(JsonLocation location, String pointer) {
         this.location = location;
         this.pointer = pointer;
     }
@@ -278,7 +277,7 @@ public class ProblemBuilder {
     private static class SimpleProblem extends AbstractProblem {
 
         private final JsonLocation location;
-        private final JsonPointer pointer;
+        private final String pointer;
 
         /**
          * Constructs this problem.
@@ -303,7 +302,7 @@ public class ProblemBuilder {
          * {@inheritDoc}
          */
         @Override
-        public JsonPointer getPointer() {
+        public String getPointer() {
             return pointer;
         }
     }
@@ -342,7 +341,7 @@ public class ProblemBuilder {
         }
 
         @Override
-        public JsonPointer getPointer() {
+        public String getPointer() {
             return null;
         }
 

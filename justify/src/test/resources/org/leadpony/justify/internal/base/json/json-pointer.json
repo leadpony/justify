@@ -124,6 +124,24 @@
     },
     {
         "description": "pointers are returned as expected when parsing nested json arrays",
+        "data": [ 
+            [
+                [],
+                "foo"
+            ]
+        ],
+        "pointers": [
+            "",
+            "/0",
+            "/0/0",
+            "/0/0",
+            "/0/1",
+            "/0",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing arrays nested in json objects",
         "data": {
             "topLevel": ["value"],
             "parent": {
@@ -143,33 +161,6 @@
             "/parent/child/0",
             "/parent/child",
             "/parent",
-            ""
-        ]
-    },
-    {
-        "description": "pointers are returned as expected when parsing objects nested in json arrays",
-        "data": [
-            {
-                "topLevelObjectKey": "value"
-            },
-            [
-                {
-                    "nestedObjectKey": 2
-                }
-            ]
-        ],
-        "pointers": [
-            "",
-            "/0",
-            "/0",
-            "/0/topLevelObjectKey",
-            "/0",
-            "/1",
-            "/1/0",
-            "/1/0",
-            "/1/0/nestedObjectKey",
-            "/1/0",
-            "/1",
             ""
         ]
     },

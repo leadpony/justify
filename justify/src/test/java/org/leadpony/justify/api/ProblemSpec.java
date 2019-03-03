@@ -18,29 +18,35 @@ package org.leadpony.justify.api;
 
 /**
  * Problem specification.
- * 
+ *
  * @author leadpony
  */
 class ProblemSpec {
 
     private final long line;
     private final long column;
+    private final String pointer;
     private final String keyword;
-    
-    ProblemSpec(long line, long column, String keyword) {
+
+    ProblemSpec(long line, long column, String pointer, String keyword) {
         this.line = line;
         this.column = column;
+        this.pointer = pointer;
         this.keyword = keyword;
     }
-    
+
     long lineNumber() {
         return line;
     }
-    
+
     long columnNumber() {
         return column;
     }
-    
+
+    String pointer() {
+        return pointer;
+    }
+
     String keyword() {
         return keyword;
     }

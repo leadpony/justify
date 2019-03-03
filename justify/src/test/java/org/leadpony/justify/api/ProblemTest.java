@@ -42,16 +42,16 @@ import org.leadpony.justify.api.ProblemHandler;
 public class ProblemTest {
 
     private static final Logger log = Logger.getLogger(ProblemTest.class.getName());
-    
+
     private static final String RESOURCE_NAME = "problem.tml";
-  
+
     private static final JsonValidationService service = JsonValidationService.newInstance();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
-    
+
     public static Stream<ProblemFixture> fixtureProvider() {
         return ProblemFixture.newStream(RESOURCE_NAME);
     }
-    
+
     @ParameterizedTest
     @MethodSource("fixtureProvider")
     public void testProblem(ProblemFixture fixture) {
@@ -68,16 +68,17 @@ public class ProblemTest {
             JsonLocation loc = actual.getLocation();
             assertThat(loc.getLineNumber()).isEqualTo(expected.lineNumber());
             assertThat(loc.getColumnNumber()).isEqualTo(expected.columnNumber());
+            assertThat(actual.getPointer()).isEqualTo(expected.pointer());
             assertThat(actual.getKeyword()).isEqualTo(expected.keyword());
         }
         printProblems(problems, fixture);
     }
-    
+
     private JsonSchema readSchema(String schema) {
         JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
         return reader.read();
     }
-    
+
     private void printProblems(List<Problem> problems, ProblemFixture fixture) {
         if (!problems.isEmpty()) {
             log.info(fixture.displayName());

@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.problem;
 
-import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -42,7 +41,7 @@ public interface ProblemBuilderFactory {
      */
     default ProblemBuilder createProblemBuilder(EvaluatorContext context) {
         JsonLocation current = context.getParser().getLocation();
-        JsonPointer pointer = context.getPointer();
+        String pointer = context.getPointer();
         return new ProblemBuilder(SimpleJsonLocation.before(current), pointer);
     }
 

@@ -23,5 +23,5 @@
     "age": -1
 }
 --- problems
-3, 13, minimum
-4, 1, required
+3, 13, /age, minimum
+4, 1, ,  required

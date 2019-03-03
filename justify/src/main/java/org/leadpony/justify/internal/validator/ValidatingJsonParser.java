@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import javax.json.JsonPointer;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -70,7 +69,7 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
         this.jsonProvider = jsonProvider;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
-        this.jsonPointerBuilder = JsonPointerBuilder.newInstane();
+        this.jsonPointerBuilder = JsonPointerBuilder.newInstance();
     }
 
     /**
@@ -104,8 +103,8 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
     }
 
     @Override
-    public JsonPointer getPointer() {
-        return jsonProvider.createPointer(jsonPointerBuilder.toPointer());
+    public String getPointer() {
+        return jsonPointerBuilder.toPointer();
     }
 
     /* DefaultProblemDispatcher */

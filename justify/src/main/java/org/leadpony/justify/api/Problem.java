@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.json.JsonPointer;
 import javax.json.stream.JsonLocation;
 
 /**
@@ -79,11 +78,11 @@ public interface Problem {
     /**
      * Returns the JSON pointer where this problem is found in the input source.
      *
-     * @return the JSON pointer where this problem occurred. This can be
-     *         {@code null} if the location is unknown.
+     * @return the string representation of JSON pointer where this problem
+     *         occurred. This can be {@code null} if the location is unknown.
      * @since 0.14.0
      */
-    JsonPointer getPointer();
+    String getPointer();
 
     /**
      * Returns the JSON schema which provided the assertion.

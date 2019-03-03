@@ -15,7 +15,6 @@
  */
 package org.leadpony.justify.api;
 
-import javax.json.JsonPointer;
 import javax.json.stream.JsonParser;
 
 /**
@@ -42,5 +41,5 @@ public interface EvaluatorContext {
      * @return the JSON pointer which points to the current location in the
      *         instance.
      */
-    JsonPointer getPointer();
+    String getPointer();
 }

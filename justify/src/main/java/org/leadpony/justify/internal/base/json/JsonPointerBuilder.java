@@ -32,7 +32,7 @@ public class JsonPointerBuilder {
      *
      * @return the instance corresponding to the entire JSON value.
      */
-    public static JsonPointerBuilder newInstane() {
+    public static JsonPointerBuilder newInstance() {
         return ROOT_BUILDER;
     }
 
