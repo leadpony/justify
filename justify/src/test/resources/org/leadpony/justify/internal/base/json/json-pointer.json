@@ -55,5 +55,149 @@
     {
         "data": [],
         "pointers": [ "", "" ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing a json object with property of various primitive types",
+        "remark": "This and following tests are originally developed by Marcin Erdmann",
+        "data": {
+            "first": "foo",
+            "second": 2,
+            "third": true,
+            "fourth": false,
+            "fifth": null
+        },
+        "pointers": [
+            "",
+            "",
+            "/first",
+            "",
+            "/second",
+            "",
+            "/third",
+            "",
+            "/fourth",
+            "",
+            "/fifth",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing a json array with values of various primitive types",
+        "data": [
+            "foo",
+            2,
+            true,
+            false,
+            null
+        ],
+        "pointers": [
+            "",
+            "/0",
+            "/1",
+            "/2",
+            "/3",
+            "/4",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing nested json objects",
+        "data": {
+            "parent": {
+                "child": {
+                    "notAnObject": "foo"
+                }
+            }
+        },
+        "pointers": [
+            "",
+            "",
+            "/parent",
+            "/parent",
+            "/parent/child",
+            "/parent/child",
+            "/parent/child/notAnObject",
+            "/parent/child",
+            "/parent",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing nested json arrays",
+        "data": {
+            "topLevel": ["value"],
+            "parent": {
+                "child": [2]
+            }
+        },
+        "pointers": [
+            "",
+            "",
+            "/topLevel",
+            "/topLevel/0",
+            "/topLevel",
+            "",
+            "/parent",
+            "/parent",
+            "/parent/child",
+            "/parent/child/0",
+            "/parent/child",
+            "/parent",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing objects nested in json arrays",
+        "data": [
+            {
+                "topLevelObjectKey": "value"
+            },
+            [
+                {
+                    "nestedObjectKey": 2
+                }
+            ]
+        ],
+        "pointers": [
+            "",
+            "/0",
+            "/0",
+            "/0/topLevelObjectKey",
+            "/0",
+            "/1",
+            "/1/0",
+            "/1/0",
+            "/1/0/nestedObjectKey",
+            "/1/0",
+            "/1",
+            ""
+        ]
+    },
+    {
+        "description": "pointers are returned as expected when parsing objects nested in json arrays",
+        "data": [
+            {
+                "topLevelObjectKey": "value"
+            },
+            [
+                {
+                    "nestedObjectKey": 2
+                }
+            ]
+        ],
+        "pointers": [
+            "",
+            "/0",
+            "/0",
+            "/0/topLevelObjectKey",
+            "/0",
+            "/1",
+            "/1/0",
+            "/1/0",
+            "/1/0/nestedObjectKey",
+            "/1/0",
+            "/1",
+            ""
+        ]
     }
 ]
