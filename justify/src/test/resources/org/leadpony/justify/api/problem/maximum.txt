@@ -1,0 +1,14 @@
+{
+    "type": "integer",
+    "maximum": 9
+}
+---
+10
+---
+[
+    {
+        "location": [1, 2], 
+        "pointer": "", 
+        "keyword": "maximum"
+    }
+]

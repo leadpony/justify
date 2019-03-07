@@ -1,0 +1,14 @@
+{
+    "type": "array",
+    "uniqueItems": true
+}
+---
+["first", "second", "first", "third"]
+---
+[
+    {
+        "location": [1,27], 
+        "pointer": "/2", 
+        "keyword": "uniqueItems"
+    }
+]

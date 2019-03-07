@@ -18,52 +18,52 @@ package org.leadpony.justify.api;
 
 /**
  * Base type of fixtures.
- * 
+ *
  * @author leadpony
  */
 public abstract class Fixture {
 
     private final String name;
     private final int index;
-    
+
     /**
      * Constructs this fixture.
-     * 
-     * @param name the base nmae of this fixture.
+     *
+     * @param name the base name of this fixture.
      * @param index the index of this fixture.
      */
     protected Fixture(String name, int index) {
         this.name = name;
-        this.index = index;    
+        this.index = index;
     }
-    
+
     public String name() {
         StringBuilder builder = new StringBuilder();
         int beginIndex = name.lastIndexOf('/') + 1;
         int endIndex = name.lastIndexOf('.');
         builder.append(name.substring(beginIndex, endIndex))
-               .append("[").append(index).append("]"); 
+               .append("[").append(index).append("]");
         return builder.toString();
     }
-    
+
     public int index() {
         return index;
     }
-    
+
     public String displayName() {
         StringBuilder builder = new StringBuilder();
         int beginIndex = name.lastIndexOf('/') + 1;
         int endIndex = name.lastIndexOf('.');
         builder.append(name.substring(beginIndex, endIndex))
-               .append("[").append(index).append("]") 
-               .append(" ").append(description()); 
+               .append("[").append(index).append("]")
+               .append(" ").append(description());
         return builder.toString();
     }
-    
+
     @Override
     public String toString() {
         return displayName();
     }
-    
+
     public abstract String description();
 }

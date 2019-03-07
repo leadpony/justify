@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "patternProperties": {
+        "poto{8}": {
+            "type": "string"
+        }
+    }
+}
+---
+{
+    "potoooooooo": 42
+}
+---
+[
+    {
+        "location": [2, 21], 
+        "pointer": "/potoooooooo", 
+        "keyword": "type"
+    }
+]

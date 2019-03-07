@@ -1,0 +1,16 @@
+{
+    "type": "object",
+    "required": ["foo", "bar"]
+}
+--- 
+{
+    "foo": 42
+}
+---
+[
+    {
+        "location": [3, 1], 
+        "pointer": "", 
+        "keyword": "required"
+    }
+]

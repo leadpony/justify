@@ -1,0 +1,17 @@
+{
+    "type": "array",
+    "items": [ true, true, true ],
+    "additionalItems": {
+        "type": "string"
+    }
+}
+---
+[1, 2, 3, 4]
+---
+[
+    {
+        "location": [1, 11],
+        "pointer": "/3",
+        "keyword": "type"
+    }
+]

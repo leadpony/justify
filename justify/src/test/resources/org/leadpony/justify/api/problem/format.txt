@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "properties": {
+        "foo": {
+            "type": "string",
+            "format": "date"
+        }
+    }
+}
+---
+{
+    "foo": "Monday"
+}
+---
+[
+    {
+        "location": [2, 19], 
+        "pointer": "/foo", 
+        "keyword": "format"
+    }
+]

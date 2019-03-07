@@ -1,0 +1,24 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": ["child"]
+    }
+}
+---
+[
+    {
+        "child": 42
+    },
+    {
+        "foo": 42
+    }
+]
+---
+[
+    {
+        "location": [7,5], 
+        "pointer": "/1", 
+        "keyword": "required"
+    }
+]

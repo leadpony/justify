@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "properties": {
+        "parent": {
+            "type": "object",
+             "required": ["child"]
+        }
+    }
+}
+---
+{
+    "parent": {
+        "foo": 42
+    }
+}
+---
+[
+    {
+        "location": [4, 5], 
+        "pointer": "/parent", 
+        "keyword": "required"
+    }
+]

@@ -1,0 +1,14 @@
+{
+    "type": "integer",
+    "minimum": 1
+}
+---
+0
+---
+[
+    {
+        "location": [1, 1], 
+        "pointer": "", 
+        "keyword": "minimum"
+    }
+]

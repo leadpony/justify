@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "minProperties": 3
+}
+---
+{
+    "first": 1,
+    "second": 2
+}
+---
+[
+    {
+        "location": [4, 1], 
+        "pointer": "", 
+        "keyword": "minProperties"
+    }
+]

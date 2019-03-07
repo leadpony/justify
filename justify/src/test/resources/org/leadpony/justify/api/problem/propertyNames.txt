@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "propertyNames": {
+        "maxLength": 3
+    }
+}
+---
+{
+    "longName": 123
+}
+---
+[
+    {
+        "location": [2,14], 
+        "pointer": "", 
+        "keyword": "maxLength"
+    }
+]

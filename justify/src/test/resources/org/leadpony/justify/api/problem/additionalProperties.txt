@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "additionalProperties": {
+        "type": "string"
+    }
+}
+---
+{
+    "foo": 42
+}
+---
+[
+    {
+        "pointer": "/foo",
+        "location": [2, 13],
+        "keyword": "type"
+    }
+]

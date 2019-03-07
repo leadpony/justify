@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "patternProperties": {
+        "poto{8}": false
+    }
+}
+---
+{
+    "potoooooooo": 42
+}
+---
+[
+    {
+        "location": [2, 17], 
+        "pointer": ""
+    }
+]

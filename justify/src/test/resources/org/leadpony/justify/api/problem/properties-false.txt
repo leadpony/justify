@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+        "foo": false
+    }
+}
+---
+{
+    "foo": 42
+}
+---
+[
+    {
+        "location": [2, 9], 
+        "pointer": ""
+    }
+]

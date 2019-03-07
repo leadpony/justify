@@ -1,0 +1,14 @@
+{
+    "type": "array",
+    "maxItems": 3
+}
+---
+[1, 2, 3, 4]
+---
+[
+    {
+        "location": [1, 12], 
+        "pointer": "", 
+        "keyword": "maxItems"
+    }
+]

@@ -1,0 +1,33 @@
+{
+    "type": "array",
+    "items": {
+        "type": "array",
+        "items": {
+            "maximum": 9
+        }
+    }
+}
+---
+[
+    [8, 9, 10],
+    [9, 10, 9],
+    [10, 9, 8]
+]
+---
+[
+    {
+        "location": [2, 13], 
+        "pointer": "/0/2", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [3, 10], 
+        "pointer": "/1/1", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [4, 7], 
+        "pointer": "/2/0", 
+        "keyword": "maximum"
+    }
+]

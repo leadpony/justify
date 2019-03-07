@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+        "first": {
+            "type": "array",
+            "items": {
+                "maximum": 9
+            }
+        },
+        "second": {
+            "type": "array",
+            "items": {
+                "minimum": 9
+            }
+        }
+    }
+}
+---
+{
+    "first": [8, 9, 10],
+    "second": [8, 9, 10]
+}
+---
+[
+    {
+        "location": [2, 22], 
+        "pointer": "/first/2", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [3, 16], 
+        "pointer": "/second/0", 
+        "keyword": "minimum"
+    }
+]

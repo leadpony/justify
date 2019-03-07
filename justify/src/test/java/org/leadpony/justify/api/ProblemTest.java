@@ -37,19 +37,48 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
+ * A test for problems found while validating JSON instances.
+ *
  * @author leadpony
  */
 public class ProblemTest {
 
     private static final Logger log = Logger.getLogger(ProblemTest.class.getName());
 
-    private static final String RESOURCE_NAME = "problem.tml";
-
     private static final JsonValidationService service = JsonValidationService.newInstance();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
+    private static final String[] files = {
+            "problem/additionalItems.txt",
+            "problem/additionalItems-false.txt",
+            "problem/additionalProperties.txt",
+            "problem/additionalProperties-false.txt",
+            "problem/format.txt",
+            "problem/items.txt",
+            "problem/items-in-array.txt",
+            "problem/items-in-object.txt",
+            "problem/maximum.txt",
+            "problem/maxItems.txt",
+            "problem/maxProperties.txt",
+            "problem/minimum.txt",
+            "problem/minItems.txt",
+            "problem/minProperties.txt",
+            "problem/patternProperties.txt",
+            "problem/patternProperties-false.txt",
+            "problem/properties.txt",
+            "problem/properties-false.txt",
+            "problem/properties-in-array.txt",
+            "problem/properties-in-object.txt",
+            "problem/propertyNames.txt",
+            "problem/required.txt",
+            "problem/required-in-array.txt",
+            "problem/required-in-object.txt",
+            "problem/type.txt",
+            "problem/uniqueItems.txt"
+    };
+
     public static Stream<ProblemFixture> fixtureProvider() {
-        return ProblemFixture.newStream(RESOURCE_NAME);
+        return Stream.of(files).map(ProblemFixture::readFrom);
     }
 
     @ParameterizedTest
@@ -57,14 +86,14 @@ public class ProblemTest {
     public void testProblem(ProblemFixture fixture) {
         JsonSchema schema = readSchema(fixture.schema());
         List<Problem> problems = new ArrayList<>();
-        JsonReader reader = service.createReader(new StringReader(fixture.data()), schema, problems::addAll);
+        JsonReader reader = service.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
         reader.readValue();
         assertThat(problems).hasSameSizeAs(fixture.problems());
         Iterator<Problem> it = problems.iterator();
-        Iterator<ProblemSpec> it2 = fixture.problems().iterator();
+        Iterator<ProblemFixture.Problem> it2 = fixture.problems().iterator();
         while (it.hasNext() && it2.hasNext()) {
             Problem actual = it.next();
-            ProblemSpec expected = it2.next();
+            ProblemFixture.Problem expected = it2.next();
             JsonLocation loc = actual.getLocation();
             assertThat(loc.getLineNumber()).isEqualTo(expected.lineNumber());
             assertThat(loc.getColumnNumber()).isEqualTo(expected.columnNumber());
@@ -81,7 +110,7 @@ public class ProblemTest {
 
     private void printProblems(List<Problem> problems, ProblemFixture fixture) {
         if (!problems.isEmpty()) {
-            log.info(fixture.displayName());
+            log.info(fixture.toString());
             printer.handleProblems(problems);
         }
     }

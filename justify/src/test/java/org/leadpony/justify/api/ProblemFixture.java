@@ -20,65 +20,132 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 /**
+ * A test fixture type for {@link ProblemTest}.
+ *
  * @author leadpony
  */
-class ProblemFixture extends Fixture {
+class ProblemFixture {
 
+    private final String name;
     private final String schema;
-    private final String data;
-    private final String description;
-    private final List<ProblemSpec> problems;
+    private final String instance;
+    private final List<Problem> problems;
 
-    /**
-     * @param name
-     * @param index
-     */
-    private ProblemFixture(String name, int index, String schema, String data, String description,
-            List<ProblemSpec> problems) {
-        super(name, index);
+    private ProblemFixture(String name, String schema, String data, List<Problem> problems) {
+        this.name = name;
         this.schema = schema;
-        this.data = data;
-        this.description = description;
+        this.instance = data;
         this.problems = problems;
     }
 
-    @Override
-    public String description() {
-        return description;
-    }
-
+    /**
+     * Returns the JSON schema for this fixture.
+     *
+     * @return the JSON schema.
+     */
     String schema() {
         return schema;
     }
 
-    String data() {
-        return data;
+    /**
+     * Returns the JSON instance for this fixture.
+     *
+     * @return the JSON instance.
+     */
+    String instance() {
+        return instance;
     }
 
-    List<ProblemSpec> problems() {
+    /**
+     * Returns the problems to be found.
+     *
+     * @return the problems to be found.
+     */
+    List<Problem> problems() {
         return problems;
     }
 
-    static Stream<ProblemFixture> newStream(String name) {
+    /**
+     * Returns the title of this fixture.
+     *
+     * @return the title of this fixture.
+     */
+    @Override
+    public String toString() {
+        int beginIndex = name.lastIndexOf('/') + 1;
+        int endIndex = name.lastIndexOf('.');
+        return name.substring(beginIndex, endIndex);
+    }
+
+    /**
+     * Reads a fixture from the specified resource file.
+     *
+     * @param name the name of the resource file.
+     * @return the read fixture.
+     */
+    static ProblemFixture readFrom(String name) {
         InputStream in = ProblemFixture.class.getResourceAsStream(name);
         try (FixtureReader reader = new FixtureReader(name, in)) {
-            return reader.read().stream();
+            return reader.read();
         }
     }
 
+    /**
+     * An expected problem.
+     *
+     * @author leadpony
+     */
+    static class Problem {
+
+        private final long line;
+        private final long column;
+        private final String pointer;
+        private final String keyword;
+
+        Problem(long line, long column, String pointer, String keyword) {
+            this.line = line;
+            this.column = column;
+            this.pointer = pointer;
+            this.keyword = keyword;
+        }
+
+        long lineNumber() {
+            return line;
+        }
+
+        long columnNumber() {
+            return column;
+        }
+
+        String pointer() {
+            return pointer;
+        }
+
+        String keyword() {
+            return keyword;
+        }
+    }
+
+    /**
+     * A reader type for reading a fixture.
+     *
+     * @author leadpony
+     */
     private static class FixtureReader implements AutoCloseable {
 
         private final String name;
         private final BufferedReader reader;
-        private final List<ProblemFixture> fixtures = new ArrayList<>();
-        private String line;
 
         FixtureReader(String name, InputStream in) {
             this.name = name;
@@ -91,89 +158,46 @@ class ProblemFixture extends Fixture {
             try {
                 reader.close();
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
             }
         }
 
-        List<ProblemFixture> read() {
-            moveNext();
-            while (readFixture()) {
+        ProblemFixture read() {
+            try {
+                String schema = readJsonAsString();
+                String data = readJsonAsString();
+                List<Problem> problems = readProblems();
+                return new ProblemFixture(name, schema, data, problems);
+            } catch (IOException e) {
+                return null;
             }
-            return fixtures;
         }
 
-        private boolean readFixture() {
-            String line = currentLine();
-            if (line == null || !line.startsWith("===")) {
-                return false;
-            }
-            String description = line.substring(3).trim();
-            moveNext();
-            line = currentLine();
-            if (line == null || line.startsWith("===")) {
-                return false;
-            }
-            moveNext();
-            String schema = readBlock();
-            line = currentLine();
-            if (line == null || line.startsWith("===")) {
-                return false;
-            }
-            moveNext();
-            String data = readBlock();
-            line = currentLine();
-            if (line == null || line.startsWith("===")) {
-                return false;
-            }
-            moveNext();
-            List<ProblemSpec> problems = readProblems();
-            fixtures.add(new ProblemFixture(
-                    name, fixtures.size(), schema, data, description, problems));
-            return true;
-        }
-
-        private String readBlock() {
+        private String readJsonAsString() throws IOException {
             StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = currentLine()) != null) {
-                if (line.startsWith("===") || line.startsWith("---")) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("---")) {
                     break;
                 }
-                builder.append(line).append("\n");
-                moveNext();
+                builder.append(line).append('\n');
             }
             return builder.toString();
         }
 
-        private List<ProblemSpec> readProblems() {
-            List<ProblemSpec> problems = new ArrayList<>();
-            String line;
-            while ((line = currentLine()) != null) {
-                if (line.startsWith("===") || line.startsWith("---")) {
-                    break;
-                }
-                String[] tokens = line.split("\\s*,\\s*");
-                problems.add(new ProblemSpec(
-                        Long.parseLong(tokens[0]),
-                        Long.parseLong(tokens[1]),
-                        tokens[2],
-                        tokens[3]
-                        ));
-                moveNext();
+        private List<Problem> readProblems() {
+            try (JsonReader reader = Json.createReader(this.reader)) {
+                return reader.readArray().stream()
+                        .map(JsonValue::asJsonObject)
+                        .map(FixtureReader::asProblem)
+                        .collect(Collectors.toList());
             }
-            return problems;
         }
 
-        private String currentLine() {
-            return this.line;
-        }
-
-        private void moveNext() {
-            try {
-                this.line = reader.readLine();
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
+        private static Problem asProblem(JsonObject object) {
+            String pointer = object.getString("pointer");
+            JsonArray location = object.getJsonArray("location");
+            String keyword = object.getString("keyword", null);
+            return new Problem(location.getInt(0), location.getInt(1), pointer, keyword);
         }
     }
 }
