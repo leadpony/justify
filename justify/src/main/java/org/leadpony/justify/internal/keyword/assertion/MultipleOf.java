@@ -24,6 +24,7 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.
@@ -54,7 +55,7 @@ class MultipleOf extends AbstractNumericAssertion {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(context)
-                    .withMessage("instance.problem.multipleOf")
+                    .withMessage(Message.INSTANCE_PROBLEM_MULTIPLEOF)
                     .withParameter("actual", value)
                     .withParameter("factor", factor)
                     .build();
@@ -67,7 +68,7 @@ class MultipleOf extends AbstractNumericAssertion {
     protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
             Problem p = createProblemBuilder(context)
-                    .withMessage("instance.problem.not.multipleOf")
+                    .withMessage(Message.INSTANCE_PROBLEM_NOT_MULTIPLEOF)
                     .withParameter("actual", value)
                     .withParameter("factor", factor)
                     .build();

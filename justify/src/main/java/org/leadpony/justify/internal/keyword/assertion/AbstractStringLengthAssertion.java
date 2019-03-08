@@ -23,6 +23,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * @author leadpony
@@ -31,15 +32,15 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
 
     private final int limit;
     private final String name;
-    private final String messageKey;
-    private final String negatedMessageKey;
+    private final Message message;
+    private final Message negatedMessage;
 
     protected AbstractStringLengthAssertion(
-            int limit, String name, String messageKey, String negatedMessageKey) {
+            int limit, String name, Message message, Message negatedMessage) {
         this.limit = limit;
         this.name = name;
-        this.messageKey = messageKey;
-        this.negatedMessageKey = negatedMessageKey;
+        this.message = message;
+        this.negatedMessage = negatedMessage;
     }
 
     @Override
@@ -54,7 +55,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(context, event)
-                    .withMessage(this.messageKey)
+                    .withMessage(this.message)
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
                     .build();
@@ -68,7 +69,7 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
         int length = value.codePointCount(0, value.length());
         if (testLength(length, this.limit)) {
             Problem p = createProblemBuilder(context, event)
-                    .withMessage(this.negatedMessageKey)
+                    .withMessage(this.negatedMessage)
                     .withParameter("actual", length)
                     .withParameter("limit", this.limit)
                     .build();

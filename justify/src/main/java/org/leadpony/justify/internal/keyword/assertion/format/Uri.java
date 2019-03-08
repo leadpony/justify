@@ -16,22 +16,25 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "uri" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3986">
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
 class Uri extends AbstractFormatAttribute {
-    
+
     private final boolean verbose;
-    
+
     Uri() {
         this(false);
     }
-    
+
     Uri(boolean verbose) {
         this.verbose = verbose;
     }
@@ -42,8 +45,13 @@ class Uri extends AbstractFormatAttribute {
     }
 
     @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_URI;
+    }
+
+    @Override
     public boolean test(String value) {
-        UriMatcher m = verbose ? 
+        UriMatcher m = verbose ?
                 new VerboseUriMatcher(value) : new UriMatcher(value);
         return m.matches();
     }

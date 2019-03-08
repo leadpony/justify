@@ -16,9 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "uri" attribute.
- * 
+ *
  * @author leadpony
  */
 public class UriTemplate extends AbstractFormatAttribute {
@@ -26,6 +29,11 @@ public class UriTemplate extends AbstractFormatAttribute {
     @Override
     public String name() {
         return "uri-template";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_URI_TEMPLATE;
     }
 
     @Override

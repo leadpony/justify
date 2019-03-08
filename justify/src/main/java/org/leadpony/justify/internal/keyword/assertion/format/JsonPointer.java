@@ -16,11 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "json-pointer" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc6901">
  * "JavaScript Object Notation (JSON) Pointer", RFC 6901</a>
  */
@@ -29,6 +32,11 @@ class JsonPointer extends AbstractFormatAttribute {
     @Override
     public String name() {
         return "json-pointer";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_JSON_POINTER;
     }
 
     @Override

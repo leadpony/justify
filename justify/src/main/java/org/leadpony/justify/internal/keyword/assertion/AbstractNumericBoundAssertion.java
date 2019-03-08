@@ -24,6 +24,7 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * @author leadpony
@@ -32,23 +33,23 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     private final BigDecimal limit;
     private final String name;
-    private final String messageKey;
-    private final String negatedMessageKey;
+    private final Message message;
+    private final Message negatedMessage;
 
     /**
      * Constructs this assertion.
      *
      * @param limit the lower or upper limit.
      * @param name the name of this assertion.
-     * @param messageKey the error message for normal evaluation.
-     * @param negatedMessageKey the error message for negated evaluation.
+     * @param message the error message for normal evaluation.
+     * @param negatedMessage the error message for negated evaluation.
      */
     protected AbstractNumericBoundAssertion(
-            BigDecimal limit, String name, String messageKey, String negatedMessageKey) {
+            BigDecimal limit, String name, Message message, Message negatedMessage) {
         this.limit = limit;
         this.name = name;
-        this.messageKey = messageKey;
-        this.negatedMessageKey = negatedMessageKey;
+        this.message = message;
+        this.negatedMessage = negatedMessage;
     }
 
     @Override
@@ -67,7 +68,7 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(context)
-                    .withMessage(this.messageKey)
+                    .withMessage(this.message)
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)
                     .build();
@@ -80,7 +81,7 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value, this.limit)) {
             Problem p = createProblemBuilder(context)
-                    .withMessage(this.negatedMessageKey)
+                    .withMessage(this.negatedMessage)
                     .withParameter("actual", value)
                     .withParameter("limit", this.limit)
                     .build();

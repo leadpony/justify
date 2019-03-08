@@ -16,19 +16,27 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "dateTime" attribute.
- * 
+ *
  * @author leadpony
  */
 class DateTime extends AbstractFormatAttribute {
 
     private final Date date = new Date();
     private final Time time = new Time();
-    
+
     @Override
     public String name() {
         return "date-time";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_DATE_TIME;
     }
 
     @Override

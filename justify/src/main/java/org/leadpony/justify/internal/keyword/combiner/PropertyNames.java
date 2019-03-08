@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator.Result;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -81,7 +82,7 @@ class PropertyNames extends UnaryCombiner {
     private Evaluator createForbiddenPropertyEvaluator(JsonSchema subschema) {
         return (event, context, depth, dispatcher)->{
             ProblemBuilder b = createProblemBuilder(context)
-                .withMessage("instance.problem.object.nonempty");
+                .withMessage(Message.INSTANCE_PROBLEM_OBJECT_NONEMPTY);
             dispatcher.dispatchProblem(b.build());
             return Result.FALSE;
         };

@@ -25,6 +25,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
@@ -85,7 +86,7 @@ class MaxItems extends AbstractAssertion implements ArrayKeyword {
                     return Result.TRUE;
                 } else {
                     Problem p = factory.createProblemBuilder(context)
-                            .withMessage("instance.problem.maxItems")
+                            .withMessage(Message.INSTANCE_PROBLEM_MAXITEMS)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxItems)
                             .build();

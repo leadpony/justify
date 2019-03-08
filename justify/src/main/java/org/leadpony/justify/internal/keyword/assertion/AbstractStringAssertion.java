@@ -22,7 +22,6 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.StringKeyword;
@@ -34,9 +33,6 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  * @author leadpony
  */
 abstract class AbstractStringAssertion extends AbstractAssertion implements StringKeyword, Evaluator {
-
-    private static final Localizable LOCALIZED_KEY = (locale)->Message.asString("string.key", locale);
-    private static final Localizable LOCALIZED_VALUE = (locale)->Message.asString("string.value", locale);
 
     @Override
     protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
@@ -58,10 +54,10 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Stri
         ProblemBuilder builder = super.createProblemBuilder(context);
         if (event == Event.KEY_NAME) {
             builder.withParameter("subject", "key")
-                   .withParameter("localizedSubject", LOCALIZED_KEY);
+                   .withParameter("localizedSubject", Message.STRING_KEY);
         } else {
             builder.withParameter("subject", "value")
-                   .withParameter("localizedSubject", LOCALIZED_VALUE);
+                   .withParameter("localizedSubject", Message.STRING_VALUE);
         }
         return builder;
     }

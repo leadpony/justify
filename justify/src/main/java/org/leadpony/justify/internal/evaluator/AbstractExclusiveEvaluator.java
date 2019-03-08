@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemList;
 
@@ -41,7 +42,7 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
             dispatcher.dispatchAllProblems(filteredLists.get(0));
         } else {
             ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage("instance.problem.oneOf.few")
+                    .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
                     .withBranches(filteredLists);
             dispatcher.dispatchProblem(builder.build());
         }
@@ -49,7 +50,7 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
 
     protected void dispatchNegatedProblems(EvaluatorContext context, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
         ProblemBuilder builder = createProblemBuilder(context)
-                .withMessage("instance.problem.oneOf.many")
+                .withMessage(Message.INSTANCE_PROBLEM_ONEOF_MANY)
                 .withBranches(problemLists);
         dispatcher.dispatchProblem(builder.build());
     }

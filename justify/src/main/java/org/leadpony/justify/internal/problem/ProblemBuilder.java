@@ -43,7 +43,7 @@ public class ProblemBuilder {
     private JsonSchema schema;
     private String keyword;
     private boolean resolvable = true;
-    private String messageKey;
+    private Message message;
     private final Map<String, Object> parameters = new HashMap<>();
     private List<List<Problem>> branches;
 
@@ -94,13 +94,13 @@ public class ProblemBuilder {
     }
 
     /**
-     * Specifies the key name of the message used for the problem.
+     * Specifies the message used for the problem.
      *
-     * @param messageKey the key name of the message.
+     * @param message the message to be presented, cannot be {@code null}.
      * @return this builder.
      */
-    public ProblemBuilder withMessage(String messageKey) {
-        this.messageKey = messageKey;
+    public ProblemBuilder withMessage(Message message) {
+        this.message = message;
         return this;
     }
 
@@ -156,14 +156,14 @@ public class ProblemBuilder {
         private final JsonSchema schema;
         private final String keyword;
         private final boolean resolvable;
-        private final String messageKey;
+        private final Message message;
         private final Map<String, Object> parameters;
 
         protected AbstractProblem(ProblemBuilder builder) {
             this.schema = builder.schema;
             this.keyword = builder.keyword;
             this.resolvable = builder.resolvable;
-            this.messageKey = builder.messageKey;
+            this.message = builder.message;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
         }
 
@@ -233,7 +233,7 @@ public class ProblemBuilder {
          * @return the built message.
          */
         private String buildMessage(Locale locale) {
-            return Message.get(messageKey, locale).format(parameters);
+            return message.format(parameters, locale);
         }
 
         /**
@@ -247,7 +247,7 @@ public class ProblemBuilder {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("message", message);
             parameters.put("location", buildLocation(getLocation(), locale));
-            return Message.get("line", locale).format(parameters);
+            return Message.LINE.format(parameters, locale);
         }
 
         /**
@@ -259,12 +259,12 @@ public class ProblemBuilder {
          */
         private String buildLocation(JsonLocation location, Locale locale) {
             if (location == null) {
-                return Message.asString("location.unknown", locale);
+                return Message.LOCATION_UNKNOWN.getLocalized(locale);
             } else {
                 Map<String, Object> parameters = new HashMap<>();
                 parameters.put("row", location.getLineNumber());
                 parameters.put("col", location.getColumnNumber());
-                return Message.get("location", locale).format(parameters);
+                return Message.LOCATION.format(parameters, locale);
             }
         }
     }

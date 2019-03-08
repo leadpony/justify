@@ -25,6 +25,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -88,7 +89,7 @@ class MinProperties extends AbstractAssertion implements ObjectKeyword {
                     return Result.TRUE;
                 } else {
                     Problem p = factory.createProblemBuilder(context)
-                            .withMessage("instance.problem.minProperties")
+                            .withMessage(Message.INSTANCE_PROBLEM_MINPROPERTIES)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minProperties)
                             .build();

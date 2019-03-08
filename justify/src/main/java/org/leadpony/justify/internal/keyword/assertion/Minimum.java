@@ -18,17 +18,19 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Assertion specified with "minimum" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class Minimum extends AbstractNumericBoundAssertion {
 
     Minimum(BigDecimal limit) {
-        super(limit, "minimum", "instance.problem.minimum", "instance.problem.exclusiveMaximum");
+        super(limit, "minimum", Message.INSTANCE_PROBLEM_MINIMUM, Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM);
     }
-    
+
     @Override
     protected boolean testValue(BigDecimal actual, BigDecimal limit) {
         return actual.compareTo(limit) >= 0;

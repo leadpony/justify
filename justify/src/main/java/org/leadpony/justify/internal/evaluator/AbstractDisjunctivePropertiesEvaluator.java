@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
@@ -34,7 +35,7 @@ public abstract class AbstractDisjunctivePropertiesEvaluator extends AbstractDis
     @Override
     protected void dispatchDefaultProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
         ProblemBuilder b = createProblemBuilder(context)
-                .withMessage("instance.problem.object.empty");
+                .withMessage(Message.INSTANCE_PROBLEM_OBJECT_EMPTY);
         dispatcher.dispatchProblem(b.build());
     }
 }

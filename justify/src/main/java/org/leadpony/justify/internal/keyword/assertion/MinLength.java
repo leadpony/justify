@@ -16,15 +16,17 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Assertion specified with "minLength" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class MinLength extends AbstractStringLengthAssertion {
 
     MinLength(int limit) {
-        super(limit, "minLength", "instance.problem.minLength", "instance.problem.not.minLength");
+        super(limit, "minLength", Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
     }
 
     @Override

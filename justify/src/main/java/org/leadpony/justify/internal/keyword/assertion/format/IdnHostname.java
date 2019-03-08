@@ -16,11 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "idn-hostname" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc5890">RFC 5890</a>
  * @see <a href="https://tools.ietf.org/html/rfc5892">RFC 5892</a>
  */
@@ -29,6 +32,11 @@ public class IdnHostname extends AbstractFormatAttribute {
     @Override
     public String name() {
         return "idn-hostname";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_IDN_HOSTNAME;
     }
 
     @Override

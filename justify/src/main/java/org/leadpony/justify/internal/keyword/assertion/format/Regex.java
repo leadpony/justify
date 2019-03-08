@@ -16,9 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "regex" attribute.
- * 
+ *
  * @author leadpony
  * @see <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
  *      ECMA 262 specification</a>
@@ -31,10 +34,15 @@ public class Regex extends AbstractFormatAttribute {
     }
 
     @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_REGEX;
+    }
+
+    @Override
     public boolean test(String value) {
         return testUnicode(value);
     }
-    
+
     public boolean test(String value, String flags) {
         if (flags.indexOf('u') >= 0) {
             return testUnicode(value);
@@ -42,7 +50,7 @@ public class Regex extends AbstractFormatAttribute {
             return testNonUnicode(value);
         }
     }
-    
+
     private boolean testUnicode(String value) {
         return new UnicodeRegExpMatcher(value).matches();
     }

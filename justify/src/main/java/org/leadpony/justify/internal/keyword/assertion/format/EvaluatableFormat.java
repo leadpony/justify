@@ -29,6 +29,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -79,7 +80,7 @@ public class EvaluatableFormat extends Format implements Evaluator {
             return Result.TRUE;
         } else {
             ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage("instance.problem.format");
+                    .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
             dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
         }
@@ -89,7 +90,7 @@ public class EvaluatableFormat extends Format implements Evaluator {
         JsonValue value = context.getParser().getValue();
         if (attribute.test(value)) {
             ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage("instance.problem.not.format");
+                    .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
             dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;
         } else {

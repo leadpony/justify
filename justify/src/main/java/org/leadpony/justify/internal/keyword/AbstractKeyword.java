@@ -26,6 +26,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -119,11 +120,11 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
             ProblemBuilder builder = createProblemBuilder(context)
                                     .withParameter("actual", actual);
             if (expected.size() > 1) {
-                builder.withMessage("instance.problem.type.plural")
+                builder.withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
                        .withParameter("expected", expected);
             } else {
                 InstanceType first = expected.iterator().next();
-                builder.withMessage("instance.problem.type")
+                builder.withMessage(Message.INSTANCE_PROBLEM_TYPE)
                        .withParameter("expected", first);
             }
             dispatcher.dispatchProblem(builder.build());

@@ -18,15 +18,17 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Assertion specified with "exclusiveMinimum" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMinimum(BigDecimal limit) {
-        super(limit, "exclusiveMinimum", "instance.problem.exclusiveMinimum", "instance.problem.maximum");
+        super(limit, "exclusiveMinimum", Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM, Message.INSTANCE_PROBLEM_MAXIMUM);
     }
 
     @Override

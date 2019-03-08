@@ -28,6 +28,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
@@ -86,7 +87,7 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
         if (scheme.canDecode(encoded)) {
             return Result.TRUE;
         } else {
-            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.contentEncoding"));
+            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTENCODING));
             return Result.FALSE;
         }
     }
@@ -94,7 +95,7 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
     public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         String encoded = ((JsonString) context.getParser().getValue()).getString();
         if (scheme.canDecode(encoded)) {
-            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.not.contentEncoding"));
+            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING));
             return Result.FALSE;
         }
         return Result.TRUE;
@@ -109,7 +110,7 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
         return scheme;
     }
 
-    private Problem buildProblem(EvaluatorContext context, String messageKey) {
-        return createProblemBuilder(context).withMessage(messageKey).withParameter("encoding", scheme.name()).build();
+    private Problem buildProblem(EvaluatorContext context, Message message) {
+        return createProblemBuilder(context).withMessage(message).withParameter("encoding", scheme.name()).build();
     }
 }

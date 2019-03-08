@@ -30,6 +30,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -107,7 +108,7 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
         if (testValue(value, true)) {
             return Result.TRUE;
         } else {
-            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.contentMediaType"));
+            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE));
             return Result.FALSE;
         }
     }
@@ -115,7 +116,7 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
     public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         String value = ((JsonString) context.getParser().getValue()).getString();
         if (testValue(value, false)) {
-            dispatcher.dispatchProblem(buildProblem(context, "instance.problem.not.contentMediaType"));
+            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE));
             return Result.FALSE;
         } else {
             return Result.TRUE;
@@ -148,7 +149,7 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
         return builder.toString();
     }
 
-    private Problem buildProblem(EvaluatorContext context, String messageKey) {
-        return createProblemBuilder(context).withMessage(messageKey).withParameter("type", value()).build();
+    private Problem buildProblem(EvaluatorContext context, Message message) {
+        return createProblemBuilder(context).withMessage(message).withParameter("type", value()).build();
     }
 }

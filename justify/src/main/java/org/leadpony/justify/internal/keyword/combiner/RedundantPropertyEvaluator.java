@@ -23,16 +23,17 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
 class RedundantPropertyEvaluator implements Evaluator {
-    
+
     private final String keyName;
     private final JsonSchema schema;
-    
+
     RedundantPropertyEvaluator(String keyName, JsonSchema schema) {
         this.keyName = keyName;
         this.schema = schema;
@@ -41,7 +42,7 @@ class RedundantPropertyEvaluator implements Evaluator {
     @Override
     public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
-                .withMessage("instance.problem.redundant.property")
+                .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_PROPERTY)
                 .withParameter("name", keyName)
                 .withSchema(schema)
                 .build();

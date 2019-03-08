@@ -16,12 +16,15 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "email" attribute.
- * As defined by RFC 5322, section 3.4.1. 
- * 
+ * As defined by RFC 5322, section 3.4.1.
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc5322">RFC 5322, section 3.4.1</a>
  */
 class Email extends AbstractFormatAttribute {
@@ -29,6 +32,11 @@ class Email extends AbstractFormatAttribute {
     @Override
     public String name() {
         return "email";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_EMAIL;
     }
 
     @Override

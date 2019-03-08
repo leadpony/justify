@@ -41,7 +41,7 @@ public class ValidatingJsonReader implements JsonReader {
     private final JsonParser parser;
     private boolean alreadyRead;
     private boolean alreadyClosed;
-    
+
     ValidatingJsonReader(JsonParser parser) {
         this.parser = parser;
     }
@@ -62,14 +62,13 @@ public class ValidatingJsonReader implements JsonReader {
                 } else {
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put("event", event);
-                    String message = Message.get("reader.read.error")
-                                            .format(parameters);
+                    String message = Message.READER_READ_ERROR.format(parameters);
                     throw newParsingException(message);
                 }
             } catch (IllegalStateException e) {
                 throw newParsingException(e);
             }
-            
+
         }
         throw newUnexpectedEndOfInputException();
     }
@@ -124,7 +123,7 @@ public class ValidatingJsonReader implements JsonReader {
         }
         throw newUnexpectedEndOfInputException();
     }
-    
+
     @Override
     public void close() {
         if (!alreadyClosed) {
@@ -134,10 +133,10 @@ public class ValidatingJsonReader implements JsonReader {
     }
 
     private static JsonException newUnexpectedEndOfInputException() {
-        String message = Message.asString("reader.unexpected.eoi");
+        String message = Message.READER_UNEXPECTED_EOI.getLocalized();
         return new JsonException(message);
     }
-    
+
     private JsonParsingException newParsingException(String message) {
         JsonLocation location = SimpleJsonLocation.before(parser.getLocation());
         return new JsonParsingException(message, location);

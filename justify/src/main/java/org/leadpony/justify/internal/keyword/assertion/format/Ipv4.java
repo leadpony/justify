@@ -16,17 +16,25 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "ipv4" attribute.
- * 
+ *
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
  */
 class Ipv4 extends AbstractFormatAttribute {
-    
+
     @Override
     public String name() {
         return "ipv4";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_IPV4;
     }
 
     @Override

@@ -16,11 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "iri-reference" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3987">
  * "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
@@ -29,6 +32,11 @@ class IriReference extends AbstractFormatAttribute {
     @Override
     public String name() {
         return "iri-reference";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_IRI_REFERENCE;
     }
 
     @Override

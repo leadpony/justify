@@ -19,6 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "date" attribute.
  *
@@ -27,10 +30,15 @@ import java.time.format.DateTimeParseException;
 class Date extends AbstractFormatAttribute {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-    
+
     @Override
     public String name() {
         return "date";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_DATE;
     }
 
     @Override

@@ -23,16 +23,17 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
 class RedundantItemEvaluator implements Evaluator {
-    
+
     private final int itemIndex;
     private final JsonSchema schema;
-    
+
     RedundantItemEvaluator(int itemIndex, JsonSchema schema) {
         assert schema.isBoolean() || schema == JsonSchema.EMPTY;
         this.itemIndex = itemIndex;
@@ -42,7 +43,7 @@ class RedundantItemEvaluator implements Evaluator {
     @Override
     public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
-                .withMessage("instance.problem.redundant.item")
+                .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_ITEM)
                 .withParameter("index", itemIndex)
                 .withSchema(schema)
                 .build();

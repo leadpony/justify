@@ -27,7 +27,7 @@ import org.leadpony.justify.api.Localizable;
 
 /**
  * Formatter of message.
- * 
+ *
  * @author leadpony
  */
 class MessageFormatter {
@@ -35,12 +35,12 @@ class MessageFormatter {
     private final String input;
     private final ResourceBundle bundle;
     private int offset;
-   
+
     private Map<String, Object> arguments;
-    
+
     /**
      * Constructs this formatter.
-     * 
+     *
      * @param input the original message.
      * @param bundle the resource bundle to be used for localization.
      */
@@ -49,7 +49,7 @@ class MessageFormatter {
         this.bundle = bundle;
         this.offset= 0;
     }
-  
+
     /**
      * Formats the message.
      * @param arguments the values for variables.
@@ -63,12 +63,12 @@ class MessageFormatter {
             if (c == '{') {
                 builder.append(placeholder());
             } else {
-                builder.append(c); 
+                builder.append(c);
             }
         }
         return builder.toString();
     }
-    
+
     private String placeholder() {
         StringBuilder builder = new StringBuilder();
         while (hasNext()) {
@@ -76,12 +76,12 @@ class MessageFormatter {
             if (c == '}') {
                 break;
             } else {
-                builder.append(c); 
+                builder.append(c);
             }
         }
         return expandVariable(builder.toString());
     }
-    
+
     private String expandVariable(String spec) {
         String[] tokens = spec.split("\\|");
         String name = tokens[0];
@@ -92,22 +92,22 @@ class MessageFormatter {
         Object value = resolveVariable(name);
         return stringify(value, modifier);
     }
-    
+
     private Object resolveVariable(String name) {
         if (arguments.containsKey(name)) {
             return arguments.get(name);
         }
         throw new IllegalArgumentException("variable \"" + name + "\" is undefined.");
     }
-    
+
     private String stringify(Object object, Function<String, String> modifier) {
         String string = null;
         if (object instanceof Collection<?>) {
             return collectionToString(object, modifier);
-        } else if (object instanceof Enum<?>) {
-            string = enumToString(object);
         } else if (object instanceof Localizable) {
             string = localizedToString(object);
+        } else if (object instanceof Enum<?>) {
+            string = enumToString(object);
         } else if (object instanceof String) {
             string = stringToString(object);
         } else {
@@ -115,11 +115,11 @@ class MessageFormatter {
         }
         return modifier.apply(string);
     }
-    
+
     private boolean hasNext() {
         return offset < input.length();
     }
-    
+
     private char next() {
         if (offset < input.length()) {
             return input.charAt(offset++);
@@ -127,11 +127,11 @@ class MessageFormatter {
             throw new NoSuchElementException();
         }
     }
-    
+
     private String stringToString(Object object) {
         return (String)object;
     }
-    
+
     private String localizedToString(Object object) {
         Localizable localized = (Localizable)object;
         return localized.getLocalized(bundle.getLocale());
@@ -158,14 +158,14 @@ class MessageFormatter {
                  .append("]")
                  .toString();
     }
-    
+
     /**
      * Variable modifier.
-     * 
+     *
      * @author leadpony
      */
     private static enum Modifier implements Function<String, String> {
-        
+
         CAPITALIZE() {
             @Override
             public String apply(String t) {
@@ -189,12 +189,12 @@ class MessageFormatter {
             }
         }
         ;
-        
+
         @Override
         public String apply(String t) {
             return t;
         }
-        
+
         public static Modifier byName(String name) {
             return valueOf(name.toUpperCase());
         }

@@ -22,6 +22,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Default implementation of {@link ProblemDispatcher}.
@@ -38,7 +39,7 @@ public interface DefaultProblemDispatcher extends ProblemDispatcher {
         requireNonNull(context, "context");
         requireNonNull(schema, "schema");
         Problem problem = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
-                .withMessage("instance.problem.unknown")
+                .withMessage(Message.INSTANCE_PROBLEM_UNKNOWN)
                 .withSchema(schema)
                 .withResolvability(false)
                 .build();

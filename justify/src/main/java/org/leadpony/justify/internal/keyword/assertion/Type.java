@@ -29,6 +29,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 
 /**
@@ -78,7 +79,7 @@ abstract class Type extends AbstractAssertion {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.type")
+                        .withMessage(Message.INSTANCE_PROBLEM_TYPE)
                         .withParameter("actual", type)
                         .withParameter("expected", this.type)
                         .build();
@@ -93,7 +94,7 @@ abstract class Type extends AbstractAssertion {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.not.type")
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE)
                         .withParameter("expected", this.type)
                         .build();
                 dispatcher.dispatchProblem(p);
@@ -174,7 +175,7 @@ abstract class Type extends AbstractAssertion {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.type.plural")
+                        .withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
                         .withParameter("actual", type)
                         .withParameter("expected", typeSet)
                         .build();
@@ -186,7 +187,7 @@ abstract class Type extends AbstractAssertion {
         private Result assertTypeNotMatches(InstanceType type, EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (contains(type)) {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.not.type.plural")
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE_PLURAL)
                         .withParameter("actual", type)
                         .withParameter("expected", typeSet)
                         .build();

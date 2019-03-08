@@ -30,6 +30,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
@@ -157,7 +158,7 @@ public class SchemaReference extends AbstractJsonSchema {
         public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
             Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
                     .withKeyword("$ref")
-                    .withMessage("schema.problem.reference")
+                    .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
                     .withParameter("ref", ref())
                     .withParameter("targetId", getTargetId())
                     .build();

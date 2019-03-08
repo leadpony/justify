@@ -16,21 +16,28 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Format attribute representing "relative-json-pointer" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  */
 class RelativeJsonPointer extends AbstractFormatAttribute {
-    
+
     private final JsonPointer jsonPointer = new JsonPointer();
 
     @Override
     public String name() {
         return "relative-json-pointer";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_RELATIVE_JSON_POINTER;
     }
 
     @Override
@@ -55,7 +62,7 @@ class RelativeJsonPointer extends AbstractFormatAttribute {
             return false;
         }
     }
-    
+
     private boolean testAfterPrefix(String value, int offset) {
         final int length = value.length();
         if (offset >= length) {

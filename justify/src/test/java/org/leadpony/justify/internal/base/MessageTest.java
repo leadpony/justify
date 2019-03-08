@@ -35,11 +35,11 @@ public class MessageTest {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("actual", InstanceType.STRING);
         parameters.put("expected", InstanceType.INTEGER);
-        
-        Message sut = Message.get("instance.problem.type", Locale.ROOT);
-        
-        String message = sut.format(parameters);
-        
+
+        Message sut = Message.INSTANCE_PROBLEM_TYPE;
+
+        String message = sut.format(parameters, Locale.ROOT);
+
         String expectedMessage = "The value must be of integer type, but actual type is string.";
         assertThat(message).isEqualTo(expectedMessage);
     }

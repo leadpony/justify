@@ -16,29 +16,37 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "uri-reference" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3986">
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
 class UriReference extends AbstractFormatAttribute {
 
     private final boolean verbose;
-    
+
     UriReference() {
         this(false);
     }
-    
+
     UriReference(boolean verbose) {
         this.verbose = verbose;
     }
-    
+
     @Override
     public String name() {
         return "uri-reference";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_URI_REFERENCE;
     }
 
     @Override

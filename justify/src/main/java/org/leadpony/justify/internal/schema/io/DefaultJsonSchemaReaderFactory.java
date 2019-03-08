@@ -110,7 +110,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             InputStream in = Files.newInputStream(path);
             return createSchemaReader(in);
         } catch (NoSuchFileException e) {
-            throw buildJsonException(e, "schema.problem.not.found", path);
+            throw buildJsonException(e, Message.SCHEMA_PROBLEM_NOT_FOUND, path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -129,11 +129,11 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new Draft07SchemaReader(parser, schemaBuilder, configuration);
     }
 
-    private static JsonException buildJsonException(NoSuchFileException e, String key, Path path) {
+    private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("path", path);
-        String message = Message.get(key).format(arguments);
-        return new JsonException(message, e);
+        String formatted = message.format(arguments);
+        return new JsonException(formatted, e);
     }
 
     private static class Builder implements JsonSchemaReaderFactoryBuilder, SchemaReaderConfiguration {

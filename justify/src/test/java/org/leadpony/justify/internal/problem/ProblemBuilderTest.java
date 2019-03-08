@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Test cases for {@link ProblemBuilder}.
@@ -58,7 +59,7 @@ public class ProblemBuilderTest {
         ProblemBuilderFactory factory = new ProblemBuilderFactory() {};
         ProblemBuilder builder = factory.createProblemBuilder(this.parser.getLocation());
         Problem problem = builder
-                .withMessage("instance.problem.type")
+                .withMessage(Message.INSTANCE_PROBLEM_TYPE)
                 .withParameter("actual", InstanceType.STRING)
                 .withParameter("expected", InstanceType.INTEGER)
                 .build();

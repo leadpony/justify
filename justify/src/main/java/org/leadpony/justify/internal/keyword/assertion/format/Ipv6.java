@@ -16,18 +16,26 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "ipv6" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc4291">RFC 4291</a>
  */
 class Ipv6 extends AbstractFormatAttribute {
-    
+
     @Override
     public String name() {
         return "ipv6";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_IPV6;
     }
 
     @Override

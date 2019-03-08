@@ -16,11 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "idn-email" attribute.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc6531">RFC 6531</a>
  */
 class IdnEmail extends Email {
@@ -29,7 +32,12 @@ class IdnEmail extends Email {
     public String name() {
         return "idn-email";
     }
-    
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_IDN_EMAIL;
+    }
+
     @Override
     public boolean test(String value) {
         return new IdnEmailMatcher(value).matches();

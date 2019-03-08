@@ -19,26 +19,34 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Format attribute representing "time" attribute.
- * 
+ *
  * @author leadpony
  */
 class Time extends AbstractFormatAttribute {
-    
+
     private static final Pattern LOCAL_TIME_PATTERN =
             Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");
-    private static final Pattern TIME_OFFSET_PATTERN = 
+    private static final Pattern TIME_OFFSET_PATTERN =
             Pattern.compile("(\\d{2})\\:(\\d{2})");
 
     private static final int MAX_HOURS = 23;
     private static final int MAX_MINUTES = 59;
     // Including leadp second.
     private static final int MAX_SECONDS = 60;
-    
+
     @Override
     public String name() {
         return "time";
+    }
+
+    @Override
+    public Localizable localizedName() {
+        return Message.FORMAT_TIME;
     }
 
     @Override
@@ -54,7 +62,7 @@ class Time extends AbstractFormatAttribute {
             return testLocalTimePart(parts[0]) && testTimeOffsetPart(parts[1]);
         }
     }
-    
+
     private static boolean testLocalTimePart(String value) {
         Matcher m = LOCAL_TIME_PATTERN.matcher(value);
         if (!m.matches()) {
@@ -74,7 +82,7 @@ class Time extends AbstractFormatAttribute {
         }
         return true;
     }
-    
+
     private static boolean testTimeOffsetPart(String value) {
         Matcher m = TIME_OFFSET_PATTERN.matcher(value);
         if (!m.matches()) {

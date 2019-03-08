@@ -25,6 +25,7 @@ import javax.json.JsonValue;
 
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator.Result;
 
@@ -59,7 +60,7 @@ class Enum extends AbstractEqualityAssertion {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(context)
-                    .withMessage("instance.problem.enum")
+                    .withMessage(Message.INSTANCE_PROBLEM_ENUM)
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
                     .build();
@@ -72,7 +73,7 @@ class Enum extends AbstractEqualityAssertion {
     protected Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (contains(actual)) {
             Problem p = createProblemBuilder(context)
-                    .withMessage("instance.problem.not.enum")
+                    .withMessage(Message.INSTANCE_PROBLEM_NOT_ENUM)
                     .withParameter("actual", actual)
                     .withParameter("expected", this.expected)
                     .build();

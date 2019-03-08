@@ -36,6 +36,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
@@ -161,7 +162,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
         protected Evaluator.Result dispatchMissingDependantProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
             Problem p = createProblemBuilder(context)
-                    .withMessage("instance.problem.required")
+                    .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                     .withParameter("required", property)
                     .build();
             dispatcher.dispatchProblem(p);
@@ -439,7 +440,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             } else {
                 for (String entry : missing) {
                     Problem p = createProblemBuilder(context)
-                            .withMessage("instance.problem.dependencies")
+                            .withMessage(Message.INSTANCE_PROBLEM_DEPENDENCIES)
                             .withParameter("required", entry)
                             .withParameter("dependant", property)
                             .build();
@@ -465,7 +466,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         protected Result test(EvaluatorContext context, ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.not.required")
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                         .withParameter("required", this.property)
                         .build();
                 dispatcher.dispatchProblem(p);
@@ -474,10 +475,10 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 ProblemBuilder b = createProblemBuilder(context)
                         .withParameter("dependant", property);
                 if (required.size() == 1) {
-                    b.withMessage("instance.problem.not.dependencies")
+                    b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES)
                      .withParameter("required", required.iterator().next());
                 } else {
-                    b.withMessage("instance.problem.not.dependencies.plural")
+                    b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES_PLURAL)
                      .withParameter("required", required);
                 }
                 dispatcher.dispatchProblem(b.build());
@@ -513,7 +514,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
         private Result dispatchProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
             Problem problem = createProblemBuilder(context)
-                    .withMessage("instance.problem.not.required")
+                    .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                     .withParameter("required", this.property)
                     .build();
             dispatcher.dispatchProblem(problem);

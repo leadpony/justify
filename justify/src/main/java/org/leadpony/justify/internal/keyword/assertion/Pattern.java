@@ -23,6 +23,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 
 /**
  * Assertion specified with "pattern" validation keyword.
@@ -53,7 +54,7 @@ class Pattern extends AbstractStringAssertion {
             return Result.TRUE;
         } else {
             Problem p = createProblemBuilder(context, event)
-                    .withMessage("instance.problem.pattern")
+                    .withMessage(Message.INSTANCE_PROBLEM_PATTERN)
                     .withParameter("pattern", pattern.toString())
                     .build();
             dispatcher.dispatchProblem(p);
@@ -65,7 +66,7 @@ class Pattern extends AbstractStringAssertion {
     protected Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
         if (testValue(value)) {
             Problem p = createProblemBuilder(context, event)
-                    .withMessage("instance.problem.not.pattern")
+                    .withMessage(Message.INSTANCE_PROBLEM_NOT_PATTERN)
                     .withParameter("pattern", pattern.toString())
                     .build();
             dispatcher.dispatchProblem(p);

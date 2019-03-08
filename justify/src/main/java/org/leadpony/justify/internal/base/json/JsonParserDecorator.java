@@ -263,7 +263,7 @@ public class JsonParserDecorator implements JsonParser {
     private JsonParsingException newParsingException(Event... expectedEvents) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expected", Arrays.asList(expectedEvents));
-        String message = Message.get("parser.unexpected.eoi").format(parameters);
+        String message = Message.PARSER_UNEXPECTED_EOI.format(parameters);
         return new JsonParsingException(message, getLastCharLocation());
     }
 

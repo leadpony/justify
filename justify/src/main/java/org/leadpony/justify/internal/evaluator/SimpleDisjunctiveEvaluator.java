@@ -26,6 +26,7 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemList;
 
@@ -94,7 +95,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
             dispatcher.dispatchAllProblems(filterdLists.get(0));
         } else {
             ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage("instance.problem.anyOf")
+                    .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
                     .withBranches(filterdLists);
             dispatcher.dispatchProblem(builder.build());
         }

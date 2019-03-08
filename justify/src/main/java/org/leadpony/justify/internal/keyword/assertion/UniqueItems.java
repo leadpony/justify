@@ -29,6 +29,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
@@ -113,7 +114,7 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             if (hasItemAlready(value)) {
                 int lastIndex = values.get(value);
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.uniqueItems")
+                        .withMessage(Message.INSTANCE_PROBLEM_UNIQUEITEMS)
                         .withParameter("index", index)
                         .withParameter("firstIndex", lastIndex)
                         .build();
@@ -155,7 +156,7 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(context)
-                        .withMessage("instance.problem.not.uniqueItems")
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_UNIQUEITEMS)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;

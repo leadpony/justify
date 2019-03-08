@@ -211,7 +211,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             InputStream in = Files.newInputStream(path);
             return createParserFactory(DEFAULT_CONFIG, schema, parser -> handler).createParser(in);
         } catch (NoSuchFileException e) {
-            throw buildJsonException(e, "instance.problem.not.found", path);
+            throw buildJsonException(e, Message.INSTANCE_PROBLEM_NOT_FOUND, path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -277,7 +277,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             InputStream in = Files.newInputStream(path);
             return createReaderFactory(DEFAULT_CONFIG, schema, parser -> handler).createReader(in);
         } catch (NoSuchFileException e) {
-            throw buildJsonException(e, "instance.problem.not.found", path);
+            throw buildJsonException(e, Message.INSTANCE_PROBLEM_NOT_FOUND, path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -339,11 +339,11 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         return new DefaultSchemaBuilderFactory(jsonBuilderFactory, defaultFormatAttributeRegistry.createMap(), contentRegistry);
     }
 
-    private static JsonException buildJsonException(NoSuchFileException e, String key, Path path) {
+    private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("path", path);
-        String message = Message.get(key).format(arguments);
-        return new JsonException(message, e);
+        String formatted = message.format(arguments);
+        return new JsonException(formatted, e);
     }
 
     /**

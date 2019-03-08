@@ -29,6 +29,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
@@ -101,7 +102,7 @@ class Required extends AbstractAssertion implements ObjectKeyword {
             } else if (last) {
                 for (String property : missing) {
                     Problem p = createProblemBuilder(context)
-                            .withMessage("instance.problem.required")
+                            .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                             .withParameter("required", property)
                             .build();
                     dispatcher.dispatchProblem(p);
@@ -139,12 +140,12 @@ class Required extends AbstractAssertion implements ObjectKeyword {
                 if (names.size() == 1) {
                     String name = names.iterator().next();
                     p = createProblemBuilder(context)
-                            .withMessage("instance.problem.not.required")
+                            .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                             .withParameter("required", name)
                             .build();
                 } else {
                     p = createProblemBuilder(context)
-                        .withMessage("instance.problem.not.required.plural")
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED_PLURAL)
                         .withParameter("required", names)
                         .build();
                 }

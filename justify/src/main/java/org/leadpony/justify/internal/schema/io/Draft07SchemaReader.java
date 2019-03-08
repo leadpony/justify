@@ -179,7 +179,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         if (parser.hasNext()) {
             return false;
         } else {
-            addProblem(problemBuilder("schema.problem.empty"));
+            addProblem(problemBuilder(Message.SCHEMA_PROBLEM_EMPTY));
             return true;
         }
     }
@@ -867,7 +867,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
                 try {
                     builder.withFormat(attribute);
                 } catch (IllegalArgumentException e) {
-                    addProblem(problemBuilder("schema.problem.format.unknown").withParameter("attribute", attribute));
+                    addProblem(problemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN).withParameter("attribute", attribute));
                 }
             } else {
                 builder.withLaxFormat(attribute);
@@ -949,7 +949,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private void addUnknown(String keyword, Draft07SchemaBuilder builder) {
         if (strictWithKeywords) {
-            addProblem(problemBuilder("schema.problem.keyword.unknown").withParameter("keyword", keyword));
+            addProblem(problemBuilder(Message.SCHEMA_PROBLEM_KEYWORD_UNKNOWN).withParameter("keyword", keyword));
         }
         if (parser.hasNext()) {
             Event event = parser.next();
@@ -1012,15 +1012,15 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private void handleInvalidMediaType() {
-        addProblem(problemBuilder("schema.problem.contentMediaType.invalid"));
+        addProblem(problemBuilder(Message.SCHEMA_PROBLEM_CONTENTMEDIATYPE_INVALID));
     }
 
-    private ProblemBuilder problemBuilder(String messageKey) {
+    private ProblemBuilder problemBuilder(Message message) {
         if (!(parser instanceof ValidatingJsonParser)) {
             throw new IllegalStateException();
         }
         EvaluatorContext context = (EvaluatorContext)parser;
-        return createProblemBuilder(context).withMessage(messageKey);
+        return createProblemBuilder(context).withMessage(message);
     }
 
     private void addProblem(ProblemBuilder problemBuilder) {
@@ -1065,7 +1065,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
                 reference.setReferencedSchema(schema);
             } else {
                 JsonLocation location = this.references.get(reference);
-                addProblem(createProblemBuilder(location).withMessage("schema.problem.reference")
+                addProblem(createProblemBuilder(location).withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
                         .withParameter("ref", reference.ref()).withParameter("targetId", targetId));
             }
         }
@@ -1104,7 +1104,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         for (SchemaReference reference : this.references.keySet()) {
             if (detector.detectInfiniteLoop(reference)) {
                 JsonLocation location = this.references.get(reference);
-                addProblem(createProblemBuilder(location).withMessage("schema.problem.reference.loop"));
+                addProblem(createProblemBuilder(location).withMessage(Message.SCHEMA_PROBLEM_REFERENCE_LOOP));
             }
         }
     }
@@ -1116,7 +1116,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private JsonParsingException newParsingException() {
-        String message = Message.asString("schema.problem.eoi");
+        String message = Message.SCHEMA_PROBLEM_EOI.getLocalized();
         return new JsonParsingException(message, parser.getLocation());
     }
 }

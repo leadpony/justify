@@ -16,15 +16,17 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import org.leadpony.justify.internal.base.Message;
+
 /**
  * Assertion specified with "maxLength" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class MaxLength extends AbstractStringLengthAssertion {
 
     MaxLength(int limit) {
-        super(limit, "maxLength", "instance.problem.maxLength", "instance.problem.not.maxLength");
+        super(limit, "maxLength", Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
     }
 
     @Override
