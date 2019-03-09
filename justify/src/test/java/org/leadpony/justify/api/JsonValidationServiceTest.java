@@ -28,14 +28,14 @@ import java.nio.file.Paths;
 import javax.json.JsonException;
 
 /**
- * Test of {@link JsonValidationService}.
- * 
+ * A test class for testing the {@link JsonValidationService} implementation.
+ *
  * @author leadpony
  */
 public class JsonValidationServiceTest {
-    
+
     private JsonValidationService service;
-    
+
     @BeforeEach
     public void setUp() {
         service = JsonValidationService.newInstance();
@@ -47,7 +47,7 @@ public class JsonValidationServiceTest {
             Path path = Paths.get("nonexistent.schema.json");
             service.createSchemaReader(path);
         });
-        
+
         assertThat(thrown)
             .isInstanceOf(JsonException.class)
             .hasCauseInstanceOf(IOException.class)
@@ -66,7 +66,7 @@ public class JsonValidationServiceTest {
             .hasCauseInstanceOf(IOException.class)
             .hasMessageContaining("nonexistent.schema.json");
     }
-    
+
     @Test
     public void createParser_shouldThrowJsonExceptionIfPathDoesNotExist() {
         Throwable thrown = catchThrowable(()->{

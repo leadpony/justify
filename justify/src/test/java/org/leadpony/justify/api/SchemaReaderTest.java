@@ -32,17 +32,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.JsonValidationService;
 
 /**
- * Tests for {@link JsonSchemaReader}.
+ * A test class for testing the {@link JsonSchemaReader} implementation.
  *
  * @author leadpony
  */
 public class SchemaReaderTest {
 
+    private static final JsonValidationService service = JsonValidationServices.get();
+
     private static final Logger log = Logger.getLogger(SchemaReaderTest.class.getName());
-    private static final JsonValidationService service = JsonValidationService.newInstance();
 
     private static void print(Throwable thrown) {
         log.info(thrown.toString());

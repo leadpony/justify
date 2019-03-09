@@ -37,20 +37,18 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
- * Base type of validation test.
+ * The base class for various kinds of validation tests.
  *
  * @author leadpony
  */
 public abstract class BaseValidationTest {
 
     private static final Logger log = Logger.getLogger(BaseValidationTest.class.getName());
-
-    public static final JsonValidationService service = JsonValidationService.newInstance();
+    protected static final JsonValidationService service = JsonValidationServices.get();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
     private static JsonValue lastValue;

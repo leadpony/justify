@@ -13,105 +13,120 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
+import java.util.Locale;
 
 import javax.json.JsonReader;
 import javax.json.stream.JsonLocation;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonSchemaReader;
-import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
+import org.junit.jupiter.api.Test;
 
 /**
- * A test for problems found while validating JSON instances.
+ * A test class for testing the {@link Problem} implementation.
  *
  * @author leadpony
  */
 public class ProblemTest {
 
-    private static final Logger log = Logger.getLogger(ProblemTest.class.getName());
+    private static final JsonValidationService service = JsonValidationServices.get();
 
-    private static final JsonValidationService service = JsonValidationService.newInstance();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final String SCHEMA = "{ \"properties\": { \"foo\": { \"type\": \"string\" } } }";
+    private static final String INSTANCE = "{\n\"foo\": 42\n}";
 
-    private static final String[] files = {
-            "problem/additionalItems.txt",
-            "problem/additionalItems-false.txt",
-            "problem/additionalProperties.txt",
-            "problem/additionalProperties-false.txt",
-            "problem/format.txt",
-            "problem/items.txt",
-            "problem/items-in-array.txt",
-            "problem/items-in-object.txt",
-            "problem/maximum.txt",
-            "problem/maxItems.txt",
-            "problem/maxProperties.txt",
-            "problem/minimum.txt",
-            "problem/minItems.txt",
-            "problem/minProperties.txt",
-            "problem/patternProperties.txt",
-            "problem/patternProperties-false.txt",
-            "problem/properties.txt",
-            "problem/properties-false.txt",
-            "problem/properties-in-array.txt",
-            "problem/properties-in-object.txt",
-            "problem/propertyNames.txt",
-            "problem/required.txt",
-            "problem/required-in-array.txt",
-            "problem/required-in-object.txt",
-            "problem/type.txt",
-            "problem/uniqueItems.txt"
-    };
-
-    public static Stream<ProblemFixture> fixtureProvider() {
-        return Stream.of(files).map(ProblemFixture::readFrom);
-    }
-
-    @ParameterizedTest
-    @MethodSource("fixtureProvider")
-    public void testProblem(ProblemFixture fixture) {
-        JsonSchema schema = readSchema(fixture.schema());
+    private static Problem createProblem(String schemaDoc, String instanceDoc) {
+        JsonSchema schema = service.readSchema(new StringReader(schemaDoc));
         List<Problem> problems = new ArrayList<>();
-        JsonReader reader = service.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
-        reader.readValue();
-        assertThat(problems).hasSameSizeAs(fixture.problems());
-        Iterator<Problem> it = problems.iterator();
-        Iterator<ProblemFixture.Problem> it2 = fixture.problems().iterator();
-        while (it.hasNext() && it2.hasNext()) {
-            Problem actual = it.next();
-            ProblemFixture.Problem expected = it2.next();
-            JsonLocation loc = actual.getLocation();
-            assertThat(loc.getLineNumber()).isEqualTo(expected.lineNumber());
-            assertThat(loc.getColumnNumber()).isEqualTo(expected.columnNumber());
-            assertThat(actual.getPointer()).isEqualTo(expected.pointer());
-            assertThat(actual.getKeyword()).isEqualTo(expected.keyword());
+        ProblemHandler handler = problems::addAll;
+        try (JsonReader reader = service.createReader(new StringReader(instanceDoc), schema, handler)) {
+            reader.readValue();
         }
-        printProblems(problems, fixture);
+        return problems.get(0);
     }
 
-    private JsonSchema readSchema(String schema) {
-        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
-        return reader.read();
+    @Test
+    public void getMessage_shouldReturnMessage() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        String message = problem.getMessage(Locale.ROOT);
+
+        assertThat(message).isEqualTo("The value must be of string type, but actual type is integer.");
     }
 
-    private void printProblems(List<Problem> problems, ProblemFixture fixture) {
-        if (!problems.isEmpty()) {
-            log.info(fixture.toString());
-            printer.handleProblems(problems);
-        }
+    @Test
+    public void getContextualMessage_shouldReturnMessageIncludingLocation() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        String message = problem.getContextualMessage(Locale.ROOT);
+
+        assertThat(message).startsWith("[2,9]");
+    }
+
+    @Test
+    public void getLocation_shouldReturnLocation() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        JsonLocation location = problem.getLocation();
+
+        assertThat(location.getLineNumber()).isEqualTo(2);
+        assertThat(location.getColumnNumber()).isEqualTo(9);
+    }
+
+    @Test
+    public void getPointer_shouldReturnPointer() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        String pointer = problem.getPointer();
+
+        assertThat(pointer).isEqualTo("/foo");
+    }
+
+    @Test
+    public void getSchema_shouldReturnSchema() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        JsonSchema schema = problem.getSchema();
+
+        assertThat(schema).hasToString("{\"type\":\"string\"}");
+    }
+
+    @Test
+    public void getSchema_shouldReturnBooleanSchema() {
+        Problem problem = createProblem("false", INSTANCE);
+        JsonSchema schema = problem.getSchema();
+
+        assertThat(schema).isSameAs(JsonSchema.FALSE);
+    }
+
+    @Test
+    public void getKeyword_shouldReturnKeyword() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        String keyword = problem.getKeyword();
+
+        assertThat(keyword).isEqualTo("type");
+    }
+
+    @Test
+    public void getKeyword_shouldReturnNull() {
+        Problem problem = createProblem("false", INSTANCE);
+        String keyword = problem.getKeyword();
+
+        assertThat(keyword).isNull();
+    }
+
+    @Test
+    public void isResolvable_shouldReturnTrue() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        boolean actual = problem.isResolvable();
+
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void isResolvable_shouldReturnFalse() {
+        Problem problem = createProblem("false", INSTANCE);
+        boolean actual = problem.isResolvable();
+
+        assertThat(actual).isFalse();
     }
 }

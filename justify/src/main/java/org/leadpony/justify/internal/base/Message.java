@@ -16,17 +16,14 @@
 package org.leadpony.justify.internal.base;
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
-
-import org.leadpony.justify.api.Localizable;
 
 /**
  * All Messages defined in the resource bundle for this library.
  *
  * @author leadpony
  */
-public enum Message implements Localizable {
+public enum Message implements BaseMessage {
     LINE_WITH_LOCATION,
     LINE_WITH_POINTER,
     LINE_WITH_BOTH,
@@ -148,22 +145,7 @@ public enum Message implements Localizable {
     private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/messages";
 
     @Override
-    public String getLocalized(Locale locale) {
-        return getBundle(locale).getString(name());
-    }
-
-    public String format(Map<String, Object> arguments) {
-        return format(arguments, Locale.getDefault());
-    }
-
-    public String format(Map<String, Object> arguments, Locale locale) {
-        ResourceBundle bundle = getBundle(locale);
-        String pattern = bundle.getString(name());
-        MessageFormatter formatter = new MessageFormatter(pattern, bundle);
-        return formatter.format(arguments);
-    }
-
-    private static ResourceBundle getBundle(Locale locale) {
-        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale, Message.class.getClassLoader());
+    public ResourceBundle getBundle(Locale locale) {
+        return ResourceBundle.getBundle(BUNDLE_BASE_NAME, locale, getClass().getClassLoader());
     }
 }

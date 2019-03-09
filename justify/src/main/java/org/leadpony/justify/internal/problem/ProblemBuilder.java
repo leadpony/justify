@@ -184,8 +184,15 @@ public class ProblemBuilder {
             requireNonNull(locale, "locale");
             Map<String, Object> args = new HashMap<>();
             args.put("message", buildMessage(locale));
-            args.put("pointer", getPointer());
-            return Message.LINE_WITH_POINTER.format(args, locale);
+            JsonLocation location = getLocation();
+            if (location == null) {
+                args.put("row", "?");
+                args.put("col", "?");
+            } else {
+                args.put("row", location.getLineNumber());
+                args.put("col", location.getColumnNumber());
+            }
+            return Message.LINE_WITH_LOCATION.format(args, locale);
         }
 
         /**

@@ -23,7 +23,6 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
-import org.leadpony.justify.api.JsonValidationService;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
@@ -40,11 +39,14 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
 /**
+ * A test class for testing the {@link JsonSchemaBuilder} implementation.
+ *
  * @author leadpony
  */
 public class JsonSchemaBuilderTest {
 
-    private static final JsonValidationService service = JsonValidationService.newInstance();
+    private static final JsonValidationService service = JsonValidationServices.get();
+
     private JsonSchemaBuilderFactory schemaBuilderfactory;
     private JsonBuilderFactory jsonBuilderFactory;
 
@@ -53,7 +55,7 @@ public class JsonSchemaBuilderTest {
         this.schemaBuilderfactory = service.createSchemaBuilderFactory();
         this.jsonBuilderFactory = Json.createBuilderFactory(null);
     }
-    
+
     @AfterEach
     public void tearDown() {
         this.jsonBuilderFactory = null;
@@ -66,11 +68,11 @@ public class JsonSchemaBuilderTest {
         JsonSchemaBuilder sut = createSchemaBuilder();
         sut.withTitle("Person")
            .withType(InstanceType.OBJECT)
-           .withProperty("firstName", 
+           .withProperty("firstName",
                    createSchemaBuilder().withType(InstanceType.STRING).build())
-           .withProperty("lastName", 
+           .withProperty("lastName",
                    createSchemaBuilder().withType(InstanceType.STRING).build())
-           .withProperty("age", 
+           .withProperty("age",
                    createSchemaBuilder()
                        .withDescription("Age in years")
                        .withType(InstanceType.INTEGER)
@@ -80,7 +82,7 @@ public class JsonSchemaBuilderTest {
            ;
         // When
         JsonSchema schema = sut.build();
-        
+
         JsonObject expected = createObjectBuilder()
                 .add("title", "Person")
                 .add("type", "object")
@@ -106,19 +108,19 @@ public class JsonSchemaBuilderTest {
         assertThat(schema).isNotNull();
         assertThat(schema.toJson()).isEqualTo(expected);
     }
-    
+
     @Test
     public void withItems_shouldAddSchemaForAllItems() {
         JsonSchemaBuilder sut = createSchemaBuilder();
         JsonSchema schema = sut.withType(InstanceType.ARRAY)
            .withItems(JsonSchema.TRUE)
            .build();
-        
+
         JsonObject expected = createObjectBuilder()
                 .add("type", "array")
                 .add("items", true)
                 .build();
-        
+
         assertThat(schema.toJson()).isEqualTo(expected);
     }
 
@@ -128,7 +130,7 @@ public class JsonSchemaBuilderTest {
         JsonSchema schema = sut.withType(InstanceType.ARRAY)
            .withItemsArray(JsonSchema.TRUE, JsonSchema.FALSE, JsonSchema.EMPTY)
            .build();
-        
+
         JsonObject expected = createObjectBuilder()
                 .add("type", "array")
                 .add("items", createArrayBuilder()
@@ -137,17 +139,17 @@ public class JsonSchemaBuilderTest {
                         .add(JsonValue.EMPTY_JSON_OBJECT)
                         .build())
                 .build();
-        
+
         assertThat(schema.toJson()).isEqualTo(expected);
     }
-    
+
     @Test
     public void withItemsArray_shouldThrowIfArrayIsEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
         Throwable thrown = catchThrowable(()->{
             sut.withType(InstanceType.ARRAY).withItemsArray();
         });
-        
+
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -157,7 +159,7 @@ public class JsonSchemaBuilderTest {
         Throwable thrown = catchThrowable(()->{
             sut.withType(InstanceType.ARRAY).withItemsArray(Collections.emptyList());
         });
-        
+
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -168,7 +170,7 @@ public class JsonSchemaBuilderTest {
         JsonSchema schema = sut.withType(InstanceType.ARRAY)
            .withItemsArray(schemas)
            .build();
-        
+
         JsonObject expected = createObjectBuilder()
                 .add("type", "array")
                 .add("items", createArrayBuilder()
@@ -177,18 +179,18 @@ public class JsonSchemaBuilderTest {
                         .add(JsonValue.EMPTY_JSON_OBJECT)
                         .build())
                 .build();
-        
+
         assertThat(schema.toJson()).isEqualTo(expected);
     }
 
     private JsonSchemaBuilder createSchemaBuilder() {
         return schemaBuilderfactory.createBuilder();
     }
-    
+
     private JsonObjectBuilder createObjectBuilder() {
         return jsonBuilderFactory.createObjectBuilder();
     }
-    
+
     private JsonArrayBuilder createArrayBuilder() {
         return jsonBuilderFactory.createArrayBuilder();
     }

@@ -27,16 +27,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
+ * A test class for testing schema validations.
+ *
  * @author leadpony
  */
 public class SchemaValidationTest {
 
     private static final Logger log = Logger.getLogger(SchemaValidationTest.class.getName());
+    private static final JsonValidationService service = JsonValidationServices.get();
 
     private static final String[] TESTS = {
             "schema/schema.json",
@@ -85,7 +87,6 @@ public class SchemaValidationTest {
             "schema/validation/optional/contentMediaType.json",
         };
 
-    private static final JsonValidationService service = JsonValidationService.newInstance();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
     public static Stream<SchemaFixture> provideAllFixtures() {

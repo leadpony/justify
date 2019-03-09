@@ -19,9 +19,12 @@ package org.leadpony.justify.api;
 import java.util.stream.Stream;
 
 /**
- * Test suite provided by json-schema.org.
+ * A test class for testing instance validations provided by the JSON Schema
+ * Test Suite.
  *
  * @author leadpony
+ * @see <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">JSON
+ *      Schema Test Suite</a>
  */
 public class InstanceValidationTest extends BaseValidationTest {
 

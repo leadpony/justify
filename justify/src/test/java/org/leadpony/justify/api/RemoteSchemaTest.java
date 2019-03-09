@@ -34,6 +34,8 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 
 /**
+ * A test class for testing remote schema resolutions using embedded web server.
+ *
  * @author leadpony
  */
 public class RemoteSchemaTest extends BaseValidationTest {

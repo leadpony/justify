@@ -30,7 +30,6 @@ import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.leadpony.justify.api.JsonSchemas.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,35 +37,50 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
- * Tests for {@link JsonReader} validating JSON instance. 
- * 
+ * A test class for testing validations using {@link JsonReader} .
+ *
  * @author leadpony
  */
 public class JsonReaderTest {
-   
+
     private static final Logger log = Logger.getLogger(JsonReaderTest.class.getName());
-    private static final JsonValidationService service = JsonValidationService.newInstance();
+    private static final JsonValidationService service = JsonValidationServices.get();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
-    
+
+    private static final String PERSON_SCHEMA =
+            "{" +
+            "\"type\":\"object\"," +
+            "\"properties\":{" +
+            "\"name\": {\"type\":\"string\"}," +
+            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
+            "}," +
+            "\"required\":[\"name\"]" +
+            "}";
+
+    private static final String INTEGER_ARRAY_SCHEMA =
+            "{" +
+            "\"type\":\"array\"," +
+            "\"items\":{\"type\":\"integer\"}" +
+            "}";
+
     private static JsonReader newReader(String instance) {
         return Json.createReader(new StringReader(instance));
     }
-    
+
     private static JsonReader newReader(String instance, String schema, ProblemHandler handler) {
         JsonSchema s = service.readSchema(new StringReader(schema));
         return service.createReader(new StringReader(instance), s, handler);
     }
-    
+
     @Test
     public void read_readsArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
-        
+
         JsonReader reader = newReader(instance);
         JsonStructure expected = reader.read();
         reader.close();
@@ -75,7 +89,7 @@ public class JsonReaderTest {
         JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonStructure actual = sut.read();
         sut.close();
-        
+
         assertThat(actual).isEqualTo(expected);
         assertThat(problems).isEmpty();
     }
@@ -84,7 +98,7 @@ public class JsonReaderTest {
     public void read_readsObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
-        
+
         JsonReader reader = newReader(instance);
         JsonStructure expected = reader.read();
         reader.close();
@@ -93,7 +107,7 @@ public class JsonReaderTest {
         JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonStructure actual = sut.read();
         sut.close();
-        
+
         assertThat(actual).isEqualTo(expected);
         assertThat(problems).isEmpty();
     }
@@ -102,7 +116,7 @@ public class JsonReaderTest {
     public void readArray_readsArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
-        
+
         JsonReader reader = newReader(instance);
         JsonArray expected = reader.readArray();
         reader.close();
@@ -111,7 +125,7 @@ public class JsonReaderTest {
         JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonArray actual = sut.readArray();
         sut.close();
-        
+
         assertThat(actual).isEqualTo(expected);
         assertThat(problems).isEmpty();
     }
@@ -120,7 +134,7 @@ public class JsonReaderTest {
     public void readObject_readsObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
-        
+
         JsonReader reader = newReader(instance);
         JsonObject expected = reader.readObject();
         reader.close();
@@ -129,11 +143,11 @@ public class JsonReaderTest {
         JsonReader sut = newReader(instance, schema, problems::addAll);
         JsonObject actual = sut.readObject();
         sut.close();
-        
+
         assertThat(actual).isEqualTo(expected);
         assertThat(problems).isEmpty();
     }
-    
+
     public static Stream<Arguments> argumentsForReadValue() {
         return Stream.of(
             Arguments.of("{\"type\":\"boolean\"}", "true", true),
@@ -166,7 +180,7 @@ public class JsonReaderTest {
         JsonReader sut = newReader(data, schema, problems::addAll);
         JsonValue actual = sut.readValue();
         sut.close();
-        
+
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
         printProblems(problems);
@@ -188,7 +202,7 @@ public class JsonReaderTest {
             problems.addAll(e.getProblems());
         }
         sut.close();
-        
+
         if (actual != null) {
             assertThat(actual).isEqualTo(expected);
             assertThat(problems).isEmpty();

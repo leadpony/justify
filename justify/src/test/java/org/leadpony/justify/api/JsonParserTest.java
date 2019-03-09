@@ -18,7 +18,6 @@ package org.leadpony.justify.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
-import static org.leadpony.justify.api.JsonSchemas.*;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -44,20 +43,35 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
- * Tests for {@link JsonParser} validating JSON instance.
+ * A test class for testing validations using {@link JsonParser} .
  *
  * @author leadpony
  */
 public class JsonParserTest {
 
     private static final Logger log = Logger.getLogger(JsonParserTest.class.getName());
-    private static final JsonValidationService service = JsonValidationService.newInstance();
+    private static final JsonValidationService service = JsonValidationServices.get();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+
+    private static final String PERSON_SCHEMA =
+            "{" +
+            "\"type\":\"object\"," +
+            "\"properties\":{" +
+            "\"name\": {\"type\":\"string\"}," +
+            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
+            "}," +
+            "\"required\":[\"name\"]" +
+            "}";
+
+    private static final String INTEGER_ARRAY_SCHEMA =
+            "{" +
+            "\"type\":\"array\"," +
+            "\"items\":{\"type\":\"integer\"}" +
+            "}";
 
     private static JsonParser newParser(String instance) {
         return Json.createParser(new StringReader(instance));

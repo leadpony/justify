@@ -19,9 +19,11 @@ package org.leadpony.justify.api;
 import java.util.stream.Stream;
 
 /**
- * Optional tests provided by the JSON Schema Test Suite.
+ * A test class for executing optional tests provided by the JSON Schema Test Suite.
  *
  * @author leadpony
+ * @see <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">JSON
+ *      Schema Test Suite</a>
  */
 public class OptionalValidationTest extends BaseValidationTest {
 

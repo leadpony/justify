@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.InstanceType;
@@ -30,17 +31,35 @@ import org.leadpony.justify.api.InstanceType;
  */
 public class MessageTest {
 
+    private enum Message implements BaseMessage {
+        ERROR
+        ;
+
+        @Override
+        public ResourceBundle getBundle(Locale locale) {
+            return ResourceBundle.getBundle("org/leadpony/justify/internal/messages-test");
+        }
+    }
+
     @Test
-    public void format_returnsFormattedMessage() {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("actual", InstanceType.STRING);
-        parameters.put("expected", InstanceType.INTEGER);
+    public void getLocalized_shouldReturnPattern() {
+        Message sut = Message.ERROR;
 
-        Message sut = Message.INSTANCE_PROBLEM_TYPE;
+        String message = sut.getLocalized(Locale.ROOT);
 
-        String message = sut.format(parameters, Locale.ROOT);
+        assertThat(message).isEqualTo("It must be of {expected} type, but actual type is {actual}.");
+    }
 
-        String expectedMessage = "The value must be of integer type, but actual type is string.";
-        assertThat(message).isEqualTo(expectedMessage);
+    @Test
+    public void format_shouldReturnFormattedMessage() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("actual", InstanceType.STRING);
+        args.put("expected", InstanceType.INTEGER);
+
+        Message sut = Message.ERROR;
+
+        String message = sut.format(args, Locale.ROOT);
+
+        assertThat(message).isEqualTo("It must be of integer type, but actual type is string.");
     }
 }

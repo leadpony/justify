@@ -17,7 +17,7 @@
 package org.leadpony.justify.api;
 
 /**
- * Base type of fixtures.
+ * The base fixture class for validation tests.
  *
  * @author leadpony
  */

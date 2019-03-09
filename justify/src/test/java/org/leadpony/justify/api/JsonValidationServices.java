@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.api;
 
 /**
- * JSON schema samples.
- * 
+ * A utility class for {@link JsonValidationService}.
+ *
  * @author leadpony
  */
-interface JsonSchemas {
+class JsonValidationServices {
 
-    String PERSON_SCHEMA =
-            "{" +
-            "\"type\":\"object\"," +
-            "\"properties\":{" +
-            "\"name\": {\"type\":\"string\"}," +
-            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
-            "}," + 
-            "\"required\":[\"name\"]" +
-            "}";        
- 
-    String INTEGER_ARRAY_SCHEMA =
-            "{" +
-            "\"type\":\"array\"," +
-            "\"items\":{\"type\":\"integer\"}" +
-            "}";
+    private static final JsonValidationService theService = JsonValidationService.newInstance();
+
+    /**
+     * Returns the single instance of {@link JsonValidationService}.
+     *
+     * @return the single instance of {@link JsonValidationService}.
+     */
+    static JsonValidationService get() {
+        return theService;
+    }
 }

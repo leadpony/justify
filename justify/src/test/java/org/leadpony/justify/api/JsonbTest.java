@@ -27,22 +27,30 @@ import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.leadpony.justify.api.JsonSchemas.*;
 
 /**
- * Tests JSON validator using with {@link Jsonb}.
- * 
+ * A test class for tesing validations using {@link Jsonb}.
+ *
  * @author leadpony
  */
 public class JsonbTest {
-  
+
     private static final Logger log = Logger.getLogger(JsonbTest.class.getName());
-    private static final JsonValidationService service = JsonValidationService.newInstance();
-    
+    private static final JsonValidationService service = JsonValidationServices.get();
+
+    private static final String PERSON_SCHEMA =
+            "{" +
+            "\"type\":\"object\"," +
+            "\"properties\":{" +
+            "\"name\": {\"type\":\"string\"}," +
+            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
+            "}," +
+            "\"required\":[\"name\"]" +
+            "}";
+
     @Test
     public void fromJson_deserializes() {
         String schema = PERSON_SCHEMA;
@@ -50,10 +58,10 @@ public class JsonbTest {
 
         JsonSchema s = service.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll); 
+        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
-        
+
         assertThat(person.name).isEqualTo("John Smith");
         assertThat(person.age).isEqualTo(46);
         assertThat(problems).isEmpty();
@@ -66,7 +74,7 @@ public class JsonbTest {
 
         JsonSchema s = service.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll); 
+        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 

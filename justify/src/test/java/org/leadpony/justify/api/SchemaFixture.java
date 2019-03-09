@@ -26,6 +26,8 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
+ * A test fixture class for {@link SchemaValidationTest}.
+ *
  * @author leadpony
  */
 class SchemaFixture extends Fixture {

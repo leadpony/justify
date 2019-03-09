@@ -38,11 +38,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.justify.api.JsonSchema;
 
 /**
+ * A test class for tesing the {@link JsonSchema} implementation.
+ *
  * @author leadpony
  */
 public class JsonSchemaTest {
 
-    private static final JsonValidationService service = JsonValidationService.newInstance();
+    private static final JsonValidationService service = JsonValidationServices.get();
 
     @Test
     public void empty_shouldReturnEmptySchema() {

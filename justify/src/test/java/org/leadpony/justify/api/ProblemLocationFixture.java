@@ -31,18 +31,18 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * A test fixture type for {@link ProblemTest}.
+ * A test fixture class for {@link ProblemLocationTest}.
  *
  * @author leadpony
  */
-class ProblemFixture {
+class ProblemLocationFixture {
 
     private final String name;
     private final String schema;
     private final String instance;
     private final List<Problem> problems;
 
-    private ProblemFixture(String name, String schema, String data, List<Problem> problems) {
+    private ProblemLocationFixture(String name, String schema, String data, List<Problem> problems) {
         this.name = name;
         this.schema = schema;
         this.instance = data;
@@ -94,8 +94,8 @@ class ProblemFixture {
      * @param name the name of the resource file.
      * @return the read fixture.
      */
-    static ProblemFixture readFrom(String name) {
-        InputStream in = ProblemFixture.class.getResourceAsStream(name);
+    static ProblemLocationFixture readFrom(String name) {
+        InputStream in = ProblemLocationFixture.class.getResourceAsStream(name);
         try (FixtureReader reader = new FixtureReader(name, in)) {
             return reader.read();
         }
@@ -161,12 +161,12 @@ class ProblemFixture {
             }
         }
 
-        ProblemFixture read() {
+        ProblemLocationFixture read() {
             try {
                 String schema = readJsonAsString();
                 String data = readJsonAsString();
                 List<Problem> problems = readProblems();
-                return new ProblemFixture(name, schema, data, problems);
+                return new ProblemLocationFixture(name, schema, data, problems);
             } catch (IOException e) {
                 return null;
             }

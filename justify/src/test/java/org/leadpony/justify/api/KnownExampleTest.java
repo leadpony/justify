@@ -33,13 +33,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
+ * A test class for testing the examples provided by json-schema.org.
+ *
  * @author leadpony
  */
 public class KnownExampleTest {
 
     private static final Logger log = Logger.getLogger(KnownExampleTest.class.getName());
-
-    public static final JsonValidationService service = JsonValidationService.newInstance();
+    private static final JsonValidationService service = JsonValidationServices.get();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
     public static Stream<Arguments> fixtures() {

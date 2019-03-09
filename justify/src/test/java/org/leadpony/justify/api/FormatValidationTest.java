@@ -19,9 +19,11 @@ package org.leadpony.justify.api;
 import java.util.stream.Stream;
 
 /**
- * Optional format tests provided by the JSON Schema Test Suite.
- * 
+ * A test class for testing formats provided by the JSON Schema Test Suite.
+ *
  * @author leadpony
+ * @see <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">JSON
+ *      Schema Test Suite</a>
  */
 public class FormatValidationTest extends BaseValidationTest {
 
@@ -44,7 +46,7 @@ public class FormatValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/optional/format/uri-reference.json",
             "/org/json_schema/tests/draft7/optional/format/uri-template.json"
     };
-    
+
     public static Stream<ValidationFixture> provideFixtures() {
         return Stream.of(TESTS).flatMap(ValidationFixture::newStream);
     }

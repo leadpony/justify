@@ -27,23 +27,24 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidationService;
 
 /**
+ * A test class for testing schema identifier resolutions.
+ *
  * @author leadpony
  */
 public class SchemaIdentificationTest {
 
+    private static final JsonValidationService service = JsonValidationServices.get();
+
     private static final String RESOURCE_NAME = "identification.json";
-    
-    private static final JsonValidationService service = JsonValidationService.newInstance();
-    
+
     @Test
     public void testSchemaIdentification() throws IOException {
         JsonSchema schema = loadSchema();
         List<URI> identifiers = new ArrayList<>();
         collectIdentifiers(schema, identifiers);
-        
+
         List<String> expected = Arrays.asList(
                 "http://example.com/root.json",
                 "http://example.com/root.json#foo",
@@ -52,19 +53,19 @@ public class SchemaIdentificationTest {
                 "http://example.com/t/inner.json",
                 "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
                 );
-        
+
         assertThat(identifiers)
             .hasSize(6)
             .extracting(URI::toString)
             .containsExactlyInAnyOrderElementsOf(expected);
     }
-    
+
     private static JsonSchema loadSchema() throws IOException {
         try (InputStream in = SchemaIdentificationTest.class.getResourceAsStream(RESOURCE_NAME)) {
             return service.readSchema(in);
         }
     }
-    
+
     private static void collectIdentifiers(JsonSchema schema, List<URI> identifiers) {
         if (schema.hasId()) {
             identifiers.add(schema.id());
