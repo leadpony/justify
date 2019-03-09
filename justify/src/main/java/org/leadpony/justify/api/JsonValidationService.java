@@ -86,8 +86,8 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     }
 
     /**
-     * Creates a factory for creating JSON schema readers
-     * with default configuration.
+     * Creates a factory for creating JSON schema readers with default
+     * configuration.
      *
      * @return newly created instance of JSON schema reader factory.
      */
@@ -119,9 +119,9 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     }
 
     /**
-     * Reads a JSON schema from a byte stream encoded by the specified charset.
-     * The bytes of the stream will be decoded to characters
-     * using the specified charset.
+     * Reads a JSON schema from a byte stream encoded by the specified charset. The
+     * bytes of the stream will be decoded to characters using the specified
+     * charset.
      *
      * @param in      the byte stream from which a JSON schema is to be read. The
      *                specified stream will be closed automatically in this method.
@@ -375,6 +375,11 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     /**
      * Creates a problem handler which will print problems with the aid of the
      * specified line consumer.
+     * <p>
+     * The problem printer will be created with the default configuration including
+     * both {@link PrinterOption#INCLUDE_LOCATION} and
+     * {@link PrinterOption#INCLUDE_POINTER}.
+     * </p>
      *
      * @param lineConsumer the object which will output the line to somewhere.
      * @return newly created instance of problem handler.
@@ -387,14 +392,49 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
 
     /**
      * Creates a problem handler which will print problems with the aid of the
-     * specified line consumer, localizing the messages for the specified locale.
+     * specified line consumer. One or more options can be specified.
+     *
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @param options      one or more options for the problem printer.
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the specified {@code lineConsumer} or
+     *                              {@code options} is {@code null}.
+     */
+    default ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, PrinterOption... options) {
+        return createProblemPrinter(lineConsumer, Locale.getDefault(), options);
+    }
+
+    /**
+     * Creates a problem handler which will print problems with the aid of the
+     * specified line consumer. The messages will be localized for the specified
+     * locale.
+     * <p>
+     * The problem printer will be created with the default configuration including
+     * both {@link PrinterOption#INCLUDE_LOCATION} and
+     * {@link PrinterOption#INCLUDE_POINTER}.
+     * </p>
      *
      * @param lineConsumer the object which will output the line to somewhere.
      * @param locale       the locale for which the problem messages will be
      *                     localized.
      * @return newly created instance of problem handler.
-     * @throws NullPointerException if the specified {@code lineConsumer} or
-     *                              {@code local} is {@code null}.
+     * @throws NullPointerException if the one of the specified parameters is
+     *                              {@code null}.
      */
     ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale);
+
+    /**
+     * Creates a problem handler which will print problems with the aid of the
+     * specified line consumer. The messages will be localized for the specified
+     * locale. One or more options can be specified.
+     *
+     * @param lineConsumer the object which will output the line to somewhere.
+     * @param locale       the locale for which the problem messages will be
+     *                     localized.
+     * @param options      one or more options for the problem printer.
+     * @return newly created instance of problem handler.
+     * @throws NullPointerException if the one of the specified parameters is
+     *                              {@code null}.
+     */
+    ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale, PrinterOption... options);
 }

@@ -182,8 +182,10 @@ public class ProblemBuilder {
         @Override
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
-            String message = buildMessage(locale);
-            return buildContextualMessage(message, locale);
+            Map<String, Object> args = new HashMap<>();
+            args.put("message", buildMessage(locale));
+            args.put("pointer", getPointer());
+            return Message.LINE_WITH_POINTER.format(args, locale);
         }
 
         /**
@@ -234,38 +236,6 @@ public class ProblemBuilder {
          */
         private String buildMessage(Locale locale) {
             return message.format(parameters, locale);
-        }
-
-        /**
-         * Builds a message including the location at which this problem occurred.
-         *
-         * @param message the original message.
-         * @param locale  the locale for which the message will be localized.
-         * @return the built message.
-         */
-        private String buildContextualMessage(String message, Locale locale) {
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("message", message);
-            parameters.put("location", buildLocation(getLocation(), locale));
-            return Message.LINE.format(parameters, locale);
-        }
-
-        /**
-         * Builds a message containing the location at which this problem occurred.
-         *
-         * @param location the location at which this problem occurred.
-         * @param locale   the locale for which the message will be localized.
-         * @return the built message.
-         */
-        private String buildLocation(JsonLocation location, Locale locale) {
-            if (location == null) {
-                return Message.LOCATION_UNKNOWN.getLocalized(locale);
-            } else {
-                Map<String, Object> parameters = new HashMap<>();
-                parameters.put("row", location.getLineNumber());
-                parameters.put("col", location.getColumnNumber());
-                return Message.LOCATION.format(parameters, locale);
-            }
         }
     }
 

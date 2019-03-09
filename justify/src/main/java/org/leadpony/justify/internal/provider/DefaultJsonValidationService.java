@@ -47,13 +47,14 @@ import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.api.PrinterOption;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
-import org.leadpony.justify.internal.problem.ProblemPrinter;
+import org.leadpony.justify.internal.problem.ProblemPrinterFactory;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
@@ -73,6 +74,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private final ContentAttributeRegistry contentRegistry;
     private final JsonSchema metaschema;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
+    private final ProblemPrinterFactory printerFactory = new ProblemPrinterFactory();
 
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
 
@@ -106,7 +108,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, defaultFormatAttributeRegistry, contentRegistry, metaschema)
+        return DefaultJsonSchemaReaderFactory
+                .builder(jsonProvider, defaultFormatAttributeRegistry, contentRegistry, metaschema)
                 .withSchemaResolver(this);
     }
 
@@ -298,9 +301,20 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      */
     @Override
     public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
+        return createProblemPrinter(lineConsumer, locale,
+                PrinterOption.INCLUDE_LOCATION,
+                PrinterOption.INCLUDE_POINTER);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale, PrinterOption... options) {
         requireNonNull(lineConsumer, "lineConsumer");
         requireNonNull(locale, "locale");
-        return new ProblemPrinter(lineConsumer, locale);
+        requireNonNull(options, "options");
+        return printerFactory.createPrinter(lineConsumer, locale, options);
     }
 
     /* JsonSchemaResolver interface */
@@ -314,6 +328,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             return null;
         }
     }
+
     protected ContentAttributeRegistry createContentAttributeRegistry(JsonProvider jsonProvider) {
         return new ContentAttributeRegistry(jsonProvider).registerProvidedEncodingSchemes().registerProvidedMimeTypes()
                 .registerDefault();
@@ -336,7 +351,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     }
 
     private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, defaultFormatAttributeRegistry.createMap(), contentRegistry);
+        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, defaultFormatAttributeRegistry.createMap(),
+                contentRegistry);
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {

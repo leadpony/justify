@@ -28,19 +28,24 @@ import org.leadpony.justify.api.ProblemHandler;
  *
  * @author leadpony
  */
-public class ProblemPrinter implements ProblemHandler {
+class ProblemPrinter implements ProblemHandler {
 
     private final Consumer<String> lineConsumer;
+    private final ProblemFormatter formatter;
     private final Locale locale;
 
     /**
      * Constructs this object.
+     *
      * @param lineConsumer the object which will output the line to somewhere.
-     * @param locale the locale for which the problem messages will be localized.
+     * @param locale       the locale for which the problem messages will be
+     *                     localized.
+     * @param formatter    the formatter for formatting each message for a problem.
      */
-    public ProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
+    public ProblemPrinter(Consumer<String> lineConsumer, Locale locale, ProblemFormatter formatter) {
         this.lineConsumer = lineConsumer;
         this.locale = locale;
+        this.formatter = formatter;
     }
 
     /**
@@ -55,10 +60,10 @@ public class ProblemPrinter implements ProblemHandler {
 
     private void printProblem(Problem problem) {
         if (problem.hasBranches()) {
-            lineConsumer.accept(problem.getMessage(locale));
+            lineConsumer.accept(formatter.formatBranchingProblem(problem, locale));
             printAllProblemGroups(problem, "");
         } else {
-            lineConsumer.accept(problem.getContextualMessage(locale));
+            lineConsumer.accept(formatter.formatProblem(problem, locale));
         }
     }
 
@@ -76,10 +81,10 @@ public class ProblemPrinter implements ProblemHandler {
         for (Problem problem : branch) {
             String currentPrefix = isFirst ? firstPrefix : laterPrefix;
             if (problem.hasBranches()) {
-                putLine(currentPrefix + problem.getMessage(locale));
+                putLine(currentPrefix + formatter.formatBranchingProblem(problem, locale));
                 printAllProblemGroups(problem, laterPrefix);
             } else {
-                putLine(currentPrefix + problem.getContextualMessage(locale));
+                putLine(currentPrefix + formatter.formatProblem(problem, locale));
             }
             isFirst = false;
         }
@@ -97,4 +102,3 @@ public class ProblemPrinter implements ProblemHandler {
         return b.toString();
     }
 }
-

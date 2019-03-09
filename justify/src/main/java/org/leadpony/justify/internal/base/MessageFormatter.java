@@ -102,7 +102,9 @@ class MessageFormatter {
 
     private String stringify(Object object, Function<String, String> modifier) {
         String string = null;
-        if (object instanceof Collection<?>) {
+        if (object == null) {
+            string = "null";
+        } else if (object instanceof Collection<?>) {
             return collectionToString(object, modifier);
         } else if (object instanceof Localizable) {
             string = localizedToString(object);

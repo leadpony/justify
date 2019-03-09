@@ -27,9 +27,9 @@ import org.leadpony.justify.api.Localizable;
  * @author leadpony
  */
 public enum Message implements Localizable {
-    LINE,
-    LOCATION,
-    LOCATION_UNKNOWN,
+    LINE_WITH_LOCATION,
+    LINE_WITH_POINTER,
+    LINE_WITH_BOTH,
 
     STRING_KEY,
     STRING_VALUE,
