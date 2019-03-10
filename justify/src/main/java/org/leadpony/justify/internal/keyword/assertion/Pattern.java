@@ -18,12 +18,10 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Assertion specified with "pattern" validation keyword.
@@ -49,34 +47,21 @@ class Pattern extends AbstractStringAssertion {
     }
 
     @Override
-    protected Result evaluateAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context, event)
-                    .withMessage(Message.INSTANCE_PROBLEM_PATTERN)
-                    .withParameter("pattern", pattern.toString())
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
+    protected boolean testValue(String value) {
+        return pattern.matcher(value).find();
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value)) {
-            Problem p = createProblemBuilder(context, event)
-                    .withMessage(Message.INSTANCE_PROBLEM_NOT_PATTERN)
-                    .withParameter("pattern", pattern.toString())
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_PATTERN)
+            .withParameter("pattern", pattern.toString())
+            .build();
     }
 
-    private boolean testValue(String value) {
-        return pattern.matcher(value).find();
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_PATTERN)
+            .withParameter("pattern", pattern.toString())
+            .build();
     }
 }

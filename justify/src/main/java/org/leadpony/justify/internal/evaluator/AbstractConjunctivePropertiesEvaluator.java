@@ -38,30 +38,31 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     private Evaluator firstChildEvaluator;
     private List<Evaluator> additionalChildEvaluators;
 
-    protected AbstractConjunctivePropertiesEvaluator() {
+    protected AbstractConjunctivePropertiesEvaluator(EvaluatorContext context) {
+        super(context);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         if (depth == 0 && event == Event.END_OBJECT) {
             return finalResult;
         }
 
         if (depth == 1) {
-            updateChildren(event, context.getParser());
+            updateChildren(event, getParser());
         }
 
         if (firstChildEvaluator != null) {
             final int childDepth = depth - 1;
 
-            if (!invokeChildEvaluator(firstChildEvaluator, event, context, childDepth, dispatcher)) {
+            if (!invokeChildEvaluator(firstChildEvaluator, event, childDepth, dispatcher)) {
                 firstChildEvaluator = null;
             }
 
             if (additionalChildEvaluators != null) {
                 Iterator<Evaluator> it = additionalChildEvaluators.iterator();
                 while (it.hasNext()) {
-                    if (!invokeChildEvaluator(it.next(), event, context, childDepth, dispatcher)) {
+                    if (!invokeChildEvaluator(it.next(), event, childDepth, dispatcher)) {
                         it.remove();
                     }
                 }
@@ -76,7 +77,7 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator.isAlwaysTrue()) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
         if (firstChildEvaluator == null) {
@@ -86,8 +87,8 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
         }
     }
 
-    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        Result result = evalutor.evaluate(event, context, depth, dispatcher);
+    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, int depth, ProblemDispatcher dispatcher) {
+        Result result = evalutor.evaluate(event, depth, dispatcher);
         if (result == Result.PENDING) {
             return true;
         } else {

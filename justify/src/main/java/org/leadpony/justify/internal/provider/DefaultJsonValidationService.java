@@ -166,7 +166,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             config = DEFAULT_CONFIG;
         }
         JsonParserFactory realFactory = jsonProvider.createParserFactory(config);
-        return new ValidatingJsonParserFactory(schema, realFactory, handlerFactory, jsonProvider);
+        return new ValidatingJsonParserFactory(schema, jsonProvider, jsonBuilderFactory, realFactory, handlerFactory);
     }
 
     /**

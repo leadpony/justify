@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -25,11 +26,11 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * Boolean logic specified with "oneOf" validation keyword.
- * 
+ *
  * @author leadpony
  */
 class OneOf extends NaryBooleanLogic {
-    
+
     OneOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
@@ -40,18 +41,18 @@ class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        return Evaluators.exclusive(type, 
-                getSubschemas().map(s->s.createEvaluator(type)),
-                getSubschemas().map(s->s.createNegatedEvaluator(type))
+    protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
+        return Evaluators.exclusive(context, type,
+                getSubschemas().map(s->s.createEvaluator(context, type)),
+                getSubschemas().map(s->s.createNegatedEvaluator(context, type))
                 );
     }
 
     @Override
-    protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.notExclusive(type);
+    protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.notExclusive(context, type);
         getSubschemas()
-            .map(s->s.createNegatedEvaluator(type))
+            .map(s->s.createNegatedEvaluator(context, type))
             .forEach(evaluator::append);
         return evaluator;
     }

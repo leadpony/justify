@@ -27,13 +27,14 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
- * N-ary boolean logic.
- * This class is the abstract base class for {@link AllOf}, {@link AnyOf} and {@link OneOf}.
+ * N-ary boolean logic. This class is the abstract base class for {@link AllOf},
+ * {@link AnyOf} and {@link OneOf}.
  *
  * @author leadpony
  */
@@ -46,21 +47,21 @@ abstract class NaryBooleanLogic extends Combiner {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return createLogicalEvaluator(type).withProblemBuilderFactory(this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return createLogicalEvaluator(context, type).withProblemBuilderFactory(this);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return createNegatedLogicalEvaluator(type).withProblemBuilderFactory(this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return createNegatedLogicalEvaluator(context, type).withProblemBuilderFactory(this);
     }
 
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
         this.subschemas.stream()
-            .map(JsonSchema::toJson)
-            .forEach(arrayBuilder::add);
+                .map(JsonSchema::toJson)
+                .forEach(arrayBuilder::add);
         builder.add(name(), arrayBuilder);
     }
 
@@ -95,15 +96,19 @@ abstract class NaryBooleanLogic extends Combiner {
 
     /**
      * Creates a new evaluator for this boolean logic.
-     * @param type the type of the instance to validate.
+     *
+     * @param context the context of the evaluator to be created.
+     * @param type    the type of the instance to validate.
      * @return newly created evaluator.
      */
-    protected abstract LogicalEvaluator createLogicalEvaluator(InstanceType type);
+    protected abstract LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type);
 
     /**
      * Creates a new evaluator for the negated version of this boolean logic.
-     * @param type the type of the instance to validate.
+     *
+     * @param context the context of the evaluator to be created.
+     * @param type    the type of the instance to validate.
      * @return newly created evaluator.
      */
-    protected abstract LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type);
+    protected abstract LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type);
 }

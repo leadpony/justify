@@ -50,16 +50,16 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new AssertionEvaluator(limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return new AssertionEvaluator(context, limit, this);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         if (limit > 0) {
-            return new MaxItems.AssertionEvaluator(limit - 1, this);
+            return new MaxItems.AssertionEvaluator(context, limit - 1, this);
         } else {
-            return createAlwaysFalseEvaluator();
+            return createAlwaysFalseEvaluator(context);
         }
     }
 
@@ -68,19 +68,20 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
         builder.add(name(), limit);
     }
 
-    static class AssertionEvaluator implements ShallowEvaluator {
+    static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int minItems;
         private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(int minItems, ProblemBuilderFactory factory) {
+        AssertionEvaluator(EvaluatorContext context, int minItems, ProblemBuilderFactory factory) {
+            super(context);
             this.minItems = minItems;
             this.factory = factory;
         }
 
         @Override
-        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
                     if (++currentCount >= minItems) {
@@ -91,7 +92,7 @@ class MinItems extends AbstractAssertion implements ArrayKeyword {
                 if (currentCount >= minItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(context)
+                    Problem p = factory.createProblemBuilder(getContext())
                             .withMessage(Message.INSTANCE_PROBLEM_MINITEMS)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minItems)

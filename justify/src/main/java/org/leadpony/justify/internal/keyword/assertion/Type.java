@@ -30,10 +30,9 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.json.ParserEvents;
 
 /**
- * Assertion representing "type" keyword.
+ * An assertion representing "type" keyword.
  *
  * @author leadpony
  */
@@ -49,64 +48,61 @@ abstract class Type extends AbstractAssertion {
      *
      * @author leadpony
      */
-    static class Single extends Type implements Evaluator {
+    static class Single extends Type {
 
-        private final InstanceType type;
+        private final InstanceType expectedType;
 
-        Single(InstanceType type) {
-            this.type = type;
+        Single(InstanceType expectedType) {
+            this.expectedType = expectedType;
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return this;
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+            if (testType(type)) {
+                return Evaluator.ALWAYS_TRUE;
+            }
+            return new Evaluator() {
+                @Override
+                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                    Problem p = createProblemBuilder(context)
+                            .withMessage(Message.INSTANCE_PROBLEM_TYPE)
+                            .withParameter("actual", type)
+                            .withParameter("expected", expectedType)
+                            .build();
+                    dispatcher.dispatchProblem(p);
+                    return Result.FALSE;
+                }
+            };
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return this::evaluateNegated;
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+            if (!testType(type)) {
+                return Evaluator.ALWAYS_TRUE;
+            }
+            return new Evaluator() {
+                @Override
+                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                    Problem p = createProblemBuilder(context)
+                            .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE)
+                            .withParameter("expected", expectedType)
+                            .build();
+                    dispatcher.dispatchProblem(p);
+                    return Result.FALSE;
+                }
+            };
         }
 
         @Override
         public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-            builder.add("type", type.name().toLowerCase());
-        }
-
-        @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
-            if (type == null || testType(type)) {
-                return Result.TRUE;
-            } else {
-                Problem p = createProblemBuilder(context)
-                        .withMessage(Message.INSTANCE_PROBLEM_TYPE)
-                        .withParameter("actual", type)
-                        .withParameter("expected", this.type)
-                        .build();
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            }
-        }
-
-        private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
-            if (type == null || !testType(type)) {
-                return Result.TRUE;
-            } else {
-                Problem p = createProblemBuilder(context)
-                        .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE)
-                        .withParameter("expected", this.type)
-                        .build();
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            }
+            builder.add("type", expectedType.name().toLowerCase());
         }
 
         private boolean testType(InstanceType type) {
-            if (type == this.type) {
+            if (type == this.expectedType) {
                 return true;
             } else if (type == InstanceType.INTEGER) {
-                return this.type == InstanceType.NUMBER;
+                return this.expectedType == InstanceType.NUMBER;
             } else {
                 return false;
             }
@@ -118,84 +114,65 @@ abstract class Type extends AbstractAssertion {
      *
      * @author leadpony
      */
-    static class Multiple extends Type implements Evaluator {
+    static class Multiple extends Type {
 
-        private final Set<InstanceType> typeSet;
+        private final Set<InstanceType> expectedTypes;
 
         Multiple(Set<InstanceType> types) {
-            this.typeSet = new LinkedHashSet<>(types);
+            this.expectedTypes = new LinkedHashSet<>(types);
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return this;
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+            if (testType(type)) {
+                return Evaluator.ALWAYS_TRUE;
+            }
+            return new Evaluator() {
+                @Override
+                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                    Problem p = createProblemBuilder(context)
+                            .withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
+                            .withParameter("actual", type)
+                            .withParameter("expected", expectedTypes)
+                            .build();
+                    dispatcher.dispatchProblem(p);
+                    return Result.FALSE;
+                }
+            };
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-            return this::evaluateNegated;
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+            if (!testType(type)) {
+                return Evaluator.ALWAYS_TRUE;
+            }
+            return new Evaluator() {
+                @Override
+                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                    Problem p = createProblemBuilder(context)
+                            .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE_PLURAL)
+                            .withParameter("actual", type)
+                            .withParameter("expected", expectedTypes)
+                            .build();
+                    dispatcher.dispatchProblem(p);
+                    return Result.FALSE;
+                }
+            };
         }
 
         @Override
         public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
             JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
-            typeSet.stream()
-                .map(InstanceType::name)
-                .map(String::toLowerCase)
-                .forEach(arrayBuilder::add);
+            expectedTypes.stream()
+                    .map(InstanceType::name)
+                    .map(String::toLowerCase)
+                    .forEach(arrayBuilder::add);
             builder.add("type", arrayBuilder);
         }
 
-        @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
-            if (type != null) {
-                return assertTypeMatches(type, context, dispatcher);
-            } else {
-                return Result.TRUE;
-            }
-        }
-
-        private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            InstanceType type = ParserEvents.toInstanceType(event, context.getParser());
-            if (type != null) {
-                return assertTypeNotMatches(type, context, dispatcher);
-            } else {
-                return Result.TRUE;
-            }
-        }
-
-        private boolean contains(InstanceType type) {
-            return typeSet.contains(type) ||
-                   (type == InstanceType.INTEGER && typeSet.contains(InstanceType.NUMBER));
-        }
-
-        private Result assertTypeMatches(InstanceType type, EvaluatorContext context, ProblemDispatcher dispatcher) {
-            if (contains(type)) {
-                return Result.TRUE;
-            } else {
-                Problem p = createProblemBuilder(context)
-                        .withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
-                        .withParameter("actual", type)
-                        .withParameter("expected", typeSet)
-                        .build();
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            }
-        }
-
-        private Result assertTypeNotMatches(InstanceType type, EvaluatorContext context, ProblemDispatcher dispatcher) {
-            if (contains(type)) {
-                Problem p = createProblemBuilder(context)
-                        .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE_PLURAL)
-                        .withParameter("actual", type)
-                        .withParameter("expected", typeSet)
-                        .build();
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            } else {
-                return Result.TRUE;
-            }
+        private boolean testType(InstanceType type) {
+            return expectedTypes.contains(type) ||
+                    (type == InstanceType.INTEGER && expectedTypes.contains(InstanceType.NUMBER));
         }
     }
 }

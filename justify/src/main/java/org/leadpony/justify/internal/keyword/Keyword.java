@@ -27,6 +27,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 
@@ -79,21 +80,17 @@ public interface Keyword {
 
     /**
      * Creates an evaluator for this keyword.
-     *
+     * @param context TODO
      * @param type           the type of the instance, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers,
-     *                       cannot be {@code null}.
      */
-    Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory);
+    Evaluator createEvaluator(EvaluatorContext context, InstanceType type);
 
     /**
      * Creates an evaluator for the negated version of this keyword.
-     *
+     * @param context TODO
      * @param type           the type of the instance, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers,
-     *                       cannot be {@code null}.
      */
-    Evaluator createNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory);
+    Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type);
 
     /**
      * Adds this keyword to the specified JSON object.

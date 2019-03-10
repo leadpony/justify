@@ -29,6 +29,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.ParserEvents;
@@ -53,13 +54,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new PropertiesEvaluator(defaultSchema);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return new PropertiesEvaluator(context, defaultSchema);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new NegatedPropertiesEvaluator(defaultSchema);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return new NegatedPropertiesEvaluator(context, defaultSchema);
     }
 
     @Override
@@ -98,7 +99,8 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         private final JsonSchema defaultSchema;
         private final List<JsonSchema> subschemas = new ArrayList<>();
 
-        PropertiesEvaluator(JsonSchema defaultSchema) {
+        PropertiesEvaluator(EvaluatorContext context, JsonSchema defaultSchema) {
+            super(context);
             this.defaultSchema = defaultSchema;
         }
 
@@ -133,13 +135,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
 
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                append(subschema.createEvaluator(type));
+                append(subschema.createEvaluator(getContext(), type));
             }
             this.subschemas.clear();
         }
 
         private void appendRedundantPropertyEvaluator(String keyName) {
-            append(new RedundantPropertyEvaluator(keyName, JsonSchema.FALSE));
+            append(new RedundantPropertyEvaluator(getContext(), keyName, JsonSchema.FALSE));
         }
     }
 
@@ -148,8 +150,8 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         private final JsonSchema defaultSchema;
         private final List<JsonSchema> subschemas = new ArrayList<>();
 
-        NegatedPropertiesEvaluator(JsonSchema defaultSchema) {
-            super(AbstractProperties.this);
+        NegatedPropertiesEvaluator(EvaluatorContext context, JsonSchema defaultSchema) {
+            super(context, AbstractProperties.this);
             this.defaultSchema = defaultSchema;
         }
 
@@ -189,13 +191,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
 
         private void appendEvaluators(InstanceType type) {
             for (JsonSchema subschema : this.subschemas) {
-                append(subschema.createNegatedEvaluator(type));
+                append(subschema.createNegatedEvaluator(getContext(), type));
             }
             this.subschemas.clear();
         }
 
         private void appendRedundantPropertyEvaluator(String keyName, JsonSchema schema) {
-            append(new RedundantPropertyEvaluator(keyName, schema));
+            append(new RedundantPropertyEvaluator(getContext(), keyName, schema));
         }
     }
 }

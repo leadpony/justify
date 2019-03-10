@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword;
 
 import java.util.Set;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -27,6 +26,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -52,45 +52,49 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
     }
 
     @Override
-    public Evaluator createEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        assert context != null;
         if (!supportsType(type)) {
-            return createAlwaysTrueEvaluator();
+            return Evaluator.ALWAYS_TRUE;
         }
-        return doCreateEvaluator(type, builderFactory);
+        return doCreateEvaluator(context, type);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        assert context != null;
         if (!supportsType(type)) {
-            return new TypeMismatchEvaluator(type);
+            return new TypeMismatchEvaluator(context, type);
         }
-        return doCreateNegatedEvaluator(type, builderFactory);
+        return doCreateNegatedEvaluator(context, type);
     }
 
     /**
      * Creates an evaluator for this keyword.
+     * @param context the context of the evaluator to create.
      * @param type the type of the instance, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
      */
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
 
     /**
      * Creates an evaluator for the negation of this keyword.
+     * @param context the context of the evaluator to create.
      * @param type the type of the instance, cannot be {@code null}.
-     * @param builderFactory the factory for producing builders of JSON containers, cannot be {@code null}.
      */
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
 
-    protected Evaluator createAlwaysTrueEvaluator() {
-        return Evaluators.alwaysTrue(getEnclosingSchema());
-    }
-
-    protected Evaluator createAlwaysFalseEvaluator() {
-        return Evaluators.alwaysFalse(getEnclosingSchema());
+    /**
+     * Creates an evaluator which evaluates anything as false.
+     *
+     * @param context the context of the evaluator to be created.
+     * @return the created evaluator.
+     */
+    protected final Evaluator createAlwaysFalseEvaluator(EvaluatorContext context) {
+        return Evaluators.alwaysFalse(getEnclosingSchema(), context);
     }
 
     /**
@@ -106,18 +110,19 @@ public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory 
                 .withKeyword(name());
     }
 
-    private class TypeMismatchEvaluator implements Evaluator {
+    private class TypeMismatchEvaluator extends AbstractEvaluator {
 
         private final InstanceType actual;
 
-        private TypeMismatchEvaluator(InstanceType actual) {
+        private TypeMismatchEvaluator(EvaluatorContext context, InstanceType actual) {
+            super(context);
             this.actual = actual;
         }
 
         @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             Set<InstanceType> expected = getSupportedTypes();
-            ProblemBuilder builder = createProblemBuilder(context)
+            ProblemBuilder builder = createProblemBuilder(getContext())
                                     .withParameter("actual", actual);
             if (expected.size() > 1) {
                 builder.withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)

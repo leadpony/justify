@@ -40,7 +40,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  */
 class Required extends AbstractAssertion implements ObjectKeyword {
 
-    protected final Set<String> names;
+    private final Set<String> names;
 
     Required(Set<String> names) {
         this.names = new LinkedHashSet<>(names);
@@ -52,20 +52,20 @@ class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         if (names.isEmpty()) {
-            return createAlwaysTrueEvaluator();
+            return Evaluator.ALWAYS_TRUE;
         } else {
-            return new AssertionEvaluator(names);
+            return new AssertionEvaluator(context, names);
         }
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         if (names.isEmpty()) {
-            return createAlwaysFalseEvaluator();
+            return createAlwaysFalseEvaluator(context);
         } else {
-            return new NegatedAssertionEvaluator(names);
+            return new NegatedAssertionEvaluator(context, names);
         }
     }
 
@@ -76,86 +76,86 @@ class Required extends AbstractAssertion implements ObjectKeyword {
         builder.add(name(), arrayBuilder);
     }
 
-    private class AssertionEvaluator implements ShallowEvaluator {
+    private class AssertionEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 
-        private AssertionEvaluator(Set<String> required) {
+        private AssertionEvaluator(EvaluatorContext context, Set<String> required) {
+            super(context);
             this.missing = new LinkedHashSet<>(required);
         }
 
         @Override
-        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
-                missing.remove(context.getParser().getString());
-                return test(context, dispatcher, false);
+                missing.remove(getParser().getString());
+                if (missing.isEmpty()) {
+                    return Result.TRUE;
+                }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(context, dispatcher, true);
-            } else {
-                return Result.PENDING;
+                if (missing.isEmpty()) {
+                    return Result.TRUE;
+                } else {
+                    return dispatchProblems(dispatcher);
+                }
             }
+            return Result.PENDING;
         }
 
-        private Result test(EvaluatorContext context, ProblemDispatcher dispatcher, boolean last) {
-            if (missing.isEmpty()) {
-                return Result.TRUE;
-            } else if (last) {
-                for (String property : missing) {
-                    Problem p = createProblemBuilder(context)
-                            .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
-                            .withParameter("required", property)
-                            .build();
-                    dispatcher.dispatchProblem(p);
-                }
-                return Result.FALSE;
-            } else {
-                return Result.PENDING;
+        private Result dispatchProblems(ProblemDispatcher dispatcher) {
+            for (String property : missing) {
+                Problem p = createProblemBuilder(getContext())
+                        .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
+                        .withParameter("required", property)
+                        .build();
+                dispatcher.dispatchProblem(p);
             }
+            return Result.FALSE;
         }
     }
 
-    private class NegatedAssertionEvaluator implements ShallowEvaluator {
+    private class NegatedAssertionEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 
-        private NegatedAssertionEvaluator(Set<String> names) {
+        private NegatedAssertionEvaluator(EvaluatorContext context, Set<String> names) {
+            super(context);
             this.missing = new LinkedHashSet<>(names);
         }
 
         @Override
-        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (event == Event.KEY_NAME) {
-                missing.remove(context.getParser().getString());
-                return test(context, dispatcher, false);
+                missing.remove(getParser().getString());
+                if (missing.isEmpty()) {
+                    return dispatchProblem(dispatcher);
+                }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return test(context, dispatcher, true);
-            } else {
-                return Result.PENDING;
+                if (missing.isEmpty()) {
+                    return dispatchProblem(dispatcher);
+                } else {
+                    return Result.TRUE;
+                }
             }
+            return Result.PENDING;
         }
 
-        private Result test(EvaluatorContext context, ProblemDispatcher dispatcher, boolean last) {
-            if (missing.isEmpty()) {
-                Problem p = null;
-                if (names.size() == 1) {
-                    String name = names.iterator().next();
-                    p = createProblemBuilder(context)
-                            .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
-                            .withParameter("required", name)
-                            .build();
-                } else {
-                    p = createProblemBuilder(context)
+        private Result dispatchProblem(ProblemDispatcher dispatcher) {
+            Problem p = null;
+            if (names.size() == 1) {
+                String name = names.iterator().next();
+                p = createProblemBuilder(getContext())
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
+                        .withParameter("required", name)
+                        .build();
+            } else {
+                p = createProblemBuilder(getContext())
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED_PLURAL)
                         .withParameter("required", names)
                         .build();
-                }
-                dispatcher.dispatchProblem(p);
-                return Result.FALSE;
-            } else if (last) {
-                return Result.TRUE;
-            } else {
-                return Result.PENDING;
             }
+            dispatcher.dispatchProblem(p);
+            return Result.FALSE;
         }
     }
 }

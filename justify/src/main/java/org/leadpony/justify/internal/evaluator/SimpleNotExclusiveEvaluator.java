@@ -37,15 +37,16 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
     private List<Problem> problemList;
     private int evaluationsAsFalse;
 
-    SimpleNotExclusiveEvaluator() {
+    SimpleNotExclusiveEvaluator(EvaluatorContext context) {
+        super(context);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            if (current.evaluate(event, context, depth, dispatcher) == Result.FALSE) {
+            if (current.evaluate(event, depth, dispatcher) == Result.FALSE) {
                 addBadEvaluator(current);
             }
         }
@@ -54,7 +55,7 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator.isAlwaysTrue()) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
         operands.add(new DeferredEvaluator(evaluator));

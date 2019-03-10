@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -29,7 +30,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  * @author leadpony
  */
 class AnyOf extends NaryBooleanLogic {
-    
+
     AnyOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
@@ -38,21 +39,21 @@ class AnyOf extends NaryBooleanLogic {
     public String name() {
         return "anyOf";
     }
-    
+
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(type);
+    protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
         getSubschemas().distinct()
-                .map(s->s.createEvaluator(type))
+                .map(s->s.createEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;
     }
 
     @Override
-    protected LogicalEvaluator createNegatedLogicalEvaluator(InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
+    protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.conjunctive(context, type);
         getSubschemas().distinct()
-                .map(s->s.createNegatedEvaluator(type))
+                .map(s->s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;
     }

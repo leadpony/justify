@@ -28,23 +28,23 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
 
-    protected AbstractDisjunctiveChildrenEvaluator(InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
-        super(type);
+    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
+        super(context, type);
         withProblemBuilderFactory(problemBuilderFactory);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         if (depth == 1) {
-            updateChildren(event, context.getParser());
+            updateChildren(event, getParser());
         }
-        return super.evaluate(event, context, depth, dispatcher);
+        return super.evaluate(event, depth, dispatcher);
     }
 
     @Override
-    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
         if (depth > 0) {
-            return super.invokeOperandEvaluators(event, context, depth - 1, dispatcher);
+            return super.invokeOperandEvaluators(event, depth - 1, dispatcher);
         }
         return Result.PENDING;
     }

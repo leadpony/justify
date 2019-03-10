@@ -22,13 +22,11 @@ import javax.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.Evaluator.Result;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * Assertion specified with "const" validation keyword.
+ * An assertion specified with "const" validation keyword.
  *
  * @author leadpony
  */
@@ -51,34 +49,23 @@ class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result assertEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (actual.equals(expected)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_CONST)
-                    .withParameter("actual", actual)
-                    .withParameter("expected", expected)
-                    .withParameter("expectedType", InstanceType.of(expected))
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
+    protected boolean testValue(JsonValue value) {
+        return value.equals(expected);
     }
 
     @Override
-    protected Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (actual.equals(expected)) {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_NOT_CONST)
-                    .withParameter("actual", actual)
-                    .withParameter("expected", expected)
-                    .withParameter("expectedType", InstanceType.of(expected))
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_CONST)
+            .withParameter("expected", expected)
+            .withParameter("expectedType", InstanceType.of(expected))
+            .build();
+    }
+
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_CONST)
+        .withParameter("expected", expected)
+        .withParameter("expectedType", InstanceType.of(expected))
+        .build();
     }
 }

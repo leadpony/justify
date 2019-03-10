@@ -49,13 +49,13 @@ class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new AssertionEvaluator(limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return new AssertionEvaluator(context, limit, this);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new MinProperties.AssertionEvaluator(limit + 1, this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return new MinProperties.AssertionEvaluator(context, limit + 1, this);
     }
 
     @Override
@@ -63,19 +63,20 @@ class MaxProperties extends AbstractAssertion implements ObjectKeyword {
         builder.add(name(), limit);
     }
 
-    static class AssertionEvaluator implements ShallowEvaluator {
+    static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int maxProperties;
         private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(int maxProperties, ProblemBuilderFactory factory) {
+        AssertionEvaluator(EvaluatorContext context, int maxProperties, ProblemBuilderFactory factory) {
+            super(context);
             this.maxProperties = maxProperties;
             this.factory = factory;
         }
 
         @Override
-        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (event == Event.KEY_NAME) {
                     ++currentCount;
@@ -84,7 +85,7 @@ class MaxProperties extends AbstractAssertion implements ObjectKeyword {
                 if (currentCount <= maxProperties) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(context)
+                    Problem p = factory.createProblemBuilder(getContext())
                             .withMessage(Message.INSTANCE_PROBLEM_MAXPROPERTIES)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxProperties)

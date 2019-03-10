@@ -28,13 +28,13 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class AbstractDisjunctivePropertiesEvaluator extends AbstractDisjunctiveChildrenEvaluator {
 
-    public AbstractDisjunctivePropertiesEvaluator(ProblemBuilderFactory problemBuilderFactory) {
-        super(InstanceType.OBJECT, problemBuilderFactory);
+    public AbstractDisjunctivePropertiesEvaluator(EvaluatorContext context, ProblemBuilderFactory problemBuilderFactory) {
+        super(context, InstanceType.OBJECT, problemBuilderFactory);
     }
 
     @Override
-    protected void dispatchDefaultProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
-        ProblemBuilder b = createProblemBuilder(context)
+    protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
+        ProblemBuilder b = createProblemBuilder(getContext())
                 .withMessage(Message.INSTANCE_PROBLEM_OBJECT_EMPTY);
         dispatcher.dispatchProblem(b.build());
     }

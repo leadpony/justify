@@ -33,21 +33,22 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     private Result finalResult = Result.TRUE;
     private Evaluator childEvaluator;
 
-    protected AbstractConjunctiveItemsEvaluator() {
+    protected AbstractConjunctiveItemsEvaluator(EvaluatorContext context) {
+        super(context);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         if (depth == 0 && event == Event.END_ARRAY) {
             return finalResult;
         }
 
         if (depth == 1) {
-            updateChildren(event, context.getParser());
+            updateChildren(event, getParser());
         }
 
         if (childEvaluator != null) {
-            Result result = childEvaluator.evaluate(event, context, depth - 1, dispatcher);
+            Result result = childEvaluator.evaluate(event, depth - 1, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;
@@ -61,7 +62,7 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator.isAlwaysTrue()) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
         assert childEvaluator == null;

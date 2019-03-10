@@ -104,13 +104,13 @@ public class SchemaReference extends AbstractJsonSchema {
     /* JsonSchema interface */
 
     @Override
-    public Evaluator createEvaluator(InstanceType type) {
-        return referencedSchema.createEvaluator(type);
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        return referencedSchema.createEvaluator(context, type);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(InstanceType type) {
-        return referencedSchema.createNegatedEvaluator(type);
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return referencedSchema.createNegatedEvaluator(context, type);
     }
 
     @Override
@@ -137,33 +137,33 @@ public class SchemaReference extends AbstractJsonSchema {
      *
      * @author leadpony
      */
-    private class NonexistentSchema implements JsonSchema, Evaluator {
+    private class NonexistentSchema implements JsonSchema {
 
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
-            return this;
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+            return new Evaluator() {
+                @Override
+                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                    Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
+                            .withKeyword("$ref")
+                            .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
+                            .withParameter("ref", ref())
+                            .withParameter("targetId", getTargetId())
+                            .build();
+                    dispatcher.dispatchProblem(p);
+                    return Result.FALSE;
+                }
+            };
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(InstanceType type) {
-            return this;
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+            return createEvaluator(context, type);
         }
 
         @Override
         public JsonValue toJson() {
             return JsonValue.FALSE;
-        }
-
-        @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
-                    .withKeyword("$ref")
-                    .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
-                    .withParameter("ref", ref())
-                    .withParameter("targetId", getTargetId())
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
         }
     }
 }

@@ -33,23 +33,24 @@ class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
     private final InstanceMonitor monitor;
     private Result finalResult = Result.TRUE;
 
-    ConjunctiveEvaluator(InstanceType type) {
+    ConjunctiveEvaluator(EvaluatorContext context, InstanceType type) {
+        super(context);
         this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        invokeOperandEvaluators(event, context, depth, dispatcher);
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        invokeOperandEvaluators(event, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
             return finalResult;
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<Evaluator> it = iterator();
         while (it.hasNext()) {
-            Result result = it.next().evaluate(event, context, depth, dispatcher);
+            Result result = it.next().evaluate(event, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;

@@ -31,16 +31,17 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
     private final InstanceMonitor monitor;
 
-    NotExclusiveEvaluator(InstanceType type) {
+    NotExclusiveEvaluator(EvaluatorContext context, InstanceType type) {
+        super(context);
         this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadEvaluator(current);

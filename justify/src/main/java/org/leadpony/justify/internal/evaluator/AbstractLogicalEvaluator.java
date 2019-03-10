@@ -25,7 +25,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator implements LogicalEvaluator {
+abstract class AbstractLogicalEvaluator extends AbstractEvaluator implements LogicalEvaluator {
+
+    protected AbstractLogicalEvaluator(EvaluatorContext context) {
+        super(context);
+    }
 
     private ProblemBuilderFactory problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
 

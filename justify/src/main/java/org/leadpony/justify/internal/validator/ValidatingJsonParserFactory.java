@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 
 import javax.json.JsonArray;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
@@ -38,23 +39,30 @@ import org.leadpony.justify.internal.base.json.JsonParserFactoryDecorator;
 public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
 
     private final JsonSchema schema;
-    private final ProblemHandlerFactory handlerFactory;
     private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory jsonBuidlerFactory;
+    private final ProblemHandlerFactory handlerFactory;
 
     /**
      * Constructs this factory.
      *
-     * @param schema the JSON schema to be evaluated while parsing JSON documents.
-     * @param realFactory the underlying JSON parser factory.
-     * @param handlerFactory the factory of problem handlers.
-     * @param jsonProvider the JSON provider.
+     * @param schema             the JSON schema to be evaluated while parsing JSON
+     *                           documents.
+     * @param jsonProvider       the JSON provider.
+     * @param jsonBuidlerFactory the JSON builder factory;
+     * @param jsonParserFactory  the underlying JSON parser factory.
+     * @param handlerFactory     the factory of problem handlers.
      */
-    public ValidatingJsonParserFactory(JsonSchema schema, JsonParserFactory realFactory,
-            ProblemHandlerFactory handlerFactory, JsonProvider jsonProvider) {
-        super(realFactory);
+    public ValidatingJsonParserFactory(JsonSchema schema,
+            JsonProvider jsonProvider,
+            JsonBuilderFactory jsonBuidlerFactory,
+            JsonParserFactory jsonParserFactory,
+            ProblemHandlerFactory handlerFactory) {
+        super(jsonParserFactory);
         this.schema = schema;
-        this.handlerFactory = handlerFactory;
         this.jsonProvider = jsonProvider;
+        this.jsonBuidlerFactory = jsonBuidlerFactory;
+        this.handlerFactory = handlerFactory;
     }
 
     @Override
@@ -88,7 +96,8 @@ public class ValidatingJsonParserFactory extends JsonParserFactoryDecorator {
     }
 
     private ValidatingJsonParser wrapParser(JsonParser parser) {
-        ValidatingJsonParser wrapper = new ValidatingJsonParser(parser, this.schema, this.jsonProvider);
+        ValidatingJsonParser wrapper = new ValidatingJsonParser(
+                parser, this.schema, this.jsonProvider, this.jsonBuidlerFactory);
         return wrapper.withHandler(this.handlerFactory.createProblemHandler(wrapper));
     }
 }

@@ -19,40 +19,19 @@ package org.leadpony.justify.api;
 import javax.json.stream.JsonParser.Event;
 
 /**
- * Skeletal implementation of simple JSON schema.
- * 
+ * A skeletal implementation of simple JSON schema.
+ *
  * @author leadpony
  */
 abstract class SimpleJsonSchema implements JsonSchema {
 
-    protected final Evaluator ALWAYS_TRUE;
-    protected final Evaluator ALWAYS_FALSE;
-    
-    protected SimpleJsonSchema() {
-        final JsonSchema self = this;
-        
-        this.ALWAYS_TRUE = new Evaluator() {
+    protected final Evaluator alwaysFalse(EvaluatorContext context) {
+        JsonSchema self = this;
+        return new Evaluator() {
             @Override
-            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-                return Result.TRUE;
-            }
-            
-            @Override
-            public boolean isAlwaysTrue() {
-                return true;
-            }
-        };
-        
-        this.ALWAYS_FALSE = new Evaluator() {
-            @Override
-            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 dispatcher.dispatchInevitableProblem(context, self);
                 return Result.FALSE;
-            }
-            
-            @Override
-            public boolean isAlwaysTrue() {
-                return false;
             }
         };
     }

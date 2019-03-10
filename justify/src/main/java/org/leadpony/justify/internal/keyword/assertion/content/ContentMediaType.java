@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -37,11 +36,11 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 
 /**
- * Content keyword representing "contentMediaType".
+ * A content keyword representing "contentMediaType".
  *
  * @author leadpony
  */
-public class ContentMediaType extends AbstractAssertion implements Evaluator {
+public class ContentMediaType extends AbstractAssertion {
 
     private final ContentMimeType mimeType;
     private final Map<String, String> parameters;
@@ -74,13 +73,35 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this;
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        String value = context.getParser().getString();
+        if (testValue(value, true)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchProblem(
+                        buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE));
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this::evaluateNegated;
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        String value = context.getParser().getString();
+        if (!testValue(value, false)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchProblem(
+                        buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE));
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
@@ -100,27 +121,6 @@ public class ContentMediaType extends AbstractAssertion implements Evaluator {
             }
         }
         evaluatables.add(this);
-    }
-
-    @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        String value = ((JsonString) context.getParser().getValue()).getString();
-        if (testValue(value, true)) {
-            return Result.TRUE;
-        } else {
-            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE));
-            return Result.FALSE;
-        }
-    }
-
-    public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        String value = ((JsonString) context.getParser().getValue()).getString();
-        if (testValue(value, false)) {
-            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE));
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
     }
 
     private boolean testValue(String value, boolean defaultResult) {

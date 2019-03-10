@@ -28,44 +28,29 @@ import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Provides various kinds of evaluators.
- * 
+ *
  * @author leadpony
  */
 public final class Evaluators {
-     
+
     private Evaluators() {
     }
-    
-    /**
-     * Creates an evaluator which always evaluates the specified schema as true.
-     * @param schema the schema to evaluate, cannot be {@code null}.
-     * @return newly created evaluator. It must not be {@code null}.
-     */
-    public static Evaluator alwaysTrue(JsonSchema schema) {
-        return new Evaluator() {
-            @Override
-            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-                return Result.TRUE;
-            }
-            @Override
-            public boolean isAlwaysTrue() {
-                return true;
-            }
-        };
-    }
-    
+
     /**
      * Creates an evaluator which always evaluates the specified schema as false.
+     *
      * @param schema the schema to evaluate, cannot be {@code null}.
+     * @param context the context of the evaluator to be created.
      * @return newly created evaluator. It must not be {@code null}.
      */
-    public static Evaluator alwaysFalse(JsonSchema schema) {
+    public static Evaluator alwaysFalse(JsonSchema schema, EvaluatorContext context) {
         return new Evaluator() {
             @Override
-            public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 dispatcher.dispatchInevitableProblem(context, schema);
                 return Result.FALSE;
             }
+
             @Override
             public boolean isAlwaysFalse() {
                 return true;
@@ -73,35 +58,36 @@ public final class Evaluators {
         };
     }
 
-    public static LogicalEvaluator conjunctive(InstanceType type) {
+    public static LogicalEvaluator conjunctive(EvaluatorContext context, InstanceType type) {
         if (type.isContainer()) {
-            return new ConjunctiveEvaluator(type);
+            return new ConjunctiveEvaluator(context, type);
         } else {
-            return new SimpleConjunctiveEvaluator();
+            return new SimpleConjunctiveEvaluator(context);
         }
     }
 
-    public static LogicalEvaluator disjunctive(InstanceType type) {
+    public static LogicalEvaluator disjunctive(EvaluatorContext context, InstanceType type) {
         if (type.isContainer()) {
-            return new DisjunctiveEvaluator(type);
+            return new DisjunctiveEvaluator(context, type);
         } else {
-            return new SimpleDisjunctiveEvaluator();
+            return new SimpleDisjunctiveEvaluator(context);
         }
     }
 
-    public static LogicalEvaluator exclusive(InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+    public static LogicalEvaluator exclusive(EvaluatorContext context, InstanceType type, Stream<Evaluator> operands,
+            Stream<Evaluator> negated) {
         if (type.isContainer()) {
-            return new ExclusiveEvaluator(type, operands, negated);
+            return new ExclusiveEvaluator(context, type, operands, negated);
         } else {
-            return new SimpleExclusiveEvaluator(operands, negated);
+            return new SimpleExclusiveEvaluator(context, operands, negated);
         }
     }
 
-    public static LogicalEvaluator notExclusive(InstanceType type) {
+    public static LogicalEvaluator notExclusive(EvaluatorContext context, InstanceType type) {
         if (type.isContainer()) {
-            return new NotExclusiveEvaluator(type);
+            return new NotExclusiveEvaluator(context, type);
         } else {
-            return new SimpleNotExclusiveEvaluator();
+            return new SimpleNotExclusiveEvaluator(context);
         }
     }
 }

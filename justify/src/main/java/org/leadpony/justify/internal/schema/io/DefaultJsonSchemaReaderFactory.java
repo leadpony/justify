@@ -117,7 +117,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     }
 
     private ValidatingJsonParser createParser(JsonParser realParser) {
-        return new ValidatingJsonParser(realParser, metaschema, jsonProvider);
+        return new ValidatingJsonParser(realParser, metaschema, jsonProvider, jsonBuilderFactory);
     }
 
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory() {

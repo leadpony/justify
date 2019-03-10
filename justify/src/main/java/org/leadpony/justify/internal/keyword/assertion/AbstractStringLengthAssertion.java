@@ -18,12 +18,10 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * @author leadpony
@@ -49,40 +47,36 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     }
 
     @Override
-    protected Result evaluateAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        int length = value.codePointCount(0, value.length());
-        if (testLength(length, this.limit)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context, event)
-                    .withMessage(this.message)
-                    .withParameter("actual", length)
-                    .withParameter("limit", this.limit)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
-    }
-
-    @Override
-    protected Result evaluateNegatedAgainst(String value, Event event, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        int length = value.codePointCount(0, value.length());
-        if (testLength(length, this.limit)) {
-            Problem p = createProblemBuilder(context, event)
-                    .withMessage(this.negatedMessage)
-                    .withParameter("actual", length)
-                    .withParameter("limit", this.limit)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
-    }
-
-    @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), this.limit);
+    }
+
+    @Override
+    protected boolean testValue(String value) {
+        return testLength(countCharsIn(value), this.limit);
+    }
+
+    @Override
+    protected Object toActualValue(String value) {
+        return countCharsIn(value);
+    }
+
+    @Override
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(this.message)
+            .withParameter("limit", this.limit)
+            .build();
+    }
+
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(this.negatedMessage)
+                .withParameter("limit", this.limit)
+                .build();
+    }
+
+    private static int countCharsIn(String value) {
+        return value.codePointCount(0, value.length());
     }
 
     protected abstract boolean testLength(int actualLength, int limit);

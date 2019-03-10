@@ -15,6 +15,8 @@
  */
 package org.leadpony.justify.api;
 
+import javax.json.JsonBuilderFactory;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
 /**
@@ -42,4 +44,18 @@ public interface EvaluatorContext {
      *         instance.
      */
     String getPointer();
+
+    /**
+     * Returns the instance of JSON provider.
+     *
+     * @return the instance of JSON provider.
+     */
+    JsonProvider getJsonProvider();
+
+    /**
+     * Returns the instance of JSON builder factory.
+     *
+     * @return the instance of JSON builder factory.
+     */
+    JsonBuilderFactory getJsonBuilderFactory();
 }

@@ -37,6 +37,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
@@ -44,7 +45,7 @@ import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * Combiner representing "dependencies" keyword.
+ * A combiner representing "dependencies" keyword.
  *
  * @author leadpony
  */
@@ -61,19 +62,19 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(type).withProblemBuilderFactory(this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.conjunctive(context, type).withProblemBuilderFactory(this);
         dependencyMap.values().stream()
-            .map(Dependency::createEvaluator)
+            .map(d->d.createEvaluator(context))
             .forEach(evaluator::append);
         return evaluator;
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(type).withProblemBuilderFactory(this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.disjunctive(context, type).withProblemBuilderFactory(this);
         dependencyMap.values().stream()
-            .map(Dependency::createNegatedEvaluator)
+            .map(d->d.createNegatedEvaluator(context))
             .forEach(evaluator::append);
         return evaluator;
     }
@@ -146,22 +147,23 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      *
      * @author leadpony
      */
-    private abstract class DependencyEvaluator implements Evaluator {
+    private abstract class DependencyEvaluator extends AbstractEvaluator {
 
         protected final String property;
         protected boolean active;
 
-        protected DependencyEvaluator(String property) {
+        protected DependencyEvaluator(EvaluatorContext context, String property) {
+            super(context);
             this.property = property;
             this.active = false;
         }
 
-        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result getResultWithoutDependant(ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
 
-        protected Evaluator.Result dispatchMissingDependantProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
-            Problem p = createProblemBuilder(context)
+        protected Evaluator.Result dispatchMissingDependantProblem(ProblemDispatcher dispatcher) {
+            Problem p = createProblemBuilder(getContext())
                     .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                     .withParameter("required", property)
                     .build();
@@ -195,13 +197,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
          * Creates a new evaluator for this dependency.
          * @return newly created evaluator.
          */
-        abstract Evaluator createEvaluator();
+        abstract Evaluator createEvaluator(EvaluatorContext context);
 
         /**
          * Creates a new evaluator for the negation of this dependency.
          * @return newly created evaluator.
          */
-        abstract Evaluator createNegatedEvaluator();
+        abstract Evaluator createNegatedEvaluator(EvaluatorContext context);
 
         abstract void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
     }
@@ -224,15 +226,15 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator() {
-            Evaluator subschemaEvaluator = subschema.createEvaluator(InstanceType.OBJECT);
-            return new SchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
+        Evaluator createEvaluator(EvaluatorContext context) {
+            Evaluator subschemaEvaluator = subschema.createEvaluator(context, InstanceType.OBJECT);
+            return new SchemaDependencyEvaluator(context, getProperty(), subschemaEvaluator);
         }
 
         @Override
-        Evaluator createNegatedEvaluator() {
-            Evaluator subschemaEvaluator = subschema.createNegatedEvaluator(InstanceType.OBJECT);
-            return new NegatedSchemaDependencyEvaluator(getProperty(), subschemaEvaluator);
+        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+            Evaluator subschemaEvaluator = subschema.createNegatedEvaluator(context, InstanceType.OBJECT);
+            return new NegatedSchemaDependencyEvaluator(context, getProperty(), subschemaEvaluator);
         }
 
         @Override
@@ -256,13 +258,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             super(property, subschema);
         }
 
-        Evaluator createEvaluator() {
-            return Evaluators.alwaysTrue(getSubschema());
+        Evaluator createEvaluator(EvaluatorContext context) {
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator() {
-            return Evaluators.alwaysFalse(getSubschema());
+        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+            return Evaluators.alwaysFalse(getSubschema(), context);
         }
     }
 
@@ -273,8 +275,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator() {
-            return new ForbiddenDependantEvaluator(getProperty());
+        Evaluator createEvaluator(EvaluatorContext context) {
+            return new ForbiddenDependantEvaluator(context, getProperty());
         }
     }
 
@@ -284,16 +286,16 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         private Result result;
         private List<Problem> problems;
 
-        SchemaDependencyEvaluator(String property, Evaluator subschemaEvaluator) {
-            super(property);
+        SchemaDependencyEvaluator(EvaluatorContext context, String property, Evaluator subschemaEvaluator) {
+            super(context, property);
             this.subschemaEvaluator = subschemaEvaluator;
         }
 
         @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (!active) {
                 if (depth == 1 && event == Event.KEY_NAME) {
-                    String keyName = context.getParser().getString();
+                    String keyName = getParser().getString();
                     if (keyName.equals(property)) {
                         active = true;
                         dispatchAllProblems(dispatcher);
@@ -301,13 +303,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 }
             }
             if (this.result == null) {
-                evaluateSubschema(event, context, depth, dispatcher);
+                evaluateSubschema(event, depth, dispatcher);
             }
             if (active) {
                 return (result != null) ? result : Result.PENDING;
             } else {
                 if (depth == 0 && event == Event.END_OBJECT) {
-                    return getResultWithoutDependant(context, dispatcher);
+                    return getResultWithoutDependant(dispatcher);
                 } else {
                     return Result.PENDING;
                 }
@@ -322,8 +324,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
             problems.add(problem);
         }
 
-        private void evaluateSubschema(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-            Result result = subschemaEvaluator.evaluate(event, context, depth, active ? dispatcher : this);
+        private void evaluateSubschema(Event event, int depth, ProblemDispatcher dispatcher) {
+            Result result = subschemaEvaluator.evaluate(event, depth, active ? dispatcher : this);
             if (result != Result.PENDING) {
                 this.result = result;
             }
@@ -346,13 +348,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      */
     private class NegatedSchemaDependencyEvaluator extends SchemaDependencyEvaluator {
 
-        NegatedSchemaDependencyEvaluator(String property, Evaluator subschemaEvaluator) {
-            super(property, subschemaEvaluator);
+        NegatedSchemaDependencyEvaluator(EvaluatorContext context, String property, Evaluator subschemaEvaluator) {
+            super(context, property, subschemaEvaluator);
         }
 
         @Override
-        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(context, dispatcher);
+        protected Result getResultWithoutDependant(ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(dispatcher);
         }
     }
 
@@ -371,13 +373,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator() {
-            return new PropertyDependencyEvaluator(getProperty(), requiredProperties);
+        Evaluator createEvaluator(EvaluatorContext context) {
+            return new PropertyDependencyEvaluator(context, getProperty(), requiredProperties);
         }
 
         @Override
-        Evaluator createNegatedEvaluator() {
-            return new NegatedPropertyDependencyEvaluator(getProperty(), requiredProperties);
+        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+            return new NegatedPropertyDependencyEvaluator(context, getProperty(), requiredProperties);
         }
 
         @Override
@@ -395,13 +397,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator() {
-            return createAlwaysTrueEvaluator();
+        Evaluator createEvaluator(EvaluatorContext context) {
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator() {
-            return new NegatedForbiddenDependantEvaluator(getProperty());
+        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+            return new NegatedForbiddenDependantEvaluator(context, getProperty());
         }
     }
 
@@ -410,36 +412,36 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         protected final Set<String> required;
         protected final Set<String> missing;
 
-        PropertyDependencyEvaluator(String property, Set<String> required) {
-            super(property);
+        PropertyDependencyEvaluator(EvaluatorContext context, String property, Set<String> required) {
+            super(context, property);
             this.required = required;
             this.missing = new LinkedHashSet<>(required);
         }
 
         @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
-                String keyName = context.getParser().getString();
+                String keyName = getParser().getString();
                 if (keyName.equals(property)) {
                     active = true;
                 }
                 missing.remove(keyName);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
-                    return test(context, dispatcher);
+                    return test(dispatcher);
                 } else {
-                    return getResultWithoutDependant(context, dispatcher);
+                    return getResultWithoutDependant(dispatcher);
                 }
             }
             return Result.PENDING;
         }
 
-        protected Result test(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result test(ProblemDispatcher dispatcher) {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
                 for (String entry : missing) {
-                    Problem p = createProblemBuilder(context)
+                    Problem p = createProblemBuilder(getContext())
                             .withMessage(Message.INSTANCE_PROBLEM_DEPENDENCIES)
                             .withParameter("required", entry)
                             .withParameter("dependant", property)
@@ -453,26 +455,26 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
     private class NegatedPropertyDependencyEvaluator extends PropertyDependencyEvaluator {
 
-        NegatedPropertyDependencyEvaluator(String property, Set<String> required) {
-            super(property, required);
+        NegatedPropertyDependencyEvaluator(EvaluatorContext context, String property, Set<String> required) {
+            super(context, property, required);
         }
 
         @Override
-        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(context, dispatcher);
+        protected Result getResultWithoutDependant(ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(dispatcher);
         }
 
         @Override
-        protected Result test(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result test(ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
-                Problem p = createProblemBuilder(context)
+                Problem p = createProblemBuilder(getContext())
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                         .withParameter("required", this.property)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
-                ProblemBuilder b = createProblemBuilder(context)
+                ProblemBuilder b = createProblemBuilder(getContext())
                         .withParameter("dependant", property);
                 if (required.size() == 1) {
                     b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES)
@@ -496,24 +498,24 @@ public class Dependencies extends Combiner implements ObjectKeyword {
      */
     private class ForbiddenDependantEvaluator extends DependencyEvaluator {
 
-        ForbiddenDependantEvaluator(String property) {
-            super(property);
+        ForbiddenDependantEvaluator(EvaluatorContext context, String property) {
+            super(context, property);
         }
 
         @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
-                if (context.getParser().getString().equals(property)) {
-                    return dispatchProblem(context, dispatcher);
+                if (getParser().getString().equals(property)) {
+                    return dispatchProblem(dispatcher);
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return getResultWithoutDependant(context, dispatcher);
+                return getResultWithoutDependant(dispatcher);
             }
             return Result.PENDING;
         }
 
-        private Result dispatchProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
-            Problem problem = createProblemBuilder(context)
+        private Result dispatchProblem(ProblemDispatcher dispatcher) {
+            Problem problem = createProblemBuilder(getContext())
                     .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                     .withParameter("required", this.property)
                     .build();
@@ -524,13 +526,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
     private class NegatedForbiddenDependantEvaluator extends ForbiddenDependantEvaluator {
 
-        NegatedForbiddenDependantEvaluator(String property) {
-            super(property);
+        NegatedForbiddenDependantEvaluator(EvaluatorContext context, String property) {
+            super(context, property);
         }
 
         @Override
-        protected Result getResultWithoutDependant(EvaluatorContext context, ProblemDispatcher dispatcher) {
-            return dispatchMissingDependantProblem(context, dispatcher);
+        protected Result getResultWithoutDependant(ProblemDispatcher dispatcher) {
+            return dispatchMissingDependantProblem(dispatcher);
         }
     }
 }

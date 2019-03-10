@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
@@ -39,7 +38,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public class EvaluatableFormat extends Format implements Evaluator {
+public class EvaluatableFormat extends Format {
 
     private final FormatAttribute attribute;
 
@@ -64,38 +63,37 @@ public class EvaluatableFormat extends Format implements Evaluator {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this;
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        JsonValue value = context.getParser().getValue();
+        if (test(value)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = createProblemBuilder(context)
+                        .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
+                dispatcher.dispatchProblem(builder.build());
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this::evaluateNegated;
-    }
-
-    @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         JsonValue value = context.getParser().getValue();
-        if (attribute.test(value)) {
-            return Result.TRUE;
-        } else {
-            ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
-            dispatcher.dispatchProblem(builder.build());
-            return Result.FALSE;
+        if (!test(value)) {
+            return Evaluator.ALWAYS_TRUE;
         }
-    }
-
-    private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        JsonValue value = context.getParser().getValue();
-        if (attribute.test(value)) {
-            ProblemBuilder builder = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
-            dispatcher.dispatchProblem(builder.build());
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = createProblemBuilder(context)
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
+                dispatcher.dispatchProblem(builder.build());
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
@@ -103,5 +101,9 @@ public class EvaluatableFormat extends Format implements Evaluator {
         return super.createProblemBuilder(context)
                     .withParameter("attribute", attribute.name())
                     .withParameter("localizedAttribute", attribute.localizedName());
+    }
+
+    private boolean test(JsonValue value) {
+        return attribute.test(value);
     }
 }

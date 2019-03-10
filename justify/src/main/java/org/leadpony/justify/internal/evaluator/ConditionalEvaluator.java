@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
  *
  * @author leadpony
  */
-public class ConditionalEvaluator implements Evaluator {
+public class ConditionalEvaluator extends AbstractEvaluator {
 
     private final Evaluator ifEvaluator;
     private final DeferredEvaluator thenEvaluator;
@@ -38,7 +38,8 @@ public class ConditionalEvaluator implements Evaluator {
     private Result thenResult;
     private Result elseResult;
 
-    public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
+    public ConditionalEvaluator(EvaluatorContext context, Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
+        super(context);
         assert ifEvaluator != null;
         assert thenEvaluator != null;
         assert elseEvaluator != null;
@@ -51,28 +52,28 @@ public class ConditionalEvaluator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        ifResult = updateEvaluation(ifResult, ifEvaluator, event, context, depth, SilentProblemDispatcher.SINGLETON);
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        ifResult = updateEvaluation(ifResult, ifEvaluator, event, depth, SilentProblemDispatcher.SINGLETON);
         if (ifResult == Result.TRUE) {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, context, depth, dispatcher);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth, dispatcher);
             if (thenResult != Result.PENDING) {
                 return finalizeEvaluation(thenResult, thenEvaluator, dispatcher);
             }
         } else if (ifResult == Result.FALSE) {
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, context, depth, dispatcher);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth, dispatcher);
             if (elseResult != Result.PENDING) {
                 return finalizeEvaluation(elseResult, elseEvaluator, dispatcher);
             }
         } else {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, context, depth, dispatcher);
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, context, depth, dispatcher);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth, dispatcher);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth, dispatcher);
         }
         return Result.PENDING;
     }
 
-    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    private Result updateEvaluation(Result result, Evaluator evaluator, Event event,int depth, ProblemDispatcher dispatcher) {
         if (result == Result.PENDING) {
-            return evaluator.evaluate(event, context, depth, dispatcher);
+            return evaluator.evaluate(event, depth, dispatcher);
         } else {
             return result;
         }

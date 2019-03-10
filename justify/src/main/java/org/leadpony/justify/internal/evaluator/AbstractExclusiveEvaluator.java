@@ -31,7 +31,11 @@ import org.leadpony.justify.internal.problem.ProblemList;
  */
 abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    protected void dispatchProblems(EvaluatorContext context, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
+    protected AbstractExclusiveEvaluator(EvaluatorContext context) {
+        super(context);
+    }
+
+    protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
         List<ProblemList> filteredLists = problemLists.stream()
                 .filter(ProblemList::isResolvable)
                 .collect(Collectors.toList());
@@ -41,15 +45,15 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
         if (filteredLists.size() == 1) {
             dispatcher.dispatchAllProblems(filteredLists.get(0));
         } else {
-            ProblemBuilder builder = createProblemBuilder(context)
+            ProblemBuilder builder = createProblemBuilder(getContext())
                     .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
                     .withBranches(filteredLists);
             dispatcher.dispatchProblem(builder.build());
         }
     }
 
-    protected void dispatchNegatedProblems(EvaluatorContext context, ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
-        ProblemBuilder builder = createProblemBuilder(context)
+    protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
+        ProblemBuilder builder = createProblemBuilder(getContext())
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_MANY)
                 .withBranches(problemLists);
         dispatcher.dispatchProblem(builder.build());

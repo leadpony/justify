@@ -31,10 +31,11 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
+import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 
 /**
- * Assertion specified with "uniqueItems" validation keyword.
+ * An assertion specified with "uniqueItems" validation keyword.
  *
  * @author leadpony
  */
@@ -52,16 +53,16 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new AssertionEvaluator(builderFactory);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return new AssertionEvaluator(context);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         if (unique) {
-            return new NegatedAssertionEvaluator(builderFactory);
+            return new NegatedAssertionEvaluator(context);
         } else {
-            return createAlwaysFalseEvaluator();
+            return createAlwaysFalseEvaluator(context);
         }
     }
 
@@ -70,22 +71,23 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         builder.add(name(), unique);
     }
 
-    private class AssertionEvaluator implements Evaluator {
+    private class AssertionEvaluator extends AbstractEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
         private int index;
         private JsonInstanceBuilder builder;
 
-        private AssertionEvaluator(JsonBuilderFactory builderFactory) {
-            this.builderFactory = builderFactory;
+        private AssertionEvaluator(EvaluatorContext context) {
+            super(context);
+            this.builderFactory = context.getJsonBuilderFactory();
         }
 
         @Override
-        public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 0) {
                 if (event == Event.END_ARRAY) {
-                    return getFinalResult(context, dispatcher);
+                    return getFinalResult(dispatcher);
                 } else {
                     return Result.PENDING;
                 }
@@ -93,12 +95,12 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             if (builder == null) {
                 builder = new JsonInstanceBuilder(builderFactory);
             }
-            if (builder.append(event, context.getParser())) {
+            if (builder.append(event, getParser())) {
                 return Result.PENDING;
             } else {
                 JsonValue value = builder.build();
                 builder = null;
-                return testItemValue(value, index++, context, dispatcher);
+                return testItemValue(value, index++, dispatcher);
             }
         }
 
@@ -110,10 +112,10 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             values.put(value, index);
         }
 
-        protected Result testItemValue(JsonValue value, int index, EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result testItemValue(JsonValue value, int index, ProblemDispatcher dispatcher) {
             if (hasItemAlready(value)) {
                 int lastIndex = values.get(value);
-                Problem p = createProblemBuilder(context)
+                Problem p = createProblemBuilder(getContext())
                         .withMessage(Message.INSTANCE_PROBLEM_UNIQUEITEMS)
                         .withParameter("index", index)
                         .withParameter("firstIndex", lastIndex)
@@ -126,7 +128,7 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             return Result.PENDING;
         }
 
-        protected Result getFinalResult(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result getFinalResult(ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
     }
@@ -135,13 +137,13 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
 
         private boolean duplicated;
 
-        private NegatedAssertionEvaluator(JsonBuilderFactory builderFactory) {
-            super(builderFactory);
+        private NegatedAssertionEvaluator(EvaluatorContext context) {
+            super(context);
             duplicated = false;
         }
 
         @Override
-        protected Result testItemValue(JsonValue value, int index, EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result testItemValue(JsonValue value, int index, ProblemDispatcher dispatcher) {
             if (hasItemAlready(value)) {
                 duplicated = true;
             } else {
@@ -151,11 +153,11 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         }
 
         @Override
-        protected Result getFinalResult(EvaluatorContext context, ProblemDispatcher dispatcher) {
+        protected Result getFinalResult(ProblemDispatcher dispatcher) {
             if (duplicated) {
                 return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(context)
+                Problem p = createProblemBuilder(getContext())
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_UNIQUEITEMS)
                         .build();
                 dispatcher.dispatchProblem(p);

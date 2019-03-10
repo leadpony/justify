@@ -50,13 +50,13 @@ class MaxItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new AssertionEvaluator(limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return new AssertionEvaluator(context, limit, this);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return new MinItems.AssertionEvaluator(limit + 1, this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return new MinItems.AssertionEvaluator(context, limit + 1, this);
     }
 
     @Override
@@ -64,19 +64,20 @@ class MaxItems extends AbstractAssertion implements ArrayKeyword {
         builder.add(name(), limit);
     }
 
-    static class AssertionEvaluator implements ShallowEvaluator {
+    static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int maxItems;
         private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(int maxItems, ProblemBuilderFactory factory) {
+        AssertionEvaluator(EvaluatorContext context, int maxItems, ProblemBuilderFactory factory) {
+            super(context);
             this.maxItems = maxItems;
             this.factory = factory;
         }
 
         @Override
-        public Result evaluateShallow(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
                     ++currentCount;
@@ -85,7 +86,7 @@ class MaxItems extends AbstractAssertion implements ArrayKeyword {
                 if (currentCount <= maxItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(context)
+                    Problem p = factory.createProblemBuilder(getContext())
                             .withMessage(Message.INSTANCE_PROBLEM_MAXITEMS)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxItems)

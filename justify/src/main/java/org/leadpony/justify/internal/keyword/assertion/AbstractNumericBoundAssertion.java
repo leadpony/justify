@@ -21,10 +21,9 @@ import java.math.BigDecimal;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * @author leadpony
@@ -63,34 +62,23 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
 
     @Override
-    protected Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value, this.limit)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(this.message)
-                    .withParameter("actual", value)
-                    .withParameter("limit", this.limit)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
+    protected boolean testValue(BigDecimal value) {
+        return testValue(value, this.limit);
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value, this.limit)) {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(this.negatedMessage)
-                    .withParameter("actual", value)
-                    .withParameter("limit", this.limit)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(this.message)
+                .withParameter("limit", this.limit)
+                .build();
     }
+
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(this.negatedMessage)
+                .withParameter("limit", this.limit)
+                .build();
+   }
 
     protected abstract boolean testValue(BigDecimal actual, BigDecimal limit);
 }

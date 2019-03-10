@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser.Event;
+import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
- * An evaluator type which will observes only shallow events.
+ * The base implementation of {@link Evaluator} interfae.
  *
  * @author leadpony
  */
-public abstract class ShallowEvaluator extends AbstractEvaluator {
+public abstract class AbstractEvaluator implements Evaluator {
 
-    protected ShallowEvaluator(EvaluatorContext context) {
-        super(context);
+    private final EvaluatorContext context;
+
+    protected AbstractEvaluator(EvaluatorContext context) {
+        this.context = context;
     }
 
-    @Override
-    public final Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        if (depth > 1) {
-            return Result.PENDING;
-        }
-        return evaluateShallow(event, depth, dispatcher);
+    public final EvaluatorContext getContext() {
+        return context;
     }
 
-    public abstract Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher);
+    public final JsonParser getParser() {
+        return context.getParser();
+    }
 }

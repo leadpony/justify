@@ -20,7 +20,6 @@ import java.util.Set;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonString;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -33,11 +32,11 @@ import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**
- * Content keyword representing "contentEncoding".
+ * A content keyword representing "contentEncoding".
  *
  * @author leadpony
  */
-public class ContentEncoding extends AbstractAssertion implements Evaluator {
+public class ContentEncoding extends AbstractAssertion {
 
     private final ContentEncodingScheme scheme;
 
@@ -67,13 +66,33 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this;
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        if (test(context.getParser().getString())) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchProblem(
+                        buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTENCODING));
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this::evaluateNegated;
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        if (!test(context.getParser().getString())) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                dispatcher.dispatchProblem(
+                        buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING));
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
@@ -81,24 +100,8 @@ public class ContentEncoding extends AbstractAssertion implements Evaluator {
         builder.add(name(), scheme.name());
     }
 
-    @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        String encoded = ((JsonString) context.getParser().getValue()).getString();
-        if (scheme.canDecode(encoded)) {
-            return Result.TRUE;
-        } else {
-            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTENCODING));
-            return Result.FALSE;
-        }
-    }
-
-    public Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        String encoded = ((JsonString) context.getParser().getValue()).getString();
-        if (scheme.canDecode(encoded)) {
-            dispatcher.dispatchProblem(buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING));
-            return Result.FALSE;
-        }
-        return Result.TRUE;
+    private boolean test(String src) {
+        return scheme.canDecode(src);
     }
 
     /**

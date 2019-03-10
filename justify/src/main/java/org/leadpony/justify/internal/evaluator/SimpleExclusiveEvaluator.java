@@ -36,18 +36,19 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private final Stream<Evaluator> operands;
     private final Stream<Evaluator> negated;
 
-    SimpleExclusiveEvaluator(Stream<Evaluator> operands, Stream<Evaluator> negated) {
+    SimpleExclusiveEvaluator(EvaluatorContext context, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+        super(context);
         this.operands = operands;
         this.negated = negated;
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        int evaluationsAsTrue = evaluateAll(event, context, depth, dispatcher);
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        int evaluationsAsTrue = evaluateAll(event, depth, dispatcher);
         if (evaluationsAsTrue == 1) {
             return Result.TRUE;
         } else if (evaluationsAsTrue > 1) {
-            evaluateAllNegated(event, context, depth, dispatcher);
+            evaluateAllNegated(event, depth, dispatcher);
         }
         return Result.FALSE;
     }
@@ -56,13 +57,13 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
         return stream.map(DeferredEvaluator::new).iterator();
     }
 
-    private int evaluateAll(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    private int evaluateAll(Event event, int depth, ProblemDispatcher dispatcher) {
         List<ProblemList> problemLists = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(operands);
         int evaluationsAsTrue = 0;
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result == Result.TRUE) {
                 ++evaluationsAsTrue;
             } else if (result == Result.FALSE){
@@ -72,21 +73,21 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
             }
         }
         if (evaluationsAsTrue == 0) {
-            dispatchProblems(context, dispatcher, problemLists);
+            dispatchProblems(dispatcher, problemLists);
         }
         return evaluationsAsTrue;
     }
 
-    private void evaluateAllNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAllNegated(Event event, int depth, ProblemDispatcher dispatcher) {
         List<ProblemList> problemLists = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(negated);
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result == Result.FALSE) {
                 problemLists.add(current.problems());
             }
         }
-        dispatchNegatedProblems(context, dispatcher, problemLists);
+        dispatchNegatedProblems(dispatcher, problemLists);
     }
 }

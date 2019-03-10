@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
@@ -105,15 +103,15 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return Evaluators.alwaysTrue(this);
+            return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return Evaluators.alwaysFalse(this);
+            return Evaluators.alwaysFalse(this, context);
         }
     }
 
@@ -130,15 +128,15 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createEvaluator(type, getBuilderFactory());
+            return evaluatable.createEvaluator(context, type);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createNegatedEvaluator(type, getBuilderFactory());
+            return evaluatable.createNegatedEvaluator(context, type);
         }
     }
 
@@ -155,34 +153,32 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
 
         @Override
-        public Evaluator createEvaluator(InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return createCombinedEvaluator(type);
+            return createCombinedEvaluator(context, type);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return createCombinedNegatedEvaluator(type);
+            return createCombinedNegatedEvaluator(context, type);
         }
 
-        private Evaluator createCombinedEvaluator(InstanceType type) {
-            JsonBuilderFactory builderFactory = getBuilderFactory();
-            LogicalEvaluator evaluator = Evaluators.conjunctive(type);
+        private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
+            LogicalEvaluator evaluator = Evaluators.conjunctive(context, type);
             evaluator.withProblemBuilderFactory(this);
             for (Keyword keyword : this.evaluatables) {
-                Evaluator child = keyword.createEvaluator(type, builderFactory);
+                Evaluator child = keyword.createEvaluator(context, type);
                 evaluator.append(child);
             }
             return evaluator;
         }
 
-        private Evaluator createCombinedNegatedEvaluator(InstanceType type) {
-            JsonBuilderFactory builderFactory = getBuilderFactory();
-            LogicalEvaluator evaluator = Evaluators.disjunctive(type);
+        private Evaluator createCombinedNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+            LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
             evaluator.withProblemBuilderFactory(this);
             for (Keyword keyword : this.evaluatables) {
-                Evaluator child = keyword.createNegatedEvaluator(type, builderFactory);
+                Evaluator child = keyword.createNegatedEvaluator(context, type);
                 evaluator.append(child);
             }
             return evaluator;

@@ -16,9 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.JsonBuilderFactory;
-
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 
@@ -44,12 +43,12 @@ class Not extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return getSubschema().createNegatedEvaluator(type);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return getSubschema().createNegatedEvaluator(context, type);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return getSubschema().createEvaluator(type);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return getSubschema().createEvaluator(context, type);
     }
 }

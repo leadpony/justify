@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import javax.json.JsonBuilderFactory;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -45,8 +46,8 @@ import org.leadpony.justify.api.Evaluator.Result;
 public class ValidatingJsonParser extends PointingJsonParser implements EvaluatorContext, DefaultProblemDispatcher {
 
     private final JsonSchema rootSchema;
-    @SuppressWarnings("unused")
     private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory jsonBuilderFactory;
     private ProblemHandler problemHandler;
     private BiConsumer<Event, JsonParser> eventHandler;
     private Evaluator evaluator;
@@ -60,11 +61,13 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
      * @param real the underlying JSON parser.
      * @param rootSchema the root JSON schema to be evaluated during validation.
      * @param jsonProvider the JSON provider.
+     * @param jsonBuilderFactory the JSON builder factory.
      */
-    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider) {
-        super(real, jsonProvider.createBuilderFactory(null));
+    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
+        super(real, jsonBuilderFactory);
         this.rootSchema = rootSchema;
         this.jsonProvider = jsonProvider;
+        this.jsonBuilderFactory = jsonBuilderFactory;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
     }
@@ -98,6 +101,16 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
         return realParser();
     }
 
+    @Override
+    public JsonProvider getJsonProvider() {
+        return jsonProvider;
+    }
+
+    @Override
+    public JsonBuilderFactory getJsonBuilderFactory() {
+        return jsonBuilderFactory;
+    }
+
     /* DefaultProblemDispatcher */
 
     @Override
@@ -108,7 +121,7 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
 
     private void handleEventFirst(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
-        this.evaluator = rootSchema.createEvaluator(type);
+        this.evaluator = rootSchema.createEvaluator(this, type);
         if (this.evaluator != null) {
             handleEvent(event, parser);
         }
@@ -125,7 +138,7 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
                 this.eventHandler = this::handleNone;
             }
         }
-        Result result = evaluator.evaluate(event, this, depth, this);
+        Result result = evaluator.evaluate(event, depth, this);
         if (ParserEvents.isStartOfContainer(event)) {
             ++depth;
         }

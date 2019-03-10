@@ -17,11 +17,14 @@
 package org.leadpony.justify.api;
 
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 /**
  * An evaluator interface for applying a JSON schema to a JSON instance.
  *
- * <p>Note that this type is not intended to be used directly by end users.</p>
+ * <p>
+ * Note that this type is not intended to be used directly by end users.
+ * </p>
  *
  * @author leadpony
  */
@@ -42,30 +45,34 @@ public interface Evaluator {
     /**
      * Evaluates a JSON schema against each instance location to which it applies.
      *
-     * @param event the event triggered by the JSON parser, cannot be {@code null}.
-     * @param context the context of this evaluator, cannot be {@code null}.
-     * @param depth the depth where the event occurred.
-     * @param dispatcher the dispatcher of the found problems, cannot be {@code null}.
-     * @return the result of the evaluation, one defined in {@link Result}.
-     *         This cannot be {@code null}.
+     * @param event      the event triggered by the JSON parser, cannot be
+     *                   {@code null}.
+     * @param depth      the depth where the event occurred.
+     * @param dispatcher the dispatcher of the found problems, cannot be
+     *                   {@code null}.
+     * @return the result of the evaluation, one defined in {@link Result}. This
+     *         cannot be {@code null}.
      */
-    Result evaluate(JsonParser.Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher);
+    Result evaluate(JsonParser.Event event, int depth, ProblemDispatcher dispatcher);
 
     /**
-     * Checks whether this evaluator evaluates anything as true or not.
-     * This method returns {@code false} by default.
-     * @return {@code true} if this evaluator is always true, otherwise {@code false}.
-     */
-    default boolean isAlwaysTrue() {
-        return false;
-    }
-
-    /**
-     * Checks whether this evaluator evaluates anything as false or not.
-     * This method returns {@code false} by default.
-     * @return {@code true} if this evaluator is always false, otherwise {@code false}.
+     * Checks whether this evaluator evaluates anything as false or not. This method
+     * returns {@code false} by default.
+     *
+     * @return {@code true} if this evaluator is always false, otherwise
+     *         {@code false}.
      */
     default boolean isAlwaysFalse() {
         return false;
     }
+
+    /**
+     * The evaluator which evaluates anything as true.
+     */
+    static Evaluator ALWAYS_TRUE = new Evaluator() {
+        @Override
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            return Result.TRUE;
+        }
+    };
 }

@@ -19,30 +19,31 @@ package org.leadpony.justify.internal.keyword.combiner;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
-class RedundantItemEvaluator implements Evaluator {
+class RedundantItemEvaluator extends AbstractEvaluator {
 
     private final int itemIndex;
     private final JsonSchema schema;
 
-    RedundantItemEvaluator(int itemIndex, JsonSchema schema) {
+    RedundantItemEvaluator(EvaluatorContext context, int itemIndex, JsonSchema schema) {
+        super(context);
         assert schema.isBoolean() || schema == JsonSchema.EMPTY;
         this.itemIndex = itemIndex;
         this.schema = schema;
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(getContext())
                 .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_ITEM)
                 .withParameter("index", itemIndex)
                 .withSchema(schema)

@@ -41,20 +41,21 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     private final List<DeferredEvaluator> operands = new ArrayList<>();
     private List<ProblemList> problemLists;
 
-    SimpleDisjunctiveEvaluator() {
+    SimpleDisjunctiveEvaluator(EvaluatorContext context) {
+        super(context);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         for (DeferredEvaluator operand : operands) {
-            Result result = operand.evaluate(event, context, depth, dispatcher);
+            Result result = operand.evaluate(event, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else {
                 addBadEvaluator(operand);
             }
         }
-        return dispatchProblems(context, dispatcher);
+        return dispatchProblems(dispatcher);
     }
 
     @Override
@@ -74,17 +75,17 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         problemLists.add(evaluator.problems());
     }
 
-    protected Result dispatchProblems(EvaluatorContext context, ProblemDispatcher dispatcher) {
+    protected Result dispatchProblems(ProblemDispatcher dispatcher) {
         if (problemLists == null) {
-            dispatchDefaultProblem(context, dispatcher);
+            dispatchDefaultProblem(dispatcher);
         } else {
             assert !problemLists.isEmpty();
-            dispatchProblemBranches(context, dispatcher);
+            dispatchProblemBranches(dispatcher);
         }
         return Result.FALSE;
     }
 
-    private void dispatchProblemBranches(EvaluatorContext context, ProblemDispatcher dispatcher) {
+    private void dispatchProblemBranches(ProblemDispatcher dispatcher) {
         List<ProblemList> filterdLists = this.problemLists.stream()
             .filter(ProblemList::isResolvable)
             .collect(Collectors.toList());
@@ -94,14 +95,14 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         if (filterdLists.size() == 1) {
             dispatcher.dispatchAllProblems(filterdLists.get(0));
         } else {
-            ProblemBuilder builder = createProblemBuilder(context)
+            ProblemBuilder builder = createProblemBuilder(getContext())
                     .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
                     .withBranches(filterdLists);
             dispatcher.dispatchProblem(builder.build());
         }
     }
 
-    protected void dispatchDefaultProblem(EvaluatorContext context, ProblemDispatcher dispatcher) {
+    protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
         throw new IllegalStateException();
     }
 }

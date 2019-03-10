@@ -44,24 +44,25 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private long evaluationsAsTrue;
     private final InstanceMonitor monitor;
 
-    ExclusiveEvaluator(InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+    ExclusiveEvaluator(EvaluatorContext context, InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+        super(context);
         this.operands = createEvaluators(operands);
         this.negated = createEvaluators(negated);
         this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         if (evaluationsAsTrue == 0) {
-            evaluateAll(event, context, depth, dispatcher);
+            evaluateAll(event, depth, dispatcher);
         }
-        evaluateAllNegated(event, context, depth, dispatcher);
+        evaluateAllNegated(event, depth, dispatcher);
         if (monitor.isCompleted(event, depth)) {
             if (evaluationsAsTrue == 0) {
-                dispatchProblems(context, dispatcher, problemLists);
+                dispatchProblems(dispatcher, problemLists);
                 return Result.FALSE;
             } else if (evaluationsAsTrue > 1) {
-                dispatchNegatedProblems(context, dispatcher, negatedProblemLists);
+                dispatchNegatedProblems(dispatcher, negatedProblemLists);
                 return Result.FALSE;
             }
             return Result.TRUE;
@@ -69,11 +70,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         return Result.PENDING;
     }
 
-    private void evaluateAll(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAll(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.TRUE) {
                     evaluationsAsTrue++;
@@ -85,11 +86,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         }
     }
 
-    private void evaluateAllNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAllNegated(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = negated.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadNegatedEvaluator(current);

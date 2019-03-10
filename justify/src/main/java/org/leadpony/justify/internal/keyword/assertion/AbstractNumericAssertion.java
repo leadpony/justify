@@ -18,60 +18,60 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.keyword.NumericKeyword;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * Assertion on a value of numeric type.
+ * An assertion on a value of numeric type.
  *
  * @author leadpony
  */
-abstract class AbstractNumericAssertion extends AbstractAssertion implements NumericKeyword, Evaluator {
+abstract class AbstractNumericAssertion extends AbstractAssertion implements NumericKeyword {
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this;
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        BigDecimal value = context.getParser().getBigDecimal();
+        if (testValue(value)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = createProblemBuilder(context)
+                        .withParameter("actual", value);
+                dispatcher.dispatchProblem(createProblem(builder));
+                return Result.FALSE;
+            }
+        };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        return this::evaluateNegated;
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        BigDecimal value = context.getParser().getBigDecimal();
+        if (!testValue(value)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new Evaluator() {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = createProblemBuilder(context)
+                        .withParameter("actual", value);
+                dispatcher.dispatchProblem(createNegatedProblem(builder));
+                return Result.FALSE;
+            }
+        };
     }
 
-    @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        assert event == Event.VALUE_NUMBER;
-        return evaluateAgainst(context.getParser().getBigDecimal(), context, dispatcher);
-    }
+    protected abstract boolean testValue(BigDecimal value);
 
-    private Result evaluateNegated(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        assert event == Event.VALUE_NUMBER;
-        return evaluateNegatedAgainst(context.getParser().getBigDecimal(), context, dispatcher);
-    }
+    protected abstract Problem createProblem(ProblemBuilder builder);
 
-    /**
-     * Evaluates this assertion on a numeric value.
-     *
-     * @param value the value to apply this assertion.
-     * @param context the evaluator context.
-     * @param dispatcher the dispatcher by which detected problems will be dispatched.
-     * @return the result of the evaluation.
-     */
-    protected abstract Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher);
-
-    /**
-     * Evaluates the negated assertion on a numeric value.
-     *
-     * @param value the value to apply this assertion.
-     * @param context the evaluator context.
-     * @param dispatcher the dispatcher by which detected problems will be dispatched.
-     * @return the result of the evaluation.
-     */
-    protected abstract Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher);
+    protected abstract Problem createNegatedProblem(ProblemBuilder builder);
 }

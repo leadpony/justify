@@ -36,14 +36,15 @@ public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
 
     private final List<Evaluator> operands = new ArrayList<>();
 
-    SimpleConjunctiveEvaluator() {
+    SimpleConjunctiveEvaluator(EvaluatorContext context) {
+        super(context);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         Result finalResult = Result.TRUE;
         for (Evaluator operand : operands) {
-            if (operand.evaluate(event, context, depth, dispatcher) == Result.FALSE) {
+            if (operand.evaluate(event, depth, dispatcher) == Result.FALSE) {
                 finalResult = Result.FALSE;
             }
         }
@@ -52,7 +53,7 @@ public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
 
     @Override
     public void append(Evaluator evaluator) {
-        if (evaluator.isAlwaysTrue()) {
+        if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
         this.operands.add(evaluator);

@@ -31,26 +31,27 @@ class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
 
     private final InstanceMonitor monitor;
 
-    DisjunctiveEvaluator(InstanceType type) {
+    DisjunctiveEvaluator(EvaluatorContext context, InstanceType type) {
+        super(context);
         this.monitor = InstanceMonitor.of(type);
     }
 
     @Override
-    public Result evaluate(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
-        if (invokeOperandEvaluators(event, context, depth, dispatcher) == Result.TRUE) {
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        if (invokeOperandEvaluators(event, depth, dispatcher) == Result.TRUE) {
             return Result.TRUE;
         }
         if (monitor.isCompleted(event, depth)) {
-            return dispatchProblems(context, dispatcher);
+            return dispatchProblems(dispatcher);
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, EvaluatorContext context, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, context, depth, dispatcher);
+            Result result = current.evaluate(event, depth, dispatcher);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else if (result != Result.PENDING) {

@@ -24,13 +24,11 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.Evaluator.Result;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * Assertion specified with "enum" validation keyword.
+ * An assertion specified with "enum" validation keyword.
  *
  * @author leadpony
  */
@@ -55,41 +53,26 @@ class Enum extends AbstractEqualityAssertion {
     }
 
     @Override
-    protected Result assertEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (contains(actual)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_ENUM)
-                    .withParameter("actual", actual)
-                    .withParameter("expected", this.expected)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
-    }
-
-    @Override
-    protected Result assertNotEquals(JsonValue actual, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (contains(actual)) {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_NOT_ENUM)
-                    .withParameter("actual", actual)
-                    .withParameter("expected", this.expected)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
-    }
-
-    private boolean contains(JsonValue value) {
+    protected boolean testValue(JsonValue value) {
         for (JsonValue expected : this.expected) {
             if (value.equals(expected)) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_ENUM)
+            .withParameter("expected", this.expected)
+            .build();
+    }
+
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_ENUM)
+        .withParameter("expected", this.expected)
+        .build();
     }
 }

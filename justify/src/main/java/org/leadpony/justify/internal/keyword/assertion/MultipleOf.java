@@ -21,10 +21,9 @@ import java.math.BigDecimal;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
  * Assertion specified with "multipleOf" validation keyword.
@@ -50,37 +49,22 @@ class MultipleOf extends AbstractNumericAssertion {
     }
 
     @Override
-    protected Result evaluateAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value)) {
-            return Result.TRUE;
-        } else {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_MULTIPLEOF)
-                    .withParameter("actual", value)
-                    .withParameter("factor", factor)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        }
+    protected boolean testValue(BigDecimal value) {
+        BigDecimal remainder = value.remainder(factor);
+        return remainder.compareTo(BigDecimal.ZERO) == 0;
     }
 
     @Override
-    protected Result evaluateNegatedAgainst(BigDecimal value, EvaluatorContext context, ProblemDispatcher dispatcher) {
-        if (testValue(value)) {
-            Problem p = createProblemBuilder(context)
-                    .withMessage(Message.INSTANCE_PROBLEM_NOT_MULTIPLEOF)
-                    .withParameter("actual", value)
-                    .withParameter("factor", factor)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Result.FALSE;
-        } else {
-            return Result.TRUE;
-        }
+    protected Problem createProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_MULTIPLEOF)
+            .withParameter("factor", factor)
+            .build();
     }
 
-    private boolean testValue(BigDecimal value) {
-        BigDecimal remainder = value.remainder(factor);
-        return remainder.compareTo(BigDecimal.ZERO) == 0;
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_MULTIPLEOF)
+            .withParameter("factor", factor)
+            .build();
     }
 }

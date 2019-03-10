@@ -19,9 +19,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
@@ -47,23 +46,23 @@ class If extends Conditional {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(type)
-                : JsonSchema.TRUE.createEvaluator(type);
-        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(type)
-                : JsonSchema.TRUE.createEvaluator(type);
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
+        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
+                : Evaluator.ALWAYS_TRUE;
+        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(context, type)
+                : Evaluator.ALWAYS_TRUE;
+        return new ConditionalEvaluator(context, ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
-        Evaluator ifEvaluator = getSubschema().createEvaluator(type);
-        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(type)
-                : getSubschema().createNegatedEvaluator(type);
-        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(type)
-                : getSubschema().createEvaluator(type);
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
+        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
+                : getSubschema().createNegatedEvaluator(context, type);
+        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
+                : getSubschema().createEvaluator(context, type);
+        return new ConditionalEvaluator(context, ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override

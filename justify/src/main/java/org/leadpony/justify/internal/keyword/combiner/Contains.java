@@ -16,11 +16,11 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.ParserEvents;
@@ -48,44 +48,44 @@ class Contains extends UnaryCombiner implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         if (this.min == 1) {
-            return createItemsEvaluator();
+            return createItemsEvaluator(context);
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(InstanceType type, JsonBuilderFactory builderFactory) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         if (this.min == 1) {
-            return createNegatedItemsEvaluator();
+            return createNegatedItemsEvaluator(context);
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
-    private Evaluator createItemsEvaluator() {
+    private Evaluator createItemsEvaluator(EvaluatorContext context) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractDisjunctiveItemsEvaluator(this) {
+        return new AbstractDisjunctiveItemsEvaluator(context, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    append(subschema.createEvaluator(type));
+                    append(subschema.createEvaluator(context, type));
                 }
             }
         };
     }
 
-    private Evaluator createNegatedItemsEvaluator() {
+    private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractConjunctiveItemsEvaluator() {
+        return new AbstractConjunctiveItemsEvaluator(context) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toInstanceType(event, parser);
-                    append(subschema.createNegatedEvaluator(type));
+                    append(subschema.createNegatedEvaluator(context, type));
                 }
             }
         };
