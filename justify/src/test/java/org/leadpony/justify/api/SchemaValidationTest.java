@@ -19,6 +19,7 @@ package org.leadpony.justify.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringReader;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -45,43 +46,44 @@ public class SchemaValidationTest {
             "schema/core/schema.json",
             "schema/core/id.json",
             "schema/core/ref.json",
-            "schema/validation/type.json",
-            "schema/validation/type.json",
-            "schema/validation/enum.json",
-            "schema/validation/const.json",
-            "schema/validation/multipleOf.json",
-            "schema/validation/maximum.json",
-            "schema/validation/exclusiveMaximum.json",
-            "schema/validation/minimum.json",
-            "schema/validation/exclusiveMinimum.json",
-            "schema/validation/maxLength.json",
-            "schema/validation/minLength.json",
-            "schema/validation/pattern.json",
-            "schema/validation/items.json",
+
             "schema/validation/additionalItems.json",
-            "schema/validation/maxItems.json",
-            "schema/validation/minItems.json",
-            "schema/validation/uniqueItems.json",
-            "schema/validation/contains.json",
-            "schema/validation/maxProperties.json",
-            "schema/validation/minProperties.json",
-            "schema/validation/required.json",
-            "schema/validation/properties.json",
-            "schema/validation/patternProperties.json",
             "schema/validation/additionalProperties.json",
-            "schema/validation/dependencies.json",
-            "schema/validation/propertyNames.json",
-            "schema/validation/if.json",
-            "schema/validation/then.json",
-            "schema/validation/else.json",
             "schema/validation/allOf.json",
             "schema/validation/anyOf.json",
-            "schema/validation/oneOf.json",
-            "schema/validation/not.json",
-            "schema/validation/definitions.json",
-            "schema/validation/title.json",
-            "schema/validation/description.json",
+            "schema/validation/const.json",
+            "schema/validation/contains.json",
             "schema/validation/default.json",
+            "schema/validation/definitions.json",
+            "schema/validation/dependencies.json",
+            "schema/validation/description.json",
+            "schema/validation/else.json",
+            "schema/validation/enum.json",
+            "schema/validation/exclusiveMaximum.json",
+            "schema/validation/exclusiveMinimum.json",
+            "schema/validation/if.json",
+            "schema/validation/items.json",
+            "schema/validation/maximum.json",
+            "schema/validation/maxItems.json",
+            "schema/validation/maxLength.json",
+            "schema/validation/maxProperties.json",
+            "schema/validation/minimum.json",
+            "schema/validation/minItems.json",
+            "schema/validation/minLength.json",
+            "schema/validation/minProperties.json",
+            "schema/validation/multipleOf.json",
+            "schema/validation/not.json",
+            "schema/validation/oneOf.json",
+            "schema/validation/pattern.json",
+            "schema/validation/patternProperties.json",
+            "schema/validation/properties.json",
+            "schema/validation/propertyNames.json",
+            "schema/validation/required.json",
+            "schema/validation/then.json",
+            "schema/validation/title.json",
+            "schema/validation/type.json",
+            "schema/validation/uniqueItems.json",
+
             "schema/validation/optional/format.json",
             "schema/validation/optional/contentEncoding.json",
             "schema/validation/optional/contentMediaType.json",
@@ -101,8 +103,23 @@ public class SchemaValidationTest {
             reader.read();
             assertThat(true).isEqualTo(fixture.hasValidSchema());
         } catch (JsonValidatingException e) {
-            printProblems(fixture, e.getProblems());
+            List<Problem> problems = e.getProblems();
+            printProblems(fixture, problems);
             assertThat(false).isEqualTo(fixture.hasValidSchema());
+            verifyProblemDetails(fixture, problems);
+        }
+    }
+
+    private void verifyProblemDetails(SchemaFixture fixture, List<Problem> problems) {
+        List<SchemaFixture.Error> errors = fixture.errors();
+        if (errors.isEmpty()) {
+            return;
+        }
+        assertThat(problems).hasSameSizeAs(errors);
+        Iterator<SchemaFixture.Error> it = errors.iterator();
+        for (Problem problem : problems) {
+            SchemaFixture.Error error = it.next();
+            assertThat(problem.getPointer()).isEqualTo(error.pointer());
         }
     }
 

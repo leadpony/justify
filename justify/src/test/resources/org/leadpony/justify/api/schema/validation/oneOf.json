@@ -12,31 +12,61 @@
     {
         "description": "value is an object",
         "schema": { "oneOf": {} },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "oneOf": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "oneOf": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "oneOf": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf"
+            }
+        ]
     },
     {
         "description": "array element is not a schema",
         "schema": { "oneOf": ["foo"] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf/0"
+            }
+        ]
     },
     {
         "description": "array is empty",
         "schema": { "oneOf": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/oneOf"
+            }
+        ]
     }
 ]

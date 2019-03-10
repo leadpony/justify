@@ -12,31 +12,61 @@
     {
         "description": "value is an object",
         "schema": { "anyOf": {} },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "anyOf": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "anyOf": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "anyOf": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf"
+            }
+        ]
     },
     {
         "description": "array element is not a schema",
         "schema": { "anyOf": ["foo"] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf/0"
+            }
+        ]
     },
     {
         "description": "array is empty",
         "schema": { "anyOf": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/anyOf"
+            }
+        ]
     }
 ]

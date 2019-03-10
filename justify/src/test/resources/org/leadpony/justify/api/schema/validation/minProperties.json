@@ -12,16 +12,31 @@
     {
         "description": "value is a number",
         "schema": { "minProperties": 3.5 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minProperties"
+            }
+        ]
     },
     {
         "description": "value is negative",
         "schema": { "minProperties": -1 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minProperties"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "minProperties": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minProperties"
+            }
+        ]
     }
 ]

@@ -17,16 +17,31 @@
     {
         "description": "value is an array",
         "schema": { "propertyNames": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/propertyNames"
+            }
+        ]
     },
     {
         "description": "value is an integer",
         "schema": { "propertyNames": 42},
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/propertyNames"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "propertyNames": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/propertyNames"
+            }
+        ]
     }
 ]

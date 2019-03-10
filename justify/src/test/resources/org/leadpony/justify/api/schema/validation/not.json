@@ -17,21 +17,41 @@
     {
         "description": "value is an array",
         "schema": { "not": [{}, true, false] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/not"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "not": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/not"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "not": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/not"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "not": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/not"
+            }
+        ]
     }
 ]

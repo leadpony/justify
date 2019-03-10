@@ -12,11 +12,21 @@
     {
         "description": "value is a number",
         "schema": { "pattern": 123 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/pattern"
+            }
+        ]
     },
     {
         "description": "value is not a regular expression",
         "schema": { "pattern": "^(abc]" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/pattern"
+            }
+        ]
     }
 ]

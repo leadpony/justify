@@ -17,21 +17,41 @@
     {
         "description": "value is an array",
         "schema": { "if": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/if"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "if": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/if"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "if": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/if"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "if": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/if"
+            }
+        ]
     }
 ]

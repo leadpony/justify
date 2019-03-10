@@ -17,11 +17,15 @@
 package org.leadpony.justify.api;
 
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
@@ -35,12 +39,27 @@ class SchemaFixture extends Fixture {
     private final String description;
     private final JsonValue schema;
     private final boolean validity;
+    private final List<Error> errors;
 
-    private SchemaFixture(String name, int index, String description, JsonValue schema, boolean valid) {
+    static class Error {
+        private final String pointer;
+
+        Error(String pointer) {
+            this.pointer = pointer;
+        }
+
+        String pointer() {
+            return pointer;
+        }
+    }
+
+    private SchemaFixture(String name, int index, String description, JsonValue schema, boolean valid,
+            List<Error> errors) {
         super(name, index);
         this.description = description;
         this.schema = schema;
         this.validity = valid;
+        this.errors = errors;
     }
 
     @Override
@@ -56,17 +75,37 @@ class SchemaFixture extends Fixture {
         return validity;
     }
 
+    List<Error> errors() {
+        return errors;
+    }
+
     static Stream<SchemaFixture> newStream(String name) {
         AtomicInteger counter = new AtomicInteger();
         return readJsonArray(name).stream()
                 .map(JsonValue::asJsonObject)
-                .map(object->new SchemaFixture(
-                        name,
-                        counter.getAndIncrement(),
-                        object.getString("description"),
-                        object.get("schema"),
-                        object.getBoolean("valid")
-                        ));
+                .map(object -> toFixture(object, name, counter.getAndIncrement()));
+    }
+
+    private static SchemaFixture toFixture(JsonObject object, String name, int index) {
+        List<Error> errors = Collections.emptyList();
+        JsonArray array = object.getJsonArray("errors");
+        if (array != null) {
+            errors = array.stream()
+                    .map(JsonValue::asJsonObject)
+                    .map(SchemaFixture::toError)
+                    .collect(Collectors.toList());
+        }
+        return new SchemaFixture(
+                name,
+                index,
+                object.getString("description"),
+                object.get("schema"),
+                object.getBoolean("valid"),
+                errors);
+    }
+
+    private static Error toError(JsonObject object) {
+        return new Error(object.getString("pointer"));
     }
 
     private static JsonArray readJsonArray(String name) {

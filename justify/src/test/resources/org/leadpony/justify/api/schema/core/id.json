@@ -12,6 +12,11 @@
     {
         "description": "value is not a URI",
         "schema": { "$id": "http://<invalid>/schema.json" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/$id"
+            }
+        ]
     }
 ]

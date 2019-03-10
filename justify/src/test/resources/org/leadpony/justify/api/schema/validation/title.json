@@ -7,6 +7,11 @@
     {
         "description": "value is a number",
         "schema": { "title": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/title"
+            }
+        ]
     }
 ]

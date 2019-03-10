@@ -23,20 +23,20 @@ import javax.json.stream.JsonParser.Event;
  *
  * @author leadpony
  */
-public class JsonPointerBuilder {
+public abstract class JsonPointerBuilder {
 
-    private static final JsonPointerBuilder ROOT_BUILDER = new JsonPointerBuilder();
-
+    private static final JsonPointerBuilder INTIAL_BUILDER = new InitialJsonPointerBuilder();
+    private static final JsonPointerBuilder ROOT_BUILDER = new RootJsonPointerBuilder();
     /**
      * Returns the instance corresponding to the entire JSON value.
      *
      * @return the instance corresponding to the entire JSON value.
      */
     public static JsonPointerBuilder newInstance() {
-        return ROOT_BUILDER;
+        return INTIAL_BUILDER;
     }
 
-    private JsonPointerBuilder() {
+    protected JsonPointerBuilder() {
     }
 
     /**
@@ -58,7 +58,7 @@ public class JsonPointerBuilder {
     /**
      * Returns the current JSON pointer as a string.
      *
-     * @return the current JSON pointer as a string.
+     * @return the current JSON pointer as a string, may be {@code null}.
      */
     public String toPointer() {
         StringBuilder builder = new StringBuilder();
@@ -72,6 +72,32 @@ public class JsonPointerBuilder {
      * @param builder the builder to build a JSON pointer as a stirng.
      */
     protected void appendReferenceTokens(StringBuilder builder) {
+    }
+
+    private static class InitialJsonPointerBuilder extends JsonPointerBuilder {
+
+        public JsonPointerBuilder withEvent(Event event, JsonParser parser) {
+            if (event == Event.START_ARRAY) {
+                return new ArrayJsonPointerBuilder(ROOT_BUILDER);
+            } else if (event == Event.START_OBJECT) {
+                return new ObjectJsonPointerBuilder(ROOT_BUILDER);
+            } else if (event == Event.END_ARRAY || event == Event.END_OBJECT) {
+                throw new IllegalStateException();
+            }
+            return ROOT_BUILDER;
+        }
+
+        @Override
+        public String toPointer() {
+            return null;
+        }
+    }
+
+    private static class RootJsonPointerBuilder extends JsonPointerBuilder {
+
+        public JsonPointerBuilder withEvent(Event event, JsonParser parser) {
+            throw new IllegalStateException();
+        }
     }
 
     private static class ArrayJsonPointerBuilder extends JsonPointerBuilder {

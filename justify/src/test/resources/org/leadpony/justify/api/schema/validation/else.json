@@ -29,7 +29,12 @@
             "if": false,
             "else": [] 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/else"
+            }
+        ]
     },
     {
         "description": "value is a string",
@@ -37,7 +42,12 @@
             "if": false,
             "else": "foo" 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/else"
+            }
+        ]
     },
     {
         "description": "value is a number",
@@ -45,7 +55,12 @@
             "if": false,
             "else": 42 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/else"
+            }
+        ]
     },
     {
         "description": "value is null",
@@ -53,6 +68,11 @@
             "if": false,
             "else": null 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/else"
+            }
+        ]
     }
 ]

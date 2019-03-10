@@ -29,7 +29,12 @@
             "if": true,
             "then": [] 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/then"
+            }
+        ]
     },
     {
         "description": "value is a string",
@@ -37,7 +42,12 @@
             "if": true,
             "then": "foo" 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/then"
+            }
+        ]
     },
     {
         "description": "value is a number",
@@ -45,7 +55,12 @@
             "if": true,
             "then": 42 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/then"
+            }
+        ]
     },
     {
         "description": "value is null",
@@ -53,6 +68,11 @@
             "if": true,
             "then": null 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/then"
+            }
+        ]
     }
 ]

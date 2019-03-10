@@ -40,18 +40,19 @@ public interface ProblemBuilderFactory {
      * @return newly created instance of {@link ProblemBuilder}.
      */
     default ProblemBuilder createProblemBuilder(EvaluatorContext context) {
-        JsonLocation current = context.getParser().getLocation();
+        JsonLocation location = context.getParser().getLocation();
         String pointer = context.getPointer();
-        return new ProblemBuilder(SimpleJsonLocation.before(current), pointer);
+        return createProblemBuilder(location, pointer);
     }
 
     /**
      * Creates new instance of this builder.
      *
      * @param location the location where problem occurred, cannot be {@code null}.
+     * @param pointer the JSON pointer where problem occurred, can be {@code null}.
      * @return newly created instance of {@link ProblemBuilder}.
      */
-    default ProblemBuilder createProblemBuilder(JsonLocation location) {
-        return new ProblemBuilder(location, null);
+    default ProblemBuilder createProblemBuilder(JsonLocation location, String pointer) {
+        return new ProblemBuilder(SimpleJsonLocation.before(location), pointer);
     }
 }

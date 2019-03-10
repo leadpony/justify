@@ -7,21 +7,41 @@
     {
         "description": "value is an object",
         "schema": { "enum": {} },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/enum"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "enum": "abc" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/enum"
+            }
+        ]
     },
     {
         "description": "value is an empty array",
         "schema": { "enum": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/enum"
+            }
+        ]
     },
     {
         "description": "array elements are not unique",
         "schema": { "enum": ["short", "short"] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/enum/1"
+            }
+        ]
     }
 ]

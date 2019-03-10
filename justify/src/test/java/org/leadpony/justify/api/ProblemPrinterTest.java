@@ -47,7 +47,7 @@ public class ProblemPrinterTest {
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
-        assertThat(lines.get(0)).isEqualTo("[12,34][#/foo] hello problem.");
+        assertThat(lines.get(0)).isEqualTo("[12,34][/foo] hello problem.");
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ProblemPrinterTest {
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
-        assertThat(lines.get(0)).isEqualTo("[#/foo] hello problem.");
+        assertThat(lines.get(0)).isEqualTo("[/foo] hello problem.");
     }
 
     private static class MockProblem implements Problem {

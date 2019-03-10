@@ -12,7 +12,12 @@
     {
         "description": "value is a number",
         "schema": { "contentMediaType": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contentMediaType"
+            }
+        ]
     },
     {
         "description": "value is unknown",
@@ -22,6 +27,11 @@
     {
         "description": "value is not a media type",
         "schema": { "contentMediaType": "application/json; charset" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contentMediaType"
+            }
+        ]
     }
 ]

@@ -48,7 +48,11 @@ public class ProblemPrinterFactory {
             args.put("row", location.getLineNumber());
             args.put("col", location.getColumnNumber());
         }
-        args.put("pointer", problem.getPointer());
+        String pointer = problem.getPointer();
+        if (pointer == null) {
+            pointer = "?";
+        }
+        args.put("pointer", pointer);
         return args;
     }
 

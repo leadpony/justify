@@ -18,12 +18,22 @@
     {
         "description": "value is not a URI",
         "schema": { "$ref": "http://<invalid>/schema.json#" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/$ref"
+            }
+        ]
     },
     {
         "description": "value cannot be resolved",
         "schema": { "$ref": "#foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/$ref"
+            }
+        ]
     },
     {
         "description": "value cannot be resolved",
@@ -35,7 +45,12 @@
                 }
             } 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions/A/$ref"
+            }
+        ]
     },
     {
         "description": "has both $id and $ref",
@@ -57,6 +72,14 @@
                 }
             }
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions/alice/allOf/0/$ref"
+            },
+            {
+                "pointer": "/definitions/bob/allOf/0/$ref"
+            }
+        ]
     }
 ]

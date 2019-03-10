@@ -49,11 +49,14 @@ public class SchemaReaderTest {
     }
 
     public static Stream<Arguments> schemas() {
-        return Stream.of(Arguments.of("", JsonValidatingException.class),
-                Arguments.of(" ", JsonValidatingException.class), Arguments.of(" {}", null),
+        return Stream.of(
+                Arguments.of("", JsonValidatingException.class),
+                Arguments.of(" ", JsonValidatingException.class),
+                Arguments.of(" {}", null),
                 Arguments.of("{\"type\":", JsonParsingException.class),
                 Arguments.of("{\"type\":\"number\"", JsonParsingException.class),
-                Arguments.of("{\"type\":\"number\"},", null));
+                Arguments.of("{\"type\":\"number\"},", null)
+                );
     }
 
     @ParameterizedTest(name = "{index}")

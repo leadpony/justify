@@ -17,21 +17,41 @@
     {
         "description": "value is an array",
         "schema": { "additionalProperties": [{}, true, false] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/additionalProperties"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "additionalProperties": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/additionalProperties"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "additionalProperties": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/additionalProperties"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "additionalProperties": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/additionalProperties"
+            }
+        ]
     }
 ]

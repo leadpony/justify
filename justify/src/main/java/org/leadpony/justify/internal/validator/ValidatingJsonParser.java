@@ -25,9 +25,8 @@ import java.util.function.BiConsumer;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
-import org.leadpony.justify.internal.base.json.JsonParserDecorator;
-import org.leadpony.justify.internal.base.json.JsonPointerBuilder;
 import org.leadpony.justify.internal.base.json.ParserEvents;
+import org.leadpony.justify.internal.base.json.PointingJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
@@ -43,7 +42,7 @@ import org.leadpony.justify.api.Evaluator.Result;
  *
  * @author leadpony
  */
-public class ValidatingJsonParser extends JsonParserDecorator implements EvaluatorContext, DefaultProblemDispatcher {
+public class ValidatingJsonParser extends PointingJsonParser implements EvaluatorContext, DefaultProblemDispatcher {
 
     private final JsonSchema rootSchema;
     @SuppressWarnings("unused")
@@ -53,7 +52,6 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
     private Evaluator evaluator;
     private int depth;
 
-    private JsonPointerBuilder jsonPointerBuilder;
     private List<Problem> currentProblems = new ArrayList<>();
 
     /**
@@ -69,7 +67,6 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
         this.jsonProvider = jsonProvider;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleEventFirst;
-        this.jsonPointerBuilder = JsonPointerBuilder.newInstance();
     }
 
     /**
@@ -87,7 +84,6 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
     public Event next() {
         currentProblems.clear();
         Event event = super.next();
-        updateJsonPointer(event, realParser());
         eventHandler.accept(event, realParser());
         if (!currentProblems.isEmpty()) {
             dispatchProblems();
@@ -102,21 +98,12 @@ public class ValidatingJsonParser extends JsonParserDecorator implements Evaluat
         return realParser();
     }
 
-    @Override
-    public String getPointer() {
-        return jsonPointerBuilder.toPointer();
-    }
-
     /* DefaultProblemDispatcher */
 
     @Override
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
         this.currentProblems.add(problem);
-    }
-
-    private void updateJsonPointer(Event event, JsonParser parser) {
-        jsonPointerBuilder = jsonPointerBuilder.withEvent(event, parser);
     }
 
     private void handleEventFirst(Event event, JsonParser parser) {

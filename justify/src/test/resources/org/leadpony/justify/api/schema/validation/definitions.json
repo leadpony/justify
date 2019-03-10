@@ -18,17 +18,32 @@
     {
         "description": "value is a string",
         "schema": { "definitions": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "definitions": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "definitions": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions"
+            }
+        ]
     },
     {
         "description": "member is a string",
@@ -37,7 +52,12 @@
                 "foo": "bar"
             }
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions/foo"
+            }
+        ]
     },
     {
         "description": "member is a number",
@@ -46,6 +66,11 @@
                 "foo": 42
             }
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/definitions/foo"
+            }
+        ]
     }
 ]

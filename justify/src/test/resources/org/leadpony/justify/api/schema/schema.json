@@ -17,21 +17,41 @@
     {
         "description": "schema is a string",
         "schema": "foo",
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": ""
+            }
+        ]
     },
     {
         "description": "schema is null",
         "schema": null,
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": ""
+            }
+        ]
     },
     {
         "description": "schema is a number",
         "schema": 42,
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": ""
+            }
+        ]
     },
     {
         "description": "schema is an array",
         "schema": [],
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": ""
+            }
+        ]
     }
 ]

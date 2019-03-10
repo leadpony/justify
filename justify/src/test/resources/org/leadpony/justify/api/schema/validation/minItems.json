@@ -12,16 +12,31 @@
     {
         "description": "value is a number",
         "schema": { "minItems": 3.5 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minItems"
+            }
+        ]
     },
     {
         "description": "value is negative",
         "schema": { "minItems": -1 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minItems"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "minItems": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/minItems"
+            }
+        ]
     }
 ]

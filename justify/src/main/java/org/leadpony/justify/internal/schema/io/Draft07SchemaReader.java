@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,7 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.URIs;
+import org.leadpony.justify.internal.base.json.PointingJsonParser;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -65,7 +65,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
 
-    private final JsonParser parser;
+    private final PointingJsonParser parser;
     private final DefaultSchemaBuilderFactory factory;
 
     private final boolean strictWithKeywords;
@@ -78,7 +78,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private final Set<JsonSchema> identified = new HashSet<>();
     private final Map<URI, JsonSchema> idSchemaMap = new HashMap<>();
-    private final Map<SchemaReference, JsonLocation> references = new IdentityHashMap<>();
+    private final List<ReferenceContext> references = new ArrayList<>();
 
     private final List<JsonSchemaResolver> resolvers;
 
@@ -90,7 +90,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param parser  the parser of JSON document.
      * @param factory the factory for producing schema builders.
      */
-    public Draft07SchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory) {
+    public Draft07SchemaReader(PointingJsonParser parser, DefaultSchemaBuilderFactory factory) {
         this(parser, factory, SchemaReaderConfiguration.DEFAULT);
     }
 
@@ -101,7 +101,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param factory the factory for producing schema builders.
      * @param config  the configuration for this schema reader.
      */
-    public Draft07SchemaReader(JsonParser parser, DefaultSchemaBuilderFactory factory,
+    public Draft07SchemaReader(PointingJsonParser parser, DefaultSchemaBuilderFactory factory,
             SchemaReaderConfiguration config) {
         this.parser = parser;
         this.factory = factory;
@@ -120,7 +120,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      */
     public Draft07SchemaReader(ValidatingJsonParser parser, DefaultSchemaBuilderFactory factory,
             SchemaReaderConfiguration config) {
-        this((JsonParser) parser, factory, config);
+        this((PointingJsonParser) parser, factory, config);
         parser.withHandler(this::addProblems);
     }
 
@@ -187,6 +187,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     private JsonSchema objectSchema(boolean root) {
         Draft07SchemaBuilder builder = this.factory.createBuilder();
         JsonLocation refLocation = null;
+        String refPointer = null;
         Event event = null;
         while (parser.hasNext()) {
             event = parser.next();
@@ -197,6 +198,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
                 populateSchema(keyName, builder);
                 if (keyName.equals("$ref")) {
                     refLocation = parser.getLocation();
+                    refPointer = parser.getPointer();
                 }
             }
         }
@@ -209,7 +211,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
         }
         if (schema instanceof SchemaReference) {
             SchemaReference reference = (SchemaReference) schema;
-            references.put(reference, SimpleJsonLocation.before(refLocation));
+            references.add(new ReferenceContext(reference, refLocation, refPointer));
         }
         return schema;
     }
@@ -1058,15 +1060,17 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private void resolveAllReferences() {
-        for (SchemaReference reference : this.references.keySet()) {
+        for (ReferenceContext context : this.references) {
+            SchemaReference reference = context.getReference();
             URI targetId = reference.getTargetId();
             JsonSchema schema = dereferenceSchema(targetId);
             if (schema != null) {
                 reference.setReferencedSchema(schema);
             } else {
-                JsonLocation location = this.references.get(reference);
-                addProblem(createProblemBuilder(location).withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
-                        .withParameter("ref", reference.ref()).withParameter("targetId", targetId));
+                addProblem(createProblemBuilder(context.getLocation(), context.getPointer())
+                        .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
+                        .withParameter("ref", reference.ref())
+                        .withParameter("targetId", targetId));
             }
         }
     }
@@ -1101,10 +1105,11 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private void checkInfiniteRecursiveLoop() {
         InfiniteLoopDetector detector = new InfiniteLoopDetector();
-        for (SchemaReference reference : this.references.keySet()) {
+        for (ReferenceContext context : this.references) {
+            SchemaReference reference = context.getReference();
             if (detector.detectInfiniteLoop(reference)) {
-                JsonLocation location = this.references.get(reference);
-                addProblem(createProblemBuilder(location).withMessage(Message.SCHEMA_PROBLEM_REFERENCE_LOOP));
+                addProblem(createProblemBuilder(context.getLocation(), context.getPointer())
+                        .withMessage(Message.SCHEMA_PROBLEM_REFERENCE_LOOP));
             }
         }
     }

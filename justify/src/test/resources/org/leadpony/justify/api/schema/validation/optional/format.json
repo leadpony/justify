@@ -7,7 +7,12 @@
     {
         "description": "value is a number",
         "schema": { "format": 123 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/format"
+            }
+        ]
     },
     {
         "description": "value is an unknown attribute",

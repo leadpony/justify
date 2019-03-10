@@ -17,21 +17,41 @@
     {
         "description": "value is a string",
         "schema": { "required": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/required"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "required": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/required"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "required": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/required"
+            }
+        ]
     },
     {
         "description": "array elements are not unique",
         "schema": { "required": ["foo", "foo"] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/required/1"
+            }
+        ]
     }
 ]

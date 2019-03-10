@@ -12,16 +12,31 @@
     {
         "description": "value is number",
         "schema": { "maxLength": 3.5 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/maxLength"
+            }
+        ]
     },
     {
         "description": "value is negative",
         "schema": { "maxLength": -1 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/maxLength"
+            }
+        ]
     },
     {
         "description": "value is string",
         "schema": { "maxLength": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/maxLength"
+            }
+        ]
     }
 ]

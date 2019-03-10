@@ -17,21 +17,41 @@
     {
         "description": "value is an array",
         "schema": { "contains": [{}, true, false] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contains"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "contains": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contains"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "contains": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contains"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "contains": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contains"
+            }
+        ]
     }
 ]

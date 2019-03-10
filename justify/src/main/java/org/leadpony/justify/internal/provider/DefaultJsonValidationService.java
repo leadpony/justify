@@ -52,6 +52,7 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.json.PointingJsonParser;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.problem.ProblemPrinterFactory;
@@ -345,7 +346,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
         JsonParser realParser = jsonProvider.createParser(in);
-        try (JsonSchemaReader reader = new Draft07SchemaReader(realParser, createDefaultSchemaBuilderFactory())) {
+        PointingJsonParser parser = new PointingJsonParser(realParser, jsonBuilderFactory);
+        try (JsonSchemaReader reader = new Draft07SchemaReader(parser, createDefaultSchemaBuilderFactory())) {
             return reader.read();
         }
     }

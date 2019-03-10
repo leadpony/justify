@@ -7,7 +7,12 @@
     {
         "description": "value is a number",
         "schema": { "contentEncoding": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/contentEncoding"
+            }
+        ]
     },
     {
         "description": "value is unknown",

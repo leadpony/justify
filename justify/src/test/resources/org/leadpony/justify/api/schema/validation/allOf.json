@@ -12,31 +12,61 @@
     {
         "description": "value is an object",
         "schema": { "allOf": {} },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf"
+            }
+        ]
     },
     {
         "description": "value is a string",
         "schema": { "allOf": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "allOf": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "allOf": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf"
+            }
+        ]
     },
     {
         "description": "array element is not a schema",
         "schema": { "allOf": ["foo"] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf/0"
+            }
+        ]
     },
     {
         "description": "array is empty",
         "schema": { "allOf": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/allOf"
+            }
+        ]
     }
 ]

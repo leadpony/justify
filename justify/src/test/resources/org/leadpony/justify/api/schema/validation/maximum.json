@@ -22,6 +22,11 @@
     {
         "description": "value is a string",
         "schema": { "maximum": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/maximum"
+            }
+        ]
     }
 ]

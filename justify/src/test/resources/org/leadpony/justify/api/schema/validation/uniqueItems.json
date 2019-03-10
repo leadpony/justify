@@ -12,26 +12,51 @@
     {
         "description": "value is a string",
         "schema": { "uniqueItems": "foo" },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/uniqueItems"
+            }
+        ]
     },
     {
         "description": "value is a number",
         "schema": { "uniqueItems": 42 },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/uniqueItems"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "uniqueItems": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/uniqueItems"
+            }
+        ]
     },
     {
         "description": "value is an object",
         "schema": { "uniqueItems": {} },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/uniqueItems"
+            }
+        ]
     },
     {
         "description": "value is an array",
         "schema": { "uniqueItems": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/uniqueItems"
+            }
+        ]
     }
 ]

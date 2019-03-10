@@ -17,22 +17,42 @@
     {
         "description": "value is true",
         "schema": { "properties": true },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/properties"
+            }
+        ]
     },
     {
         "description": "value is false",
         "schema": { "properties": false },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/properties"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "properties": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/properties"
+            }
+        ]
     },
     {
         "description": "value is an array",
         "schema": { "properties": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/properties"
+            }
+        ]
     },
     {
         "description": "member value is a string",
@@ -41,6 +61,11 @@
                 "foo": "bar"
             } 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/properties/foo"
+            }
+        ]
     }
 ]

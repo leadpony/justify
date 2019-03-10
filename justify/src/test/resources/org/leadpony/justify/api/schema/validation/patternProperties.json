@@ -18,22 +18,42 @@
     {
         "description": "value is true",
         "schema": { "patternProperties": true },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties"
+            }
+        ]
     },
     {
         "description": "value is false",
         "schema": { "patternProperties": false },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties"
+            }
+        ]
     },
     {
         "description": "value is null",
         "schema": { "patternProperties": null },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties"
+            }
+        ]
     },
     {
         "description": "value is an array",
         "schema": { "patternProperties": [] },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties"
+            }
+        ]
     },
     {
         "description": "member value is a string",
@@ -42,7 +62,12 @@
                 "^a+$": "bar"
             } 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties/^a+$"
+            }
+        ]
     },
     {
         "description": "property name is not a regular expression",
@@ -51,6 +76,11 @@
                 "^(abc]": {}
             } 
         },
-        "valid": false
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/patternProperties"
+            }
+        ]
     }
 ]
