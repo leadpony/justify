@@ -155,8 +155,22 @@ public abstract class JsonPointerBuilder {
         protected void appendReferenceTokens(StringBuilder builder) {
             parent.appendReferenceTokens(builder);
             if (keyName != null && lastEvent != Event.KEY_NAME) {
-                String encoded = keyName.replaceAll("~", "~0").replaceAll("/", "~1");
-                builder.append("/").append(encoded);
+                builder.append('/');
+                int lastIndex = 0;
+                final int length = keyName.length();
+                for (int i = 0; i < length; i++) {
+                    char c = keyName.charAt(i);
+                    if (c == '~') {
+                        builder.append(keyName, lastIndex, i).append("~0");
+                        lastIndex = i + 1;
+                    } else if (c == '/') {
+                        builder.append(keyName, lastIndex, i).append("~1");
+                        lastIndex = i + 1;
+                    }
+                }
+                if (lastIndex < length) {
+                    builder.append(keyName, lastIndex, length);
+                }
             }
         }
     }

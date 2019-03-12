@@ -27,6 +27,7 @@ import javax.json.stream.JsonParser;
 public class PointingJsonParser extends JsonParserDecorator {
 
     private JsonPointerBuilder pointerBuilder;
+    private String cachedPointer;
 
     /**
      * Constructs this parser.
@@ -45,13 +46,18 @@ public class PointingJsonParser extends JsonParserDecorator {
      * @return the JSON pointer which points to the current value.
      */
     public String getPointer() {
-        return pointerBuilder.toPointer();
+        if (cachedPointer != null) {
+            return cachedPointer;
+        }
+        cachedPointer = pointerBuilder.toPointer();
+        return cachedPointer;
     }
 
     @Override
     public Event next() {
         Event event = super.next();
         pointerBuilder = pointerBuilder.withEvent(event, realParser());
+        cachedPointer = null;
         return event;
     }
 }
