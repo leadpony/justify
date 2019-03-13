@@ -72,7 +72,8 @@ public class ProblemLocationTest {
             "problem/required-in-array.txt",
             "problem/required-in-object.txt",
             "problem/type.txt",
-            "problem/uniqueItems.txt"
+            "problem/uniqueItems.txt",
+            "problem/uniqueItems-in-object.txt"
     };
 
     public static Stream<ProblemLocationFixture> fixtureProvider() {

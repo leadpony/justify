@@ -40,7 +40,7 @@
         "valid": false,
         "errors": [
             {
-                "pointer": "/enum/1"
+                "pointer": "/enum"
             }
         ]
     }

@@ -7,8 +7,8 @@
 ---
 [
     {
-        "location": [1,27], 
-        "pointer": "/2", 
+        "location": [1,37], 
+        "pointer": "", 
         "keyword": "uniqueItems"
     }
 ]

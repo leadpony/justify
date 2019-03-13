@@ -71,10 +71,17 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         builder.add(name(), unique);
     }
 
+    /**
+     * An evaluator which evaluates the uniqueItems assertion.
+     *
+     * @author leadpony
+     */
     private class AssertionEvaluator extends AbstractEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
+        private boolean duplicated;
+        private int firstOccurrenceAt, secondOccurrenceAt;
         private int index;
         private JsonInstanceBuilder builder;
 
@@ -92,6 +99,9 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
                     return Result.PENDING;
                 }
             }
+            if (hasDuplicatedItems()) {
+                return Result.PENDING;
+            }
             if (builder == null) {
                 builder = new JsonInstanceBuilder(builderFactory);
             }
@@ -100,61 +110,54 @@ class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             } else {
                 JsonValue value = builder.build();
                 builder = null;
-                return testItemValue(value, index++, dispatcher);
+                testItemValue(value, index++);
+                return Result.PENDING;
             }
         }
 
-        protected boolean hasItemAlready(JsonValue value) {
-            return values.containsKey(value);
+        private void testItemValue(JsonValue value, int index) {
+            if (values.containsKey(value)) {
+                duplicated = true;
+                firstOccurrenceAt = values.get(value);
+                secondOccurrenceAt = index;
+            } else {
+                values.put(value, index);
+            }
         }
 
-        protected void addUniqueItem(JsonValue value, int index) {
-            values.put(value, index);
+        protected final boolean hasDuplicatedItems() {
+            return duplicated;
         }
 
-        protected Result testItemValue(JsonValue value, int index, ProblemDispatcher dispatcher) {
-            if (hasItemAlready(value)) {
-                int lastIndex = values.get(value);
+        protected Result getFinalResult(ProblemDispatcher dispatcher) {
+            if (duplicated) {
                 Problem p = createProblemBuilder(getContext())
                         .withMessage(Message.INSTANCE_PROBLEM_UNIQUEITEMS)
-                        .withParameter("index", index)
-                        .withParameter("firstIndex", lastIndex)
+                        .withParameter("index", secondOccurrenceAt)
+                        .withParameter("firstIndex", firstOccurrenceAt)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else {
-                addUniqueItem(value, index);
+                return Result.TRUE;
             }
-            return Result.PENDING;
-        }
-
-        protected Result getFinalResult(ProblemDispatcher dispatcher) {
-            return Result.TRUE;
         }
     }
 
+    /**
+     * An evaluator which evaluates the negated version of the assertion.
+     *
+     * @author leadpony
+     */
     private class NegatedAssertionEvaluator extends AssertionEvaluator {
-
-        private boolean duplicated;
 
         private NegatedAssertionEvaluator(EvaluatorContext context) {
             super(context);
-            duplicated = false;
-        }
-
-        @Override
-        protected Result testItemValue(JsonValue value, int index, ProblemDispatcher dispatcher) {
-            if (hasItemAlready(value)) {
-                duplicated = true;
-            } else {
-                addUniqueItem(value, index);
-            }
-            return Result.PENDING;
         }
 
         @Override
         protected Result getFinalResult(ProblemDispatcher dispatcher) {
-            if (duplicated) {
+            if (hasDuplicatedItems()) {
                 return Result.TRUE;
             } else {
                 Problem p = createProblemBuilder(getContext())
