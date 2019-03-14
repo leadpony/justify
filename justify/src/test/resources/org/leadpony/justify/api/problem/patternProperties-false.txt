@@ -11,7 +11,7 @@
 ---
 [
     {
-        "location": [2, 17], 
-        "pointer": ""
+        "location": [2, 21], 
+        "pointer": "/potoooooooo"
     }
 ]

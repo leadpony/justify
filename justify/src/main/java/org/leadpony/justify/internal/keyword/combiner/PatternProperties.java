@@ -16,10 +16,10 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,13 +61,15 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    protected void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas) {
-        subschemas.isEmpty();
+    protected boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer) {
+        boolean found = false;
         for (Pattern pattern : propertyMap.keySet()) {
             Matcher m = pattern.matcher(keyName);
             if (m.find()) {
-                subschemas.add(propertyMap.get(pattern));
+                consumer.accept(propertyMap.get(pattern));
+                found = true;
             }
         }
+        return found;
     }
 }

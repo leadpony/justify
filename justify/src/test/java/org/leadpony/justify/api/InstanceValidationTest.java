@@ -64,6 +64,7 @@ public class InstanceValidationTest extends BaseValidationTest {
             "/org/json_schema/tests/draft7/type.json",
             "/org/json_schema/tests/draft7/uniqueItems.json",
 
+            "/org/leadpony/justify/api/instance/additionalProperties.json",
             "/org/leadpony/justify/api/instance/if-then-else.json"
     };
 

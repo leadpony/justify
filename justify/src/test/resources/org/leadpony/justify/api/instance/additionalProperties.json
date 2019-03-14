@@ -1,0 +1,44 @@
+[
+    {
+        "description": "additionalProperties as true exists by itself",
+        "schema": {
+            "additionalProperties": true
+        },
+        "tests": [
+            {
+                "description": "empty object",
+                "data": {},
+                "valid": true
+            },
+            {
+                "description": "multiple properties",
+                "data": {
+                    "foo": 123,
+                    "bar": 456
+                },
+                "valid": true
+            }
+        ]
+    },
+    {
+        "description": "additionalProperties as false exists by itself",
+        "schema": {
+            "additionalProperties": false
+        },
+        "tests": [
+            {
+                "description": "empty object",
+                "data": {},
+                "valid": true
+            },
+            {
+                "description": "multiple properties",
+                "data": {
+                    "foo": 123,
+                    "bar": 456
+                },
+                "valid": false
+            }
+        ]
+    }
+]

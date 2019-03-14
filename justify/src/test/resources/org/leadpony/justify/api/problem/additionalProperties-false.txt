@@ -9,7 +9,7 @@
 ---
 [
     {
-        "pointer": "",
-        "location": [2, 9]
+        "pointer": "/foo",
+        "location": [2, 13]
     }
 ]

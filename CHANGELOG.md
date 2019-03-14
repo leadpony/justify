@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- getPointer() method in Problem interface which provides the problem location as a JSON pointer.
+
+### Changed
+- Problem printer outputs the messages including JSON pointers in addition to line and column numbers by default.
+- The evaluation of "uniqueItems" keyword is now deferred until the end of the array.
+- The evaluation of false boolean schema for "properties", "patternProperties", "additionalProperties" keywords is now deferred until the value of the property.
+
 ## 0.13.0 - 2019-02-27
 ### Added
 - JsonSchemaReaderFactoryBuilder#withCustomFormatAttributes() method for deactivating custom format attributes.

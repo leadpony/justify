@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEval
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * "additionalItems" keyword.
+ * A keyword representing "additionalItems".
  *
  * @author leadpony
  */
@@ -94,16 +94,6 @@ class AdditionalProperties extends UnaryCombiner {
         }
     }
 
-    private Evaluator createSubschemaEvaluator(EvaluatorContext context, Event event, JsonParser parser) {
-        InstanceType type = ParserEvents.toInstanceType(event, parser);
-        return getSubschema().createEvaluator(context, type);
-    }
-
-    private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, Event event, JsonParser parser) {
-        InstanceType type = ParserEvents.toInstanceType(event, parser);
-        return getSubschema().createNegatedEvaluator(context, type);
-    }
-
     /**
      * Create an evaluator which evaluates the subschema for all properties in the
      * object.
@@ -111,11 +101,13 @@ class AdditionalProperties extends UnaryCombiner {
      * @return newly created evaluator.
      */
     private Evaluator createPropertiesEvaluator(EvaluatorContext context) {
+        JsonSchema subschema = getSubschema();
         return new AbstractConjunctivePropertiesEvaluator(context) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
-                    append(createSubschemaEvaluator(getContext(), event, parser));
+                    InstanceType type = ParserEvents.toInstanceType(event, parser);
+                    append(subschema.createEvaluator(getContext(), type));
                 }
             }
         };
@@ -128,11 +120,13 @@ class AdditionalProperties extends UnaryCombiner {
      * @return newly created evaluator.
      */
     private Evaluator createNegatedPropertiesEvaluator(EvaluatorContext context) {
+        JsonSchema subschema = getSubschema();
         return new AbstractDisjunctivePropertiesEvaluator(context, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
-                    append(createNegatedSubschemaEvaluator(getContext(), event, parser));
+                    InstanceType type = ParserEvents.toInstanceType(event, parser);
+                    append(subschema.createNegatedEvaluator(getContext(), type));
                 }
             }
         };
@@ -140,10 +134,13 @@ class AdditionalProperties extends UnaryCombiner {
 
     private Evaluator createForbiddenPropertiesEvaluator(EvaluatorContext context) {
         return new AbstractConjunctivePropertiesEvaluator(context) {
+            private String keyName;
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
-                    append(createRedundantPropertyEvaluator(context, parser.getString()));
+                    keyName = parser.getString();
+                } else if (ParserEvents.isValue(event)) {
+                    append(createRedundantPropertyEvaluator(context, keyName));
                 }
             }
         };
@@ -151,10 +148,13 @@ class AdditionalProperties extends UnaryCombiner {
 
     private Evaluator createNegatedForbiddenPropertiesEvaluator(EvaluatorContext context) {
         return new AbstractDisjunctivePropertiesEvaluator(context, this) {
+            private String keyName;
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
-                    append(createRedundantPropertyEvaluator(context, parser.getString()));
+                    keyName = parser.getString();
+                } else if (ParserEvents.isValue(event)) {
+                    append(createRedundantPropertyEvaluator(context, keyName));
                 }
             }
         };

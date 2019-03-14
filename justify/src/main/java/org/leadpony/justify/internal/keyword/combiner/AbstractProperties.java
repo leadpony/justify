@@ -16,11 +16,10 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -39,7 +38,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
- * Skeletal implementation for "properties" and "patternProperties" keywords.
+ * A skeletal implementation for "properties" and "patternProperties" keywords.
  *
  * @author leadpony
  */
@@ -50,7 +49,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
 
     protected AbstractProperties() {
         this.propertyMap = new LinkedHashMap<>();
-        this.defaultSchema = AdditionalProperties.DEFAULT.getSubschema();
+        this.defaultSchema = JsonSchema.TRUE;
     }
 
     @Override
@@ -92,12 +91,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         propertyMap.put(key, subschema);
     }
 
-    protected abstract void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas);
+    protected abstract boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer);
 
-    protected class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator {
+    private class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator implements Consumer<JsonSchema> {
 
         private final JsonSchema defaultSchema;
-        private final List<JsonSchema> subschemas = new ArrayList<>();
+        private String currentKeyName;
+        private InstanceType currentType;
 
         PropertiesEvaluator(EvaluatorContext context, JsonSchema defaultSchema) {
             super(context);
@@ -107,48 +107,32 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
-                processKeyName(parser.getString());
+                currentKeyName = parser.getString();
             } else if (ParserEvents.isValue(event)) {
-                InstanceType type = ParserEvents.toInstanceType(event, parser);
-                appendEvaluators(type);
+                currentType = ParserEvents.toInstanceType(event, parser);
+                if (!findSubschemas(currentKeyName, this)) {
+                    accept(defaultSchema);
+                }
             }
         }
 
-        protected void processKeyName(String keyName) {
-            findSubschemasFor(keyName, subschemas);
-            if (subschemas.isEmpty()) {
-                findDefaultSchemaFor(keyName);
-            } else if (subschemas.contains(JsonSchema.FALSE)) {
-                appendRedundantPropertyEvaluator(keyName);
-                subschemas.clear();
-            }
-        }
+        /* Consumer */
 
-        private void findDefaultSchemaFor(String keyName) {
-            JsonSchema subschema = this.defaultSchema;
+        @Override
+        public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.FALSE) {
-                appendRedundantPropertyEvaluator(keyName);
+                append(new RedundantPropertyEvaluator(getContext(), currentKeyName, JsonSchema.FALSE));
             } else {
-                subschemas.add(subschema);
+                append(subschema.createEvaluator(getContext(), currentType));
             }
-        }
-
-        private void appendEvaluators(InstanceType type) {
-            for (JsonSchema subschema : this.subschemas) {
-                append(subschema.createEvaluator(getContext(), type));
-            }
-            this.subschemas.clear();
-        }
-
-        private void appendRedundantPropertyEvaluator(String keyName) {
-            append(new RedundantPropertyEvaluator(getContext(), keyName, JsonSchema.FALSE));
         }
     }
 
-    protected class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator {
+    private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator implements Consumer<JsonSchema> {
 
         private final JsonSchema defaultSchema;
-        private final List<JsonSchema> subschemas = new ArrayList<>();
+        private String currentKeyName;
+        private InstanceType currentType;
 
         NegatedPropertiesEvaluator(EvaluatorContext context, JsonSchema defaultSchema) {
             super(context, AbstractProperties.this);
@@ -158,46 +142,24 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         @Override
         public void updateChildren(Event event, JsonParser parser) {
             if (event == Event.KEY_NAME) {
-                processKeyName(parser.getString());
+                currentKeyName = parser.getString();
             } else if (ParserEvents.isValue(event)) {
-                InstanceType type = ParserEvents.toInstanceType(event, parser);
-                appendEvaluators(type);
+                currentType = ParserEvents.toInstanceType(event, parser);
+                if (!findSubschemas(currentKeyName, this)) {
+                    accept(defaultSchema);
+                }
             }
         }
 
-        protected void processKeyName(String keyName) {
-            findSubschemasFor(keyName, subschemas);
-            if (subschemas.isEmpty()) {
-                findDefaultSchemaFor(keyName);
-            } else {
-                subschemas.stream()
-                    .filter(s->s == JsonSchema.TRUE || s == JsonSchema.EMPTY)
-                    .findAny()
-                    .ifPresent(s->{
-                        appendRedundantPropertyEvaluator(keyName, s);
-                        subschemas.clear();
-                    });
-            }
-        }
+        /* Consumer */
 
-        private void findDefaultSchemaFor(String keyName) {
-            JsonSchema subschema = this.defaultSchema;
+        @Override
+        public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                appendRedundantPropertyEvaluator(keyName, subschema);
+                append(new RedundantPropertyEvaluator(getContext(), currentKeyName, subschema));
             } else {
-                subschemas.add(subschema);
+                append(subschema.createNegatedEvaluator(getContext(), currentType));
             }
-        }
-
-        private void appendEvaluators(InstanceType type) {
-            for (JsonSchema subschema : this.subschemas) {
-                append(subschema.createNegatedEvaluator(getContext(), type));
-            }
-            this.subschemas.clear();
-        }
-
-        private void appendRedundantPropertyEvaluator(String keyName, JsonSchema schema) {
-            append(new RedundantPropertyEvaluator(getContext(), keyName, schema));
         }
     }
 }

@@ -16,11 +16,11 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.JsonValue;
 
@@ -75,13 +75,17 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    protected void findSubschemasFor(String keyName, Collection<JsonSchema> subschemas) {
-        assert subschemas.isEmpty();
+    protected boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer) {
+        boolean found = false;
         if (propertyMap.containsKey(keyName)) {
-            subschemas.add(propertyMap.get(keyName));
+            consumer.accept(propertyMap.get(keyName));
+            found = true;
         }
         if (patternProperties != null) {
-            patternProperties.findSubschemasFor(keyName, subschemas);
+            if (patternProperties.findSubschemas(keyName, consumer)) {
+                found = true;
+            }
         }
+        return found;
     }
 }
