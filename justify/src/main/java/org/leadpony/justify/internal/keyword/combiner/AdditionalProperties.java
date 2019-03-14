@@ -40,8 +40,6 @@ import org.leadpony.justify.internal.keyword.Keyword;
  */
 class AdditionalProperties extends UnaryCombiner {
 
-    static final AdditionalProperties DEFAULT = new AdditionalProperties(JsonSchema.TRUE);
-
     AdditionalProperties(JsonSchema subschema) {
         super(subschema);
     }

@@ -49,10 +49,6 @@ abstract class Items extends Combiner implements ArrayKeyword {
         return "items";
     }
 
-    protected Evaluator createRedundantItemEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema) {
-        return new RedundantItemEvaluator(context, itemIndex, subschema);
-    }
-
     /**
      * "items" keyword with single schema.
      *
@@ -104,33 +100,27 @@ abstract class Items extends Combiner implements ArrayKeyword {
             return subschema;
         }
 
-        private Evaluator createSubschemaEvaluator(EvaluatorContext context, Event event, JsonParser parser) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
-            return subschema.createEvaluator(context, type);
-        }
-
         private Evaluator createItemsEvaluator(EvaluatorContext context) {
+            JsonSchema subschema = this.subschema;
             return new AbstractConjunctiveItemsEvaluator(context) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(createSubschemaEvaluator(getContext(), event, parser));
+                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        append(subschema.createEvaluator(getContext(), type));
                     }
                 }
             };
         }
 
-        private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, Event event, JsonParser parser) {
-            InstanceType type = ParserEvents.toInstanceType(event, parser);
-            return subschema.createNegatedEvaluator(context, type);
-        }
-
         private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
+            JsonSchema subschema = this.subschema;
             return new AbstractDisjunctiveItemsEvaluator(context, this) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(createNegatedSubschemaEvaluator(getContext(), event, parser));
+                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        append(subschema.createNegatedEvaluator(context, type));
                     }
                 }
             };
@@ -142,7 +132,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(createRedundantItemEvaluator(context, itemIndex++, subschema));
+                        append(new RedundantItemEvaluator(context, itemIndex++, subschema));
                     }
                 }
             };
@@ -154,7 +144,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(createRedundantItemEvaluator(context, itemIndex++, subschema));
+                        append(new RedundantItemEvaluator(context, itemIndex++, subschema));
                     }
                 }
             };
@@ -169,7 +159,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
     static class SeparateItems extends Items {
 
         private final List<JsonSchema> subschemas;
-        private AdditionalItems additionalItems = AdditionalItems.DEFAULT;
+        private JsonSchema defaultSchema = JsonSchema.TRUE;
 
         SeparateItems(List<JsonSchema> subschemas) {
             this.subschemas = subschemas;
@@ -195,7 +185,8 @@ abstract class Items extends Combiner implements ArrayKeyword {
         @Override
         public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
             if (keywords.containsKey("additionalItems")) {
-                this.additionalItems = (AdditionalItems)keywords.get("additionalItems");
+                AdditionalItems additionalItems = (AdditionalItems)keywords.get("additionalItems");
+                this.defaultSchema = additionalItems.getSubschema();
             }
             evaluatables.add(this);
         }
@@ -228,13 +219,13 @@ abstract class Items extends Combiner implements ArrayKeyword {
             if (itemIndex < subschemas.size()) {
                 return subschemas.get(itemIndex);
             } else {
-                return additionalItems.getSubschema();
+                return defaultSchema;
             }
         }
 
         private Evaluator createSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return createRedundantItemEvaluator(context, itemIndex, subschema);
+                return new RedundantItemEvaluator(context, itemIndex, subschema);
             } else {
                 return subschema.createEvaluator(context, type);
             }
@@ -242,7 +233,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
 
         private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return createRedundantItemEvaluator(context, itemIndex, subschema);
+                return new RedundantItemEvaluator(context, itemIndex, subschema);
             } else {
                 return subschema.createNegatedEvaluator(context, type);
             }

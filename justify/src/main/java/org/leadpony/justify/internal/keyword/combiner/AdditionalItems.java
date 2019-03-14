@@ -29,8 +29,6 @@ import org.leadpony.justify.internal.keyword.Keyword;
  */
 class AdditionalItems extends UnaryCombiner {
 
-    static final AdditionalItems DEFAULT = new AdditionalItems(JsonSchema.TRUE);
-
     AdditionalItems(JsonSchema subschema) {
         super(subschema);
     }

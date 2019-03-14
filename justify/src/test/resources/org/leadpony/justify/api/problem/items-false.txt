@@ -1,0 +1,13 @@
+{
+    "type": "array",
+    "items": [ true, false ]
+}
+---
+["first", "second"]
+---
+[
+    {
+        "location": [1, 18], 
+        "pointer": "/1"
+    }
+]

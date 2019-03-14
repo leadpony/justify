@@ -53,6 +53,7 @@ public class ProblemLocationTest {
             "problem/additionalProperties-false.txt",
             "problem/format.txt",
             "problem/items.txt",
+            "problem/items-false.txt",
             "problem/items-in-array.txt",
             "problem/items-in-object.txt",
             "problem/maximum.txt",
