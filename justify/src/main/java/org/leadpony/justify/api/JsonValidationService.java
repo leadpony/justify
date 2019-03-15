@@ -375,46 +375,34 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     /**
      * Creates a problem handler which will print problems with the aid of the
      * specified line consumer.
+     *
      * <p>
-     * The problem printer will be created with the default configuration including
-     * both {@link PrinterOption#INCLUDE_LOCATION} and
-     * {@link PrinterOption#INCLUDE_POINTER}.
+     * If a customized printer is needed,
+     * {@link #createProblemPrinterBuilder(Consumer)} should be used instead of this
+     * method.
      * </p>
      *
-     * @param lineConsumer the object which will output the line to somewhere.
+     * @param lineConsumer the object which will output the message lines to
+     *                     somewhere.
      * @return newly created instance of problem handler.
      * @throws NullPointerException if the specified {@code lineConsumer} is
      *                              {@code null}.
      */
-    default ProblemHandler createProblemPrinter(Consumer<String> lineConsumer) {
-        return createProblemPrinter(lineConsumer, Locale.getDefault());
-    }
-
-    /**
-     * Creates a problem handler which will print problems with the aid of the
-     * specified line consumer. One or more options can be specified.
-     *
-     * @param lineConsumer the object which will output the line to somewhere.
-     * @param options      one or more options for the problem printer.
-     * @return newly created instance of problem handler.
-     * @throws NullPointerException if the specified {@code lineConsumer} or
-     *                              {@code options} is {@code null}.
-     */
-    default ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, PrinterOption... options) {
-        return createProblemPrinter(lineConsumer, Locale.getDefault(), options);
-    }
+    ProblemHandler createProblemPrinter(Consumer<String> lineConsumer);
 
     /**
      * Creates a problem handler which will print problems with the aid of the
      * specified line consumer. The messages will be localized for the specified
      * locale.
+     *
      * <p>
-     * The problem printer will be created with the default configuration including
-     * both {@link PrinterOption#INCLUDE_LOCATION} and
-     * {@link PrinterOption#INCLUDE_POINTER}.
+     * If a customized printer is needed,
+     * {@link #createProblemPrinterBuilder(Consumer)} should be used instead of this
+     * method.
      * </p>
      *
-     * @param lineConsumer the object which will output the line to somewhere.
+     * @param lineConsumer the object which will output the message lines to
+     *                     somewhere.
      * @param locale       the locale for which the problem messages will be
      *                     localized.
      * @return newly created instance of problem handler.
@@ -424,17 +412,15 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale);
 
     /**
-     * Creates a problem handler which will print problems with the aid of the
-     * specified line consumer. The messages will be localized for the specified
-     * locale. One or more options can be specified.
+     * Creates a builder instance which can be used to build a customized problem
+     * printer.
      *
-     * @param lineConsumer the object which will output the line to somewhere.
-     * @param locale       the locale for which the problem messages will be
-     *                     localized.
-     * @param options      one or more options for the problem printer.
-     * @return newly created instance of problem handler.
-     * @throws NullPointerException if the one of the specified parameters is
+     * @param lineConsumer the object which will output the message lines to
+     *                     somewhere.
+     * @return newly created instance of problem printer builder, which can be used
+     *         to build a problem printer.
+     * @throws NullPointerException if the specified {@code lineConsumer} is
      *                              {@code null}.
      */
-    ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale, PrinterOption... options);
+    ProblemPrinterBuilder createProblemPrinterBuilder(Consumer<String> lineConsumer);
 }

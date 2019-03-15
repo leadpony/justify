@@ -47,15 +47,15 @@ import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.PrinterOption;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
+import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.PointingJsonParser;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
-import org.leadpony.justify.internal.problem.ProblemPrinterFactory;
+import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
@@ -75,7 +75,6 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private final ContentAttributeRegistry contentRegistry;
     private final JsonSchema metaschema;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
-    private final ProblemPrinterFactory printerFactory = new ProblemPrinterFactory();
 
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
 
@@ -301,21 +300,27 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     @Override
-    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
-        return createProblemPrinter(lineConsumer, locale,
-                PrinterOption.INCLUDE_LOCATION,
-                PrinterOption.INCLUDE_POINTER);
+    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer) {
+        return createProblemPrinter(lineConsumer, Locale.getDefault());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale, PrinterOption... options) {
+    public ProblemHandler createProblemPrinter(Consumer<String> lineConsumer, Locale locale) {
         requireNonNull(lineConsumer, "lineConsumer");
         requireNonNull(locale, "locale");
-        requireNonNull(options, "options");
-        return printerFactory.createPrinter(lineConsumer, locale, options);
+        return createProblemPrinterBuilder(lineConsumer).withLocale(locale).build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProblemPrinterBuilder createProblemPrinterBuilder(Consumer<String> lineConsumer) {
+        requireNonNull(lineConsumer, "lineConsumer");
+        return new DefaultProblemPrinterBuilder(lineConsumer);
     }
 
     /* JsonSchemaResolver interface */

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.json.stream.JsonLocation;
 
@@ -35,10 +36,11 @@ import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
  */
 public class ProblemPrinterTest {
 
+    private static final Logger log = Logger.getLogger(ProblemPrinterTest.class.getName());
     private static final JsonValidationService service = JsonValidationServices.get();
 
     @Test
-    public void defaultPrinter_shouldPrintBoth() {
+    public void defaultPrinter_shouldPrintBothLocationAndPointer() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
@@ -48,32 +50,86 @@ public class ProblemPrinterTest {
 
         assertThat(lines).hasSize(1);
         assertThat(lines.get(0)).isEqualTo("[12,34][/foo] hello problem.");
+        printLines(lines);
     }
 
     @Test
-    public void printerWithLocation_shouldPrintLocationOnly() {
+    public void printerBuiltByDefault_shouldPrintBothLocationAndPointer() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinter(lines::add, PrinterOption.INCLUDE_LOCATION);
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+                .build();
+        printer.handleProblems(problems);
+
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0)).isEqualTo("[12,34][/foo] hello problem.");
+        printLines(lines);
+    }
+
+    @Test
+    public void printerBuiltWithLocationAndPointer_shouldPrintBothLocationAndPointer() {
+        List<Problem> problems = Arrays.asList(
+                new MockProblem("hello problem.", 12, 34, "/foo")
+                );
+        List<String> lines = new ArrayList<>();
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+                .withLocation(true).withPointer(true).build();
+        printer.handleProblems(problems);
+
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0)).isEqualTo("[12,34][/foo] hello problem.");
+        printLines(lines);
+    }
+
+    @Test
+    public void printerBuiltWithLocation_shouldPrintLocationOnly() {
+        List<Problem> problems = Arrays.asList(
+                new MockProblem("hello problem.", 12, 34, "/foo")
+                );
+        List<String> lines = new ArrayList<>();
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+                .withPointer(false).build();
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
         assertThat(lines.get(0)).isEqualTo("[12,34] hello problem.");
+        printLines(lines);
     }
 
     @Test
-    public void printerWithPointer_shouldPrintPointerOnly() {
+    public void printerBuiltWithPointer_shouldPrintPointerOnly() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinter(lines::add, PrinterOption.INCLUDE_POINTER);
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+                .withLocation(false).build();
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
         assertThat(lines.get(0)).isEqualTo("[/foo] hello problem.");
+        printLines(lines);
+    }
+
+    @Test
+    public void printerBuiltWithoutLocationAndPointer_shouldPrintMessageOnly() {
+        List<Problem> problems = Arrays.asList(
+                new MockProblem("hello problem.", 12, 34, "/foo")
+                );
+        List<String> lines = new ArrayList<>();
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+                .withLocation(false).withPointer(false).build();
+        printer.handleProblems(problems);
+
+        assertThat(lines).hasSize(1);
+        assertThat(lines.get(0)).isEqualTo("hello problem.");
+        printLines(lines);
+    }
+
+    private void printLines(List<String> lines) {
+        lines.forEach(log::info);
     }
 
     private static class MockProblem implements Problem {
