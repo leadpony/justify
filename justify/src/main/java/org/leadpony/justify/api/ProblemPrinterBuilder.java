@@ -28,7 +28,8 @@ public interface ProblemPrinterBuilder {
      * Builds a new instance of problem printer which was configured through this
      * interface.
      *
-     * @return newly created instance of problem printer, never be {@code null}.
+     * @return newly created instance of problem printer as a
+     *         {@code ProblemHandler}, never be {@code null}.
      */
     ProblemHandler build();
 
@@ -62,8 +63,8 @@ public interface ProblemPrinterBuilder {
     ProblemPrinterBuilder withLocation(boolean present);
 
     /**
-     * Specifies whether problem locations should be presented in the form of a
-     * JSON pointer or not.
+     * Specifies whether problem locations should be presented in the form of a JSON
+     * pointer or not.
      *
      * <p>
      * The value of this option is set to {@code true} by default.
