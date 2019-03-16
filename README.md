@@ -12,9 +12,11 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
-* Passes 1,000+ test cases including official ones provided by [JSON Schema Test Suite].
+* Passes all test cases provided by [JSON Schema Test Suite] including both mandatory and optional tests.
+* Validates the input in streaming way, which claims small memory footprint even when the input is a large JSON.
 * Accepts custom formats for string and other instance types.
-* Supports Java 8, 9, 10 and 11, can be used as a modular jar in Java 9 and higher.
+* Supports Java 8, 9, 10 and 11.
+* Can be used as a modular jar in Java 9 and higher.
 * Internationalized problem messages, including Japanese language support.
 
 ## Getting Started
@@ -30,7 +32,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.13.0</version>
+  <version>0.14.0</version>
 </dependency>
 
 <dependency>
