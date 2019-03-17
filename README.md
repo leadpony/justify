@@ -49,7 +49,7 @@ such as [Apache Johnzon] as below.
 <dependency>
   <groupId>org.apache.johnzon</groupId>
   <artifactId>johnzon-core</artifactId>
-  <version>1.1.10</version>
+  <version>1.1.11</version>
 </dependency>
 ```
 
