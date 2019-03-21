@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -39,6 +40,6 @@ class AdditionalItems extends UnaryCombiner {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 }

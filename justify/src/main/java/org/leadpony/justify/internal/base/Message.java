@@ -133,8 +133,8 @@ public enum Message implements BaseMessage {
 
     /* Problem messages for JSON parser */
 
+    PARSER_ILLEGAL_STATE,
     PARSER_UNEXPECTED_EOI,
-    PARSER_INVALID_TOKEN,
 
     /* Problem messages for JSON reader */
 

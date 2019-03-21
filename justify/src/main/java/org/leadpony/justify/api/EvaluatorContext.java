@@ -15,7 +15,11 @@
  */
 package org.leadpony.justify.api;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.json.JsonBuilderFactory;
+import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -58,4 +62,18 @@ public interface EvaluatorContext {
      * @return the instance of JSON builder factory.
      */
     JsonBuilderFactory getJsonBuilderFactory();
+
+    /**
+     * Inserts default values at the end of the object.
+     *
+     * @param properties the pairs each of which consists of key and default value.
+     */
+    void putDefaultProperties(Map<String, JsonValue> properties);
+
+    /**
+     * Inserts default values at the end of the array.
+     *
+     * @param items the list of default values to insert.
+     */
+    void putDefaultItems(List<JsonValue> items);
 }

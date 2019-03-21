@@ -26,8 +26,6 @@ import java.util.stream.Stream;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 
@@ -36,7 +34,7 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-public interface Keyword {
+public interface Keyword extends Evaluatable {
 
     /**
      * Returns the name of this keyword.
@@ -79,20 +77,6 @@ public interface Keyword {
     }
 
     /**
-     * Creates an evaluator for this keyword.
-     * @param context TODO
-     * @param type           the type of the instance, cannot be {@code null}.
-     */
-    Evaluator createEvaluator(EvaluatorContext context, InstanceType type);
-
-    /**
-     * Creates an evaluator for the negated version of this keyword.
-     * @param context TODO
-     * @param type           the type of the instance, cannot be {@code null}.
-     */
-    Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type);
-
-    /**
      * Adds this keyword to the specified JSON object.
      *
      * @param builder        the builder for building a JSON object, cannot be
@@ -105,10 +89,10 @@ public interface Keyword {
     /**
      * Adds this keyword to the list if this keyword is evaluatables.
      *
-     * @param evaluatables the list of evaluatable keywords.
+     * @param evaluatables the list of evaluatable objects.
      * @param keywords     all keywords in the enclosing schema.
      */
-    default void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 
     /**

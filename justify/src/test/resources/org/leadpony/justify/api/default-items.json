@@ -1,0 +1,324 @@
+[
+    {
+        "schema": {
+            "items": [
+                { "default": 0 },
+                { "default": 0 },
+                { "default": 0 }
+            ]
+        },
+        "tests": [
+            {
+                "description": "expands empty vector",
+                "data": [],
+                "result": [0, 0, 0]
+            },
+            {
+                "description": "expands 1D vector",
+                "data": [1],
+                "result": [1, 0, 0]
+            },
+            {
+                "description": "expands 2D vector",
+                "data": [1, 2],
+                "result": [1, 2, 0]
+            },
+            {
+                "description": "does not expand 3D vector",
+                "data": [1, 2, 4],
+                "result": [1, 2, 4]
+            },
+            {
+                "description": "does not expand 4D vector",
+                "data": [1, 2, 4, 8],
+                "result": [1, 2, 4, 8]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                { "default": 365 },
+                { "default": "hello" },
+                { "default": true },
+                { "default": false },
+                { "default": null }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with various types",
+                "data": [],
+                "result": [365, "hello", true, false, null]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                {},
+                {},
+                { "default": [0, 0] }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with array",
+                "data": [ [1, 2], [3, 4] ],
+                "result": [ [1, 2], [3, 4], [0, 0] ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                {},
+                {},
+                { "default": [] }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with empty array",
+                "data": [ [1, 2], [3, 4] ],
+                "result": [ [1, 2], [3, 4], [] ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                {},
+                { "default": { "r": 255, "g": 255, "b": 255 } }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with object",
+                "data": [ { "r": 128, "g": 192, "b": 255 } ],
+                "result": [
+                    { "r": 128, "g": 192, "b": 255 },
+                    { "r": 255, "g": 255, "b": 255 }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                { "default": {} }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with empty object",
+                "data": [],
+                "result": [ {} ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                {},
+                { "default": [ [1, 0, 0], [0, 1, 0], [0, 0, 1] ] }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with array of array",
+                "data": [
+                    [ [1, 0, 0], [0, 0, -1], [0, 1, 0] ]
+                ],
+                "result": [
+                    [ [1, 0, 0], [0, 0, -1], [0, 1, 0] ],
+                    [ [1, 0, 0], [0, 1, 0], [0, 0, 1] ]
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                { "default": [{}, {}, {}] }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with array of object",
+                "data": [
+                ],
+                "result": [
+                    [{}, {}, {}]
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                { 
+                    "default": {
+                        "fore": [0, 0, 0],
+                        "back": [255, 255, 255]
+                    }
+                }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with object of array",
+                "data": [
+                ],
+                "result": [ 
+                    {
+                        "fore": [0, 0, 0],
+                        "back": [255, 255, 255]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [
+                { 
+                    "default": {
+                        "key": {},
+                        "value": {}
+                    }
+                }
+            ]
+        },
+        "tests": [
+            {
+                "description": "fills with object of object",
+                "data": [
+                ],
+                "result": [ 
+                    {
+                        "key": {},
+                        "value": {}
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": {
+                "items": [
+                    { "default": 0 },
+                    { "default": 0 },
+                    { "default": 0 }
+                ]
+            }
+        },
+        "tests": [
+            {
+                "description": "fills array in array",
+                "data": [ [], [1], [1, 2], [1, 2, 4] ],
+                "result": [ [0, 0, 0], [1, 0, 0], [1, 2, 0], [1, 2, 4] ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "patternProperties": {
+                ".+": {
+                    "items": [
+                        { "default": 0 },
+                        { "default": 0 },
+                        { "default": 0 }
+                    ]
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills array in object",
+                "data": {
+                    "a": [],
+                    "b": [1],
+                    "c": [1, 2],
+                    "d": [1, 2, 4]
+                },
+                "result": {
+                    "a": [0, 0, 0],
+                    "b": [1, 0, 0],
+                    "c": [1, 2, 0],
+                    "d": [1, 2, 4]
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [ { "default": "unused" } ]
+        },
+        "tests": [
+            {
+                "description": "must not fill object",
+                "data": {},
+                "result": {}
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": [ {}, {} ],
+            "additionalItems": { "default": "unused" }
+        },
+        "tests": [
+            {
+                "description": "must be ignored in additionalItems",
+                "data": [1, 2],
+                "result": [1, 2]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": { "default": "unused" }
+        },
+        "tests": [
+            {
+                "description": "must be ignored in items with a shared schema",
+                "data": [],
+                "result": []
+            }
+        ]
+    },
+    {
+        "schema": {
+            "allOf": [
+                {
+                    "items": [
+                        {},
+                        { "default": 2 },
+                        { "default": 3 }
+                    ]
+                },
+                {
+                    "items": [
+                        {},
+                        { "default": "second" }
+                    ]
+                }
+            ]
+        },
+        "tests": [
+            {
+                "description": "multiple default values from allOf",
+                "data": [
+                    1
+                ],
+                "result": [
+                    1,
+                    "second",
+                    3
+                ]
+            }
+        ]
+    }
+]

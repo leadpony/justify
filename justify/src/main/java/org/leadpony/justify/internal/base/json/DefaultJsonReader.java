@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.validator;
+package org.leadpony.justify.internal.base.json;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,18 +31,19 @@ import javax.json.stream.JsonParser.Event;
 import javax.json.stream.JsonParsingException;
 
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 
 /**
+ * The default implementation of {@link JsonReader}.
+ *
  * @author leadpony
  */
-public class ValidatingJsonReader implements JsonReader {
+public class DefaultJsonReader implements JsonReader {
 
     private final JsonParser parser;
     private boolean alreadyRead;
     private boolean alreadyClosed;
 
-    ValidatingJsonReader(JsonParser parser) {
+    public DefaultJsonReader(JsonParser parser) {
         this.parser = parser;
     }
 

@@ -1,0 +1,487 @@
+[
+    {
+        "schema": {
+            "properties": {
+                "a": {
+                    "default": 365
+                },
+                "b": {
+                    "default": "hello"
+                },
+                "c": {
+                    "default": true
+                },
+                "d": {
+                    "default": false
+                },
+                "e": {
+                    "default": null
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills none",
+                "data": {
+                    "a": 1,
+                    "b": 2,
+                    "c": 3,
+                    "d": 4,
+                    "e": 5
+                },
+                "result": {
+                    "a": 1,
+                    "b": 2,
+                    "c": 3,
+                    "d": 4,
+                    "e": 5
+                }
+            },
+            {
+                "description": "fills one",
+                "data": {
+                    "a": 1,
+                    "c": 3,
+                    "d": 4,
+                    "e": 5
+                },
+                "result": {
+                    "a": 1,
+                    "c": 3,
+                    "d": 4,
+                    "e": 5,
+                    "b": "hello"
+                }
+            },
+            {
+                "description": "fills multiple",
+                "data": {
+                    "b": 2,
+                    "d": 4
+                },
+                "result": {
+                    "b": 2,
+                    "d": 4,
+                    "a": 365,
+                    "c": true,
+                    "e": null
+                }
+            },
+            {
+                "description": "fills all",
+                "data": {},
+                "result": {
+                    "a": 365,
+                    "b": "hello",
+                    "c": true,
+                    "d": false,
+                    "e": null
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "model": {
+                    "default": ["red", "green", "blue"]
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with array",
+                "data": {
+                },
+                "result": {
+                    "model": ["red", "green", "blue"]
+                }
+            },
+            {
+                "description": "does not fill with array",
+                "data": {
+                    "model": ["hue", "saturation", "brightness"]
+                },
+                "result": {
+                    "model": ["hue", "saturation", "brightness"]
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "color": {
+                    "default": {
+                        "red": 255,
+                        "green": 255,
+                        "blue": 255
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with object",
+                "data": {
+                },
+                "result": {
+                    "color": {
+                        "red": 255,
+                        "green": 255,
+                        "blue": 255
+                    }
+                }
+            },
+            {
+                "description": "does not fill with object",
+                "data": {
+                    "color": {
+                        "red": 128,
+                        "green": 192,
+                        "blue": 255
+                    }
+                },
+                "result": {
+                    "color": {
+                        "red": 128,
+                        "green": 192,
+                        "blue": 255
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "transform": {
+                    "default": [
+                        [1, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 1]
+                    ]
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with array of array",
+                "data": {
+                },
+                "result": {
+                    "transform": [
+                        [1, 0, 0],
+                        [0, 1, 0],
+                        [0, 0, 1]
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "responses": {
+                    "default": [
+                        {
+                            "code": 200,
+                            "message": "OK"
+                        },
+                        {
+                            "code": 400,
+                            "message": "Bad Request"
+                        }
+                    ]
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with array of object",
+                "data": {
+                },
+                "result": {
+                    "responses": [
+                        {
+                            "code": 200,
+                            "message": "OK"
+                        },
+                        {
+                            "code": 400,
+                            "message": "Bad Request"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "elements": {
+                    "default": []
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with empty array",
+                "data": {
+                },
+                "result": {
+                    "elements": []
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "responses": {
+                    "default": {
+                        "success": [200, 201],
+                        "failure": [400, 404]
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with object of array",
+                "data": {
+                },
+                "result": {
+                    "responses": {
+                        "success": [200, 201],
+                        "failure": [400, 404]
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "responses": {
+                    "default": {
+                        "200": {
+                            "message": "OK"
+                        },
+                        "400": {
+                            "message": "Bad Request"
+                        }
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with object of object",
+                "data": {
+                },
+                "result": {
+                    "responses": {
+                        "200": {
+                            "message": "OK"
+                        },
+                        "400": {
+                            "message": "Bad Request"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "mapping": {
+                    "default": {}
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills with empty object",
+                "data": {
+                },
+                "result": {
+                    "mapping": {}
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": {
+                "properties": {
+                    "first": {
+                        "default": 1
+                    },
+                    "second": {
+                        "default": 2
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills object in array",
+                "data": [
+                    {
+                        "first": 101
+                    },
+                    {
+                        "second": 102
+                    }
+                ],
+                "result": [
+                    {
+                        "first": 101,
+                        "second": 2
+                    },
+                    {
+                        "first": 1,
+                        "second": 102
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "a": {
+                    "properties": {
+                        "first": {
+                            "default": 1
+                        },
+                        "second": {
+                            "default": 2
+                        }
+                    }
+                },
+                "b": {
+                    "properties": {
+                        "third": {
+                            "default": 3
+                        },
+                        "fourth": {
+                            "default": 4
+                        }
+                    }
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "fills object in object",
+                "data": {
+                    "a": {
+                        "first": 101
+                    },
+                    "b": {
+                        "fourth": 104
+                    }
+                },
+                "result": {
+                    "a": {
+                        "first": 101,
+                        "second": 2
+                    },
+                    "b": {
+                        "third": 3,
+                        "fourth": 104
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "greeting": {
+                    "default": "unused"
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "must not fill array",
+                "data": [],
+                "result": []
+            }
+        ]
+    },
+    {
+        "schema": {
+            "patternProperties": {
+                ".+": {
+                    "default": "unused"
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "must be ignored in patternProperties",
+                "data": {},
+                "result": {}
+            }
+        ]
+    },
+    {
+        "schema": {
+            "additionalProperties": {
+                "default": "unused"
+            }
+        },
+        "tests": [
+            {
+                "description": "must be ignored in additionalProperties",
+                "data": {},
+                "result": {}
+            }
+        ]
+    },
+    {
+        "schema": {
+            "allOf": [
+                {
+                    "properties": {
+                        "country": {
+                            "default": "us"
+                        },
+                        "language": {
+                            "default": "en"
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "language": {
+                            "default": "java"
+                        },
+                        "os": {
+                            "default": "linux"
+                        }
+                    }
+                }
+            ]
+        },
+        "tests": [
+            {
+                "description": "multiple default values from allOf",
+                "data": {
+                    "job": "programmer"
+                },
+                "result": {
+                    "job": "programmer",
+                    "country": "us",
+                    "language": "java",
+                    "os": "linux"
+                }
+            }
+        ]
+    }
+]

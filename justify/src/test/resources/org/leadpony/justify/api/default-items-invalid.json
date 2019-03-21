@@ -1,0 +1,100 @@
+[
+    {
+        "schema": {
+            "items": [
+                { "default": 0 },
+                { "default": 0 },
+                { "default": 0 }
+            ],
+            "uniqueItems": true
+        },
+        "tests": [
+            {
+                "description": "problem in root array",
+                "data": [1, 1],
+                "result": [1, 1, 0],
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "",
+                        "event": 5
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": {
+                "items": [
+                    { "default": 0 },
+                    { "default": 0 },
+                    { "default": 0 }
+                ],
+               "uniqueItems": true
+            }
+        },
+        "tests": [
+            {
+                "description": "problem in array in array",
+                "data": [
+                    [1, 1],
+                    [2, 2]
+                ],
+                "result": [
+                    [1, 1, 0],
+                    [2, 2, 0]
+                ],
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/0",
+                        "event": 6
+                    },
+                    {
+                        "pointer": "/1",
+                        "event": 11
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "patternProperties": {
+                ".+": {
+                    "items": [
+                        { "default": 0 },
+                        { "default": 0 },
+                        { "default": 0 }
+                    ],
+                   "uniqueItems": true
+               }
+            }
+        },
+        "tests": [
+            {
+                "description": "problem in array in object",
+                "data": {
+                    "first": [1, 1],
+                    "second": [2, 2]
+                },
+                "result": {
+                    "first": [1, 1, 0],
+                    "second": [2, 2, 0]
+                },
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/first",
+                        "event": 7
+                    },
+                    {
+                        "pointer": "/second",
+                        "event": 13
+                    }
+                ]
+            }
+        ]
+    }
+]

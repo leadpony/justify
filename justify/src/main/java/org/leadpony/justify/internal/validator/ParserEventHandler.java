@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.internal.validator;
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.util.List;
-import java.util.Map;
-
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 
 /**
- * Assertion on JSON instances.
+ * A handler type of JSON parser events.
  *
  * @author leadpony
  */
-public interface Assertion extends Keyword {
+interface ParserEventHandler {
 
-    @Override
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
-        evaluatables.add(this);
-    }
+    ParserEventHandler IDLE = (event, parser) -> {
+    };
+
+    void handleParserEvent(Event evnet, JsonParser parser);
 }

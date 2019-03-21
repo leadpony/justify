@@ -52,15 +52,15 @@ import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
-import org.leadpony.justify.internal.base.json.PointingJsonParser;
+import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
+import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
-import org.leadpony.justify.internal.validator.ValidatingJsonParserFactory;
-import org.leadpony.justify.internal.validator.ValidatingJsonReaderFactory;
+import org.leadpony.justify.internal.validator.JsonValidatorFactory;
 
 /**
  * Default implementation of {@link JsonValidationService}.
@@ -157,7 +157,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     @Override
-    public ValidatingJsonParserFactory createParserFactory(Map<String, ?> config, JsonSchema schema,
+    public JsonValidatorFactory createParserFactory(Map<String, ?> config, JsonSchema schema,
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         requireNonNull(handlerFactory, "handlerFactory");
@@ -165,7 +165,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
             config = DEFAULT_CONFIG;
         }
         JsonParserFactory realFactory = jsonProvider.createParserFactory(config);
-        return new ValidatingJsonParserFactory(schema, jsonProvider, jsonBuilderFactory, realFactory, handlerFactory);
+        return new JsonValidatorFactory(schema, jsonProvider, realFactory, handlerFactory);
     }
 
     /**
@@ -224,14 +224,14 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     @Override
-    public ValidatingJsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
+    public DefaultJsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         requireNonNull(handlerFactory, "handlerFactory");
         if (config == null) {
             config = DEFAULT_CONFIG;
         }
-        return new ValidatingJsonReaderFactory(createParserFactory(config, schema, handlerFactory), config);
+        return new DefaultJsonReaderFactory(createParserFactory(config, schema, handlerFactory), config);
     }
 
     /**
@@ -351,7 +351,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
         JsonParser realParser = jsonProvider.createParser(in);
-        PointingJsonParser parser = new PointingJsonParser(realParser, jsonBuilderFactory);
+        DefaultPointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(jsonProvider, realParser);
         try (JsonSchemaReader reader = new Draft07SchemaReader(parser, createDefaultSchemaBuilderFactory())) {
             return reader.read();
         }

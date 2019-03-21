@@ -280,61 +280,6 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObject_returnsObject() {
-        String schema = PERSON_SCHEMA;
-        String instance = "{\"name\":\"John Smith\", \"age\": 46}";
-
-        JsonParser parser = newParser(instance);
-        parser.next();
-        JsonObject expected = parser.getObject();
-        parser.close();
-
-        List<Problem> problems = new ArrayList<>();
-        JsonParser sut = newParser(instance, schema, problems::addAll);
-        sut.next();
-        JsonObject actual = sut.getObject();
-        sut.close();
-
-        JsonAssertions.assertThat(actual).isEqualTo(expected);
-        assertThat(problems).isEmpty();
-    }
-
-    @Test
-    public void getObject_throwsExceptionIfNotObject() {
-        String schema = INTEGER_ARRAY_SCHEMA;
-        String instance = "[1,2,3]";
-
-        List<Problem> problems = new ArrayList<>();
-        JsonParser sut = newParser(instance, schema, problems::addAll);
-        sut.next();
-        Throwable thrown = catchThrowable(()->sut.getObject());
-        sut.close();
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-        assertThat(problems).isEmpty();
-    }
-
-    @Test
-    public void getObject_throwsExceptionIfNotClosed() {
-        String schema = PERSON_SCHEMA;
-        String instance = "{\"name\":\"John Smith\", \"age\": 46";
-
-        JsonParser parser = newParser(instance);
-        parser.next();
-        Throwable expected = catchThrowable(()->parser.getObject());
-        parser.close();
-
-        List<Problem> problems = new ArrayList<>();
-        JsonParser sut = newParser(instance, schema, problems::addAll);
-        sut.next();
-        Throwable actual = catchThrowable(()->sut.getObject());
-        sut.close();
-
-        assertThat(actual).hasSameClassAs(expected);
-        assertThat(actual.getMessage()).isNotEmpty();
-    }
-
-    @Test
     public void getArray_returnsArray() {
         String schema = INTEGER_ARRAY_SCHEMA;
         String instance = "[1,2,3]";
@@ -367,6 +312,8 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
+
+        log.info(thrown.getMessage());
     }
 
     @Test
@@ -390,37 +337,60 @@ public class JsonParserTest {
     }
 
     @Test
-    public void skipObject_skipsObject() {
+    public void getObject_returnsObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
+        JsonParser parser = newParser(instance);
+        parser.next();
+        JsonObject expected = parser.getObject();
+        parser.close();
+
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        sut.skipObject();
-
-        assertThat(sut.hasNext()).isFalse();
-        assertThat(problems).isEmpty();
-
+        JsonObject actual = sut.getObject();
         sut.close();
+
+        JsonAssertions.assertThat(actual).isEqualTo(expected);
+        assertThat(problems).isEmpty();
     }
 
     @Test
-    public void skipObject_skipsObjectNotClosed() {
-        String schema = "{\"type\":\"object\"}";
-        String instance = "{";
+    public void getObject_throwsExceptionIfNotObject() {
+        String schema = INTEGER_ARRAY_SCHEMA;
+        String instance = "[1,2,3]";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        try {
-            sut.skipObject();
-        } catch (JsonParsingException e) {
-        }
+        Throwable thrown = catchThrowable(()->sut.getObject());
+        sut.close();
 
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
+        log.info(thrown.getMessage());
+    }
+
+    @Test
+    public void getObject_throwsExceptionIfNotClosed() {
+        String schema = PERSON_SCHEMA;
+        String instance = "{\"name\":\"John Smith\", \"age\": 46";
+
+        JsonParser parser = newParser(instance);
+        parser.next();
+        Throwable expected = catchThrowable(()->parser.getObject());
+        parser.close();
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Throwable actual = catchThrowable(()->sut.getObject());
         sut.close();
+
+        assertThat(actual).hasSameClassAs(expected);
+        assertThat(actual.getMessage()).isNotEmpty();
     }
 
     @Test
@@ -458,9 +428,43 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArrayStream_returnsArrayStream() {
-        String schema = "{\"type\":\"array\"}";
-        String instance = "[true,false,null]";
+    public void skipObject_skipsObject() {
+        String schema = PERSON_SCHEMA;
+        String instance = "{\"name\":\"John Smith\", \"age\": 46}";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        sut.skipObject();
+
+        assertThat(sut.hasNext()).isFalse();
+        assertThat(problems).isEmpty();
+
+        sut.close();
+    }
+
+    @Test
+    public void skipObject_skipsObjectNotClosed() {
+        String schema = "{\"type\":\"object\"}";
+        String instance = "{";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        try {
+            sut.skipObject();
+        } catch (JsonParsingException e) {
+        }
+
+        assertThat(problems).isEmpty();
+
+        sut.close();
+    }
+
+    @Test
+    public void getArrayStream_returnsStream() {
+        String schema = "{ \"type\":\"array\" }";
+        String instance = "[ true, false, null ]";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
@@ -473,9 +477,62 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObjectStream_returnsObjectStream() {
-        String schema = PERSON_SCHEMA;
-        String instance = "{\"name\":\"John Smith\", \"age\": 46}";
+    public void getArrayStream_returnsStreamReporingProblem() {
+        String schema = "{ \"minItems\": 4 }";
+        // invalid
+        String instance = "[ true, false, null ]";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Stream<JsonValue> actual = sut.getArrayStream();
+
+        assertThat(actual).containsExactly(JsonValue.TRUE, JsonValue.FALSE, JsonValue.NULL);
+        assertThat(problems).isNotEmpty();
+        sut.close();
+    }
+
+    @Test
+    public void getArrayStream_returnsStreamThrowingException() {
+        String schema = "true";
+        // ill-formed
+        String instance = "[ \"key\" : 123 ]";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Stream<JsonValue> stream = sut.getArrayStream();
+        Throwable thrown = catchThrowable(()->{
+            stream.forEach(entry->{});
+        });
+        sut.close();
+
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
+    }
+
+    @Test
+    public void getArrayStream_throwsIllegalStateException() {
+        String schema = "true";
+        String instance = "[ 1, 2, 3 ]";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        sut.next();
+        Throwable thrown = catchThrowable(()->{
+            sut.getArrayStream();
+        });
+        sut.close();
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    @Test
+    public void getObjectStream_returnsStream() {
+        String schema = "{ \"type\": \"object\" }";
+        String instance = "{ \"key\": 123 }";
 
         JsonParser parser = newParser(instance);
         parser.next();
@@ -494,9 +551,32 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObjectStream_throwsException() {
-        String schema = PERSON_SCHEMA;
-        String instance = "{\"foo\", \"bar\"}";
+    public void getObjectStream_returnsStreamReportingProblems() {
+        String schema = "{ \"required\": [\"bar\"] }";
+        // invalid
+        String instance = "{ \"foo\" : 123 }";
+
+        JsonParser parser = newParser(instance);
+        parser.next();
+        Stream<Map.Entry<String, JsonValue>> expected = parser.getObjectStream();
+        parser.close();
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Stream<Map.Entry<String, JsonValue>> actual = sut.getObjectStream();
+
+        assertThat(actual).containsExactlyElementsOf(
+                expected.collect(Collectors.toList()));
+        assertThat(problems).isNotEmpty();
+        sut.close();
+    }
+
+    @Test
+    public void getObjectStream_returnsStreamThrowingException() {
+        String schema = "true";
+        // ill-formed
+        String instance = "{ \"key\", 123 }";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
@@ -511,6 +591,25 @@ public class JsonParserTest {
     }
 
     @Test
+    public void getObjectStream_throwsIllegalStateException() {
+        String schema = "true";
+        String instance = "{ \"key\": 123 }";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        sut.next();
+        Throwable thrown = catchThrowable(()->{
+            sut.getObjectStream();
+        });
+        sut.close();
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    @Test
     public void getValueStream_returnsValueStream() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
@@ -522,6 +621,24 @@ public class JsonParserTest {
         assertThat(actual).containsExactly(Json.createValue(42));
         assertThat(problems).isEmpty();
         sut.close();
+    }
+
+    @Test
+    public void getValueStream_throwsIllegalStateException() {
+        String schema = "true";
+        String instance = "{ \"key\": 123 }";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        Throwable thrown = catchThrowable(()->{
+            sut.getValueStream();
+        });
+        sut.close();
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
     }
 
     public static Stream<Arguments> argumentsForGetValue() {
@@ -563,6 +680,24 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
         printProblems(problems);
+    }
+
+    @Test
+    public void getValue_throwsIllegalStateException() {
+        String schema = "true";
+        String instance = "{}";
+
+        List<Problem> problems = new ArrayList<>();
+        JsonParser sut = newParser(instance, schema, problems::addAll);
+        sut.next();
+        sut.next();
+        Throwable thrown = catchThrowable(()->sut.getValue());
+        sut.close();
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+        assertThat(problems).isEmpty();
+
+        log.info(thrown.getMessage());
     }
 
     private static void printProblems(List<Problem> problems) {

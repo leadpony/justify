@@ -20,14 +20,14 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
+import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
+import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
-import org.leadpony.justify.internal.base.json.PointingJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
@@ -39,17 +39,16 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.Evaluator.Result;
 
 /**
- * JSON parser with validation functionality.
+ * A JSON parser type with validation functionality.
  *
  * @author leadpony
  */
-public class ValidatingJsonParser extends PointingJsonParser implements EvaluatorContext, DefaultProblemDispatcher {
+public class JsonValidator extends DefaultPointerAwareJsonParser
+    implements EvaluatorContext, DefaultProblemDispatcher, ParserEventHandler {
 
     private final JsonSchema rootSchema;
-    private final JsonProvider jsonProvider;
-    private final JsonBuilderFactory jsonBuilderFactory;
     private ProblemHandler problemHandler;
-    private BiConsumer<Event, JsonParser> eventHandler;
+    private ParserEventHandler eventHandler;
     private Evaluator evaluator;
     private int depth;
 
@@ -58,18 +57,16 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
     /**
      * Constructs this parser.
      *
-     * @param real the underlying JSON parser.
-     * @param rootSchema the root JSON schema to be evaluated during validation.
+     * @param realParser   the underlying JSON parser.
+     * @param rootSchema   the root JSON schema to be evaluated during validation.
      * @param jsonProvider the JSON provider.
-     * @param jsonBuilderFactory the JSON builder factory.
      */
-    public ValidatingJsonParser(JsonParser real, JsonSchema rootSchema, JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
-        super(real, jsonBuilderFactory);
+    public JsonValidator(JsonParser realParser, JsonSchema rootSchema, JsonProvider jsonProvider) {
+        super(jsonProvider);
         this.rootSchema = rootSchema;
-        this.jsonProvider = jsonProvider;
-        this.jsonBuilderFactory = jsonBuilderFactory;
         this.problemHandler = this::throwProblems;
-        this.eventHandler = this::handleEventFirst;
+        this.eventHandler = this::handleFirstEvent;
+        setCurrentParser(realParser);
     }
 
     /**
@@ -78,37 +75,41 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
      * @param problemHandler the problem handler to be assigned.
      * @return this parser.
      */
-    public ValidatingJsonParser withHandler(ProblemHandler problemHandler) {
+    public JsonValidator withHandler(ProblemHandler problemHandler) {
         this.problemHandler = problemHandler;
         return this;
     }
 
+    /* AbstractJsonParser */
+
     @Override
-    public Event next() {
-        currentProblems.clear();
-        Event event = super.next();
-        eventHandler.accept(event, realParser());
-        if (!currentProblems.isEmpty()) {
+    protected Event process(Event event) {
+        eventHandler.handleParserEvent(event, getParser());
+        return event;
+    }
+
+    @Override
+    protected void postprocess() {
+        if (hasProblems()) {
             dispatchProblems();
         }
-        return event;
     }
 
     /* Evaluator.Context */
 
     @Override
     public JsonParser getParser() {
-        return realParser();
+        return getCurrentParser();
     }
 
     @Override
-    public JsonProvider getJsonProvider() {
-        return jsonProvider;
+    public void putDefaultProperties(Map<String, JsonValue> defaultValues) {
+        // Ignores them.
     }
 
     @Override
-    public JsonBuilderFactory getJsonBuilderFactory() {
-        return jsonBuilderFactory;
+    public void putDefaultItems(List<JsonValue> items) {
+        // Ignores them.
     }
 
     /* DefaultProblemDispatcher */
@@ -119,23 +120,26 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
         this.currentProblems.add(problem);
     }
 
-    private void handleEventFirst(Event event, JsonParser parser) {
+    private void handleFirstEvent(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toInstanceType(event, parser);
         this.evaluator = rootSchema.createEvaluator(this, type);
         if (this.evaluator != null) {
-            handleEvent(event, parser);
+            handleParserEvent(event, parser);
         }
         if (this.evaluator != null) {
-            this.eventHandler = this::handleEvent;
+            this.eventHandler = this;
         } else {
-            this.eventHandler = this::handleNone;
+            this.eventHandler = ParserEventHandler.IDLE;
         }
     }
 
-    private void handleEvent(Event event, JsonParser parser) {
+    @Override
+    public void handleParserEvent(Event event, JsonParser parser) {
+        // Updates the JSON pointer.
+        super.process(event);
         if (ParserEvents.isEndOfContainer(event)) {
             if (--depth == 0) {
-                this.eventHandler = this::handleNone;
+                this.eventHandler = ParserEventHandler.IDLE;
             }
         }
         Result result = evaluator.evaluate(event, depth, this);
@@ -144,22 +148,36 @@ public class ValidatingJsonParser extends PointingJsonParser implements Evaluato
         }
         if (result != Result.PENDING) {
             evaluator = null;
-            this.eventHandler = this::handleNone;
+            this.eventHandler = ParserEventHandler.IDLE;
         }
         if (depth == 0) {
             assert this.evaluator == null;
         }
     }
 
-    private void handleNone(Event event, JsonParser parser) {
+    protected final boolean hasProblems() {
+        return !currentProblems.isEmpty();
     }
 
-    private void dispatchProblems() {
+    protected void dispatchProblems() {
         this.problemHandler.handleProblems(currentProblems);
+        currentProblems.clear();
+    }
+
+    protected void setEventHandler(ParserEventHandler eventHandler) {
+        this.eventHandler = eventHandler;
+    }
+
+    protected void resetEventHandler() {
+        if (this.evaluator != null) {
+            this.eventHandler = this;
+        } else {
+            this.eventHandler = ParserEventHandler.IDLE;
+        }
     }
 
     private void throwProblems(List<Problem> problems) {
         assert !problems.isEmpty();
-        throw new JsonValidatingException(problems);
+        throw new JsonValidatingException(new ArrayList<>(problems));
     }
 }

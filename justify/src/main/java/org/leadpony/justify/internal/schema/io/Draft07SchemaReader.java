@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +47,13 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.URIs;
-import org.leadpony.justify.internal.base.json.PointingJsonParser;
+import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaReference;
-import org.leadpony.justify.internal.validator.ValidatingJsonParser;
+import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.internal.schema.Draft07SchemaBuilder;
 import org.leadpony.justify.internal.schema.Resolvable;
 
@@ -65,7 +66,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
 
     private static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
 
-    private final PointingJsonParser parser;
+    private final PointerAwareJsonParser parser;
     private final DefaultSchemaBuilderFactory factory;
 
     private final boolean strictWithKeywords;
@@ -90,7 +91,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param parser  the parser of JSON document.
      * @param factory the factory for producing schema builders.
      */
-    public Draft07SchemaReader(PointingJsonParser parser, DefaultSchemaBuilderFactory factory) {
+    public Draft07SchemaReader(PointerAwareJsonParser parser, DefaultSchemaBuilderFactory factory) {
         this(parser, factory, SchemaReaderConfiguration.DEFAULT);
     }
 
@@ -101,7 +102,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param factory the factory for producing schema builders.
      * @param config  the configuration for this schema reader.
      */
-    public Draft07SchemaReader(PointingJsonParser parser, DefaultSchemaBuilderFactory factory,
+    public Draft07SchemaReader(PointerAwareJsonParser parser, DefaultSchemaBuilderFactory factory,
             SchemaReaderConfiguration config) {
         this.parser = parser;
         this.factory = factory;
@@ -118,9 +119,9 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
      * @param factory the factory for producing schema builders.
      * @param config  the configuration for this schema reader.
      */
-    public Draft07SchemaReader(ValidatingJsonParser parser, DefaultSchemaBuilderFactory factory,
+    public Draft07SchemaReader(JsonValidator parser, DefaultSchemaBuilderFactory factory,
             SchemaReaderConfiguration config) {
-        this((PointingJsonParser) parser, factory, config);
+        this((PointerAwareJsonParser) parser, factory, config);
         parser.withHandler(this::addProblems);
     }
 
@@ -690,7 +691,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
             skipValue(event);
             return;
         }
-        Map<String, JsonSchema> subschemas = new HashMap<>();
+        Map<String, JsonSchema> subschemas = new LinkedHashMap<>();
         while (parser.hasNext()) {
             event = parser.next();
             if (event == Event.KEY_NAME) {
@@ -1018,7 +1019,7 @@ public class Draft07SchemaReader implements JsonSchemaReader, ProblemBuilderFact
     }
 
     private ProblemBuilder problemBuilder(Message message) {
-        if (!(parser instanceof ValidatingJsonParser)) {
+        if (!(parser instanceof JsonValidator)) {
             throw new IllegalStateException();
         }
         EvaluatorContext context = (EvaluatorContext)parser;

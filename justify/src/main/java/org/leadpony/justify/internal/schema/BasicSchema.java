@@ -28,6 +28,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -42,7 +43,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
     static JsonSchema newSchema(JsonSchemaBuilderResult result) {
-        List<Keyword> evaluatables = collectEvaluatables(result.getKeywords());
+        List<Evaluatable> evaluatables = collectEvaluatables(result.getKeywords());
         if (evaluatables.isEmpty()) {
             return new None(result);
         } else if (evaluatables.size() == 1) {
@@ -85,8 +86,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
                 .withSchema(this);
     }
 
-    private static List<Keyword> collectEvaluatables(Map<String, Keyword> keywords) {
-        List<Keyword> evaluatables = new ArrayList<>();
+    private static List<Evaluatable> collectEvaluatables(Map<String, Keyword> keywords) {
+        List<Evaluatable> evaluatables = new ArrayList<>();
         for (Keyword keyword : keywords.values()) {
             keyword.addToEvaluatables(evaluatables, keywords);
         }
@@ -120,9 +121,9 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class One extends BasicSchema {
 
-        private final Keyword evaluatable;
+        private final Evaluatable evaluatable;
 
-        private One(JsonSchemaBuilderResult result, Keyword evaluatable) {
+        private One(JsonSchemaBuilderResult result, Evaluatable evaluatable) {
             super(result);
             this.evaluatable = evaluatable;
         }
@@ -145,9 +146,9 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class Many extends BasicSchema {
 
-        private final List<Keyword> evaluatables;
+        private final List<Evaluatable> evaluatables;
 
-        private Many(JsonSchemaBuilderResult result, List<Keyword> evaluatables) {
+        private Many(JsonSchemaBuilderResult result, List<Evaluatable> evaluatables) {
             super(result);
             this.evaluatables = evaluatables;
         }
@@ -167,8 +168,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.conjunctive(context, type);
             evaluator.withProblemBuilderFactory(this);
-            for (Keyword keyword : this.evaluatables) {
-                Evaluator child = keyword.createEvaluator(context, type);
+            for (Evaluatable evaluatable : this.evaluatables) {
+                Evaluator child = evaluatable.createEvaluator(context, type);
                 evaluator.append(child);
             }
             return evaluator;
@@ -177,8 +178,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         private Evaluator createCombinedNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
             evaluator.withProblemBuilderFactory(this);
-            for (Keyword keyword : this.evaluatables) {
-                Evaluator child = keyword.createNegatedEvaluator(context, type);
+            for (Evaluatable evaluatable : this.evaluatables) {
+                Evaluator child = evaluatable.createNegatedEvaluator(context, type);
                 evaluator.append(child);
             }
             return evaluator;

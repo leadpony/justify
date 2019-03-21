@@ -1,0 +1,174 @@
+[
+    {
+        "schema": {
+            "properties": {
+                "greeting": {
+                    "default": "hello"
+                }
+            },
+            "required": [ "firstName", "lastName" ]
+        },
+        "tests": [
+            {
+                "description": "problem in root object",
+                "data": {
+                    "firstName": "John"
+                },
+                "result": {
+                    "firstName": "John",
+                    "greeting": "hello"
+                },
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "",
+                        "event": 6
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "items": {
+                "properties": {
+                    "greeting": {
+                        "default": "hello"
+                    }
+                },
+                "required": [ "firstName", "lastName" ]
+            }
+        },
+        "tests": [
+            {
+                "description": "problem in first object in array",
+                "data": [
+                    {
+                        "firstName": "John"
+                    },
+                    {
+                        "firstName": "John",
+                        "lastName": "Doe"
+                    }
+                ],
+                "result": [
+                    {
+                        "firstName": "John",
+                        "greeting": "hello"
+                    },
+                    {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "greeting": "hello"
+                    }
+                ],
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/0",
+                        "event": 7
+                    }
+                ]
+            },
+            {
+                "description": "problem in second object in array",
+                "data": [
+                    {
+                        "firstName": "John",
+                        "lastName": "Doe"
+                    },
+                    {
+                        "firstName": "John"
+                    }
+                ],
+                "result": [
+                    {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "greeting": "hello"
+                    },
+                    {
+                        "firstName": "John",
+                        "greeting": "hello"
+                    }
+                ],
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/1",
+                        "event": 15
+                    }
+                ]
+            },
+            {
+                "description": "problem in both objects in array",
+                "data": [
+                    {
+                        "firstName": "John"
+                    },
+                    {
+                        "firstName": "John"
+                    }
+                ],
+                "result": [
+                    {
+                        "firstName": "John",
+                        "greeting": "hello"
+                    },
+                    {
+                        "firstName": "John",
+                        "greeting": "hello"
+                    }
+                ],
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/0",
+                        "event": 7
+                    },
+                    {
+                        "pointer": "/1",
+                        "event": 13
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "top": {
+                    "properties": {
+                        "greeting": {
+                            "default": "hello"
+                        }
+                    },
+                    "required": [ "firstName", "lastName" ]
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "problem in object in object",
+                "data": {
+                    "top": {
+                        "firstName": "John"
+                    }
+                },
+                "result": {
+                    "top": {
+                        "firstName": "John",
+                        "greeting": "hello"
+                    }
+                },
+                "valid": false,
+                "errors": [
+                    {
+                        "pointer": "/top",
+                        "event": 8
+                    }
+                ]
+            }
+        ]
+    }
+]

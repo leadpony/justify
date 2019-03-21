@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -31,10 +33,13 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
+import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -156,23 +161,25 @@ abstract class Items extends Combiner implements ArrayKeyword {
      *
      * @author leadpony
      */
-    static class SeparateItems extends Items {
+    static class DiscreteItems extends Items {
 
         private final List<JsonSchema> subschemas;
         private JsonSchema defaultSchema = JsonSchema.TRUE;
+        private List<JsonValue> defaultValues;
 
-        SeparateItems(List<JsonSchema> subschemas) {
+        DiscreteItems(List<JsonSchema> subschemas) {
             this.subschemas = subschemas;
+            this.defaultValues = findDefaultValues(subschemas);
         }
 
         @Override
         protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-            return createItemsEvaluator(context);
+            return decorateEvaluator(createItemsEvaluator(context), context);
         }
 
         @Override
         protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return createNegatedItemsEvaluator(context);
+            return decorateEvaluator(createNegatedItemsEvaluator(context), context);
         }
 
         @Override
@@ -183,7 +190,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         @Override
-        public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+        public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
             if (keywords.containsKey("additionalItems")) {
                 AdditionalItems additionalItems = (AdditionalItems)keywords.get("additionalItems");
                 this.defaultSchema = additionalItems.getSubschema();
@@ -267,6 +274,67 @@ abstract class Items extends Combiner implements ArrayKeyword {
                     }
                 }
             };
+        }
+
+        private List<JsonValue> findDefaultValues(List<JsonSchema> subschemas) {
+            for (int i = subschemas.size() - 1; i >= 0; i--) {
+                if (subschemas.get(i).containsKeyword("default")) {
+                    List<JsonValue> values = new ArrayList<>(i + 1);
+                    for (int j = 0; j <= i; j++) {
+                        values.add(subschemas.get(j).defaultValue());
+                    }
+                    return values;
+                }
+            }
+            return null;
+        }
+
+        private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
+            if (defaultValues != null) {
+                evaluator = new ItemsDefaultEvaluator(evaluator, context, defaultValues);
+            }
+            return evaluator;
+        }
+    }
+
+    private static class ItemsDefaultEvaluator extends EvaluatorDecorator {
+
+        private final List<JsonValue> defaultValues;
+        private int size;
+
+        ItemsDefaultEvaluator(Evaluator evaluator, EvaluatorContext context, List<JsonValue> defaultValues) {
+            super(evaluator, context);
+            this.defaultValues = defaultValues;
+        }
+
+        @Override
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            Result result = super.evaluate(event, depth, dispatcher);
+            if (depth == 1 && ParserEvents.isValue(event)) {
+                ++size;
+            } else if (depth == 0 && event == Event.END_ARRAY) {
+                supplyDefaultValues(size);
+                return result;
+            }
+            return Result.PENDING;
+        }
+
+        private void supplyDefaultValues(int size) {
+            if (size < defaultValues.size()) {
+                List<JsonValue> valuesToPut= new ArrayList<>();
+                int i = size;
+                while (i < defaultValues.size()) {
+                    JsonValue value = defaultValues.get(i++);
+                    if (value != null) {
+                        valuesToPut.add(value);
+                    } else {
+                        break;
+                    }
+                }
+                if (!valuesToPut.isEmpty()) {
+                    getContext().putDefaultItems(valuesToPut);
+                }
+            }
         }
     }
 }

@@ -64,7 +64,7 @@ public final class Combiners {
     }
 
     public static Combiner items(List<JsonSchema> subschemas) {
-        return new Items.SeparateItems(subschemas);
+        return new Items.DiscreteItems(subschemas);
     }
     
     public static Combiner additionalItems(JsonSchema subschema) {

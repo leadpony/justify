@@ -14,47 +14,49 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.validator;
+package org.leadpony.justify.internal.base.json;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParserFactory;
 
 /**
- * JsonReaderFactory for creating JSON readers 
- * which validate JSON documents while reading.
- * 
+ * The default implementation of {@link JsonReaderFactory}.
+ *
  * @author leadpony
  */
-public class ValidatingJsonReaderFactory implements JsonReaderFactory {
+public class DefaultJsonReaderFactory implements JsonReaderFactory {
 
-    private final ValidatingJsonParserFactory parserFactory;
+    private final JsonParserFactory parserFactory;
     private final Map<String, ?> config;
-    
-    public ValidatingJsonReaderFactory(ValidatingJsonParserFactory parserFactory, Map<String, ?> config) {
+
+    public DefaultJsonReaderFactory(JsonParserFactory parserFactory, Map<String, ?> config) {
         this.parserFactory = parserFactory;
         this.config = config;
     }
 
     @Override
-    public ValidatingJsonReader createReader(Reader reader) {
-        ValidatingJsonParser parser = parserFactory.createParser(reader);
-        return new ValidatingJsonReader(parser);
+    public JsonReader createReader(Reader reader) {
+        JsonParser parser = parserFactory.createParser(reader);
+        return new DefaultJsonReader(parser);
     }
 
     @Override
-    public ValidatingJsonReader createReader(InputStream in) {
-        ValidatingJsonParser parser = parserFactory.createParser(in);
-        return new ValidatingJsonReader(parser);
+    public JsonReader createReader(InputStream in) {
+        JsonParser parser = parserFactory.createParser(in);
+        return new DefaultJsonReader(parser);
     }
 
     @Override
-    public ValidatingJsonReader createReader(InputStream in, Charset charset) {
-        ValidatingJsonParser parser = parserFactory.createParser(in, charset);
-        return new ValidatingJsonReader(parser);
+    public JsonReader createReader(InputStream in, Charset charset) {
+        JsonParser parser = parserFactory.createParser(in, charset);
+        return new DefaultJsonReader(parser);
     }
 
     @Override

@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.internal.base.json;
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.util.List;
-import java.util.Map;
-
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import javax.json.stream.JsonParser;
 
 /**
- * Assertion on JSON instances.
+ * A JSON parser type which can track the current parsing position as a JSON
+ * pointer.
  *
  * @author leadpony
  */
-public interface Assertion extends Keyword {
+public interface PointerAwareJsonParser extends JsonParser {
 
-    @Override
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
-        evaluatables.add(this);
-    }
+    /**
+     * Returns the current position as a JSON pointer.
+     *
+     * @return the JSON pointer which points to the current value. {@code null} will
+     *         be returned before any event.
+     */
+    String getPointer();
 }

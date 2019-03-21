@@ -45,7 +45,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.validator.ValidatingJsonParser;
+import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
  * The default implementation of {@link JsonSchemaResolver}.
@@ -82,7 +82,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     public JsonSchemaReader createSchemaReader(InputStream in) {
         requireNonNull(in, "in");
         JsonParser realParser = jsonParserFactory.createParser(in);
-        ValidatingJsonParser parser = createParser(realParser);
+        JsonValidator parser = createParser(realParser);
         return createSchemaReaderWith(parser);
     }
 
@@ -91,7 +91,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         requireNonNull(in, "in");
         requireNonNull(charset, "charset");
         JsonParser realParser = jsonParserFactory.createParser(in, charset);
-        ValidatingJsonParser parser = createParser(realParser);
+        JsonValidator parser = createParser(realParser);
         return createSchemaReaderWith(parser);
     }
 
@@ -99,7 +99,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     public JsonSchemaReader createSchemaReader(Reader reader) {
         requireNonNull(reader, "reader");
         JsonParser realParser = jsonParserFactory.createParser(reader);
-        ValidatingJsonParser parser = createParser(realParser);
+        JsonValidator parser = createParser(realParser);
         return createSchemaReaderWith(parser);
     }
 
@@ -116,15 +116,15 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
-    private ValidatingJsonParser createParser(JsonParser realParser) {
-        return new ValidatingJsonParser(realParser, metaschema, jsonProvider, jsonBuilderFactory);
+    private JsonValidator createParser(JsonParser realParser) {
+        return new JsonValidator(realParser, metaschema, jsonProvider);
     }
 
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory() {
         return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry.createMap(), contentRegistry);
     }
 
-    private JsonSchemaReader createSchemaReaderWith(ValidatingJsonParser parser) {
+    private JsonSchemaReader createSchemaReaderWith(JsonValidator parser) {
         DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory();
         return new Draft07SchemaReader(parser, schemaBuilder, configuration);
     }

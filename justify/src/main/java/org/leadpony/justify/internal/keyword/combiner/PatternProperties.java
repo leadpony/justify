@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -40,7 +41,7 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
         super.addToEvaluatables(evaluatables, keywords);
         if (!keywords.containsKey("properties")) {
             evaluatables.add(this);

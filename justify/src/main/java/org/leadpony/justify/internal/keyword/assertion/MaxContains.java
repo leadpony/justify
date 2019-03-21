@@ -23,17 +23,18 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * The type representing "maxContains" keyword.
- * 
+ *
  * @author leadpony
  */
 public class MaxContains extends AbstractKeyword {
-    
+
     private final int limit;
-    
+
     MaxContains(int limit) {
         this.limit = limit;
     }
@@ -41,7 +42,7 @@ public class MaxContains extends AbstractKeyword {
     public int value() {
         return limit;
     }
-    
+
     @Override
     public String name() {
         return "maxContains";
@@ -53,6 +54,6 @@ public class MaxContains extends AbstractKeyword {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 }

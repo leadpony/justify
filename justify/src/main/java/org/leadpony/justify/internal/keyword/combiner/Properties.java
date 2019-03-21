@@ -16,15 +16,22 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.json.JsonValue;
+import javax.json.stream.JsonParser.Event;
 
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
@@ -46,7 +53,7 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
         super.addToEvaluatables(evaluatables, keywords);
         if (keywords.containsKey("patternProperties")) {
             this.patternProperties = (PatternProperties) keywords.get("patternProperties");
@@ -67,11 +74,18 @@ public class Properties extends AbstractProperties<String> {
     public void addProperty(String key, JsonSchema subschema) {
         super.addProperty(key, subschema);
         if (subschema.containsKeyword("default")) {
-            if (defaultValues == null) {
-                defaultValues = new HashMap<>();
-            }
-            defaultValues.put(key, subschema.defaultValue());
+            addDefaultValue(key, subschema.defaultValue());
         }
+    }
+
+    @Override
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return decorateEvaluator(super.doCreateEvaluator(context, type), context);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return decorateEvaluator(super.doCreateNegatedEvaluator(context, type), context);
     }
 
     @Override
@@ -87,5 +101,52 @@ public class Properties extends AbstractProperties<String> {
             }
         }
         return found;
+    }
+
+    private void addDefaultValue(String key, JsonValue defaultValue) {
+        if (defaultValues == null) {
+            defaultValues = new LinkedHashMap<>();
+        }
+        defaultValues.put(key, defaultValue);
+    }
+
+    private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
+        if (defaultValues != null) {
+            return new PropertiesDefaultEvaluator(evaluator, context, defaultValues);
+        }
+        return evaluator;
+    }
+
+    /**
+     * An evaluator supplying default values.
+     *
+     * @author leadpony
+     */
+    private static class PropertiesDefaultEvaluator extends EvaluatorDecorator {
+
+        private final Map<String, JsonValue> defaultValues;
+
+        private PropertiesDefaultEvaluator(Evaluator evaluator, EvaluatorContext context, Map<String, JsonValue> defaultValues) {
+            super(evaluator, context);
+            this.defaultValues = new LinkedHashMap<>(defaultValues);
+        }
+
+        @Override
+        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            Result result = super.evaluate(event, depth, dispatcher);
+            if (depth == 1 && event == Event.KEY_NAME) {
+                defaultValues.remove(getParser().getString());
+            } else if (depth == 0 && event == Event.END_OBJECT) {
+                if (!defaultValues.isEmpty()) {
+                    supplyDefaultValues();
+                }
+                return result;
+            }
+            return Result.PENDING;
+        }
+
+        private void supplyDefaultValues() {
+            getContext().putDefaultProperties(defaultValues);
+        }
     }
 }

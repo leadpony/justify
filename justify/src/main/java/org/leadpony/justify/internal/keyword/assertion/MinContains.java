@@ -23,11 +23,12 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * The type representing "minContains" keyword.
- * 
+ *
  * @author leadpony
  */
 public class MinContains extends AbstractKeyword {
@@ -53,6 +54,6 @@ public class MinContains extends AbstractKeyword {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 }

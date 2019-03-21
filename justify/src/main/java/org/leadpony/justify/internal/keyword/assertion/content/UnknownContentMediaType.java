@@ -22,11 +22,12 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Content media type with an unknown value.
- * 
+ *
  * @author leadpony
  */
 public class UnknownContentMediaType extends AbstractKeyword {
@@ -35,7 +36,7 @@ public class UnknownContentMediaType extends AbstractKeyword {
 
     /**
      * Constructs this object.
-     * 
+     *
      * @param value the media type value which may include additional parameters.
      */
     public UnknownContentMediaType(String value) {
@@ -53,6 +54,6 @@ public class UnknownContentMediaType extends AbstractKeyword {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 }

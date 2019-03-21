@@ -22,17 +22,18 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
  * Content encoding with an unknown scheme.
- * 
+ *
  * @author leadpony
  */
 public class UnknownContentEncoding extends AbstractKeyword {
-    
+
     private final String scheme;
-    
+
     public UnknownContentEncoding(String scheme) {
         this.scheme = scheme;
     }
@@ -48,6 +49,6 @@ public class UnknownContentEncoding extends AbstractKeyword {
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
     }
 }

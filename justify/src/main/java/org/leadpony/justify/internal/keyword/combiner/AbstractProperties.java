@@ -34,6 +34,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
@@ -70,7 +71,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     }
 
     @Override
-    public void addToEvaluatables(List<Keyword> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
         if (keywords.containsKey("additionalProperties")) {
             AdditionalProperties additionalProperties = (AdditionalProperties)keywords.get("additionalProperties");
             this.defaultSchema = additionalProperties.getSubschema();

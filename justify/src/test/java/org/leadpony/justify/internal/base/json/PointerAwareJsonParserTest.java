@@ -15,43 +15,51 @@
  */
 package org.leadpony.justify.internal.base.json;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser.Event;
+import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonParser;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.internal.base.json.JsonValueParser;
 
 /**
+ * A test class for {@link PointerAwareJsonParser}.
+ *
  * @author leadpony
  */
-public class JsonValueParserTest {
+public class PointerAwareJsonParserTest {
+
+    private static JsonProvider provider;
+
+    @BeforeAll
+    public static void setUpOnce() {
+        provider = JsonProvider.provider();
+    }
 
     public static Stream<Arguments> fixtures() {
-        InputStream in = JsonValueParserTest.class.getResourceAsStream("jsonvalue.json");
+        InputStream in = DefaultValueParserTest.class.getResourceAsStream("json-pointer.json");
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
                 .map(JsonValue::asJsonObject)
                 .map(object->{
-                    JsonValue value = object.get("value");
-                    List<Event> events = object.get("events")
+                    JsonValue value = object.get("data");
+                    List<String> events = object.get("pointers")
                             .asJsonArray().stream()
                             .map(event->((JsonString)event).getString())
-                            .map(Event::valueOf)
                             .collect(Collectors.toList());
                     return Arguments.of(value, events);
                 });
@@ -60,24 +68,19 @@ public class JsonValueParserTest {
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void next_shouldReturnEvent(JsonValue value, List<Event> events) {
-        List<Event> actual = new ArrayList<>();
-        JsonValueParser parser = createParser(value);
-        while (parser.hasNext()) {
-            actual.add(parser.next());
+    public void toPointer_shouldReturnCorrectJsonPointer(JsonValue json, List<String> pointers) {
+        String source = json.toString();
+        List<String> actual = new ArrayList<>();
+        try (PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(provider, createRealParser(source))) {
+            while (parser.hasNext()) {
+                parser.next();
+                actual.add(parser.getPointer());
+            }
         }
-
-        assertThat(actual).containsExactlyElementsOf(events);
+        assertThat(actual).containsExactlyElementsOf(pointers);
     }
 
-    private static JsonValueParser createParser(JsonValue value) {
-        switch (value.getValueType()) {
-        case ARRAY:
-            return new JsonValueParser((JsonArray) value);
-        case OBJECT:
-            return new JsonValueParser((JsonObject) value);
-        default:
-            throw new UnsupportedOperationException();
-        }
+    private static JsonParser createRealParser(String source) {
+        return Json.createParser(new StringReader(source));
     }
 }
