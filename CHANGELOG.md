@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Fixed
+- The bug which was causing `getArrayStream()`, `getObjectStream()`, and `getValueStream()` in `JsonParser` to throw wrongly `UnsupportedOperationException` in the case that they should throw `IllegalStateException`. (Issue #10)
+
 ## 0.14.0 - 2019-03-18
 ### Added
-- `getPointer()` method in `Problem` interface which provides the location of the problem in the JSON instance as a JSON pointer.
+- `getPointer()` method in `Problem` interface which provides the location of the problem in the JSON instance as a JSON pointer. (Proposed originally by @mshaposhnik and the implementation is supported by @erdi)
 - `ProblemPrinterBuilder` interface to build configured problem printers, such as printers with problem locations omitted.
 - `JsonValidationService#createProblemPrinterBuilder()` to create instances of `ProblemPrinterBuilder`.
 
