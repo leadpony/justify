@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.validator;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -27,6 +28,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidatorFactoryBuilder;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.internal.base.json.JsonParserFactoryDecorator;
 
@@ -40,58 +42,76 @@ public class JsonValidatorFactory extends JsonParserFactoryDecorator {
     private final JsonSchema schema;
     private final JsonProvider jsonProvider;
     private final ProblemHandlerFactory handlerFactory;
+    private final Map<String, Object> properties;
 
     /**
      * Constructs this factory.
      *
-     * @param schema             the JSON schema to be evaluated while parsing JSON
-     *                           documents.
-     * @param jsonProvider       the JSON provider.
-     * @param jsonParserFactory  the underlying JSON parser factory.
-     * @param handlerFactory     the factory of problem handlers.
+     * @param schema            the JSON schema to be evaluated while parsing JSON
+     *                          documents.
+     * @param jsonProvider      the JSON provider.
+     * @param jsonParserFactory the underlying JSON parser factory.
+     * @param handlerFactory    the factory of problem handlers.
+     * @param properties        the configuration properties.
      */
-    public JsonValidatorFactory(JsonSchema schema,
+    public JsonValidatorFactory(
+            JsonSchema schema,
             JsonProvider jsonProvider,
             JsonParserFactory jsonParserFactory,
-            ProblemHandlerFactory handlerFactory) {
+            ProblemHandlerFactory handlerFactory,
+            Map<String, Object> properties) {
         super(jsonParserFactory);
         this.schema = schema;
         this.jsonProvider = jsonProvider;
         this.handlerFactory = handlerFactory;
+        this.properties = properties;
     }
 
     @Override
     public JsonValidator createParser(Reader reader) {
         JsonParser parser = super.createParser(reader);
-        return wrapParser(parser);
+        return createValiator(parser);
     }
 
     @Override
     public JsonValidator createParser(InputStream in) {
         JsonParser parser = super.createParser(in);
-        return wrapParser(parser);
+        return createValiator(parser);
     }
 
     @Override
     public JsonValidator createParser(JsonObject obj) {
         JsonParser parser = super.createParser(obj);
-        return wrapParser(parser);
+        return createValiator(parser);
     }
 
     @Override
     public JsonValidator createParser(JsonArray array) {
         JsonParser parser = super.createParser(array);
-        return wrapParser(parser);
+        return createValiator(parser);
     }
 
     @Override
     public JsonValidator createParser(InputStream in, Charset charset) {
         JsonParser parser = super.createParser(in, charset);
-        return wrapParser(parser);
+        return createValiator(parser);
     }
 
-    private JsonValidator wrapParser(JsonParser parser) {
-        JsonValidator wrapper = new DefaultizingJsonValidator(parser, this.schema, this.jsonProvider);
-        return wrapper.withHandler(this.handlerFactory.createProblemHandler(wrapper));
+    private boolean usesDefaultValues() {
+        Object value = properties.get(JsonValidatorFactoryBuilder.DEFAULT_VALUES);
+        return value == Boolean.TRUE;
+    }
+
+    private JsonValidator createValiator(JsonParser parser) {
+        JsonValidator validator = newValidator(parser);
+        return validator.withHandler(this.handlerFactory.createProblemHandler(validator));
+    }
+
+    private JsonValidator newValidator(JsonParser parser) {
+        if (usesDefaultValues()) {
+            return new DefaultizingJsonValidator(parser, this.schema, this.jsonProvider);
+        } else {
+            return new JsonValidator(parser, this.schema, jsonProvider);
+        }
     }
 }

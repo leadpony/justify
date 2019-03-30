@@ -166,8 +166,7 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
 
         private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
-            LogicalEvaluator evaluator = Evaluators.conjunctive(context, type);
-            evaluator.withProblemBuilderFactory(this);
+            LogicalEvaluator evaluator = Evaluators.conjunctive(type);
             for (Evaluatable evaluatable : this.evaluatables) {
                 Evaluator child = evaluatable.createEvaluator(context, type);
                 evaluator.append(child);

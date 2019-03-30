@@ -103,13 +103,18 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
     }
 
     @Override
+    public boolean acceptsDefaultValues() {
+        return false;
+    }
+
+    @Override
     public void putDefaultProperties(Map<String, JsonValue> defaultValues) {
-        // Ignores them.
+        assert false;
     }
 
     @Override
     public void putDefaultItems(List<JsonValue> items) {
-        // Ignores them.
+        assert false;
     }
 
     /* DefaultProblemDispatcher */

@@ -17,12 +17,9 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -31,19 +28,17 @@ import org.leadpony.justify.api.ProblemDispatcher;
  *
  * @author leadpony
  */
-public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
-    implements Iterable<Evaluator> {
+class SimpleConjunctiveEvaluator extends ArrayList<Evaluator> implements LogicalEvaluator {
 
-    private final List<Evaluator> operands = new ArrayList<>();
+    private static final long serialVersionUID = 1L;
 
-    SimpleConjunctiveEvaluator(EvaluatorContext context) {
-        super(context);
+    SimpleConjunctiveEvaluator() {
     }
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         Result finalResult = Result.TRUE;
-        for (Evaluator operand : operands) {
+        for (Evaluator operand : this) {
             if (operand.evaluate(event, depth, dispatcher) == Result.FALSE) {
                 finalResult = Result.FALSE;
             }
@@ -56,11 +51,6 @@ public class SimpleConjunctiveEvaluator extends AbstractLogicalEvaluator
         if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
-        this.operands.add(evaluator);
-    }
-
-    @Override
-    public Iterator<Evaluator> iterator() {
-        return operands.iterator();
+        add(evaluator);
     }
 }

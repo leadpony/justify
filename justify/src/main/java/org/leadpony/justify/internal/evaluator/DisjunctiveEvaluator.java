@@ -21,7 +21,6 @@ import java.util.Iterator;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
@@ -29,11 +28,11 @@ import org.leadpony.justify.api.ProblemDispatcher;
  */
 class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
 
-    private final InstanceMonitor monitor;
+    private final Event closingEvent;
 
-    DisjunctiveEvaluator(EvaluatorContext context, InstanceType type) {
+    DisjunctiveEvaluator(EvaluatorContext context, Event closingEvent) {
         super(context);
-        this.monitor = InstanceMonitor.of(type);
+        this.closingEvent = closingEvent;
     }
 
     @Override
@@ -41,7 +40,7 @@ class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
         if (invokeOperandEvaluators(event, depth, dispatcher) == Result.TRUE) {
             return Result.TRUE;
         }
-        if (monitor.isCompleted(event, depth)) {
+        if (depth == 0 && event == closingEvent) {
             return dispatchProblems(dispatcher);
         }
         return Result.PENDING;

@@ -62,7 +62,8 @@ public class DefaultValueTest {
 
         final List<Error> errors;
 
-        Fixture(JsonValue schema, JsonValue data, JsonValue result, boolean valid, List<Error> errors, String description) {
+        Fixture(JsonValue schema, JsonValue data, JsonValue result, boolean valid, List<Error> errors,
+                String description) {
             this.schema = schema;
             this.data = data;
             this.result = result;
@@ -102,12 +103,12 @@ public class DefaultValueTest {
         InputStream in = DefaultValueTest.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
-                .map(JsonValue::asJsonObject)
-                .flatMap(schema->{
-                    return schema.getJsonArray("tests").stream()
-                            .map(JsonValue::asJsonObject)
-                            .map(test->createFixture(schema, test));
-                });
+                    .map(JsonValue::asJsonObject)
+                    .flatMap(schema -> {
+                        return schema.getJsonArray("tests").stream()
+                                .map(JsonValue::asJsonObject)
+                                .map(test -> createFixture(schema, test));
+                    });
         }
     }
 
@@ -118,15 +119,14 @@ public class DefaultValueTest {
                 test.get("result"),
                 test.getBoolean("valid", true),
                 createErrors(test),
-                test.getString("description")
-                );
+                test.getString("description"));
     }
 
     private static List<Error> createErrors(JsonObject test) {
-        if(test.containsKey("errors")) {
+        if (test.containsKey("errors")) {
             return test.getJsonArray("errors").stream()
                     .map(JsonValue::asJsonObject)
-                    .map(e->new Error(
+                    .map(e -> new Error(
                             e.getString("pointer"),
                             e.getInt("event")))
                     .collect(Collectors.toList());
@@ -202,14 +202,20 @@ public class DefaultValueTest {
         return service.readSchema(reader);
     }
 
-    private JsonReader createJsonReader(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        StringReader reader = new StringReader(value.toString());
-        return service.createReader(reader, schema, handler);
+    private JsonParser createJsonParser(JsonValue value, JsonSchema schema, ProblemHandler handler) {
+        return service.createValidatorFactoryBuilder(schema)
+                .withProblemHandler(handler)
+                .withDefaultValues(true)
+                .buildParserFactory()
+                .createParser(new StringReader(value.toString()));
     }
 
-    private JsonParser createJsonParser(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        StringReader reader = new StringReader(value.toString());
-        return service.createParser(reader, schema, handler);
+    private JsonReader createJsonReader(JsonValue value, JsonSchema schema, ProblemHandler handler) {
+        return service.createValidatorFactoryBuilder(schema)
+                .withProblemHandler(handler)
+                .withDefaultValues(true)
+                .buildReaderFactory()
+                .createReader(new StringReader(value.toString()));
     }
 
     private List<Event> getExpectedEvents(JsonValue value) {

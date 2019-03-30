@@ -21,7 +21,6 @@ import java.util.Iterator;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
@@ -29,11 +28,11 @@ import org.leadpony.justify.api.ProblemDispatcher;
  */
 class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
-    private final InstanceMonitor monitor;
+    private final Event closingEvent;
 
-    NotExclusiveEvaluator(EvaluatorContext context, InstanceType type) {
+    NotExclusiveEvaluator(EvaluatorContext context, Event closingEvent) {
         super(context);
-        this.monitor = InstanceMonitor.of(type);
+        this.closingEvent = closingEvent;
     }
 
     @Override
@@ -49,7 +48,7 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
                 it.remove();
             }
         }
-        if (monitor.isCompleted(event, depth)) {
+        if (depth == 0 && event == closingEvent) {
             return finalizeResult(dispatcher);
         }
         return Result.PENDING;

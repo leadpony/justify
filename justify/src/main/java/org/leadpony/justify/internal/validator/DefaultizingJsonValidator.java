@@ -56,6 +56,11 @@ public class DefaultizingJsonValidator extends JsonValidator {
     }
 
     @Override
+    public boolean acceptsDefaultValues() {
+        return true;
+    }
+
+    @Override
     public void putDefaultProperties(Map<String, JsonValue> properties) {
         defaultProperties.putAll(properties);
         defaultValuesInserted = true;

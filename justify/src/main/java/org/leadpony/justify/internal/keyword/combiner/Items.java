@@ -290,7 +290,7 @@ abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
-            if (defaultValues != null) {
+            if (context.acceptsDefaultValues() && defaultValues != null) {
                 evaluator = new ItemsDefaultEvaluator(evaluator, context, defaultValues);
             }
             return evaluator;

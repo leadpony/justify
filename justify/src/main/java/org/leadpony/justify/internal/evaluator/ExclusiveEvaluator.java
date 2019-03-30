@@ -26,7 +26,6 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemList;
 
@@ -42,13 +41,13 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private List<ProblemList> problemLists;
     private List<ProblemList> negatedProblemLists;
     private long evaluationsAsTrue;
-    private final InstanceMonitor monitor;
+    private final Event closingEvent;
 
-    ExclusiveEvaluator(EvaluatorContext context, InstanceType type, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+    ExclusiveEvaluator(EvaluatorContext context, Event closingEvent, Stream<Evaluator> operands, Stream<Evaluator> negated) {
         super(context);
         this.operands = createEvaluators(operands);
         this.negated = createEvaluators(negated);
-        this.monitor = InstanceMonitor.of(type);
+        this.closingEvent = closingEvent;
     }
 
     @Override
@@ -57,7 +56,7 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
             evaluateAll(event, depth, dispatcher);
         }
         evaluateAllNegated(event, depth, dispatcher);
-        if (monitor.isCompleted(event, depth)) {
+        if (depth == 0 && event == closingEvent) {
             if (evaluationsAsTrue == 0) {
                 dispatchProblems(dispatcher, problemLists);
                 return Result.FALSE;

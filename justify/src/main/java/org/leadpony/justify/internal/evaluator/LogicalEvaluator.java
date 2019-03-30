@@ -21,22 +21,24 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Logical connective evaluator.
- * 
+ *
  * @author leadpony
  */
 public interface LogicalEvaluator extends Evaluator {
-    
+
     /**
      * Assigns the factory for producing problem builders.
-     * 
+     *
      * @param problemBuilderFactory the factory for producing problem builders, cannot be {@code null}.
      * @return this evaluator.
      */
-    LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory); 
+    default LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
+        return this;
+    }
 
     /**
      * Appends an evaluator.
-     * 
+     *
      * @param evaluator the evaluator to append, cannot be {@code null}.
      */
     default void append(Evaluator evaluator) {

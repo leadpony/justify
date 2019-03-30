@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
@@ -28,8 +27,8 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
 
-    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, InstanceType type, ProblemBuilderFactory problemBuilderFactory) {
-        super(context, type);
+    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, Event closingEvent, ProblemBuilderFactory problemBuilderFactory) {
+        super(context, closingEvent);
         withProblemBuilderFactory(problemBuilderFactory);
     }
 

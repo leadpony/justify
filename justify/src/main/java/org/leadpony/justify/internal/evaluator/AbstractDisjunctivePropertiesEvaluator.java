@@ -16,8 +16,9 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import javax.json.stream.JsonParser.Event;
+
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -29,7 +30,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 public abstract class AbstractDisjunctivePropertiesEvaluator extends AbstractDisjunctiveChildrenEvaluator {
 
     public AbstractDisjunctivePropertiesEvaluator(EvaluatorContext context, ProblemBuilderFactory problemBuilderFactory) {
-        super(context, InstanceType.OBJECT, problemBuilderFactory);
+        super(context, Event.END_OBJECT, problemBuilderFactory);
     }
 
     @Override

@@ -20,9 +20,7 @@ import java.util.Iterator;
 
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
@@ -30,18 +28,19 @@ import org.leadpony.justify.api.ProblemDispatcher;
  */
 class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
 
-    private final InstanceMonitor monitor;
+    private static final long serialVersionUID = 1L;
+
+    private final Event closingEvent;
     private Result finalResult = Result.TRUE;
 
-    ConjunctiveEvaluator(EvaluatorContext context, InstanceType type) {
-        super(context);
-        this.monitor = InstanceMonitor.of(type);
+    ConjunctiveEvaluator(Event closingEvent) {
+        this.closingEvent = closingEvent;
     }
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         invokeOperandEvaluators(event, depth, dispatcher);
-        if (monitor.isCompleted(event, depth)) {
+        if (depth == 0 && event == closingEvent) {
             return finalResult;
         }
         return Result.PENDING;

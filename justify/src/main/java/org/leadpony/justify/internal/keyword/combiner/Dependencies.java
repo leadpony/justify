@@ -63,7 +63,7 @@ public class Dependencies extends Combiner implements ObjectKeyword {
 
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(context, type).withProblemBuilderFactory(this);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependencyMap.values().stream()
             .map(d->d.createEvaluator(context))
             .forEach(evaluator::append);

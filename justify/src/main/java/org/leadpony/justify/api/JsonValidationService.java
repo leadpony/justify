@@ -184,6 +184,16 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonSchemaBuilderFactory createSchemaBuilderFactory();
 
     /**
+     * Creates a builder instance which can be used for building configured instance
+     * of {@code JsonParserFactory} or {@code JsonReaderFactory}.
+     *
+     * @param schema the JSON schema to apply while parsing or reading JSON documents.
+     * @return newly created instance of {@link JsonValidatorFactoryBuilder}.
+     * @throws NullPointerException if the specified {@code schema} is {@code null}.
+     */
+    JsonValidatorFactoryBuilder createValidatorFactoryBuilder(JsonSchema schema);
+
+    /**
      * Creates a parser factory for creating {@link JsonParser} instances. Parsers
      * created by the factory validate JSON documents while parsing.
      *

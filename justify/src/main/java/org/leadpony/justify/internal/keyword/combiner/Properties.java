@@ -111,7 +111,7 @@ public class Properties extends AbstractProperties<String> {
     }
 
     private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
-        if (defaultValues != null) {
+        if (context.acceptsDefaultValues() && defaultValues != null) {
             return new PropertiesDefaultEvaluator(evaluator, context, defaultValues);
         }
         return evaluator;

@@ -42,7 +42,7 @@ class AllOf extends NaryBooleanLogic {
 
     @Override
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(context, type);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         getSubschemas().distinct()
                 .map(s->s.createEvaluator(context, type))
                 .forEach(evaluator::append);

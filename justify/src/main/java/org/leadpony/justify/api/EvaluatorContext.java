@@ -64,6 +64,14 @@ public interface EvaluatorContext {
     JsonBuilderFactory getJsonBuilderFactory();
 
     /**
+     * Checks if the current validator accepts default values or not.
+     *
+     * @return {@code true} if the validator accepts default values, {@code false}
+     *         if it does not.
+     */
+    boolean acceptsDefaultValues();
+
+    /**
      * Inserts default values at the end of the object.
      *
      * @param properties the pairs each of which consists of key and default value.
