@@ -32,7 +32,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.14.0</version>
+  <version>0.15.0</version>
 </dependency>
 
 <dependency>
@@ -143,10 +143,9 @@ Displays all available options including those shown above.
 * [API Reference in Javadoc]
 * [Changelog]
 
-## Current Development Status
+## Conformance to Specification
 
-### Schema keywords implemented
-
+All assertion keywords described in [JSON Schema Specification] Draft-07, including `default`, are now supported.
 * type
 * enum
 * const
@@ -194,10 +193,43 @@ Displays all available options including those shown above.
   * regex (compliant with [ECMA 262])
 * contentEncoding, with built-in "base64" support.
 * contentMediaType, with built-in "application/json" support.
-
-### Schema keywords not implemented yet
-
 * default
+
+## Completion by `default` Keyword
+
+The missing properties and/or items in the instance can be filled with default values provided by `default` keyword while it is being validated.
+
+For example, the input JSON instance shown below
+```json
+{
+    "red": 64,
+    "green": 128,
+    "blue": 192
+}
+```
+
+will be filled with the default value and modified to:
+```json
+{
+    "red": 64,
+    "green": 128,
+    "blue": 192,
+    "alpha": 255
+}
+```
+
+Both `JsonParser` and `JsonReader` support the feature. `JsonParser` produces additional events caused by the default values and `JsonReader` expands objects and arrays with the additional values.
+
+By default, this feature is disabled and the instance never be modified. The following code shows how to explicitly enable the feature for the readers.
+
+```java
+JsonReaderFactory readerFactory = service.createValidatorFactoryBuilder(schema)
+        .withProblemHandler(handler)
+        .withDefaultValues(true) // Enables the default values.
+        .buildReaderFactory(); // or buildParserFactory() for parsers.
+```
+
+For more information, please see [the code sample](https://github.com/leadpony/justify-examples/tree/master/justify-examples-defaultvalue).
 
 ## Similar Solutions
 

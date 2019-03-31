@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.15.0 - 2019-03-31
+### Added
+- New `JsonValidatorFactoryBuilder` interface for building configured instances of `JsonParserFactory` or `JsonReaderFactory`.
+- Support of `default` keyword in the validations. The missing properties and/or items in the source instances are filled with the default values provided by the keyword. Both `JsonParser` and `JsonReader` support this feature. `JsonParser` produces additional events caused by the default values and `JsonReader` expands objects and arrays with the additional values. This feature is disabled by default and can be enabled explicitly by `withDefaultValues()` in `JsonValidatorFactoryBuilder`.
+
 ### Fixed
 - The bug which was causing `getArrayStream()`, `getObjectStream()`, and `getValueStream()` in `JsonParser` to throw wrongly `UnsupportedOperationException` in the case that they should throw `IllegalStateException`. (Issue #10)
 
