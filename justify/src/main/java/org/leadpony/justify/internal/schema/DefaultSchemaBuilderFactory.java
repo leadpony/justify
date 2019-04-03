@@ -16,13 +16,9 @@
 
 package org.leadpony.justify.internal.schema;
 
-import java.util.Map;
-
 import javax.json.JsonBuilderFactory;
 
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
-import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
@@ -32,21 +28,19 @@ import org.leadpony.justify.spi.FormatAttribute;
 public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     private final JsonBuilderFactory builderFactory;
-    private final Map<String, FormatAttribute> formatAttributeMap;
-    private final ContentAttributeRegistry contentRegistry;
+    private final SchemaSpec spec;
 
     /**
      * Constructs this factory.
      *
-     * @param builderFactory  the factory for producing builders of JSON values.
-     * @param formatAttributeMap  the map containing all available format attributes.
-     * @param contentRegistry the registry managing all content attributes.
+     * @param builderFactory the factory for producing builders of JSON values.
+     * @param spec           the schema specification.
      */
-    public DefaultSchemaBuilderFactory(JsonBuilderFactory builderFactory, Map<String, FormatAttribute> formatAttributeMap,
-            ContentAttributeRegistry contentRegistry) {
+    public DefaultSchemaBuilderFactory(
+            JsonBuilderFactory builderFactory,
+            SchemaSpec spec) {
         this.builderFactory = builderFactory;
-        this.formatAttributeMap = formatAttributeMap;
-        this.contentRegistry = contentRegistry;
+        this.spec = spec;
     }
 
     /**
@@ -58,6 +52,6 @@ public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
     }
 
     public Draft07SchemaBuilderImpl createBuilderForDraft07() {
-        return new Draft07SchemaBuilderImpl(builderFactory, formatAttributeMap, contentRegistry);
+        return new Draft07SchemaBuilderImpl(builderFactory, spec);
     }
 }

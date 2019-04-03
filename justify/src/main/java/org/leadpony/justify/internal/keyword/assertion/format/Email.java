@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
@@ -27,6 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @see <a href="https://tools.ietf.org/html/rfc5322">RFC 5322, section 3.4.1</a>
  */
+@Spec({SpecVersion.DRAFT_07})
 class Email extends AbstractFormatAttribute {
 
     @Override

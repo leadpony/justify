@@ -13,34 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.internal.annotation;
 
-package org.leadpony.justify.internal.keyword.assertion.format;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.leadpony.justify.api.Localizable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.base.Message;
 
+@Retention(RUNTIME)
+@Target(TYPE)
 /**
- * Format attribute representing "uri" attribute.
+ * Supported versions of the JSON Schema specification.
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
-class UriTemplate extends AbstractFormatAttribute {
+public @interface Spec {
 
-    @Override
-    public String name() {
-        return "uri-template";
-    }
-
-    @Override
-    public Localizable localizedName() {
-        return Message.FORMAT_URI_TEMPLATE;
-    }
-
-    @Override
-    public boolean test(String value) {
-        return new UriTemplateMatcher(value).matches();
-    }
+    /**
+     * Returns the supported specification versions.
+     *
+     * @return the supported specification versions.
+     */
+    SpecVersion[] value();
 }

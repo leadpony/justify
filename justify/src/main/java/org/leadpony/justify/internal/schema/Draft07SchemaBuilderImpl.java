@@ -45,7 +45,6 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.keyword.assertion.Assertions;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
@@ -57,7 +56,6 @@ import org.leadpony.justify.internal.keyword.combiner.Definitions;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
 import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
-import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link Draft07SchemaBuilder}.
@@ -67,8 +65,7 @@ import org.leadpony.justify.spi.FormatAttribute;
 class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilderResult {
 
     private final JsonBuilderFactory builderFactory;
-    private final Map<String, FormatAttribute> formatAttributeMap;
-    private final ContentAttributeRegistry contentRegistry;
+    private final SchemaSpec spec;
 
     private boolean empty;
     private URI id;
@@ -81,15 +78,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     /**
      * Constructs this builder.
      *
-     * @param builderFactory  the factory for producing builders of JSON values.
-     * @param formatAttributeMap  the map containing all avaiable format attributes.
-     * @param contentRegistry the registry managing all content attributes.
+     * @param builderFactory the factory for producing builders of JSON values.
+     * @param spec           the schema specification.
      */
-    public Draft07SchemaBuilderImpl(JsonBuilderFactory builderFactory, Map<String, FormatAttribute> formatAttributeMap,
-            ContentAttributeRegistry contentRegistry) {
+    public Draft07SchemaBuilderImpl(
+            JsonBuilderFactory builderFactory,
+            SchemaSpec spec) {
         this.builderFactory = builderFactory;
-        this.formatAttributeMap = formatAttributeMap;
-        this.contentRegistry = contentRegistry;
+        this.spec = spec;
         this.empty = true;
     }
 
@@ -536,8 +532,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     @Override
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
-        if (formatAttributeMap.containsKey(attribute)) {
-            Format format = new EvaluatableFormat(formatAttributeMap.get(attribute));
+        if (spec.supportsFormatAttribute(attribute)) {
+            Format format = new EvaluatableFormat(spec.getFormatAttribute(attribute));
             addKeyword(format);
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
@@ -549,8 +545,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withLaxFormat(String attribute) {
         requireNonNull(attribute, "attribute");
         Format format = null;
-        if (formatAttributeMap.containsKey(attribute)) {
-            format = new EvaluatableFormat(formatAttributeMap.get(attribute));
+        if (spec.supportsFormatAttribute(attribute)) {
+            format = new EvaluatableFormat(spec.getFormatAttribute(attribute));
         } else {
             format = new Format(attribute);
         }
@@ -561,8 +557,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     @Override
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
-        if (contentRegistry.containsEncodingScheme(value)) {
-            addKeyword(new ContentEncoding(contentRegistry.findEncodingScheme(value)));
+        if (spec.supportsEncodingScheme(value)) {
+            addKeyword(new ContentEncoding(spec.getEncodingScheme(value)));
         } else {
             addKeyword(new UnknownContentEncoding(value));
         }
@@ -574,8 +570,8 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(value, "value");
         MediaType mediaType = MediaType.valueOf(value);
         String mimeType = mediaType.mimeType();
-        if (contentRegistry.containsMimeType(mimeType)) {
-            addKeyword(new ContentMediaType(contentRegistry.findMimeType(mimeType), mediaType.parameters()));
+        if (spec.supportsMimeType(mimeType)) {
+            addKeyword(new ContentMediaType(spec.getMimeType(mimeType), mediaType.parameters()));
         } else {
             addKeyword(new UnknownContentMediaType(value));
         }

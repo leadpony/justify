@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
@@ -27,6 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc3986">
  * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
  */
+@Spec({SpecVersion.DRAFT_07})
 class UriReference extends AbstractFormatAttribute {
 
     private final boolean verbose;

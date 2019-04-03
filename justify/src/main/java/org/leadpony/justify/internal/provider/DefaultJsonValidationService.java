@@ -50,14 +50,14 @@ import org.leadpony.justify.api.JsonValidatorFactoryBuilder;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
+import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
-import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
 import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactoryBuilder;
@@ -73,10 +73,10 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private final JsonProvider jsonProvider;
     private final JsonBuilderFactory jsonBuilderFactory;
     private final JsonParserFactory parserFactory;
-    private final FormatAttributeRegistry defaultFormatAttributeRegistry;
-    private final ContentAttributeRegistry contentRegistry;
     private final JsonSchema metaschema;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
+
+    private final SchemaSpecRegistry specRegistry;
 
     private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
 
@@ -91,8 +91,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         this.jsonProvider = jsonProvider;
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.parserFactory = jsonProvider.createParserFactory(null);
-        this.defaultFormatAttributeRegistry = FormatAttributeRegistry.getDefault();
-        this.contentRegistry = createContentAttributeRegistry(jsonProvider);
+        this.specRegistry = new SchemaSpecRegistry(jsonProvider);
         this.metaschema = loadMetaschema(METASCHEMA_NAME);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().withSchemaResolver(this).build();
     }
@@ -110,7 +109,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
         return DefaultJsonSchemaReaderFactory
-                .builder(jsonProvider, defaultFormatAttributeRegistry, contentRegistry, metaschema)
+                .builder(jsonProvider, specRegistry, metaschema)
                 .withSchemaResolver(this);
     }
 
@@ -334,11 +333,6 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         }
     }
 
-    protected ContentAttributeRegistry createContentAttributeRegistry(JsonProvider jsonProvider) {
-        return new ContentAttributeRegistry(jsonProvider).registerProvidedEncodingSchemes().registerProvidedMimeTypes()
-                .registerDefault();
-    }
-
     /**
      * Loads metaschema from the resource on classpath.
      *
@@ -357,8 +351,9 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     }
 
     private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, defaultFormatAttributeRegistry.createMap(),
-                contentRegistry);
+        return new DefaultSchemaBuilderFactory(
+                jsonBuilderFactory,
+                specRegistry.getSpec(SpecVersion.DRAFT_07, false));
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {

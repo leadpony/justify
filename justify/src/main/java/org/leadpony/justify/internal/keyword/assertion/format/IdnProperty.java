@@ -23,17 +23,17 @@ import com.ibm.icu.text.Normalizer2;
 
 /**
  * IDN Property defined in <a href="https://tools.ietf.org/html/rfc5892">RFC 5892</a>.
- * 
+ *
  * @author leadpony
  */
-public enum IdnProperty {
+enum IdnProperty {
     /**
      * Code points with this property value are permitted for general use in IDNs.
      */
     PVALID,
     /**
      * One of subdivision of CONTEXTUAL RULE REQUIRED.
-     * Some characteristics of the character, such as it being invisible 
+     * Some characteristics of the character, such as it being invisible
      * in certain contexts or problematic in others, require that it not be used
      * in labels unless specific other characters or properties are present.
      * This subdivision is for Join_controls.
@@ -49,15 +49,15 @@ public enum IdnProperty {
      */
     DISALLOWED,
     /**
-     * Those code points that are not designated 
+     * Those code points that are not designated
      * (i.e., are unassigned) in the Unicode Standard.
      */
     UNASSIGNED
     ;
-    
+
     /**
      * Calculates the property of the specified character.
-     * 
+     *
      * @param codePoint the code point of the character.
      * @return the IDN property calculated.
      */
@@ -85,7 +85,7 @@ public enum IdnProperty {
             return DISALLOWED;
         }
     }
-    
+
     private static IdnProperty asExceptional(int codePoint) {
         switch (codePoint) {
         case 0x00DF:    // LATIN SMALL LETTER SHARP S
@@ -137,29 +137,29 @@ public enum IdnProperty {
             return null;
         }
     }
-    
+
     private static boolean isLetterDigit(int codePoint) {
         final int type = Character.getType(codePoint);
         return type == Character.LOWERCASE_LETTER ||        // General category "Ll"
                type == Character.UPPERCASE_LETTER ||        // General category "Lu"
-               type == Character.OTHER_LETTER ||            // General category "Lo" 
+               type == Character.OTHER_LETTER ||            // General category "Lo"
                type == Character.DECIMAL_DIGIT_NUMBER ||    // General category "Nd"
-               type == Character.MODIFIER_LETTER ||         // General category "Lm" 
+               type == Character.MODIFIER_LETTER ||         // General category "Lm"
                type == Character.NON_SPACING_MARK ||        // General category "Mn"
                type == Character.COMBINING_SPACING_MARK;    // General category "Mc"
     }
-    
+
     private static boolean isUnassigned(int codePoint) {
         return Character.getType(codePoint) == Character.UNASSIGNED &&
-               !isNoncharacter(codePoint); 
+               !isNoncharacter(codePoint);
     }
-    
+
     private static boolean isLDH(int codePoint) {
         return (codePoint == 0x002d) || // '-'
                (codePoint >= 0x0030 && codePoint <= 0x0039) || // '0' to '9'
-               (codePoint >= 0x0061 && codePoint <= 0x007a);   // 'a' to 'z' 
+               (codePoint >= 0x0061 && codePoint <= 0x007a);   // 'a' to 'z'
     }
-    
+
     private static boolean isJoinControl(int codePoint) {
         return codePoint == 0x200c || codePoint == 0x200d;
     }
@@ -172,16 +172,16 @@ public enum IdnProperty {
         String result = normalizer.normalize(folded);
         return !original.equals(result);
     }
-    
+
     private static boolean isIgnorableProperties(int codePoint) {
         return isDefaultIgnorable(codePoint) ||
                Character.isWhitespace(codePoint) ||
                isNoncharacter(codePoint);
     }
-    
+
     private static boolean isDefaultIgnorable(int codePoint) {
         return  codePoint == 0x00AD ||
-                codePoint == 0x034F ||  
+                codePoint == 0x034F ||
                (codePoint >= 0x115F &&  codePoint <= 0x1160) ||
                (codePoint >= 0x17B4 &&  codePoint <= 0x17B5) ||
                (codePoint >= 0x180B &&  codePoint <= 0x180D) ||
@@ -198,14 +198,14 @@ public enum IdnProperty {
                (codePoint >= 0x1D173 && codePoint <= 0x1D17A) ||
                (codePoint >= 0xe0000 && codePoint <= 0xe0fff);
     }
-    
+
     private static boolean isIgnorableBlocks(int codePoint) {
         UnicodeBlock block = UnicodeBlock.of(codePoint);
         return block == UnicodeBlock.COMBINING_MARKS_FOR_SYMBOLS  ||
                block == UnicodeBlock.MUSICAL_SYMBOLS ||
                block == UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION;
     }
-    
+
     private static boolean isOldHangulJamo(int codePoint) {
         // Hangul_Syllable_Type=Leading_Jamo
         if ((0x1100 <= codePoint && codePoint <= 0x115F) ||
@@ -224,11 +224,11 @@ public enum IdnProperty {
         }
         return false;
     }
-    
+
     /**
      * Checks if the specified character is a noncharacter or not.
      * There are 66 noncharacters defined in the Unicode specification.
-     * 
+     *
      * @param codePoint the code point of the character.
      * @return {@code true} if the specified character is a noncharacter.
      */

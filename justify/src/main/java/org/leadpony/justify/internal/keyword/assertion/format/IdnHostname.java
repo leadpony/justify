@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
@@ -27,7 +29,8 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc5890">RFC 5890</a>
  * @see <a href="https://tools.ietf.org/html/rfc5892">RFC 5892</a>
  */
-public class IdnHostname extends AbstractFormatAttribute {
+@Spec({SpecVersion.DRAFT_07})
+class IdnHostname extends AbstractFormatAttribute {
 
     @Override
     public String name() {

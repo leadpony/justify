@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
@@ -25,6 +27,7 @@ import org.leadpony.justify.internal.base.Message;
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
  */
+@Spec({SpecVersion.DRAFT_07})
 class Ipv4 extends AbstractFormatAttribute {
 
     @Override

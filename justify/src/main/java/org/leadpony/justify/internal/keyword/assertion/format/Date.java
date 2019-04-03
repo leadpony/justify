@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 import org.leadpony.justify.api.Localizable;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
@@ -27,6 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
+@Spec({SpecVersion.DRAFT_07})
 class Date extends AbstractFormatAttribute {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;

@@ -41,10 +41,10 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
+import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributeRegistry;
-import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributeRegistry;
 import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
@@ -58,23 +58,25 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     private final JsonParserFactory jsonParserFactory;
     private final JsonBuilderFactory jsonBuilderFactory;
 
-    private final FormatAttributeRegistry formatRegistry;
-    private final ContentAttributeRegistry contentRegistry;
+    private final SchemaSpecRegistry specRegistry;
     private final JsonSchema metaschema;
     private final SchemaReaderConfiguration configuration;
+    private final boolean usingCutsomFormats;
 
-    public static JsonSchemaReaderFactoryBuilder builder(JsonProvider jsonProvider,
-            FormatAttributeRegistry formatRegistry, ContentAttributeRegistry contentRegistry, JsonSchema metaschema) {
-        return new Builder(jsonProvider, formatRegistry, contentRegistry, metaschema);
+    public static JsonSchemaReaderFactoryBuilder builder(
+            JsonProvider jsonProvider,
+            SchemaSpecRegistry specRegistry,
+            JsonSchema metaschema) {
+        return new Builder(jsonProvider, specRegistry, metaschema);
     }
 
     private DefaultJsonSchemaReaderFactory(Builder builder) {
         this.jsonProvider = builder.jsonProvider;
         this.jsonParserFactory = jsonProvider.createParserFactory(null);
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
-        this.formatRegistry = builder.formatRegistry;
-        this.contentRegistry = builder.contentRegistry;
+        this.specRegistry = builder.specRegistry;
         this.metaschema = builder.metaschema;
+        this.usingCutsomFormats = builder.usingCutsomFormats;
         this.configuration = builder;
     }
 
@@ -83,7 +85,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         requireNonNull(in, "in");
         JsonParser realParser = jsonParserFactory.createParser(in);
         JsonValidator parser = createParser(realParser);
-        return createSchemaReaderWith(parser);
+        return createSchemaReader(parser);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         requireNonNull(charset, "charset");
         JsonParser realParser = jsonParserFactory.createParser(in, charset);
         JsonValidator parser = createParser(realParser);
-        return createSchemaReaderWith(parser);
+        return createSchemaReader(parser);
     }
 
     @Override
@@ -100,7 +102,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         requireNonNull(reader, "reader");
         JsonParser realParser = jsonParserFactory.createParser(reader);
         JsonValidator parser = createParser(realParser);
-        return createSchemaReaderWith(parser);
+        return createSchemaReader(parser);
     }
 
     @Override
@@ -120,12 +122,14 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new JsonValidator(realParser, metaschema, jsonProvider);
     }
 
-    private DefaultSchemaBuilderFactory createSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(jsonBuilderFactory, formatRegistry.createMap(), contentRegistry);
+    private DefaultSchemaBuilderFactory createSchemaBuilderFactory(SpecVersion version) {
+        return new DefaultSchemaBuilderFactory(
+                jsonBuilderFactory,
+                specRegistry.getSpec(version, usingCutsomFormats));
     }
 
-    private JsonSchemaReader createSchemaReaderWith(JsonValidator parser) {
-        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory();
+    private JsonSchemaReader createSchemaReader(JsonValidator parser) {
+        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.latest());
         return new Draft07SchemaReader(parser, schemaBuilder, configuration);
     }
 
@@ -139,20 +143,21 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     private static class Builder implements JsonSchemaReaderFactoryBuilder, SchemaReaderConfiguration {
 
         private final JsonProvider jsonProvider;
-        private FormatAttributeRegistry formatRegistry;
-        private final ContentAttributeRegistry contentRegistry;
+        private final SchemaSpecRegistry specRegistry;
         private final JsonSchema metaschema;
         private boolean alreadyBuilt = false;
 
         private boolean strictWithKeywords = false;
         private boolean strictWithFormats = false;
+        private boolean usingCutsomFormats = true;
         private List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
-        private Builder(JsonProvider jsonProvider, FormatAttributeRegistry formatRegistry,
-                ContentAttributeRegistry contentRegistry, JsonSchema metaschema) {
+        private Builder(
+                JsonProvider jsonProvider,
+                SchemaSpecRegistry specRegistry,
+                JsonSchema metaschema) {
             this.jsonProvider = jsonProvider;
-            this.formatRegistry = formatRegistry;
-            this.contentRegistry = contentRegistry;
+            this.specRegistry = specRegistry;
             this.metaschema = metaschema;
         }
 
@@ -190,7 +195,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         @Override
         public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active) {
             checkState();
-            formatRegistry = formatRegistry.withCustomFormatAttributes(active);
+            usingCutsomFormats = active;
             return this;
         }
 
