@@ -43,8 +43,6 @@ import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**

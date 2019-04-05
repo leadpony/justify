@@ -56,10 +56,10 @@ import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
+import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
+import org.leadpony.justify.internal.schema.io.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactoryBuilder;
 import org.leadpony.justify.internal.validator.JsonValidator;
 

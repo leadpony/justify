@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
+package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 

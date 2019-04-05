@@ -30,6 +30,9 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
+import org.leadpony.justify.internal.keyword.core.Comment;
+import org.leadpony.justify.internal.keyword.core.Id;
+import org.leadpony.justify.internal.keyword.core.Schema;
 
 /**
  * Skeletal implementation of {@link JsonSchema}.
@@ -39,20 +42,20 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
 abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     private URI id;
-    private final URI originalId;
-    private final URI schema;
-    private final String comment;
 
     private final Map<String, Keyword> keywordMap;
     private final JsonBuilderFactory builderFactory;
 
-    protected AbstractJsonSchema(JsonSchemaBuilderResult result) {
-        this.keywordMap = result.getKeywords();
-        this.builderFactory = result.getBuilderFactory();
+    protected AbstractJsonSchema(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+        this.keywordMap = keywords;
+        this.builderFactory = builderFactory;
         keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
-        this.id = this.originalId = result.getId();
-        this.schema = result.getSchema();
-        this.comment = result.getComment();
+        if (containsKeyword("$id")) {
+            Id keyword = getKeyword("$id");
+            this.id= keyword.value();
+        } else {
+            this.id = null;
+        }
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
         }
@@ -70,18 +73,28 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     @Override
     public URI schema() {
-        return schema;
+        if (containsKeyword("$schema")) {
+            Schema keyword = getKeyword("$schema");
+            return keyword.value();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String comment() {
-        return comment;
+        if (containsKeyword("$comment")) {
+            Comment keyword = getKeyword("$comment");
+            return keyword.value();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public JsonValue defaultValue() {
         if (containsKeyword("default")) {
-            Default keyword = (Default)getKeyword("default");
+            Default keyword = getKeyword("default");
             return keyword.value();
         } else {
             return null;
@@ -147,8 +160,9 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
         return hasId() && id().isAbsolute();
     }
 
-    protected Keyword getKeyword(String name) {
-        return keywordMap.get(name);
+    @SuppressWarnings("unchecked")
+    protected <T extends Keyword> T getKeyword(String name) {
+        return (T)keywordMap.get(name);
     }
 
     protected Map<String, Keyword> getKeywordsAsMap() {
@@ -170,15 +184,6 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
      * @param builder the builder for building JSON object, never be {@code null}.
      */
     protected void addToJson(JsonObjectBuilder builder) {
-        if (this.originalId != null) {
-            builder.add("$id", this.originalId.toString());
-        }
-        if (this.schema != null) {
-            builder.add("$schema", this.schema.toString());
-        }
-        if (this.comment != null) {
-            builder.add("$comment", this.comment);
-        }
         for (Keyword keyword : this.keywordMap.values()) {
             keyword.addToJson(builder, builderFactory);
         }

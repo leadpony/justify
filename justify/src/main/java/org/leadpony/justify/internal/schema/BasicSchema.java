@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonBuilderFactory;
+
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
@@ -42,24 +44,25 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    static JsonSchema newSchema(JsonSchemaBuilderResult result) {
-        List<Evaluatable> evaluatables = collectEvaluatables(result.getKeywords());
+    public static JsonSchema newSchema(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+        List<Evaluatable> evaluatables = collectEvaluatables(keywords);
         if (evaluatables.isEmpty()) {
-            return new None(result);
+            return new None(keywords, builderFactory);
         } else if (evaluatables.size() == 1) {
-            return new One(result, evaluatables.get(0));
+            return new One(keywords, builderFactory, evaluatables.get(0));
         } else {
-            return new Many(result, evaluatables);
+            return new Many(keywords, builderFactory, evaluatables);
         }
     }
 
     /**
      * Constructs this schema.
      *
-     * @param result the result of the schema builder.
+     * @param keywords all keywords.
+     * @param builderFactory the factory to create JSON builders.
      */
-    protected BasicSchema(JsonSchemaBuilderResult result) {
-        super(result);
+    protected BasicSchema(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+        super(keywords, builderFactory);
     }
 
     @Override
@@ -99,8 +102,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class None extends BasicSchema {
 
-        private None(JsonSchemaBuilderResult result) {
-            super(result);
+        private None(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+            super(keywords, builderFactory);
         }
 
         @Override
@@ -123,8 +126,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final Evaluatable evaluatable;
 
-        private One(JsonSchemaBuilderResult result, Evaluatable evaluatable) {
-            super(result);
+        private One(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory, Evaluatable evaluatable) {
+            super(keywords, builderFactory);
             this.evaluatable = evaluatable;
         }
 
@@ -148,8 +151,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final List<Evaluatable> evaluatables;
 
-        private Many(JsonSchemaBuilderResult result, List<Evaluatable> evaluatables) {
-            super(result);
+        private Many(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory, List<Evaluatable> evaluatables) {
+            super(keywords, builderFactory);
             this.evaluatables = evaluatables;
         }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema;
+package org.leadpony.justify.internal.schema.io;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonEmpty;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNegative;
@@ -56,22 +56,21 @@ import org.leadpony.justify.internal.keyword.combiner.Definitions;
 import org.leadpony.justify.internal.keyword.combiner.Dependencies;
 import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
+import org.leadpony.justify.internal.keyword.core.Comment;
+import org.leadpony.justify.internal.keyword.core.Id;
+import org.leadpony.justify.internal.keyword.core.Schema;
+import org.leadpony.justify.internal.schema.BasicSchema;
+import org.leadpony.justify.internal.schema.SchemaReference;
 
 /**
  * The default implementation of {@link Draft07SchemaBuilder}.
  *
  * @author leadpony
  */
-class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilderResult {
+class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
 
     private final JsonBuilderFactory builderFactory;
     private final SchemaSpec spec;
-
-    private boolean empty;
-    private URI id;
-    private URI schema;
-    private String comment;
-
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI ref;
 
@@ -86,68 +85,40 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
             SchemaSpec spec) {
         this.builderFactory = builderFactory;
         this.spec = spec;
-        this.empty = true;
-    }
-
-    /* JsonSchemaBuilderResult interface */
-
-    @Override
-    public URI getId() {
-        return id;
-    }
-
-    @Override
-    public URI getSchema() {
-        return schema;
-    }
-
-    @Override
-    public String getComment() {
-        return comment;
-    }
-
-    @Override
-    public Map<String, Keyword> getKeywords() {
-        return keywords;
-    }
-
-    @Override
-    public JsonBuilderFactory getBuilderFactory() {
-        return builderFactory;
     }
 
     /* Draft07SchemaBuilder interface */
 
     @Override
     public JsonSchema build() {
-        if (empty) {
+        if (ref != null) {
+            return new SchemaReference(keywords, builderFactory, ref);
+        } else if (keywords.isEmpty()) {
             return JsonSchema.EMPTY;
-        } else if (ref != null) {
-            return new SchemaReference(this, ref);
         } else {
-            return BasicSchema.newSchema(this);
+            return BasicSchema.newSchema(keywords, builderFactory);
         }
     }
 
     @Override
     public JsonSchemaBuilder withId(URI id) {
         requireNonNull(id, "id");
-        this.id = id;
-        return nonemptyBuilder();
+        addKeyword(new Id(id));
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withSchema(URI schema) {
         requireNonNull(schema, "schema");
-        this.schema = schema;
-        return nonemptyBuilder();
+        addKeyword(new Schema(schema));
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withComment(String comment) {
         requireNonNull(comment, "comment");
-        this.comment = comment;
-        return nonemptyBuilder();
+        addKeyword(new Comment(comment));
+        return this;
     }
 
     @Override
@@ -163,7 +134,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(types, "types");
         requireNonEmpty(types, "types");
         addKeyword(Assertions.type(types));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -179,14 +150,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(values, "values");
         requireNonEmpty(values, "values");
         addKeyword(Assertions.enum_(values));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withConst(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.const_(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -206,49 +177,49 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(value, "value");
         requirePositive(value, "value");
         addKeyword(Assertions.multipleOf(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.maximum(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMaximum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.exclusiveMaximum(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinimum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.minimum(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMinimum(BigDecimal value) {
         requireNonNull(value, "value");
         addKeyword(Assertions.exclusiveMinimum(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxLength(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxLength(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinLength(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minLength(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -256,7 +227,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(pattern, "pattern");
         Pattern compiled = Pattern.compile(pattern);
         addKeyword(Assertions.pattern(compiled));
-        return nonemptyBuilder();
+        return this;
     }
 
     /* Validation Keywords for Arrays */
@@ -265,7 +236,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.items(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -279,55 +250,55 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.items(subschemas));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.additionalItems(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxItems(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxItems(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinItems(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minItems(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withUniqueItems(boolean unique) {
         addKeyword(Assertions.uniqueItems(unique));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.contains(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxContains(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxContains(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinContains(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minContains(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     /* Validation Keywords for Objects */
@@ -336,14 +307,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withMaxProperties(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.maxProperties(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinProperties(int value) {
         requireNonNegative(value, "value");
         addKeyword(Assertions.minProperties(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -357,7 +328,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withRequired(Set<String> names) {
         requireNonNull(names, "names");
         addKeyword(Assertions.required(names));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -366,7 +337,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschema, "subschema");
         Properties properties = requireKeyword("properties", Combiners::properties);
         properties.addProperty(name, subschema);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -374,7 +345,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschemas, "subschemas");
         Properties properties = requireKeyword("properties", Combiners::properties);
         subschemas.forEach(properties::addProperty);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -384,7 +355,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         Pattern compiled = Pattern.compile(pattern);
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
         properties.addProperty(compiled, subschema);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -396,14 +367,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         });
         PatternProperties properties = requireKeyword("patternProperties", Combiners::patternProperties);
         compiledMap.forEach(properties::addProperty);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.additionalProperties(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -412,7 +383,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschema, "subschema");
         Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
         keyword.addDependency(name, subschema);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -428,7 +399,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(requiredProperties, "requiredProperties");
         Dependencies keyword = requireKeyword("dependencies", Combiners::dependencies);
         keyword.addDependency(name, requiredProperties);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -444,14 +415,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
                 dependencies.addDependency(property, requiredProperties);
             }
         });
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.propertyNames(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     /* Keywords for Applying Subschemas Conditionally */
@@ -460,21 +431,21 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.if_(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.then_(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.else_(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -489,7 +460,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.allOf(subschemas));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -504,7 +475,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.anyOf(subschemas));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -519,14 +490,14 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
         addKeyword(Combiners.oneOf(subschemas));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.not(subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -538,7 +509,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
         }
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -551,7 +522,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
             format = new Format(attribute);
         }
         addKeyword(format);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -562,7 +533,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         } else {
             addKeyword(new UnknownContentEncoding(value));
         }
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -575,7 +546,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         } else {
             addKeyword(new UnknownContentMediaType(value));
         }
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -584,7 +555,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(schema, "schema");
         Definitions definitions = requireKeyword("definitions", Combiners::definitions);
         definitions.addDefinition(name, schema);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -592,35 +563,35 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(schemas, "schemas");
         Definitions definitions = requireKeyword("definitions", Combiners::definitions);
         schemas.forEach(definitions::addDefinition);
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withTitle(String title) {
         requireNonNull(title, "title");
         addKeyword(new Title(title));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withDescription(String description) {
         requireNonNull(description, "description");
         addKeyword(new Description(description));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withDefault(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(new Default(value));
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
     public JsonSchemaBuilder withRef(URI ref) {
         requireNonNull(ref, "ref");
         this.ref = ref;
-        return nonemptyBuilder();
+        return this;
     }
 
     @Override
@@ -628,7 +599,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
         requireNonNull(name, "name");
         requireNonNull(subschema, "subschema");
         addKeyword(Combiners.unknown(name, subschema));
-        return nonemptyBuilder();
+        return this;
     }
 
     private void addKeyword(Keyword keyword) {
@@ -645,15 +616,5 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder, JsonSchemaBuilde
             keywords.put(name, keyword);
         }
         return keyword;
-    }
-
-    /**
-     * Marks this builder as non-empty.
-     *
-     * @return this builder.
-     */
-    private JsonSchemaBuilder nonemptyBuilder() {
-        this.empty = false;
-        return this;
     }
 }

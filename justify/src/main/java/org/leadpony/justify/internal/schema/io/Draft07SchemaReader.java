@@ -51,10 +51,8 @@ import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
-import org.leadpony.justify.internal.schema.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.validator.JsonValidator;
-import org.leadpony.justify.internal.schema.Draft07SchemaBuilder;
 import org.leadpony.justify.internal.schema.Resolvable;
 
 /**
