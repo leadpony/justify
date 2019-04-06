@@ -25,6 +25,7 @@ import javax.json.JsonObjectBuilder;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * An assertion representing "format" keyword.
@@ -35,7 +36,15 @@ public class Format extends AbstractAssertion {
 
     private final String attribute;
 
-    public Format(String attribute) {
+    public static Format of(String attribute) {
+        return new Format(attribute);
+    }
+
+    public static Format of(FormatAttribute attribute) {
+        return new EvaluatableFormat(attribute);
+    }
+
+    protected Format(String attribute) {
         this.attribute = attribute;
     }
 

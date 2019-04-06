@@ -32,7 +32,8 @@ import org.leadpony.justify.internal.keyword.Keyword;
  */
 public class PatternProperties extends AbstractProperties<Pattern> {
 
-    PatternProperties() {
+    public PatternProperties(Map<Pattern, JsonSchema> properties) {
+        super(properties);
     }
 
     @Override

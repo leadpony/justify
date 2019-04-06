@@ -28,11 +28,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-class Pattern extends AbstractStringAssertion {
+public class Pattern extends AbstractStringAssertion {
 
     private final java.util.regex.Pattern pattern;
 
-    Pattern(java.util.regex.Pattern pattern) {
+    public Pattern(java.util.regex.Pattern pattern) {
         this.pattern = pattern;
     }
 

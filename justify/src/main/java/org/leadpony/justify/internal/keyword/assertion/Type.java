@@ -36,7 +36,19 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-abstract class Type extends AbstractAssertion {
+public abstract class Type extends AbstractAssertion {
+
+    public static Type of(InstanceType type) {
+        return new Single(type);
+    }
+
+    public static Type of(Set<InstanceType> types) {
+        if (types.size() == 1) {
+            return new Single(types.iterator().next());
+        } else {
+            return new Multiple(types);
+        }
+    }
 
     @Override
     public String name() {

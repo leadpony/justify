@@ -49,7 +49,11 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     private JsonSchema defaultSchema;
 
     protected AbstractProperties() {
-        this.propertyMap = new LinkedHashMap<>();
+        this(new LinkedHashMap<>());
+    }
+
+    protected AbstractProperties(Map<K, JsonSchema> properties) {
+        this.propertyMap = properties;
         this.defaultSchema = JsonSchema.TRUE;
     }
 

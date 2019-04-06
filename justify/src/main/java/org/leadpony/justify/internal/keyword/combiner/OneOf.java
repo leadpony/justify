@@ -29,9 +29,9 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  *
  * @author leadpony
  */
-class OneOf extends NaryBooleanLogic {
+public class OneOf extends NaryBooleanLogic {
 
-    OneOf(Collection<JsonSchema> subschemas) {
+    public OneOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
 

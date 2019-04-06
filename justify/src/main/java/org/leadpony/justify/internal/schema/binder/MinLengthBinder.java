@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.internal.schema.binder;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.leadpony.justify.api.JsonSchemaResolver;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.assertion.MinLength;
 
 /**
- * A SchemaReaderConfiguration interface.
+ * A binder type for "minLength" keyword.
  *
  * @author leadpony
  */
-interface SchemaReaderConfiguration {
+@Spec({SpecVersion.DRAFT_07})
+class MinLengthBinder extends AbstractNonNegativeBinder {
 
-    public static final SchemaReaderConfiguration DEFAULT = new SchemaReaderConfiguration() {};
-
-    default boolean isStrictWithKeywords() {
-        return false;
+    @Override
+    public String name() {
+        return "minLength";
     }
 
-    default boolean isStrictWithFormats() {
-        return false;
-    }
-
-    default List<JsonSchemaResolver> getResolvers() {
-        return Collections.emptyList();
+    @Override
+    public Keyword createKeyword(int value) {
+        return new MinLength(value);
     }
 }

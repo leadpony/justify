@@ -44,7 +44,14 @@ public class Properties extends AbstractProperties<String> {
     private PatternProperties patternProperties;
     private Map<String, JsonValue> defaultValues;
 
-    Properties() {
+    public Properties(Map<String, JsonSchema> subschemas) {
+        super(subschemas);
+        for (Map.Entry<String, JsonSchema> entry : subschemas.entrySet()) {
+            JsonSchema subschema = entry.getValue();
+            if (subschema.containsKeyword("default")) {
+                addDefaultValue(entry.getKey(), subschema.defaultValue());
+            }
+        }
     }
 
     @Override
@@ -67,14 +74,6 @@ public class Properties extends AbstractProperties<String> {
             return propertyMap.get(jsonPointer.next());
         } else {
             return null;
-        }
-    }
-
-    @Override
-    public void addProperty(String key, JsonSchema subschema) {
-        super.addProperty(key, subschema);
-        if (subschema.containsKeyword("default")) {
-            addDefaultValue(key, subschema.defaultValue());
         }
     }
 

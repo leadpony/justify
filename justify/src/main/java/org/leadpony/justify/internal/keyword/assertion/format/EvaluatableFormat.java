@@ -39,11 +39,11 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public class EvaluatableFormat extends Format {
+class EvaluatableFormat extends Format {
 
     private final FormatAttribute attribute;
 
-    public EvaluatableFormat(FormatAttribute attribute) {
+    EvaluatableFormat(FormatAttribute attribute) {
         super(attribute.name());
         this.attribute = attribute;
     }

@@ -36,11 +36,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-class MaxItems extends AbstractAssertion implements ArrayKeyword {
+public class MaxItems extends AbstractAssertion implements ArrayKeyword {
 
     private final int limit;
 
-    MaxItems(int limit) {
+    public MaxItems(int limit) {
         this.limit = limit;
     }
 

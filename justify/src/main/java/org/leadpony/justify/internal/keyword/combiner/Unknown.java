@@ -33,12 +33,12 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class Unknown extends Combiner {
+public class Unknown extends Combiner {
 
     private final String name;
     private final JsonSchema subschema;
 
-    Unknown(String name, JsonSchema subschema) {
+    public Unknown(String name, JsonSchema subschema) {
         this.name = name;
         this.subschema = subschema;
     }

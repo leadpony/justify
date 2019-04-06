@@ -15,35 +15,21 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
 
 /**
  * A keyword type representing "$comment" keyword.
  *
  * @author leadpony
  */
-public class Comment extends AbstractKeyword {
-
-    private final String value;
+public class Comment extends AbstractMetadataKeyword<String> {
 
     public Comment(String value) {
-        this.value = value;
-    }
-
-    public String value() {
-        return value;
+        super(value);
     }
 
     @Override
     public String name() {
         return "$comment";
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value);
     }
 }

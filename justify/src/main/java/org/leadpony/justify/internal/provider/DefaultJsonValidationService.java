@@ -53,10 +53,12 @@ import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
-import org.leadpony.justify.internal.schema.io.Draft07SchemaReader;
+import org.leadpony.justify.internal.schema.io.GenericSchemaReader;
+import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
 import org.leadpony.justify.internal.schema.io.DefaultSchemaBuilderFactory;
@@ -344,8 +346,9 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     private JsonSchema loadMetaschema(String name) {
         InputStream in = getClass().getResourceAsStream(name);
         JsonParser realParser = jsonProvider.createParser(in);
-        DefaultPointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(jsonProvider, realParser);
-        try (JsonSchemaReader reader = new Draft07SchemaReader(parser, createDefaultSchemaBuilderFactory())) {
+        PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(jsonProvider, realParser);
+        SchemaSpec spec = specRegistry.getSpec(SpecVersion.latest(), false);
+        try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonBuilderFactory, spec)) {
             return reader.read();
         }
     }
@@ -366,8 +369,8 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
     /**
      * Creates an instance of JSON validator.
      *
-     * @param parser the real parser.
-     * @param schema the schema.
+     * @param parser  the real parser.
+     * @param schema  the schema.
      * @param handler the handler of found problems.
      * @return newly created validator.
      */

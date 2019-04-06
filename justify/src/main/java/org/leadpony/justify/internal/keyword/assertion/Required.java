@@ -38,11 +38,11 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  *
  * @author leadpony
  */
-class Required extends AbstractAssertion implements ObjectKeyword {
+public class Required extends AbstractAssertion implements ObjectKeyword {
 
     private final Set<String> names;
 
-    Required(Set<String> names) {
+    public Required(Set<String> names) {
         this.names = new LinkedHashSet<>(names);
     }
 

@@ -26,9 +26,9 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-class Not extends UnaryCombiner {
+public class Not extends UnaryCombiner {
 
-    Not(JsonSchema subschema) {
+    public Not(JsonSchema subschema) {
         super(subschema);
     }
 

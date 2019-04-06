@@ -27,7 +27,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public abstract class AbstractFormatAttribute implements FormatAttribute {
+abstract class AbstractFormatAttribute implements FormatAttribute {
 
     /**
      * {@inheritDoc}

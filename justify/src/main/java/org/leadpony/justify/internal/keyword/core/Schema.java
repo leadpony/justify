@@ -17,35 +17,21 @@ package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
 
 /**
  * A keyword type representing "$schema" keyword.
  *
  * @author leadpony
  */
-public class Schema extends AbstractKeyword {
-
-    private final URI value;
+public class Schema extends AbstractMetadataKeyword<URI> {
 
     public Schema(URI value) {
-        this.value = value;
-    }
-
-    public URI value() {
-        return value;
+        super(value);
     }
 
     @Override
     public String name() {
         return "$schema";
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value.toString());
     }
 }

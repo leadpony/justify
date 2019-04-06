@@ -35,11 +35,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-class MinProperties extends AbstractAssertion implements ObjectKeyword {
+public class MinProperties extends AbstractAssertion implements ObjectKeyword {
 
     private final int limit;
 
-    MinProperties(int limit) {
+    public MinProperties(int limit) {
         this.limit = limit;
     }
 

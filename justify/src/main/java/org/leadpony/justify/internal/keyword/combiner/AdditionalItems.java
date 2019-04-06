@@ -28,9 +28,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class AdditionalItems extends UnaryCombiner {
+public class AdditionalItems extends UnaryCombiner {
 
-    AdditionalItems(JsonSchema subschema) {
+    public AdditionalItems(JsonSchema subschema) {
         super(subschema);
     }
 

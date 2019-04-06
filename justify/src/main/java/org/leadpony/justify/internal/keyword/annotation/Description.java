@@ -16,34 +16,19 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-
 /**
- * "description" annotation keyword.
- * 
+ * An annotation keyword representing "title".
+ *
  * @author leadpony
  */
 public class Description extends Annotation<String> {
-    
-    private final String value;
-    
+
     public Description(String value) {
-        this.value = value;
+        super(value);
     }
 
     @Override
     public String name() {
         return "description";
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value());
-    }
-    
-    @Override
-    public String value() {
-        return value;
     }
 }

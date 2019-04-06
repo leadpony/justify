@@ -30,11 +30,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-class Const extends AbstractEqualityAssertion {
+public class Const extends AbstractEqualityAssertion {
 
     private final JsonValue expected;
 
-    Const(JsonValue expected) {
+    public Const(JsonValue expected) {
         this.expected = expected;
     }
 

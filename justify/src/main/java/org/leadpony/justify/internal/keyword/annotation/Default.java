@@ -21,16 +21,14 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
 /**
- * "description" annotation keyword.
- * 
+ * An annotation keyword representing "default".
+ *
  * @author leadpony
  */
 public class Default extends Annotation<JsonValue> {
-    
-    private final JsonValue value;
-    
+
     public Default(JsonValue value) {
-        this.value = value;
+        super(value);
     }
 
     @Override
@@ -41,10 +39,5 @@ public class Default extends Annotation<JsonValue> {
     @Override
     public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
         builder.add(name(), value());
-    }
-    
-    @Override
-    public JsonValue value() {
-        return value;
     }
 }

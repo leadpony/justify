@@ -39,9 +39,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class AdditionalProperties extends UnaryCombiner {
+public class AdditionalProperties extends UnaryCombiner {
 
-    AdditionalProperties(JsonSchema subschema) {
+    public AdditionalProperties(JsonSchema subschema) {
         super(subschema);
     }
 

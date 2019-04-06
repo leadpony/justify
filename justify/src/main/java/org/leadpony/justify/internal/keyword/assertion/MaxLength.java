@@ -23,9 +23,9 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-class MaxLength extends AbstractStringLengthAssertion {
+public class MaxLength extends AbstractStringLengthAssertion {
 
-    MaxLength(int limit) {
+    public MaxLength(int limit) {
         super(limit, "maxLength", Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
     }
 

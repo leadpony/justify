@@ -28,9 +28,9 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-class Then extends Conditional {
+public class Then extends Conditional {
 
-    Then(JsonSchema schema) {
+    public Then(JsonSchema schema) {
         super(schema);
     }
 

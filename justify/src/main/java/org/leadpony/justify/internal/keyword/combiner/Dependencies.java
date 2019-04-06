@@ -51,9 +51,19 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  */
 public class Dependencies extends Combiner implements ObjectKeyword {
 
-    private final Map<String, Dependency> dependencyMap = new HashMap<>();
+    private final Map<String, Dependency> dependencyMap;
 
-    Dependencies() {
+    public Dependencies(Map<String, Object> map) {
+        dependencyMap = new HashMap<>();
+        map.forEach((property, value) -> {
+            if (value instanceof JsonSchema) {
+                addDependency(property, (JsonSchema) value);
+            } else if (value instanceof Set) {
+                @SuppressWarnings("unchecked")
+                Set<String> requiredProperties = (Set<String>) value;
+                addDependency(property, requiredProperties);
+            }
+        });
     }
 
     @Override

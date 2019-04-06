@@ -28,6 +28,8 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
+import org.leadpony.justify.internal.schema.binder.KeywordBinder;
+import org.leadpony.justify.internal.schema.binder.KeywordBinders;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -63,7 +65,7 @@ public class SchemaSpecRegistry {
     private Map<SpecVersion, SimpleSpec> createVanillaSpecs() {
         Map<SpecVersion, SimpleSpec> specs = new EnumMap<>(SpecVersion.class);
         for (SpecVersion version : SpecVersion.values()) {
-            SimpleSpec spec = new SimpleSpec();
+            SimpleSpec spec = new SimpleSpec(KeywordBinders.getBinders(version));
             spec.addFormatAttributes(formatAttriutes.get(version));
             specs.put(version, spec);
         }
@@ -110,14 +112,17 @@ public class SchemaSpecRegistry {
 
     private class SimpleSpec implements SchemaSpec {
 
+        private final Map<String, KeywordBinder> keywordBinders;
         private final Map<String, FormatAttribute> formatAttributes;
 
-        SimpleSpec() {
-            formatAttributes = new HashMap<>();
+        SimpleSpec(Map<String, KeywordBinder> keywordBinders) {
+            this.keywordBinders = keywordBinders;
+            this.formatAttributes = new HashMap<>();
         }
 
         SimpleSpec(SimpleSpec other) {
-            formatAttributes = new HashMap<>(other.formatAttributes);
+            this.keywordBinders = other.keywordBinders;
+            this.formatAttributes = new HashMap<>(other.formatAttributes);
         }
 
         void addFormatAttribute(FormatAttribute attribute) {
@@ -128,6 +133,11 @@ public class SchemaSpecRegistry {
             for (FormatAttribute attribute : attributes) {
                 addFormatAttribute(attribute);
             }
+        }
+
+        @Override
+        public Map<String, KeywordBinder> getKeywordBinders() {
+            return keywordBinders;
         }
 
         @Override

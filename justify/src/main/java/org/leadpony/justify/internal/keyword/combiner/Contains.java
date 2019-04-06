@@ -33,11 +33,11 @@ import org.leadpony.justify.internal.keyword.ArrayKeyword;
  *
  * @author leadpony
  */
-class Contains extends UnaryCombiner implements ArrayKeyword {
+public class Contains extends UnaryCombiner implements ArrayKeyword {
 
     private int min;
 
-    Contains(JsonSchema subschema) {
+    public Contains(JsonSchema subschema) {
         super(subschema);
         this.min = 1;
     }

@@ -38,9 +38,9 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-class PropertyNames extends UnaryCombiner {
+public class PropertyNames extends UnaryCombiner {
 
-    PropertyNames(JsonSchema subschema) {
+    public PropertyNames(JsonSchema subschema) {
         super(subschema);
     }
 

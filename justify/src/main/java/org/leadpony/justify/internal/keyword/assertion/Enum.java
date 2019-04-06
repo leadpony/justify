@@ -32,11 +32,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-class Enum extends AbstractEqualityAssertion {
+public class Enum extends AbstractEqualityAssertion {
 
     private final Set<JsonValue> expected;
 
-    Enum(Set<JsonValue> expected) {
+    public Enum(Set<JsonValue> expected) {
         this.expected = expected;
     }
 

@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
@@ -34,6 +33,7 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
@@ -43,34 +43,33 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public class SchemaReference extends AbstractJsonSchema {
 
-    private final URI ref;
     private URI targetId;
     private JsonSchema referencedSchema;
 
     /**
      * Constructs this schema reference.
      *
-     * @param keywords all keywords but "$ref" keyword.
+     * @param keywords       all keywords.
      * @param builderFactory the factory to create JSON builders.
-     * @param ref the value of the "$ref" keyword.
      */
-    public SchemaReference(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory, URI ref) {
+    public SchemaReference(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
         super(keywords, builderFactory);
-        this.ref = ref;
         this.referencedSchema = new NonexistentSchema();
-        if (hasId() && id().isAbsolute()) {
-            this.targetId = id().resolve(ref);
+        if (hasAbsoluteId()) {
+            this.targetId = id().resolve(ref());
         } else {
-            this.targetId = ref;
+            this.targetId = ref();
         }
     }
 
     /**
      * Returns the original value of the keyword "$ref".
+     *
      * @return the value of the keyword "$ref".
      */
     public URI ref() {
-        return ref;
+        Ref ref = getKeyword("$ref");
+        return ref.value();
     }
 
     /**
@@ -115,12 +114,6 @@ public class SchemaReference extends AbstractJsonSchema {
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         return referencedSchema.createNegatedEvaluator(context, type);
-    }
-
-    @Override
-    protected void addToJson(JsonObjectBuilder builder) {
-        builder.add("$ref", this.ref.toString());
-        super.addToJson(builder);
     }
 
     /* Resolvable interface */

@@ -23,9 +23,9 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-class MinLength extends AbstractStringLengthAssertion {
+public class MinLength extends AbstractStringLengthAssertion {
 
-    MinLength(int limit) {
+    public MinLength(int limit) {
         super(limit, "minLength", Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
     }
 

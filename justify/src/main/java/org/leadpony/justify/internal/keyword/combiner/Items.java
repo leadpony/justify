@@ -47,7 +47,15 @@ import org.leadpony.justify.internal.keyword.Keyword;
  *
  * @author leadpony
  */
-abstract class Items extends Combiner implements ArrayKeyword {
+public abstract class Items extends Combiner implements ArrayKeyword {
+
+    public static Items of(JsonSchema subschema) {
+        return new BroadcastItems(subschema);
+    }
+
+    public static Items of(List<JsonSchema> subschemas) {
+        return new DiscreteItems(subschemas);
+    }
 
     @Override
     public String name() {

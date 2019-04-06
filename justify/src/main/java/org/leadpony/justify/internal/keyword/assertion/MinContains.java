@@ -35,7 +35,7 @@ public class MinContains extends AbstractKeyword {
 
     private final int limit;
 
-    MinContains(int limit) {
+    public MinContains(int limit) {
         this.limit = limit;
     }
 

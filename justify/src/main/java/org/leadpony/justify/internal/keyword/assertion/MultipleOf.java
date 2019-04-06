@@ -30,11 +30,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-class MultipleOf extends AbstractNumericAssertion {
+public class MultipleOf extends AbstractNumericAssertion {
 
-    protected final BigDecimal factor;
+    private final BigDecimal factor;
 
-    MultipleOf(BigDecimal factor) {
+    public MultipleOf(BigDecimal factor) {
         this.factor = factor;
     }
 

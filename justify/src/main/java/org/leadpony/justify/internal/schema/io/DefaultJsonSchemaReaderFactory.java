@@ -58,8 +58,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private final SchemaSpecRegistry specRegistry;
     private final JsonSchema metaschema;
-    private final SchemaReaderConfiguration configuration;
-    private final boolean usingCutsomFormats;
+    private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
             JsonProvider jsonProvider,
@@ -74,8 +73,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.specRegistry = builder.specRegistry;
         this.metaschema = builder.metaschema;
-        this.usingCutsomFormats = builder.usingCutsomFormats;
-        this.configuration = builder;
+        this.config = builder.getAsMap();
     }
 
     @Override
@@ -110,7 +108,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             InputStream in = Files.newInputStream(path);
             return createSchemaReader(in);
         } catch (NoSuchFileException e) {
-            throw buildJsonException(e, Message.SCHEMA_PROBLEM_NOT_FOUND, path);
+            throw newJsonException(e, Message.SCHEMA_PROBLEM_NOT_FOUND, path);
         } catch (IOException e) {
             throw new JsonException(e.getMessage(), e);
         }
@@ -123,31 +121,45 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory(SpecVersion version) {
         return new DefaultSchemaBuilderFactory(
                 jsonBuilderFactory,
-                specRegistry.getSpec(version, usingCutsomFormats));
+                specRegistry.getSpec(version, usesCustomFormats()));
     }
 
     private JsonSchemaReader createSchemaReader(JsonValidator parser) {
-        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.latest());
-        return new Draft07SchemaReader(parser, schemaBuilder, configuration);
+        return createGenericSchemReader(parser);
     }
 
-    private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {
+    @SuppressWarnings("unused")
+    private JsonSchemaReader createBuildingSchemReader(JsonValidator parser) {
+        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.latest());
+        return new Draft07SchemaReader(parser, schemaBuilder, config);
+    }
+
+    private JsonSchemaReader createGenericSchemReader(JsonValidator parser) {
+        SchemaSpec spec = specRegistry.getSpec(SpecVersion.latest(), usesCustomFormats());
+        return new GenericSchemaReader(
+                parser, jsonBuilderFactory, spec, config);
+    }
+
+    private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("path", path);
         String formatted = message.format(arguments);
         return new JsonException(formatted, e);
     }
 
-    private static class Builder implements JsonSchemaReaderFactoryBuilder, SchemaReaderConfiguration {
+    private boolean usesCustomFormats() {
+        return config.get(JsonSchemaReader.CUSTOM_FORMATS) == Boolean.TRUE;
+    }
+
+    @SuppressWarnings("serial")
+    private static class Builder extends HashMap<String, Object>
+        implements JsonSchemaReaderFactoryBuilder {
 
         private final JsonProvider jsonProvider;
         private final SchemaSpecRegistry specRegistry;
         private final JsonSchema metaschema;
         private boolean alreadyBuilt = false;
 
-        private boolean strictWithKeywords = false;
-        private boolean strictWithFormats = false;
-        private boolean usingCutsomFormats = true;
         private List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
         private Builder(
@@ -157,9 +169,15 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             this.jsonProvider = jsonProvider;
             this.specRegistry = specRegistry;
             this.metaschema = metaschema;
+            put(JsonSchemaReader.CUSTOM_FORMATS, true);
+            put(JsonSchemaReader.RESOLVERS, resolvers);
         }
 
-        /* JsonSchemaReaderFactoryBuilder */
+        Map<String, Object> getAsMap() {
+            return Collections.unmodifiableMap(this);
+        }
+
+        /* As a JsonSchemaReaderFactoryBuilder */
 
         @Override
         public JsonSchemaReaderFactory build() {
@@ -171,14 +189,14 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         @Override
         public JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict) {
             checkState();
-            strictWithKeywords = strict;
+            put(JsonSchemaReader.STRICT_KEYWORDS, strict);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
             checkState();
-            strictWithFormats = strict;
+            put(JsonSchemaReader.STRICT_FORMATS, strict);
             return this;
         }
 
@@ -193,25 +211,8 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         @Override
         public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active) {
             checkState();
-            usingCutsomFormats = active;
+            put(JsonSchemaReader.CUSTOM_FORMATS, active);
             return this;
-        }
-
-        /* SchemaReaderConfiguration */
-
-        @Override
-        public boolean isStrictWithKeywords() {
-            return strictWithKeywords;
-        }
-
-        @Override
-        public boolean isStrictWithFormats() {
-            return strictWithFormats;
-        }
-
-        @Override
-        public List<JsonSchemaResolver> getResolvers() {
-            return Collections.unmodifiableList(resolvers);
         }
 
         private void checkState() {

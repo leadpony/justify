@@ -36,11 +36,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-class MinItems extends AbstractAssertion implements ArrayKeyword {
+public class MinItems extends AbstractAssertion implements ArrayKeyword {
 
     private final int limit;
 
-    MinItems(int limit) {
+    public MinItems(int limit) {
         this.limit = limit;
     }
 

@@ -25,9 +25,9 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-class Maximum extends AbstractNumericBoundAssertion {
+public class Maximum extends AbstractNumericBoundAssertion {
 
-    Maximum(BigDecimal limit) {
+    public Maximum(BigDecimal limit) {
         super(limit, "maximum", Message.INSTANCE_PROBLEM_MAXIMUM, Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM);
     }
 

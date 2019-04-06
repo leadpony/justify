@@ -39,11 +39,11 @@ import org.leadpony.justify.internal.keyword.ArrayKeyword;
  *
  * @author leadpony
  */
-class UniqueItems extends AbstractAssertion implements ArrayKeyword {
+public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
 
     private final boolean unique;
 
-    UniqueItems(boolean unique) {
+    public UniqueItems(boolean unique) {
         this.unique = unique;
     }
 

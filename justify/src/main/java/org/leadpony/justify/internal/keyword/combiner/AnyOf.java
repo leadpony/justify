@@ -29,9 +29,9 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  *
  * @author leadpony
  */
-class AnyOf extends NaryBooleanLogic {
+public class AnyOf extends NaryBooleanLogic {
 
-    AnyOf(Collection<JsonSchema> subschemas) {
+    public AnyOf(Collection<JsonSchema> subschemas) {
         super(subschemas);
     }
 

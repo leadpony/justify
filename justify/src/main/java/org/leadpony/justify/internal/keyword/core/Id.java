@@ -17,35 +17,21 @@ package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
 
 /**
  * A keyword type representing "$id" keyword.
  *
  * @author leadpony
  */
-public class Id extends AbstractKeyword {
-
-    private final URI value;
+public class Id extends AbstractMetadataKeyword<URI> {
 
     public Id(URI value) {
-        this.value = value;
-    }
-
-    public URI value() {
-        return value;
+        super(value);
     }
 
     @Override
     public String name() {
         return "$id";
-    }
-
-    @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value.toString());
     }
 }
