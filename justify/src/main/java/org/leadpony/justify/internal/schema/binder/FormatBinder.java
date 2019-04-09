@@ -28,7 +28,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class FormatBinder extends AbstractBinder {
 
     @Override

@@ -27,9 +27,10 @@ import org.leadpony.justify.internal.base.Message;
  * @author leadpony
  *
  * @see <a href="https://tools.ietf.org/html/rfc3986">
- * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
+ *      "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC
+ *      3986</a>
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class UriReference extends AbstractFormatAttribute {
 
     private final boolean verbose;
@@ -54,8 +55,7 @@ class UriReference extends AbstractFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        UriReferenceMatcher m = verbose ?
-                new VerboseUriReferenceMatcher(value) : new UriReferenceMatcher(value);
+        UriReferenceMatcher m = verbose ? new VerboseUriReferenceMatcher(value) : new UriReferenceMatcher(value);
         return m.matches();
     }
 }

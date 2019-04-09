@@ -96,4 +96,15 @@ public interface JsonSchemaReaderFactoryBuilder {
      * @return this builder.
      */
     JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active);
+
+    /**
+     * Specifies the version of the JSON Schema specification. By default the latest
+     * version is assigned.
+     *
+     * @param version the version of the JSON Schema specification.
+     * @return this buidler.
+     * @throws NullPointerException if the specified {@code version} is
+     *                              {@code null}.
+     */
+    JsonSchemaReaderFactoryBuilder withSpecVersion(SpecVersion version);
 }

@@ -17,6 +17,8 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.util.Map;
 
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.schema.binder.KeywordBinder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -26,6 +28,10 @@ import org.leadpony.justify.spi.FormatAttribute;
  * @author leadpony
  */
 public interface SchemaSpec {
+
+    SpecVersion getVersion();
+
+    JsonSchema getMetaschema();
 
     Map<String, KeywordBinder> getKeywordBinders();
 

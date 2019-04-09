@@ -25,10 +25,11 @@ import org.leadpony.justify.internal.base.Message;
  * Format attribute representing "regex" attribute.
  *
  * @author leadpony
- * @see <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
+ * @see <a href=
+ *      "http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
  *      ECMA 262 specification</a>
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class Regex extends AbstractFormatAttribute {
 
     @Override

@@ -25,7 +25,7 @@ import org.leadpony.justify.internal.keyword.assertion.MinProperties;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class MinPropertiesBinder extends AbstractNonNegativeBinder {
 
     @Override

@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.combiner.If;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class IfBinder extends AbstractSchemaBinder {
 
     @Override

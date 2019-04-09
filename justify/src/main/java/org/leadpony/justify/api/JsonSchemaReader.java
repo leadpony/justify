@@ -71,6 +71,11 @@ public interface JsonSchemaReader extends Closeable {
     String RESOLVERS = "org.leadpony.justify.schema.resolvers";
 
     /**
+     * The property used to specify the version of the JSON Schema specification.
+     */
+    String SPEC_VERSION = "org.leadpony.justify.schema.spec-version";
+
+    /**
      * Returns a JSON schema that is represented in the input source. This method
      * needs to be called only once for a reader instance.
      *

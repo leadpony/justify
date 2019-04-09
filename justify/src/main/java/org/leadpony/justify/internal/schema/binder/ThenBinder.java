@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.combiner.Then;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class ThenBinder extends AbstractSchemaBinder {
 
     @Override

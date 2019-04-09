@@ -36,7 +36,6 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
@@ -57,14 +56,13 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     private final JsonBuilderFactory jsonBuilderFactory;
 
     private final SchemaSpecRegistry specRegistry;
-    private final JsonSchema metaschema;
+    private final SpecVersion specVersion;
     private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
             JsonProvider jsonProvider,
-            SchemaSpecRegistry specRegistry,
-            JsonSchema metaschema) {
-        return new Builder(jsonProvider, specRegistry, metaschema);
+            SchemaSpecRegistry specRegistry) {
+        return new Builder(jsonProvider, specRegistry);
     }
 
     private DefaultJsonSchemaReaderFactory(Builder builder) {
@@ -72,16 +70,17 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         this.jsonParserFactory = jsonProvider.createParserFactory(null);
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.specRegistry = builder.specRegistry;
-        this.metaschema = builder.metaschema;
         this.config = builder.getAsMap();
+        this.specVersion = (SpecVersion)this.config.get(JsonSchemaReader.SPEC_VERSION);
     }
 
     @Override
     public JsonSchemaReader createSchemaReader(InputStream in) {
         requireNonNull(in, "in");
         JsonParser realParser = jsonParserFactory.createParser(in);
-        JsonValidator parser = createParser(realParser);
-        return createSchemaReader(parser);
+        SchemaSpec spec = getSpec();
+        JsonValidator parser = createParser(realParser, spec);
+        return createSchemaReader(parser, spec);
     }
 
     @Override
@@ -89,16 +88,18 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         requireNonNull(in, "in");
         requireNonNull(charset, "charset");
         JsonParser realParser = jsonParserFactory.createParser(in, charset);
-        JsonValidator parser = createParser(realParser);
-        return createSchemaReader(parser);
+        SchemaSpec spec = getSpec();
+        JsonValidator parser = createParser(realParser, spec);
+        return createSchemaReader(parser, spec);
     }
 
     @Override
     public JsonSchemaReader createSchemaReader(Reader reader) {
         requireNonNull(reader, "reader");
         JsonParser realParser = jsonParserFactory.createParser(reader);
-        JsonValidator parser = createParser(realParser);
-        return createSchemaReader(parser);
+        SchemaSpec spec = getSpec();
+        JsonValidator parser = createParser(realParser, spec);
+        return createSchemaReader(parser, spec);
     }
 
     @Override
@@ -114,8 +115,12 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
-    private JsonValidator createParser(JsonParser realParser) {
-        return new JsonValidator(realParser, metaschema, jsonProvider);
+    private SchemaSpec getSpec() {
+        return specRegistry.getSpec(this.specVersion, usesCustomFormats());
+    }
+
+    private JsonValidator createParser(JsonParser realParser, SchemaSpec spec) {
+        return new JsonValidator(realParser, spec.getMetaschema(), jsonProvider);
     }
 
     private DefaultSchemaBuilderFactory createSchemaBuilderFactory(SpecVersion version) {
@@ -124,8 +129,8 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
                 specRegistry.getSpec(version, usesCustomFormats()));
     }
 
-    private JsonSchemaReader createSchemaReader(JsonValidator parser) {
-        return createGenericSchemReader(parser);
+    private JsonSchemaReader createSchemaReader(JsonValidator parser, SchemaSpec spec) {
+        return createGenericSchemReader(parser, spec);
     }
 
     @SuppressWarnings("unused")
@@ -134,10 +139,8 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new Draft07SchemaReader(parser, schemaBuilder, config);
     }
 
-    private JsonSchemaReader createGenericSchemReader(JsonValidator parser) {
-        SchemaSpec spec = specRegistry.getSpec(SpecVersion.latest(), usesCustomFormats());
-        return new GenericSchemaReader(
-                parser, jsonBuilderFactory, spec, config);
+    private JsonSchemaReader createGenericSchemReader(JsonValidator parser, SchemaSpec spec) {
+        return new GenericSchemaReader(parser, jsonBuilderFactory, spec, config);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
@@ -157,20 +160,17 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
         private final JsonProvider jsonProvider;
         private final SchemaSpecRegistry specRegistry;
-        private final JsonSchema metaschema;
         private boolean alreadyBuilt = false;
 
         private List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
-        private Builder(
-                JsonProvider jsonProvider,
-                SchemaSpecRegistry specRegistry,
-                JsonSchema metaschema) {
+        private Builder(JsonProvider jsonProvider, SchemaSpecRegistry specRegistry) {
             this.jsonProvider = jsonProvider;
             this.specRegistry = specRegistry;
-            this.metaschema = metaschema;
             put(JsonSchemaReader.CUSTOM_FORMATS, true);
             put(JsonSchemaReader.RESOLVERS, resolvers);
+            put(JsonSchemaReader.SPEC_VERSION, SpecVersion.latest());
+            withSchemaResolver(specRegistry.getMetaschemaCatalog());
         }
 
         Map<String, Object> getAsMap() {
@@ -212,6 +212,14 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active) {
             checkState();
             put(JsonSchemaReader.CUSTOM_FORMATS, active);
+            return this;
+        }
+
+        @Override
+        public JsonSchemaReaderFactoryBuilder withSpecVersion(SpecVersion version) {
+            checkState();
+            requireNonNull(version, "version");
+            put(JsonSchemaReader.SPEC_VERSION, version);
             return this;
         }
 

@@ -24,6 +24,10 @@ import java.net.URI;
  */
 public enum SpecVersion {
     /**
+     * Draft-06.
+     */
+    DRAFT_06("http://json-schema.org/draft-06/schema#"),
+    /**
      * Draft-07.
      */
     DRAFT_07("http://json-schema.org/draft-07/schema#")

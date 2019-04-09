@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.base.Message;
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc2673">RFC 2673</a>
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class Ipv4 extends AbstractFormatAttribute {
 
     @Override

@@ -25,7 +25,7 @@ import org.leadpony.justify.internal.keyword.core.Comment;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class CommentBinder extends AbstractStringBinder {
 
     @Override

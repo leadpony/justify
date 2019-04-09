@@ -15,10 +15,11 @@
  */
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
@@ -26,10 +27,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  */
 public class FormatAttributes {
 
-    private static final List<FormatAttribute> attributes;
-
-    static {
-        attributes = Collections.unmodifiableList(Arrays.asList(
+    private static final FormatAttribute[] attributeList = {
             new Date(),
             new DateTime(),
             new Email(),
@@ -47,11 +45,30 @@ public class FormatAttributes {
             new Uri(),
             new UriReference(),
             new UriTemplate()
-        ));
+    };
+
+    private static final Map<SpecVersion, Map<String, FormatAttribute>> attributesBySpec = groupAttributesBySpec();
+
+    public static Map<String, FormatAttribute> getAttributes(SpecVersion version) {
+        return attributesBySpec.get(version);
     }
 
-    public static List<FormatAttribute> all() {
-        return attributes;
+    private static Map<SpecVersion, Map<String, FormatAttribute>> groupAttributesBySpec() {
+        Map<SpecVersion, Map<String, FormatAttribute>> map = new HashMap<>();
+
+        for (SpecVersion version : SpecVersion.values()) {
+            map.put(version, new HashMap<>());
+        }
+
+        for (FormatAttribute attribute : attributeList) {
+            Spec spec = attribute.getClass().getAnnotation(Spec.class);
+            if (spec != null) {
+                for (SpecVersion version : spec.value()) {
+                    map.get(version).put(attribute.name(), attribute);
+                }
+            }
+        }
+        return map;
     }
 
     private FormatAttributes() {

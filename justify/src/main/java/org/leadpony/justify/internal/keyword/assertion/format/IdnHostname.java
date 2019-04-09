@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc5890">RFC 5890</a>
  * @see <a href="https://tools.ietf.org/html/rfc5892">RFC 5892</a>
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class IdnHostname extends AbstractFormatAttribute {
 
     @Override

@@ -29,13 +29,11 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_07 })
 class Time extends AbstractFormatAttribute {
 
-    private static final Pattern LOCAL_TIME_PATTERN =
-            Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");
-    private static final Pattern TIME_OFFSET_PATTERN =
-            Pattern.compile("(\\d{2})\\:(\\d{2})");
+    private static final Pattern LOCAL_TIME_PATTERN = Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");
+    private static final Pattern TIME_OFFSET_PATTERN = Pattern.compile("(\\d{2})\\:(\\d{2})");
 
     private static final int MAX_HOURS = 23;
     private static final int MAX_MINUTES = 59;

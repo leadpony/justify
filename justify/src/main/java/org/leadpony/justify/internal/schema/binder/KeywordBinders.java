@@ -90,7 +90,7 @@ public class KeywordBinders {
         Map<SpecVersion, Map<String, KeywordBinder>> map = new HashMap<>();
 
         for (SpecVersion v : SpecVersion.values()) {
-            map.put(v, new HashMap<String, KeywordBinder>());
+            map.put(v, new HashMap<>());
         }
 
         for (KeywordBinder b : binderList) {

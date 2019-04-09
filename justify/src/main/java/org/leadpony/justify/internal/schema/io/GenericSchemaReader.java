@@ -149,10 +149,6 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
         if (schema.hasId()) {
             addIdentifiedSchema(schema);
         }
-        if (schema instanceof SchemaReference) {
-            SchemaReference reference = (SchemaReference) schema;
-            addSchemaReference(reference, builder.getRefLocation(), builder.getRefPointer());
-        }
         return schema;
     }
 
@@ -180,7 +176,7 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
     }
 
     @SuppressWarnings("serial")
-    private static class SimpleSchemaBuilder extends LinkedHashMap<String, Keyword> {
+    private class SimpleSchemaBuilder extends LinkedHashMap<String, Keyword> {
 
         // The location of "$ref".
         private JsonLocation refLocation;
@@ -191,7 +187,9 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
             if (isEmpty()) {
                 return JsonSchema.EMPTY;
             } else if (containsKey("$ref")) {
-                return new SchemaReference(this, builderFactory);
+                SchemaReference reference = new SchemaReference(this, builderFactory);
+                addSchemaReference(reference, refLocation, refPointer);
+                return reference;
             } else {
                 return BasicSchema.newSchema(this, builderFactory);
             }
@@ -200,14 +198,6 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
         void setRefLocation(JsonLocation location, String pointer) {
             this.refLocation = location;
             this.refPointer = pointer;
-        }
-
-        JsonLocation getRefLocation() {
-            return refLocation;
-        }
-
-        String getRefPointer() {
-            return refPointer;
         }
     }
 }

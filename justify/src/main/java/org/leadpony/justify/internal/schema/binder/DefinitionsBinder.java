@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.keyword.combiner.Definitions;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class DefinitionsBinder extends AbstractSchemaMapBinder {
 
     @Override

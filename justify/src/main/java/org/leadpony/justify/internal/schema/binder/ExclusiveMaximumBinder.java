@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.keyword.assertion.ExclusiveMaximum;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class ExclusiveMaximumBinder extends AbstractNumberBinder {
 
     @Override

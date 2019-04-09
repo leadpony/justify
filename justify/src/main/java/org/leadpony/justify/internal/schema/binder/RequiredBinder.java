@@ -30,7 +30,7 @@ import org.leadpony.justify.internal.keyword.assertion.Required;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class RequiredBinder extends AbstractBinder {
 
     @Override

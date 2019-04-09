@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.combiner.PropertyNames;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_07})
+@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
 class PropertyNamesBinder extends AbstractSchemaBinder {
 
     @Override

@@ -21,7 +21,6 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -44,7 +43,6 @@ import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
-import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.JsonValidatorFactoryBuilder;
 import org.leadpony.justify.api.ProblemHandler;
@@ -53,12 +51,8 @@ import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
-import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
-import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
-import org.leadpony.justify.internal.schema.io.GenericSchemaReader;
-import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
 import org.leadpony.justify.internal.schema.io.DefaultSchemaBuilderFactory;
@@ -66,21 +60,17 @@ import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactoryBuilde
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
- * Default implementation of {@link JsonValidationService}.
+ * The default implementation of {@link JsonValidationService}.
  *
  * @author leadpony
  */
-class DefaultJsonValidationService implements JsonValidationService, JsonSchemaResolver {
+class DefaultJsonValidationService implements JsonValidationService {
 
     private final JsonProvider jsonProvider;
     private final JsonBuilderFactory jsonBuilderFactory;
     private final JsonParserFactory parserFactory;
-    private final JsonSchema metaschema;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
-
     private final SchemaSpecRegistry specRegistry;
-
-    private static final String METASCHEMA_NAME = "metaschema-draft-07.json";
 
     /**
      * Constructs this object.
@@ -93,10 +83,11 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         this.jsonProvider = jsonProvider;
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.parserFactory = jsonProvider.createParserFactory(null);
-        this.specRegistry = new SchemaSpecRegistry(jsonProvider);
-        this.metaschema = loadMetaschema(METASCHEMA_NAME);
-        this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().withSchemaResolver(this).build();
+        this.specRegistry = DefaultSchemaSpecRegistry.load(jsonProvider, jsonBuilderFactory);
+        this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
     }
+
+    /* As a JsonValidationService */
 
     /**
      * {@inheritDoc}
@@ -110,9 +101,7 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return DefaultJsonSchemaReaderFactory
-                .builder(jsonProvider, specRegistry, metaschema)
-                .withSchemaResolver(this);
+        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, specRegistry);
     }
 
     /**
@@ -323,40 +312,10 @@ class DefaultJsonValidationService implements JsonValidationService, JsonSchemaR
         return new DefaultProblemPrinterBuilder(lineConsumer);
     }
 
-    /* JsonSchemaResolver interface */
-
-    @Override
-    public JsonSchema resolveSchema(URI id) {
-        requireNonNull(id, "id");
-        if (id.equals(metaschema.id())) {
-            return metaschema;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Loads metaschema from the resource on classpath.
-     *
-     * @param name the name of the resource.
-     * @return the loaded schema.
-     * @throws JsonException if an error is encountered while reading the
-     *                       metaschema.
-     */
-    private JsonSchema loadMetaschema(String name) {
-        InputStream in = getClass().getResourceAsStream(name);
-        JsonParser realParser = jsonProvider.createParser(in);
-        PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(jsonProvider, realParser);
-        SchemaSpec spec = specRegistry.getSpec(SpecVersion.latest(), false);
-        try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonBuilderFactory, spec)) {
-            return reader.read();
-        }
-    }
-
     private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
         return new DefaultSchemaBuilderFactory(
                 jsonBuilderFactory,
-                specRegistry.getSpec(SpecVersion.DRAFT_07, false));
+                specRegistry.getSpec(SpecVersion.DRAFT_07, true));
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {
