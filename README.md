@@ -239,7 +239,7 @@ There exist several JSON validator implementations conformant to the JSON Schema
 Copyright &copy; 2018-2019 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [JSON Schema Specification]: https://json-schema.org/
-[Java API for JSON Processing (JSR 374)]: https://javaee.github.io/jsonp/
+[Java API for JSON Processing (JSR 374)]: https://eclipse-ee4j.github.io/jsonp/
 [Java API for JSON Binding (JSR 367)]: http://json-b.net/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
