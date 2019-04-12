@@ -52,7 +52,7 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        if (evaluationsAsTrue == 0) {
+        if (evaluationsAsTrue <= 1) {
             evaluateAll(event, depth, dispatcher);
         }
         evaluateAllNegated(event, depth, dispatcher);

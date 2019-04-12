@@ -109,7 +109,7 @@ class SchemaFixture extends Fixture {
     }
 
     private static JsonArray readJsonArray(String name) {
-        InputStream in = ValidationFixture.class.getResourceAsStream(name);
+        InputStream in = SchemaFixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray();
         }

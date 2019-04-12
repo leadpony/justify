@@ -13,46 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.spi;
+package org.leadpony.justify.api;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.condition.EnabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.AbstractOfficialTest;
-import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 
 /**
- * A test for custom formats.
- *
  * @author leadpony
  */
-@EnabledOnJre(JRE.JAVA_8)
 @Spec(SpecVersion.DRAFT_07)
-class CustomFormatAttributeTest extends AbstractOfficialTest {
+public class Draft07UnofficialTest extends AbstractOfficialTest {
 
-    private static final String[] files = {
-            "/org/leadpony/justify/spi/customFormat.json",
+    private static final String[] mandatory = {
+            "/org/leadpony/justify/api/instance/additionalProperties.json",
+            "/org/leadpony/justify/api/instance/if-then-else.json",
     };
 
-    static Stream<Fixture> fixtures() {
-        return generateFixtures(files);
+    public static Stream<Fixture> mandatory() {
+        return generateFixtures(mandatory);
     }
 
     @ParameterizedTest
-    @MethodSource("fixtures")
-    @Override
-    public void test(Fixture fixture) {
-        super.test(fixture);
-    }
-
-    @ParameterizedTest
-    @MethodSource("fixtures")
-    @Override
-    public void testNegated(Fixture fixture) {
-        super.testNegated(fixture);
+    @MethodSource("mandatory")
+    public void testMandatory(Fixture fixture) {
+        test(fixture);
     }
 }

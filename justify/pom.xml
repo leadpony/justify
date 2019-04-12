@@ -25,7 +25,7 @@
         <jsonb.impl.groupId>org.eclipse</jsonb.impl.groupId>
         <jsonb.impl.artifactId>yasson</jsonb.impl.artifactId>
         <jsonb.impl.version>1.0.2</jsonb.impl.version>
-        <junit.jupiter.version>5.4.0</junit.jupiter.version>
+        <junit.jupiter.version>5.4.1</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
     </properties>
 
