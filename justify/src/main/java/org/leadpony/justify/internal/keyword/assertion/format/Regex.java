@@ -22,14 +22,20 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 
 /**
- * Format attribute representing "regex" attribute.
+ * A format attribute representing "regex" attribute.
+ *
+ * <p>
+ * Note that the specification Draft-04 and Draft-06 actually does not support
+ * this format attribute, but the official test suite includes tests for this
+ * attribute as optional tests.
+ * </p>
  *
  * @author leadpony
  * @see <a href=
  *      "http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
  *      ECMA 262 specification</a>
  */
-@Spec({ SpecVersion.DRAFT_07 })
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class Regex extends AbstractFormatAttribute {
 
     @Override

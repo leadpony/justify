@@ -17,7 +17,6 @@ package org.leadpony.justify.api;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -68,9 +67,9 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
     private static final String[] optional = {
             "optional/bignum.json",
             // Draft-04 does not have the "regex" format.
-            //"optional/ecmascript-regex.json",
+            "optional/ecmascript-regex.json",
             "optional/format.json",
-            "optional/zeroTerminatedFloats.json",
+            //"optional/zeroTerminatedFloats.json",
     };
 
     public static Stream<Fixture> optional() {
@@ -83,7 +82,6 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
         test(fixture);
     }
 
-    @Disabled
     @ParameterizedTest
     @MethodSource("optional")
     public void testOptional(Fixture fixture) {
