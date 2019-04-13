@@ -135,7 +135,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     @SuppressWarnings("unused")
     private JsonSchemaReader createBuildingSchemReader(JsonValidator parser) {
-        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.latest());
+        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.current());
         return new Draft07SchemaReader(parser, schemaBuilder, config);
     }
 
@@ -169,7 +169,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             this.specRegistry = specRegistry;
             put(JsonSchemaReader.CUSTOM_FORMATS, true);
             put(JsonSchemaReader.RESOLVERS, resolvers);
-            put(JsonSchemaReader.SPEC_VERSION, SpecVersion.latest());
+            put(JsonSchemaReader.SPEC_VERSION, SpecVersion.current());
             withSchemaResolver(specRegistry.getMetaschemaCatalog());
         }
 

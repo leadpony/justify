@@ -28,11 +28,21 @@ import org.leadpony.justify.internal.base.Message;
 public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
 
     public ExclusiveMaximum(BigDecimal limit) {
-        super(limit, "exclusiveMaximum", Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM, Message.INSTANCE_PROBLEM_MINIMUM);
+        super(limit, "exclusiveMaximum");
     }
 
     @Override
     protected boolean testValue(BigDecimal actual, BigDecimal limit) {
         return actual.compareTo(limit) < 0;
+    }
+
+    @Override
+    protected Message getMessageForTest() {
+        return Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM;
+    }
+
+    @Override
+    protected Message getMessageForNegatedTest() {
+        return Message.INSTANCE_PROBLEM_MINIMUM;
     }
 }

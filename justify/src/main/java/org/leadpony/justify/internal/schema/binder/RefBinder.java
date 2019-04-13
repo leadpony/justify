@@ -16,13 +16,10 @@
 package org.leadpony.justify.internal.schema.binder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.core.Ref;
 
 /**
@@ -30,8 +27,8 @@ import org.leadpony.justify.internal.keyword.core.Ref;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
-class RefBinder extends AbstractBinder {
+@Spec({SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
+class RefBinder extends AbstractUriBinder {
 
     @Override
     public String name() {
@@ -39,17 +36,12 @@ class RefBinder extends AbstractBinder {
     }
 
     @Override
-    public void fromJson(JsonParser parser, BinderContext context) {
-        Event event = parser.next();
-        if (event == Event.VALUE_STRING) {
-            try {
-                URI uri = new URI(parser.getString());
-                context.addRefKeyword(new Ref(uri));
-            } catch (URISyntaxException e) {
-                // Ignores the exception
-            }
-        } else {
-            skipValue(event, parser);
-        }
+    protected Keyword createKeyword(URI value) {
+        return new Ref(value);
+    }
+
+    @Override
+    protected void addKeyword(Keyword keyword, BinderContext context) {
+        context.addRefKeyword((Ref)keyword);
     }
 }

@@ -24,11 +24,15 @@ import java.net.URI;
  */
 public enum SpecVersion {
     /**
-     * Draft-06.
+     * JSON Schema Draft-04.
+     */
+    DRAFT_04("http://json-schema.org/draft-04/schema#"),
+    /**
+     * JSON Schema Draft-06.
      */
     DRAFT_06("http://json-schema.org/draft-06/schema#"),
     /**
-     * Draft-07.
+     * JSON Schema Draft-07.
      */
     DRAFT_07("http://json-schema.org/draft-07/schema#")
     ;
@@ -49,11 +53,11 @@ public enum SpecVersion {
     }
 
     /**
-     * Returns the lastest version.
+     * Returns the current stable version.
      *
-     * @return the lastest version.
+     * @return the current stable version.
      */
-    public static SpecVersion latest() {
+    public static SpecVersion current() {
         return DRAFT_07;
     }
 }

@@ -28,11 +28,21 @@ import org.leadpony.justify.internal.base.Message;
 public class Minimum extends AbstractNumericBoundAssertion {
 
     public Minimum(BigDecimal limit) {
-        super(limit, "minimum", Message.INSTANCE_PROBLEM_MINIMUM, Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM);
+        super(limit, "minimum");
     }
 
     @Override
     protected boolean testValue(BigDecimal actual, BigDecimal limit) {
         return actual.compareTo(limit) >= 0;
+    }
+
+    @Override
+    protected Message getMessageForTest() {
+        return Message.INSTANCE_PROBLEM_MINIMUM;
+    }
+
+    @Override
+    protected Message getMessageForNegatedTest() {
+        return Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM;
     }
 }

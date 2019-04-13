@@ -101,6 +101,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
     private final JsonBuilderFactory builderFactory;
     private final SchemaSpec spec;
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
+    private URI id;
 
     private final Map<String, KeywordBuilder> builders = new HashMap<>();
 
@@ -125,9 +126,9 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
         if (keywords.isEmpty()) {
             return JsonSchema.EMPTY;
         } else if (keywords.containsKey("$ref")) {
-            return new SchemaReference(keywords, builderFactory);
+            return new SchemaReference(id, keywords, builderFactory);
         } else {
-            return BasicSchema.newSchema(keywords, builderFactory);
+            return BasicSchema.newSchema(id, keywords, builderFactory);
         }
     }
 
@@ -135,6 +136,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
     public JsonSchemaBuilder withId(URI id) {
         requireNonNull(id, "id");
         addKeyword(new Id(id));
+        this.id = id;
         return this;
     }
 

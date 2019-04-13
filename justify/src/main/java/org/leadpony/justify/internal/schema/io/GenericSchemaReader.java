@@ -15,6 +15,7 @@
  */
 package org.leadpony.justify.internal.schema.io;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.combiner.Unknown;
+import org.leadpony.justify.internal.keyword.core.Id;
+import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.binder.KeywordBinder;
 import org.leadpony.justify.internal.schema.BasicSchema;
@@ -119,9 +122,13 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
     }
 
     @Override
-    public void addRefKeyword(Keyword keyword) {
-        addKeyword(keyword);
-        this.builder.setRefLocation(parser.getLocation(), parser.getPointer());
+    public void addIdKeyword(Id keyword) {
+        this.builder.put(keyword.name(), keyword);
+    }
+
+    @Override
+    public void addRefKeyword(Ref keyword) {
+        this.builder.put(keyword.name(), keyword);
     }
 
     @Override
@@ -178,26 +185,33 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
     @SuppressWarnings("serial")
     private class SimpleSchemaBuilder extends LinkedHashMap<String, Keyword> {
 
+        private URI id;
         // The location of "$ref".
         private JsonLocation refLocation;
         // The pointer of "$ref".
         private String refPointer;
 
+        public void put(String key, Id keyword) {
+            super.put(key, keyword);
+            this.id = keyword.value();
+        }
+
+        public void put(String key, Ref keyword) {
+            super.put(key, keyword);
+            refLocation = parser.getLocation();
+            refPointer = parser.getPointer();
+        }
+
         JsonSchema build(JsonBuilderFactory builderFactory) {
             if (isEmpty()) {
                 return JsonSchema.EMPTY;
             } else if (containsKey("$ref")) {
-                SchemaReference reference = new SchemaReference(this, builderFactory);
+                SchemaReference reference = new SchemaReference(this.id, this, builderFactory);
                 addSchemaReference(reference, refLocation, refPointer);
                 return reference;
             } else {
-                return BasicSchema.newSchema(this, builderFactory);
+                return BasicSchema.newSchema(this.id, this, builderFactory);
             }
-        }
-
-        void setRefLocation(JsonLocation location, String pointer) {
-            this.refLocation = location;
-            this.refPointer = pointer;
         }
     }
 }

@@ -32,23 +32,16 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     private final BigDecimal limit;
     private final String name;
-    private final Message message;
-    private final Message negatedMessage;
 
     /**
      * Constructs this assertion.
      *
      * @param limit the lower or upper limit.
      * @param name the name of this assertion.
-     * @param message the error message for normal evaluation.
-     * @param negatedMessage the error message for negated evaluation.
      */
-    protected AbstractNumericBoundAssertion(
-            BigDecimal limit, String name, Message message, Message negatedMessage) {
+    protected AbstractNumericBoundAssertion(BigDecimal limit, String name) {
         this.limit = limit;
         this.name = name;
-        this.message = message;
-        this.negatedMessage = negatedMessage;
     }
 
     @Override
@@ -68,17 +61,28 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     @Override
     protected Problem createProblem(ProblemBuilder builder) {
-        return builder.withMessage(this.message)
+        return builder.withMessage(getMessageForTest())
                 .withParameter("limit", this.limit)
                 .build();
     }
 
     @Override
     protected Problem createNegatedProblem(ProblemBuilder builder) {
-        return builder.withMessage(this.negatedMessage)
+        return builder.withMessage(getMessageForNegatedTest())
                 .withParameter("limit", this.limit)
                 .build();
-   }
+    }
 
+    /**
+     * Tests a value against the boundary.
+     *
+     * @param actual the value to test.
+     * @param limit the limit of the boundary.
+     * @return {@code true} if the value valid, {@code false} otherwise.
+     */
     protected abstract boolean testValue(BigDecimal actual, BigDecimal limit);
+
+    protected abstract Message getMessageForTest();
+
+    protected abstract Message getMessageForNegatedTest();
 }

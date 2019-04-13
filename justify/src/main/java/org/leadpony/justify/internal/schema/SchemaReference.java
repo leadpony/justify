@@ -49,11 +49,12 @@ public class SchemaReference extends AbstractJsonSchema {
     /**
      * Constructs this schema reference.
      *
+     * @param id             the identifier of this schema, may be {@code null}.
      * @param keywords       all keywords.
      * @param builderFactory the factory to create JSON builders.
      */
-    public SchemaReference(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
-        super(keywords, builderFactory);
+    public SchemaReference(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+        super(id, keywords, builderFactory);
         this.referencedSchema = new NonexistentSchema();
         if (hasAbsoluteId()) {
             this.targetId = id().resolve(ref());

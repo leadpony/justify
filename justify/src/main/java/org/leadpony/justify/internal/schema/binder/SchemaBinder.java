@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.keyword.core.Schema;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class SchemaBinder extends AbstractUriBinder {
 
     @Override

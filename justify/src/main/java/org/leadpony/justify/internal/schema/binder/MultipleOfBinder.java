@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.keyword.assertion.MultipleOf;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class MultipleOfBinder extends AbstractBinder {
 
     @Override

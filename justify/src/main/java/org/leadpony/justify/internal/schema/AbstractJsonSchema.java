@@ -31,7 +31,6 @@ import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
-import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
 
 /**
@@ -46,16 +45,11 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     private final Map<String, Keyword> keywordMap;
     private final JsonBuilderFactory builderFactory;
 
-    protected AbstractJsonSchema(Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+    protected AbstractJsonSchema(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
         this.keywordMap = keywords;
         this.builderFactory = builderFactory;
         keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
-        if (containsKeyword("$id")) {
-            Id keyword = getKeyword("$id");
-            this.id= keyword.value();
-        } else {
-            this.id = null;
-        }
+        this.id = id;
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
         }

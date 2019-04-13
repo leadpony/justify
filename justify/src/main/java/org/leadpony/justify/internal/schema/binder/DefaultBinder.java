@@ -26,7 +26,7 @@ import org.leadpony.justify.internal.keyword.annotation.Default;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class DefaultBinder extends AbstractBinder {
 
     @Override

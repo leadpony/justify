@@ -109,6 +109,7 @@ public abstract class AbstractOfficialTest {
 
     @SuppressWarnings("serial")
     private static final Map<SpecVersion, String> basePaths = new EnumMap<SpecVersion, String>(SpecVersion.class) {{
+        put(SpecVersion.DRAFT_04, "/org/json_schema/tests/draft4/");
         put(SpecVersion.DRAFT_06, "/org/json_schema/tests/draft6/");
         put(SpecVersion.DRAFT_07, "/org/json_schema/tests/draft7/");
     }};
@@ -278,7 +279,11 @@ public abstract class AbstractOfficialTest {
         @Override
         public JsonSchema resolveSchema(URI id) {
             String path = BASE_PATH + id.getPath();
-            try (JsonSchemaReader reader = service.createSchemaReader(openResource(path))) {
+            InputStream in = openResource(path);
+            if (in == null) {
+                return null;
+            }
+            try (JsonSchemaReader reader = service.createSchemaReader(in)) {
                 return reader.read();
             }
         }

@@ -26,12 +26,19 @@ import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
  */
 public class Id extends AbstractMetadataKeyword<URI> {
 
+    private final String name;
+
     public Id(URI value) {
+        this("$id", value);
+    }
+
+    public Id(String name, URI value) {
         super(value);
+        this.name = name;
     }
 
     @Override
     public String name() {
-        return "$id";
+        return name;
     }
 }

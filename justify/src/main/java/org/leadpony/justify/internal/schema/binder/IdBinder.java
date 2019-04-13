@@ -36,7 +36,12 @@ class IdBinder extends AbstractUriBinder {
     }
 
     @Override
-    public Keyword createKeyword(URI value) {
+    protected Keyword createKeyword(URI value) {
         return new Id(value);
+    }
+
+    @Override
+    protected void addKeyword(Keyword keyword, BinderContext context) {
+        context.addIdKeyword((Id)keyword);
     }
 }

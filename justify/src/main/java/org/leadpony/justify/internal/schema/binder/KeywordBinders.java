@@ -72,6 +72,13 @@ public class KeywordBinders {
             new TitleBinder(),
             new TypeBinder(),
             new UniqueItemsBinder(),
+
+            // For the Draft-04.
+            new Draft04ExclusiveMaximumBinder(),
+            new Draft04ExclusiveMinimumBinder(),
+            new Draft04IdBinder(),
+            new Draft04MaximumBinder(),
+            new Draft04MinimumBinder(),
     };
 
     private static final Map<SpecVersion, Map<String, KeywordBinder>> bindersBySpec = groupBindersBySpec();

@@ -56,6 +56,6 @@ public class SchemaCatalogTest {
     private static JsonSchema createSchema(URI id) {
         Map<String, Keyword> keywords = new HashMap<>();
         keywords.put("$id", new Id(id));
-        return BasicSchema.newSchema(keywords, jsonBuilderFactory);
+        return BasicSchema.newSchema(id, keywords, jsonBuilderFactory);
     }
 }

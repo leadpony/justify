@@ -20,6 +20,8 @@ import javax.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.core.Id;
+import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -53,7 +55,9 @@ public interface BinderContext {
 
     void addKeyword(Keyword keyword);
 
-    void addRefKeyword(Keyword keyword);
+    void addIdKeyword(Id keyword);
+
+    void addRefKeyword(Ref keyword);
 
     void addProblem(Message message);
 }

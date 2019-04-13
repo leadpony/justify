@@ -30,7 +30,7 @@ import org.leadpony.justify.internal.base.Message;
  *      "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC
  *      3986</a>
  */
-@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class Uri extends AbstractFormatAttribute {
 
     private final boolean verbose;

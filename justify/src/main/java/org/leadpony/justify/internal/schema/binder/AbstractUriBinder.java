@@ -33,7 +33,8 @@ abstract class AbstractUriBinder extends AbstractBinder {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
             try {
-                context.addKeyword(createKeyword(new URI(parser.getString())));
+                Keyword keyword = createKeyword(new URI(parser.getString()));
+                addKeyword(keyword, context);
             } catch (URISyntaxException e) {
                 // Ignores the exception
             }
@@ -42,5 +43,9 @@ abstract class AbstractUriBinder extends AbstractBinder {
         }
     }
 
-    public abstract Keyword createKeyword(URI value);
+    protected abstract Keyword createKeyword(URI value);
+
+    protected void addKeyword(Keyword keyword, BinderContext context) {
+        context.addKeyword(keyword);
+    }
 }

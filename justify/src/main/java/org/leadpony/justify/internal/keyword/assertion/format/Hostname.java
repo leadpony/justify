@@ -28,7 +28,7 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @see <a href="https://tools.ietf.org/html/rfc1034">RFC 1034</a>
  */
-@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class Hostname extends AbstractFormatAttribute {
 
     @Override
