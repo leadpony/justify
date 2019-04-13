@@ -30,6 +30,40 @@ import org.leadpony.justify.internal.annotation.Spec;
 public class Draft06OfficialTest extends AbstractOfficialTest {
 
     private static final String[] mandatory = {
+            "additionalItems.json",
+            "additionalProperties.json",
+            "allOf.json",
+            "anyOf.json",
+            "boolean_schema.json",
+            "const.json",
+            "contains.json",
+            "default.json",
+            "definitions.json",
+            "dependencies.json",
+            "enum.json",
+            "exclusiveMaximum.json",
+            "exclusiveMinimum.json",
+            "items.json",
+            "maximum.json",
+            "maxItems.json",
+            "maxLength.json",
+            "maxProperties.json",
+            "minimum.json",
+            "minItems.json",
+            "minLength.json",
+            "minProperties.json",
+            "multipleOf.json",
+            "not.json",
+            "oneOf.json",
+            "pattern.json",
+            "patternProperties.json",
+            "properties.json",
+            "propertyNames.json",
+            //"ref.json",
+            "refRemote.json",
+            "required.json",
+            "type.json",
+            "uniqueItems.json",
     };
 
     public static Stream<Fixture> mandatory() {
@@ -46,6 +80,12 @@ public class Draft06OfficialTest extends AbstractOfficialTest {
 
     public static Stream<Fixture> optional() {
         return generateFixtures(optional);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mandatory")
+    public void testMandatory(Fixture fixture) {
+        test(fixture);
     }
 
     @ParameterizedTest
