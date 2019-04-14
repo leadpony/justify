@@ -33,7 +33,8 @@ abstract class AbstractUriBinder extends AbstractBinder {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
             try {
-                Keyword keyword = createKeyword(new URI(parser.getString()));
+                URI uri = parse(parser.getString());
+                Keyword keyword = createKeyword(uri);
                 addKeyword(keyword, context);
             } catch (URISyntaxException e) {
                 // Ignores the exception
@@ -47,5 +48,24 @@ abstract class AbstractUriBinder extends AbstractBinder {
 
     protected void addKeyword(Keyword keyword, BinderContext context) {
         context.addKeyword(keyword);
+    }
+
+    /**
+     * Parses the given value into a URI.
+     * This method can parse fragment-only URI which is not percent-encoded.
+     *
+     * @param value the value to parse.
+     * @return newly created URI.
+     * @throws URISyntaxException if the {@code value} is not a valid URI.
+     */
+    private static URI parse(String value) throws URISyntaxException {
+        try {
+            return new URI(value);
+        } catch (URISyntaxException e) {
+            if (value.startsWith("#")) {
+                return new URI(null, null, value.substring(1));
+            }
+            throw e;
+        }
     }
 }

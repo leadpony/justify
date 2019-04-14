@@ -231,9 +231,9 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
 
         @Override
-        public JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enable) {
+        public JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enabled) {
             checkState();
-            put(JsonSchemaReader.SCHEMA_VALIDATION, enable);
+            put(JsonSchemaReader.SCHEMA_VALIDATION, enabled);
             return this;
         }
 

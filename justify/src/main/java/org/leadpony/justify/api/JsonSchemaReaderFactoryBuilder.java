@@ -109,12 +109,12 @@ public interface JsonSchemaReaderFactoryBuilder {
     JsonSchemaReaderFactoryBuilder withSpecVersion(SpecVersion version);
 
     /**
-     * Specifies the schema reader validates the schema against the metaschema or
-     * not. By default, the schema validation is enabled.
+     * Specifies whether the schema reader validates the schema against the
+     * metaschema or not. By default, the schema validation is enabled.
      *
-     * @param enable {@code true} to enable the validation, {@code false} to disable
-     *               the validation.
+     * @param enabled {@code true} to enable the validation, {@code false} to
+     *                disable the validation.
      * @return this builder.
      */
-    JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enable);
+    JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enabled);
 }

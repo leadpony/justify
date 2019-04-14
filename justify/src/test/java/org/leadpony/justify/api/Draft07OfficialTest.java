@@ -60,7 +60,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
             "patternProperties.json",
             "properties.json",
             "propertyNames.json",
-            //"ref.json",
+            "ref.json",
             "refRemote.json",
             "required.json",
             "type.json",
