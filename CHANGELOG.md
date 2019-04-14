@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- `JsonSchemaReaderFactoryBuilder#withSpecVersion()` to specify the JSON Schema specification version.
+- Support of JSON Schema specification Draft-06.
+- `JsonSchemaReaderFactoryBuilder#withSchemaValidation()` to enable or disable the validation of schemas against the metaschemas. By default the validation is enabled as before.
+
+### Fixed
+- A bug of `oneOf` which was causing the validation to produce false result in case that two or more subschemas are evaluated eventually as valid  by different parser events. (Issue #13)   
+
 ## 0.15.0 - 2019-03-31
 ### Added
 - New `JsonValidatorFactoryBuilder` interface for building configured instances of `JsonParserFactory` or `JsonReaderFactory`.
