@@ -130,6 +130,7 @@ public abstract class AbstractOfficialTest {
         schemaReaderFactory = service.createSchemaReaderFactoryBuilder()
                 .withSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
+                .withSchemaValidation(false)
                 .build();
     }
 

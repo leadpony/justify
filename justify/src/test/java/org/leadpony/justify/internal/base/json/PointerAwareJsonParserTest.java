@@ -71,7 +71,7 @@ public class PointerAwareJsonParserTest {
     public void toPointer_shouldReturnCorrectJsonPointer(JsonValue json, List<String> pointers) {
         String source = json.toString();
         List<String> actual = new ArrayList<>();
-        try (PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(provider, createRealParser(source))) {
+        try (PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(createRealParser(source), provider)) {
             while (parser.hasNext()) {
                 parser.next();
                 actual.add(parser.getPointer());

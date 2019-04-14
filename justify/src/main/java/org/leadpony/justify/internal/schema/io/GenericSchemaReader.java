@@ -35,7 +35,6 @@ import org.leadpony.justify.internal.schema.binder.KeywordBinder;
 import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.binder.BinderContext;
-import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -55,21 +54,11 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
     private SimpleSchemaBuilder builder;
 
     public GenericSchemaReader(
-            JsonValidator parser,
+            PointerAwareJsonParser parser,
             JsonBuilderFactory jsonBuilderFactory,
             SchemaSpec spec,
             Map<String, Object> config) {
         super(parser, config);
-        this.jsonBuilderFactory = jsonBuilderFactory;
-        this.spec = spec;
-        this.binders = spec.getKeywordBinders();
-    }
-
-    public GenericSchemaReader(
-            PointerAwareJsonParser parser,
-            JsonBuilderFactory jsonBuilderFactory,
-            SchemaSpec spec) {
-        super(parser);
         this.jsonBuilderFactory = jsonBuilderFactory;
         this.spec = spec;
         this.binders = spec.getKeywordBinders();

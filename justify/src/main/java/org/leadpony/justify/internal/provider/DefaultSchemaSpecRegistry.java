@@ -16,6 +16,7 @@
 package org.leadpony.justify.internal.provider;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -146,8 +147,8 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
             String name = getVersion().toString().toLowerCase() + ".json";
             InputStream in = getClass().getResourceAsStream(name);
             JsonParser realParser = jsonProvider.createParser(in);
-            PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(jsonProvider, realParser);
-            try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonBuilderFactory, this)) {
+            PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
+            try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonBuilderFactory, this, Collections.emptyMap())) {
                 this.metaschema = reader.read();
             }
             return this.metaschema;

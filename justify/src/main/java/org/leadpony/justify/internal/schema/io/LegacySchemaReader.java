@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -42,32 +41,15 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.schema.SchemaReference;
-import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
- * Basic implementation of {@link JsonSchemaReader}.
+ * The legacy implementation of {@link JsonSchemaReader}.
  *
  * @author leadpony
  */
-public class Draft07SchemaReader extends AbstractSchemaReader {
+public class LegacySchemaReader extends AbstractSchemaReader {
 
     private final DefaultSchemaBuilderFactory factory;
-
-    @SuppressWarnings("serial")
-    private static final Map<String, Object> defaultConfig = new HashMap<String, Object>() {{
-        put(RESOLVERS, Collections.emptyList());
-    }};
-
-    /**
-     * Constructs this schema reader.
-     *
-     * @param parser  the parser of JSON document.
-     * @param factory the factory for producing schema builders.
-     */
-    public Draft07SchemaReader(PointerAwareJsonParser parser,
-            DefaultSchemaBuilderFactory factory) {
-        this(parser, factory, defaultConfig);
-    }
 
     /**
      * Constructs this schema reader.
@@ -76,25 +58,11 @@ public class Draft07SchemaReader extends AbstractSchemaReader {
      * @param factory the factory for producing schema builders.
      * @param config  the configuration properties.
      */
-    public Draft07SchemaReader(PointerAwareJsonParser parser,
+    public LegacySchemaReader(PointerAwareJsonParser parser,
             DefaultSchemaBuilderFactory factory,
             Map<String, Object> config) {
         super(parser, config);
         this.factory = factory;
-    }
-
-    /**
-     * Constructs this schema reader.
-     *
-     * @param parser  the parser of JSON document, which has the validation
-     *                capability.
-     * @param factory the factory for producing schema builders.
-     * @param config  the configuration properties.
-     */
-    public Draft07SchemaReader(JsonValidator parser,
-            DefaultSchemaBuilderFactory factory,
-            Map<String, Object> config) {
-        this((PointerAwareJsonParser) parser, factory, config);
     }
 
     /* As a AbstractSchemaReader */

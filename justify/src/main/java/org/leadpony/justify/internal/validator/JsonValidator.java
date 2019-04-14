@@ -62,11 +62,10 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
      * @param jsonProvider the JSON provider.
      */
     public JsonValidator(JsonParser realParser, JsonSchema rootSchema, JsonProvider jsonProvider) {
-        super(jsonProvider);
+        super(realParser, jsonProvider);
         this.rootSchema = rootSchema;
         this.problemHandler = this::throwProblems;
         this.eventHandler = this::handleFirstEvent;
-        setCurrentParser(realParser);
     }
 
     /**

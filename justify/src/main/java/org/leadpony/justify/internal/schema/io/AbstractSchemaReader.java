@@ -29,7 +29,6 @@ import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParsingException;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaResolver;
@@ -74,21 +73,15 @@ abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderF
 
     private URI initialBaseUri = DEFAULT_INITIAL_BASE_URI;
 
-    protected AbstractSchemaReader(PointerAwareJsonParser parser) {
-        this(parser, Collections.emptyMap());
-    }
-
     @SuppressWarnings("unchecked")
     protected AbstractSchemaReader(PointerAwareJsonParser parser, Map<String, Object> config) {
         this.parser = parser;
         this.strictWithKeywords = config.get(STRICT_KEYWORDS) == Boolean.TRUE;
         this.strictWithFormats = config.get(STRICT_FORMATS) == Boolean.TRUE;
         this.resolvers = (List<JsonSchemaResolver>)config.getOrDefault(RESOLVERS, Collections.emptyList());
-    }
-
-    protected AbstractSchemaReader(JsonValidator parser, Map<String, Object> config) {
-        this((PointerAwareJsonParser)parser, config);
-        parser.withHandler(this);
+        if (parser instanceof JsonValidator) {
+            ((JsonValidator)parser).withHandler(this);
+        }
     }
 
     final boolean isStrictWithKeywords() {
@@ -193,11 +186,9 @@ abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderF
     }
 
     protected ProblemBuilder createProblemBuilder(Message message) {
-        if (!(parser instanceof JsonValidator)) {
-            throw new IllegalStateException();
-        }
-        EvaluatorContext context = (EvaluatorContext)parser;
-        return createProblemBuilder(context).withMessage(message);
+        JsonLocation location = parser.getLocation();
+        String pointer = parser.getPointer();
+        return createProblemBuilder(location, pointer).withMessage(message);
     }
 
     /**
