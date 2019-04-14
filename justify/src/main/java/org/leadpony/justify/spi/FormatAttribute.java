@@ -28,34 +28,40 @@ import org.leadpony.justify.api.Localizable;
  *
  * @author leadpony
  *
- * @see <a href="https://json-schema.org/latest/json-schema-validation.html#rfc.section.7">
- *      JSON Schema Validation: A Vocabulary for Structural Validation of JSON, Section 7
- *      </a>
+ * @see <a href=
+ *      "https://json-schema.org/latest/json-schema-validation.html#rfc.section.7">
+ *      JSON Schema Validation: A Vocabulary for Structural Validation of JSON,
+ *      Section 7 </a>
  */
 public interface FormatAttribute {
 
     /**
      * Returns the name of this attribute.
+     *
      * @return the name of this attribute, never be {@code null}.
      */
     String name();
 
     /**
      * Returns the localized name.
+     *
      * @return the localized name of this attribute, never be {@code null}.
      */
     default Localizable localizedName() {
-        return (Locale locale)->name();
+        return (Locale locale) -> name();
     }
 
     /**
      * Returns the type of the value expected by this attribute.
-     * @return the expected type of the value, never be {@code null}.
+     *
+     * @return the expected type of the value, never be {@code null}. For integers
+     *         this method must return {@link InstanceType#NUMBER}.
      */
     InstanceType valueType();
 
     /**
      * Checks if the value matches this format.
+     *
      * @param value the value to check, cannot be {@code null}.
      * @return {@code true} if the value matches this format, or {@code false}.
      * @throws NullPointerException if the specified {@code value} is {@code null}.

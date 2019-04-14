@@ -16,13 +16,9 @@
 
 package org.leadpony.justify.internal.base.json;
 
-import java.math.BigDecimal;
-import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.Map;
 
 import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.InstanceType;
@@ -31,18 +27,6 @@ import org.leadpony.justify.api.InstanceType;
  * @author leadpony
  */
 public final class ParserEvents {
-
-    @SuppressWarnings("serial")
-    private static final Map<Event, InstanceType> eventToTypeMap = new EnumMap<Event, InstanceType>(Event.class) {{
-        put(Event.START_OBJECT, InstanceType.OBJECT);
-        put(Event.START_ARRAY, InstanceType.ARRAY);
-        put(Event.KEY_NAME, InstanceType.STRING);
-        put(Event.VALUE_NUMBER, InstanceType.NUMBER);
-        put(Event.VALUE_STRING, InstanceType.STRING);
-        put(Event.VALUE_TRUE, InstanceType.BOOLEAN);
-        put(Event.VALUE_FALSE, InstanceType.BOOLEAN);
-        put(Event.VALUE_NULL, InstanceType.NULL);
-    }};
 
     private static final EnumSet<Event> valueEvents = EnumSet.of(
             Event.START_ARRAY,
@@ -62,22 +46,27 @@ public final class ParserEvents {
      * </p>
      *
      * @param event the event to convert.
-     * @param parser the parser which produced the event.
      * @return the instance of {@link InstanceType} or {@code null}.
      */
-    public static InstanceType toInstanceType(Event event, JsonParser parser) {
-        InstanceType type = eventToTypeMap.get(event);
-        if (type == InstanceType.NUMBER) {
-            if (parser.isIntegralNumber()) {
-                type = InstanceType.INTEGER;
-            } else {
-                BigDecimal value = parser.getBigDecimal().stripTrailingZeros();
-                if (value.scale() == 0) {
-                    type = InstanceType.INTEGER;
-                }
-            }
+    public static InstanceType toBroadInstanceType(Event event) {
+        switch (event) {
+        case START_ARRAY:
+            return InstanceType.ARRAY;
+        case START_OBJECT:
+            return InstanceType.OBJECT;
+        case KEY_NAME:
+        case VALUE_STRING:
+            return InstanceType.STRING;
+        case VALUE_NUMBER:
+            return InstanceType.NUMBER;
+        case VALUE_TRUE:
+        case VALUE_FALSE:
+            return InstanceType.BOOLEAN;
+        case VALUE_NULL:
+            return InstanceType.NULL;
+        default:
+            return null;
         }
-        return type;
     }
 
     public static boolean isStartOfContainer(Event event) {

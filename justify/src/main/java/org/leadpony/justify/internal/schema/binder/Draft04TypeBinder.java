@@ -13,37 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.spi;
+package org.leadpony.justify.internal.schema.binder;
 
-import javax.json.JsonNumber;
-import javax.json.JsonValue;
+import java.util.Set;
 
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.assertion.Draft04Type;
+import org.leadpony.justify.internal.keyword.assertion.Type;
 
 /**
- * Format attribute representing "int32".
+ * A binder type for "type" keyword in Draft-04.
  *
  * @author leadpony
  */
-public class Int32FormatAttribute implements FormatAttribute {
+@Spec({ SpecVersion.DRAFT_04 })
+class Draft04TypeBinder extends TypeBinder {
 
-    @Override
-    public String name() {
-        return "int32";
+    protected Type createKeyword(InstanceType type) {
+        return Draft04Type.of(type);
     }
 
-    @Override
-    public InstanceType valueType() {
-        return InstanceType.NUMBER;
-    }
-
-    @Override
-    public boolean test(JsonValue value) {
-        JsonNumber number = (JsonNumber)value;
-        if (!number.isIntegral()) {
-            return false;
-        }
-        long longValue = number.longValue();
-        return Integer.MIN_VALUE <= longValue && longValue <= Integer.MAX_VALUE;
+    protected Type createKeyword(Set<InstanceType> types) {
+        return Draft04Type.of(types);
     }
 }

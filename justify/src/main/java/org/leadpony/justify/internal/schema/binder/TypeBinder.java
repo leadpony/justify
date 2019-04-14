@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.keyword.assertion.Type;
  *
  * @author leadpony
  */
-@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
+@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class TypeBinder extends AbstractBinder {
 
     @Override
@@ -44,7 +44,7 @@ class TypeBinder extends AbstractBinder {
         Event event = parser.next();
         if (event == Event.VALUE_STRING) {
             try {
-                context.addKeyword(Type.of(getType(parser)));
+                context.addKeyword(createKeyword(getType(parser)));
             } catch (IllegalArgumentException e) {
                 // Ignores the exception.
             }
@@ -60,7 +60,7 @@ class TypeBinder extends AbstractBinder {
                     skipValue(event, parser);
                 }
             }
-            context.addKeyword(Type.of(types));
+            context.addKeyword(createKeyword(types));
         } else {
             skipValue(event, parser);
         }
@@ -69,5 +69,13 @@ class TypeBinder extends AbstractBinder {
     private static final InstanceType getType(JsonParser parser) {
         String name = parser.getString().toUpperCase();
         return InstanceType.valueOf(name);
+    }
+
+    protected Type createKeyword(InstanceType type) {
+        return Type.of(type);
+    }
+
+    protected Type createKeyword(Set<InstanceType> types) {
+        return Type.of(types);
     }
 }

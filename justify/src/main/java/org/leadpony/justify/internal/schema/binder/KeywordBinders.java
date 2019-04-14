@@ -79,6 +79,7 @@ public class KeywordBinders {
             new Draft04IdBinder(),
             new Draft04MaximumBinder(),
             new Draft04MinimumBinder(),
+            new Draft04TypeBinder(),
     };
 
     private static final Map<SpecVersion, Map<String, KeywordBinder>> bindersBySpec = groupBindersBySpec();

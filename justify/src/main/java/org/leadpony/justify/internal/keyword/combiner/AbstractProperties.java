@@ -114,7 +114,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
             if (event == Event.KEY_NAME) {
                 currentKeyName = parser.getString();
             } else if (ParserEvents.isValue(event)) {
-                currentType = ParserEvents.toInstanceType(event, parser);
+                currentType = ParserEvents.toBroadInstanceType(event);
                 if (!findSubschemas(currentKeyName, this)) {
                     accept(defaultSchema);
                 }
@@ -149,7 +149,7 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
             if (event == Event.KEY_NAME) {
                 currentKeyName = parser.getString();
             } else if (ParserEvents.isValue(event)) {
-                currentType = ParserEvents.toInstanceType(event, parser);
+                currentType = ParserEvents.toBroadInstanceType(event);
                 if (!findSubschemas(currentKeyName, this)) {
                     accept(defaultSchema);
                 }

@@ -119,7 +119,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        InstanceType type = ParserEvents.toBroadInstanceType(event);
                         append(subschema.createEvaluator(getContext(), type));
                     }
                 }
@@ -132,7 +132,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        InstanceType type = ParserEvents.toBroadInstanceType(event);
                         append(subschema.createNegatedEvaluator(context, type));
                     }
                 }
@@ -260,7 +260,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
                         append(createSubschemaEvaluator(context, itemIndex, subschema, type));
                         ++itemIndex;
@@ -275,7 +275,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        InstanceType type = ParserEvents.toInstanceType(event, parser);
+                        InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
                         append(createNegatedSubschemaEvaluator(context, itemIndex, subschema, type));
                         ++itemIndex;

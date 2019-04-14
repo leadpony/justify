@@ -69,7 +69,7 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             // Draft-04 does not have the "regex" format.
             "optional/ecmascript-regex.json",
             "optional/format.json",
-            //"optional/zeroTerminatedFloats.json",
+            "optional/zeroTerminatedFloats.json",
     };
 
     public static Stream<Fixture> optional() {

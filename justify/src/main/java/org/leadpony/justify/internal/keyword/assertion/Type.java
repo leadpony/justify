@@ -16,12 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -56,6 +58,34 @@ public abstract class Type extends AbstractAssertion {
     }
 
     /**
+     * Converts the broader type into the narrower type.
+     *
+     * <p>
+     * According to the JSON Schema Test Suite, 1.0 must be treated as an integer
+     * rather than a number.
+     * </p>
+     *
+     * @param type    the broader type.
+     * @param context the context for the evaluator.
+     * @return the narrower type.
+     */
+    protected InstanceType toNarrowType(InstanceType type, EvaluatorContext context) {
+        if (type != InstanceType.NUMBER) {
+            return type;
+        }
+        JsonParser parser = context.getParser();
+        if (parser.isIntegralNumber()) {
+            return InstanceType.INTEGER;
+        } else {
+            BigDecimal value = parser.getBigDecimal().stripTrailingZeros();
+            if (value.scale() == 0) {
+                return InstanceType.INTEGER;
+            }
+            return type;
+        }
+    }
+
+    /**
      * Type assertion specialized for single type.
      *
      * @author leadpony
@@ -70,7 +100,8 @@ public abstract class Type extends AbstractAssertion {
 
         @Override
         protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-            if (testType(type)) {
+            InstanceType narrowerType = toNarrowType(type, context);
+            if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
             return new Evaluator() {
@@ -78,7 +109,7 @@ public abstract class Type extends AbstractAssertion {
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = createProblemBuilder(context)
                             .withMessage(Message.INSTANCE_PROBLEM_TYPE)
-                            .withParameter("actual", type)
+                            .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedType)
                             .build();
                     dispatcher.dispatchProblem(p);
@@ -89,7 +120,8 @@ public abstract class Type extends AbstractAssertion {
 
         @Override
         protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            if (!testType(type)) {
+            InstanceType narrowerType = toNarrowType(type, context);
+            if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
             return new Evaluator() {
@@ -136,7 +168,8 @@ public abstract class Type extends AbstractAssertion {
 
         @Override
         protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-            if (testType(type)) {
+            InstanceType narrowerType = toNarrowType(type, context);
+            if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
             return new Evaluator() {
@@ -144,7 +177,7 @@ public abstract class Type extends AbstractAssertion {
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = createProblemBuilder(context)
                             .withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
-                            .withParameter("actual", type)
+                            .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedTypes)
                             .build();
                     dispatcher.dispatchProblem(p);
@@ -155,7 +188,8 @@ public abstract class Type extends AbstractAssertion {
 
         @Override
         protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            if (!testType(type)) {
+            InstanceType narrowerType = toNarrowType(type, context);
+            if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
             return new Evaluator() {
@@ -163,7 +197,7 @@ public abstract class Type extends AbstractAssertion {
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = createProblemBuilder(context)
                             .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE_PLURAL)
-                            .withParameter("actual", type)
+                            .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedTypes)
                             .build();
                     dispatcher.dispatchProblem(p);

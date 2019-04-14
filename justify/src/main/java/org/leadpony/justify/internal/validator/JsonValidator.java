@@ -125,7 +125,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
     }
 
     private void handleFirstEvent(Event event, JsonParser parser) {
-        InstanceType type = ParserEvents.toInstanceType(event, parser);
+        InstanceType type = ParserEvents.toBroadInstanceType(event);
         this.evaluator = rootSchema.createEvaluator(this, type);
         if (this.evaluator != null) {
             handleParserEvent(event, parser);

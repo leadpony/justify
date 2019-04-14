@@ -105,7 +105,7 @@ public class AdditionalProperties extends UnaryCombiner {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
-                    InstanceType type = ParserEvents.toInstanceType(event, parser);
+                    InstanceType type = ParserEvents.toBroadInstanceType(event);
                     append(subschema.createEvaluator(getContext(), type));
                 }
             }
@@ -124,7 +124,7 @@ public class AdditionalProperties extends UnaryCombiner {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
-                    InstanceType type = ParserEvents.toInstanceType(event, parser);
+                    InstanceType type = ParserEvents.toBroadInstanceType(event);
                     append(subschema.createNegatedEvaluator(getContext(), type));
                 }
             }
