@@ -38,11 +38,11 @@ import org.leadpony.justify.api.JsonValidatingException;
  *
  * @author leadpony
  */
-public class SchemaReaderTest {
+public class JsonSchemaReaderTest {
 
     private static final JsonValidationService service = JsonValidationServices.get();
 
-    private static final Logger log = Logger.getLogger(SchemaReaderTest.class.getName());
+    private static final Logger log = Logger.getLogger(JsonSchemaReaderTest.class.getName());
 
     private static void print(Throwable thrown) {
         log.info(thrown.toString());

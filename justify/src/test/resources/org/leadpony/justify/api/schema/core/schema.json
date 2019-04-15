@@ -23,5 +23,15 @@
                 "pointer": "/$schema"
             }
         ]
+    },
+    {
+        "description": "value is an unexpected schema URI",
+        "schema": { "$schema": "http://json-schema.org/draft-04/schema#" },
+        "valid": false,
+        "errors": [
+            {
+                "pointer": "/$schema"
+            }
+        ]
     }
 ]

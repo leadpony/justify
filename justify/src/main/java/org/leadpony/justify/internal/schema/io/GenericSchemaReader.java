@@ -25,11 +25,13 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.combiner.Unknown;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
+import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.binder.KeywordBinder;
 import org.leadpony.justify.internal.schema.BasicSchema;
@@ -44,14 +46,11 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public class GenericSchemaReader extends AbstractSchemaReader implements BinderContext {
+public class GenericSchemaReader extends AbstractSchemaReader {
 
     private final JsonBuilderFactory jsonBuilderFactory;
     private final SchemaSpec spec;
     private final Map<String, KeywordBinder> binders;
-
-    // Current schema builder.
-    private SimpleSchemaBuilder builder;
 
     public GenericSchemaReader(
             PointerAwareJsonParser parser,
@@ -68,64 +67,8 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
 
     @Override
     protected JsonSchema readObjectSchema() {
-        SimpleSchemaBuilder parentBuilder = this.builder;
-        this.builder = new SimpleSchemaBuilder();
-        try {
-            return buildObjectSchema(builder);
-        } finally {
-            this.builder = parentBuilder;
-        }
-    }
+        SchemaBuilder builder = new SchemaBuilder();
 
-    /* As a BinderContext */
-
-    @Override
-    public JsonSchema readSchema(Event event) {
-        return super.readSchema(event);
-    }
-
-    @Override
-    public FormatAttribute getFormatAttribute(String name) {
-        FormatAttribute attribute = spec.getFormatAttribute(name);
-        if (attribute == null && isStrictWithFormats()) {
-            addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
-                    .withParameter("attribute", name));
-        }
-        return attribute;
-    }
-
-
-    @Override
-    public ContentEncodingScheme getEncodingScheme(String name) {
-        return spec.getEncodingScheme(name);
-    }
-
-    @Override
-    public ContentMimeType getMimeType(String value) {
-        return spec.getMimeType(value);
-    }
-
-    @Override
-    public void addKeyword(Keyword keyword) {
-        this.builder.put(keyword.name(), keyword);
-    }
-
-    @Override
-    public void addIdKeyword(Id keyword) {
-        this.builder.put(keyword.name(), keyword);
-    }
-
-    @Override
-    public void addRefKeyword(Ref keyword) {
-        this.builder.put(keyword.name(), keyword);
-    }
-
-    @Override
-    public void addProblem(Message message) {
-        super.addProblem(message);
-    }
-
-    private JsonSchema buildObjectSchema(SimpleSchemaBuilder builder) {
         Event event = null;
         while (parser.hasNext()) {
             event = parser.next();
@@ -133,7 +76,7 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
                 break;
             } else if (event == Event.KEY_NAME) {
                 String name = parser.getString();
-                parseKeyword(name);
+                parseKeyword(name, builder);
             }
         }
 
@@ -145,19 +88,37 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
         if (schema.hasId()) {
             addIdentifiedSchema(schema);
         }
+
         return schema;
     }
 
-    private void parseKeyword(String name) {
+    protected FormatAttribute getFormatAttribute(String name) {
+        FormatAttribute attribute = spec.getFormatAttribute(name);
+        if (attribute == null && isStrictWithFormats()) {
+            addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
+                    .withParameter("attribute", name));
+        }
+        return attribute;
+    }
+
+    protected ContentEncodingScheme getEncodingScheme(String name) {
+        return spec.getEncodingScheme(name);
+    }
+
+    protected ContentMimeType getMimeType(String value) {
+        return spec.getMimeType(value);
+    }
+
+    private void parseKeyword(String name, BinderContext context) {
         KeywordBinder binder = binders.get(name);
         if (binder != null) {
-            binder.fromJson(parser, this);
+            binder.fromJson(parser, context);
         } else {
-            parseUnknownKeyword(name);
+            parseUnknownKeyword(name, context);
         }
     }
 
-    private void parseUnknownKeyword(String keyword) {
+    private void parseUnknownKeyword(String keyword, BinderContext context) {
         if (isStrictWithKeywords()) {
             ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_KEYWORD_UNKNOWN)
                     .withParameter("keyword", keyword);
@@ -165,31 +126,34 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
         }
         Event event = parser.next();
         if (canReadSchema(event)) {
-            addKeyword(new Unknown(keyword, readSchema(event)));
+            context.addKeyword(new Unknown(keyword, readSchema(event)));
         } else {
             skipValue(event);
         }
     }
 
+    private void checkMetaschemaId(URI actual) {
+        if (!actual.isAbsolute()) {
+            return;
+        }
+        URI expected = spec.getVersion().id();
+        if (URIs.COMPARATOR.compare(expected, actual) != 0) {
+            ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_METASCHEMA);
+            builder.withParameter("expected", expected)
+                   .withParameter("actual", actual);
+            addProblem(builder);
+            dispatchProblems();
+        }
+    }
+
     @SuppressWarnings("serial")
-    private class SimpleSchemaBuilder extends LinkedHashMap<String, Keyword> {
+    private class SchemaBuilder extends LinkedHashMap<String, Keyword> implements BinderContext {
 
         private URI id;
         // The location of "$ref".
         private JsonLocation refLocation;
         // The pointer of "$ref".
         private String refPointer;
-
-        public void put(String key, Id keyword) {
-            super.put(key, keyword);
-            this.id = keyword.value();
-        }
-
-        public void put(String key, Ref keyword) {
-            super.put(key, keyword);
-            refLocation = parser.getLocation();
-            refPointer = parser.getPointer();
-        }
 
         JsonSchema build(JsonBuilderFactory builderFactory) {
             if (isEmpty()) {
@@ -201,6 +165,57 @@ public class GenericSchemaReader extends AbstractSchemaReader implements BinderC
             } else {
                 return BasicSchema.newSchema(this.id, this, builderFactory);
             }
+        }
+
+        /* As a BinderContext */
+
+        @Override
+        public JsonSchema readSchema(Event event) {
+            return GenericSchemaReader.this.readSchema(event);
+        }
+
+        @Override
+        public FormatAttribute getFormatAttribute(String name) {
+            return GenericSchemaReader.this.getFormatAttribute(name);
+        }
+
+        @Override
+        public ContentEncodingScheme getEncodingScheme(String name) {
+            return GenericSchemaReader.this.getEncodingScheme(name);
+        }
+
+        @Override
+        public ContentMimeType getMimeType(String value) {
+            return GenericSchemaReader.this.getMimeType(value);
+        }
+
+        @Override
+        public void addKeyword(Keyword keyword) {
+            put(keyword.name(), keyword);
+        }
+
+        @Override
+        public void addKeyword(Id keyword) {
+            put(keyword.name(), keyword);
+            this.id = keyword.value();
+        }
+
+        @Override
+        public void addKeyword(Ref keyword) {
+            put(keyword.name(), keyword);
+            this.refLocation = parser.getLocation();
+            this.refPointer = parser.getPointer();
+        }
+
+        @Override
+        public void addKeyword(Schema keyword) {
+            put(keyword.name(), keyword);
+            checkMetaschemaId(keyword.value());
+        }
+
+        @Override
+        public void addProblem(Message message) {
+            GenericSchemaReader.this.addProblem(message);
         }
     }
 }

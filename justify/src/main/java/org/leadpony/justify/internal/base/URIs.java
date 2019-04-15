@@ -17,14 +17,15 @@
 package org.leadpony.justify.internal.base;
 
 import java.net.URI;
+import java.util.Comparator;
 
 /**
  * Utility methods operating on instances of {@link URI}.
- * 
+ *
  * @author leadpony
  */
 public final class URIs {
-    
+
     public static URI withFragment(URI uri) {
         if (uri.getFragment() == null) {
             return uri.resolve("#");
@@ -32,10 +33,14 @@ public final class URIs {
             return uri;
         }
     }
-    
+
     public static URI withEmptyFragment(URI uri) {
         return uri.resolve("#");
     }
+
+    public static final Comparator<URI> COMPARATOR = (URI x, URI y)->{
+        return withFragment(x).compareTo(withFragment(y));
+    };
 
     private URIs() {
     }

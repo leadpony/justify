@@ -42,6 +42,6 @@ class IdBinder extends AbstractUriBinder {
 
     @Override
     protected void addKeyword(Keyword keyword, BinderContext context) {
-        context.addIdKeyword((Id)keyword);
+        context.addKeyword((Id)keyword);
     }
 }

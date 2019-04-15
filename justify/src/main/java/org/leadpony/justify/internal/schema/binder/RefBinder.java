@@ -42,6 +42,6 @@ class RefBinder extends AbstractUriBinder {
 
     @Override
     protected void addKeyword(Keyword keyword, BinderContext context) {
-        context.addRefKeyword((Ref)keyword);
+        context.addKeyword((Ref)keyword);
     }
 }

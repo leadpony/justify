@@ -22,6 +22,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
+import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -49,15 +50,17 @@ public interface BinderContext {
      */
     FormatAttribute getFormatAttribute(String name);
 
-    ContentEncodingScheme getEncodingScheme(String value);
+    ContentEncodingScheme getEncodingScheme(String name);
 
     ContentMimeType getMimeType(String value);
 
     void addKeyword(Keyword keyword);
 
-    void addIdKeyword(Id keyword);
+    void addKeyword(Id keyword);
 
-    void addRefKeyword(Ref keyword);
+    void addKeyword(Ref keyword);
+
+    void addKeyword(Schema keyword);
 
     void addProblem(Message message);
 }

@@ -101,20 +101,26 @@ abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderF
         } else if (this.alreadyRead) {
             throw new IllegalStateException("already read.");
         }
-        JsonSchema schema = readRootSchema();
-        if (schema != null) {
-            postprocess(schema);
+        try {
+            JsonSchema schema = readRootSchema();
+            if (schema != null) {
+                postprocess(schema);
+            }
+            dispatchProblems();
+            return schema;
+        } finally {
+            this.alreadyRead = true;
         }
-        this.alreadyRead = true;
-        dispatchProblems();
-        return schema;
     }
 
     @Override
     public void close() {
         if (!this.alreadyClosed) {
-            this.parser.close();
-            this.alreadyClosed = true;
+            try {
+                this.parser.close();
+            } finally {
+                this.alreadyClosed = true;
+            }
         }
     }
 
@@ -209,7 +215,7 @@ abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderF
         return new JsonParsingException(message, parser.getLocation());
     }
 
-    private void dispatchProblems() {
+    protected void dispatchProblems() {
         if (!problems.isEmpty()) {
             throw new JsonValidatingException(this.problems);
         }

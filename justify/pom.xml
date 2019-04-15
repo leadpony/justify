@@ -76,12 +76,6 @@
             <version>${jsonb.impl.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.4.15.v20190215</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
