@@ -20,6 +20,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -34,6 +35,7 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParser.Event;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.api.JsonSchemaReader;
@@ -42,6 +44,7 @@ import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.ResettableReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.validator.JsonValidator;
@@ -98,8 +101,10 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     @Override
     public JsonSchemaReader createSchemaReader(Reader reader) {
         requireNonNull(reader, "reader");
-        JsonParser realParser = jsonParserFactory.createParser(reader);
-        SchemaSpec spec = getSpec();
+        ResettableReader resettable = new ResettableReader(reader);
+        SpecVersion version = probeSpecVersion(jsonParserFactory.createParser(resettable));
+        JsonParser realParser = jsonParserFactory.createParser(resettable.createResettedReader());
+        SchemaSpec spec = getSpec(version);
         PointerAwareJsonParser parser = createParser(realParser, spec);
         return createSchemaReader(parser, spec);
     }
@@ -118,6 +123,10 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     }
 
     private SchemaSpec getSpec() {
+        return getSpec(this.specVersion);
+    }
+
+    private SchemaSpec getSpec(SpecVersion version) {
         return specRegistry.getSpec(this.specVersion, testOption(JsonSchemaReader.CUSTOM_FORMATS));
     }
 
@@ -158,6 +167,41 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private boolean testOption(String option) {
         return config.get(option) == Boolean.TRUE;
+    }
+
+    private SpecVersion probeSpecVersion(JsonParser parser) {
+        try (JsonParser resource = parser){
+            if (parser.hasNext()) {
+                if (parser.next() == Event.START_OBJECT) {
+                    while (parser.hasNext()) {
+                        switch (parser.next()) {
+                        case KEY_NAME:
+                            if (parser.getString().equals("$schema")) {
+                                if (parser.next() == Event.VALUE_STRING) {
+                                    return findSpecVersion(parser.getString());
+                                }
+                            }
+                            break;
+                        case START_ARRAY:
+                            parser.skipArray();
+                            break;
+                        case START_OBJECT:
+                            parser.skipObject();
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return this.specVersion;
+    }
+
+    private SpecVersion findSpecVersion(String value) {
+        URI uri = URI.create(value);
+        return this.specVersion;
     }
 
     @SuppressWarnings("serial")
