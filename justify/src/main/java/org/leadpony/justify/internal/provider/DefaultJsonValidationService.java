@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -44,20 +45,22 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.JsonValidatorFactoryBuilder;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.ValidationConfig;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
+import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
 import org.leadpony.justify.internal.schema.io.DefaultSchemaBuilderFactory;
-import org.leadpony.justify.internal.validator.DefaultJsonValidatorFactoryBuilder;
+import org.leadpony.justify.internal.validator.DefaultValidationConfig;
 import org.leadpony.justify.internal.validator.JsonValidator;
+import org.leadpony.justify.internal.validator.JsonValidatorFactory;
 
 /**
  * The default implementation of {@link JsonValidationService}.
@@ -148,8 +151,23 @@ class DefaultJsonValidationService implements JsonValidationService {
      * {@inheritDoc}
      */
     @Override
-    public JsonValidatorFactoryBuilder createValidatorFactoryBuilder(JsonSchema schema) {
-        return new DefaultJsonValidatorFactoryBuilder(schema, jsonProvider);
+    public ValidationConfig createValidationConfig() {
+        return new DefaultValidationConfig();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonParserFactory createParserFactory(Map<String, ?> config) {
+        if (config == null) {
+            config = Collections.emptyMap();
+        }
+        if (config.containsKey(ValidationConfig.SCHEMA)) {
+            return new JsonValidatorFactory(jsonProvider, parserFactory, config);
+        } else {
+            return jsonProvider.createParserFactory(config);
+        }
     }
 
     /**
@@ -160,12 +178,12 @@ class DefaultJsonValidationService implements JsonValidationService {
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         requireNonNull(handlerFactory, "handlerFactory");
-        JsonValidatorFactoryBuilder builder = createValidatorFactoryBuilder(schema)
-                .withProblemHandlerFactory(handlerFactory);
-        if (config != null) {
-            builder.withProperties(config);
-        }
-        return builder.buildParserFactory();
+        return createParserFactory(
+                createValidationConfig()
+                    .withProperties(config)
+                    .withSchema(schema)
+                    .withProblemHandlerFactory(handlerFactory)
+                    .getAsMap());
     }
 
     /**
@@ -227,16 +245,32 @@ class DefaultJsonValidationService implements JsonValidationService {
      * {@inheritDoc}
      */
     @Override
+    public JsonReaderFactory createReaderFactory(Map<String, ?> config) {
+        if (config == null) {
+            config = Collections.emptyMap();
+        }
+        if (config.containsKey(ValidationConfig.SCHEMA)) {
+            JsonParserFactory parserFactory = createParserFactory(config);
+            return new DefaultJsonReaderFactory(parserFactory);
+        } else {
+            return jsonProvider.createReaderFactory(config);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
             ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         requireNonNull(handlerFactory, "handlerFactory");
-        JsonValidatorFactoryBuilder builder = createValidatorFactoryBuilder(schema)
-                .withProblemHandlerFactory(handlerFactory);
-        if (config != null) {
-            builder.withProperties(config);
-        }
-        return builder.buildReaderFactory();
+        return createReaderFactory(
+                createValidationConfig()
+                    .withProperties(config)
+                    .withSchema(schema)
+                    .withProblemHandlerFactory(handlerFactory)
+                    .getAsMap());
     }
 
     /**

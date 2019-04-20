@@ -18,12 +18,12 @@ package org.leadpony.justify.api;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.json.JsonReaderFactory;
-import javax.json.stream.JsonParserFactory;
-
 /**
- * A builder interface for building an instance of {@code JsonParserFactory} or
- * {@code JsonReaderFactory}.
+ * A configuration type for configuring JSON validation.
+ *
+ * The map generated from this configuration can be passed to the methods like
+ * {@link JsonValidationService#createParserFactory(Map)} and
+ * {@link JsonValidationService#createReaderFactory(Map)}.
  *
  * <p>
  * Each instance of this type is NOT safe for use by multiple concurrent
@@ -32,13 +32,23 @@ import javax.json.stream.JsonParserFactory;
  *
  * @author leadpony
  */
-public interface JsonValidatorFactoryBuilder {
+public interface ValidationConfig {
 
     /**
      * The property used to specify whether JSON instances will be filled with
      * default values or not.
      */
-    String DEFAULT_VALUES = "org.leadpony.justify.default-values";
+    String DEFAULT_VALUES = "org.leadpony.justify.api.ValidationConfig.DEFAULT_VALUES";
+
+    /**
+     * The property used to specify the factory of problem handlers.
+     */
+    String PROBLEM_HANDLER_FACTORY = "org.leadpony.justify.api.ValidationConfig.PROBLEM_HANDLER_FACTORY";
+
+    /**
+     * The property used to specify the JSON schema.
+     */
+    String SCHEMA = "org.leadpony.justify.api.ValidationConfig.SCHEMA";
 
     /**
      * Returns all configuration properties as an unmodifiable map.
@@ -64,66 +74,59 @@ public interface JsonValidatorFactoryBuilder {
      * @return this builder.
      * @throws NullPointerException if the specified {@code name} is {@code null}.
      */
-    JsonValidatorFactoryBuilder setProperty(String name, Object value);
+    ValidationConfig setProperty(String name, Object value);
 
     /**
      * Assigns set of configuration properties.
      *
-     * @param properties the configuration properties to assign.
+     * @param properties the configuration properties to assign, can be
+     *                   {@code null}.
      * @return this builder.
-     * @throws NullPointerException if the specified {@code properties} is
-     *                              {@code null}.
      */
-    JsonValidatorFactoryBuilder withProperties(Map<String, ?> properties);
+    ValidationConfig withProperties(Map<String, ?> properties);
 
     /**
-     * Assigns the handler of problems detected by the JSON validators. This method
-     * allows to be used if all parsers and readers can safely share a single problem handler.
+     * Specifies the JSON schema used by the validators.
+     *
+     * @param schema the JSON schema.
+     * @return this builder.
+     * @throws NullPointerException if the specified {@code schema} is {@code null}.
+     */
+    ValidationConfig withSchema(JsonSchema schema);
+
+    /**
+     * Specifies the handler of problems detected by the JSON validators. This
+     * method allows to be used if and only if all parsers and readers can safely
+     * share a single problem handler.
      *
      * @param handler the handler of problems, cannot be {@code null}.
      * @return this builder.
      * @throws NullPointerException if the specified {@code handler} is
      *                              {@code null}.
      */
-    JsonValidatorFactoryBuilder withProblemHandler(ProblemHandler handler);
+    ValidationConfig withProblemHandler(ProblemHandler handler);
 
     /**
-     * Assigns the factory of problem handlers. Problem handlers will be created for
-     * each instance of {@code JsonParser} and {@code JsonReader}.
+     * Specifies the factory of problem handlers. Problem handlers will be created
+     * for each instance of {@code JsonParser} and {@code JsonReader}.
      *
      * @param handlerFactory the factory of problem handlers, cannot be {@code null}
      * @return this builder.
      * @throws NullPointerException if the specified {@code handlerFactory} is
      *                              {@code null}.
      */
-    JsonValidatorFactoryBuilder withProblemHandlerFactory(ProblemHandlerFactory handlerFactory);
+    ValidationConfig withProblemHandlerFactory(ProblemHandlerFactory handlerFactory);
 
     /**
-     * Assigns whether JSON instances will be filled with default values while being
-     * validated or not. The default values are provided by {@code default} keywords
-     * in the schema. By default, the default values are ignored and the instances
-     * never be modified.
+     * Specifies whether JSON instances will be filled with default values while
+     * being validated or not. The default values are provided by {@code default}
+     * keywords in the schema. By default, the default values are ignored and the
+     * instances never be modified.
      *
      * @param usingDefaultValues {@code true} to fill the instances with default
      *                           values provided by the schema. {@code false} to
      *                           ingore default values.
      * @return this builder.
      */
-    JsonValidatorFactoryBuilder withDefaultValues(boolean usingDefaultValues);
-
-    /**
-     * Builds a new instance of {@code JsonParserFactory}.
-     *
-     * @return a new instance of {@code JsonParserFactory} configured by this
-     *         builder.
-     */
-    JsonParserFactory buildParserFactory();
-
-    /**
-     * Builds a new instance of {@code JsonReaderFactory}.
-     *
-     * @return a new instance of {@code JsonReaderFactory} configured by this
-     *         builder.
-     */
-    JsonReaderFactory buildReaderFactory();
+    ValidationConfig withDefaultValues(boolean usingDefaultValues);
 }

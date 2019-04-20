@@ -36,9 +36,9 @@ public class DefaultJsonReaderFactory implements JsonReaderFactory {
     private final JsonParserFactory parserFactory;
     private final Map<String, ?> config;
 
-    public DefaultJsonReaderFactory(JsonParserFactory parserFactory, Map<String, ?> config) {
+    public DefaultJsonReaderFactory(JsonParserFactory parserFactory) {
         this.parserFactory = parserFactory;
-        this.config = config;
+        this.config = parserFactory.getConfigInUse();
     }
 
     @Override

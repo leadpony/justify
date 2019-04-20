@@ -28,8 +28,8 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidatorFactoryBuilder;
 import org.leadpony.justify.api.ProblemHandlerFactory;
+import org.leadpony.justify.api.ValidationConfig;
 import org.leadpony.justify.internal.base.json.JsonParserFactoryDecorator;
 
 /**
@@ -42,7 +42,10 @@ public class JsonValidatorFactory extends JsonParserFactoryDecorator {
     private final JsonSchema schema;
     private final JsonProvider jsonProvider;
     private final ProblemHandlerFactory handlerFactory;
-    private final Map<String, Object> properties;
+    private final Map<String, ?> properties;
+
+    private static final ProblemHandlerFactory DEFAULT_HANDLER_FACTORY = parser -> problems -> {
+    };
 
     /**
      * Constructs this factory.
@@ -65,6 +68,30 @@ public class JsonValidatorFactory extends JsonParserFactoryDecorator {
         this.jsonProvider = jsonProvider;
         this.handlerFactory = handlerFactory;
         this.properties = properties;
+    }
+
+    /**
+     * Constructs this factory.
+     *
+     * @param jsonProvider      the JSON provider.
+     * @param jsonParserFactory the underlying JSON parser factory.
+     * @param properties        the configuration properties.
+     */
+    public JsonValidatorFactory(
+            JsonProvider jsonProvider,
+            JsonParserFactory realFactory,
+            Map<String, ?> properties) {
+        super(realFactory);
+
+        this.jsonProvider = jsonProvider;
+        this.properties = properties;
+
+        this.schema = (JsonSchema) properties.get(ValidationConfig.SCHEMA);
+        ProblemHandlerFactory handlerFactory = (ProblemHandlerFactory) properties
+                .get(ValidationConfig.PROBLEM_HANDLER_FACTORY);
+        this.handlerFactory = (handlerFactory != null) ? handlerFactory : DEFAULT_HANDLER_FACTORY;
+
+        assert this.schema != null;
     }
 
     @Override
@@ -98,7 +125,7 @@ public class JsonValidatorFactory extends JsonParserFactoryDecorator {
     }
 
     private boolean usesDefaultValues() {
-        Object value = properties.get(JsonValidatorFactoryBuilder.DEFAULT_VALUES);
+        Object value = properties.get(ValidationConfig.DEFAULT_VALUES);
         return value == Boolean.TRUE;
     }
 

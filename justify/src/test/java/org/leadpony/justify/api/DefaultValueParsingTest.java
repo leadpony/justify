@@ -610,9 +610,10 @@ public class DefaultValueParsingTest {
     }
 
     private static JsonParser createParser(String json, JsonSchema schema) {
-        return service.createValidatorFactoryBuilder(schema)
-                .withDefaultValues(true)
-                .buildParserFactory()
+        ValidationConfig config = service.createValidationConfig()
+                .withSchema(schema)
+                .withDefaultValues(true);
+        return service.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(json));
     }
 

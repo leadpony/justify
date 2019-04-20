@@ -16,5 +16,6 @@
 
 /**
  * Provides the API for validating JSON documents.
+ * The central type in this package is {@link JsonValidationService}.
  */
 package org.leadpony.justify.api;

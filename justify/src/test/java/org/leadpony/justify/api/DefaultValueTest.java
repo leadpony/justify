@@ -203,18 +203,20 @@ public class DefaultValueTest {
     }
 
     private JsonParser createJsonParser(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        return service.createValidatorFactoryBuilder(schema)
+        ValidationConfig config = service.createValidationConfig()
+                .withSchema(schema)
                 .withProblemHandler(handler)
-                .withDefaultValues(true)
-                .buildParserFactory()
+                .withDefaultValues(true);
+        return service.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(value.toString()));
     }
 
     private JsonReader createJsonReader(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        return service.createValidatorFactoryBuilder(schema)
+        ValidationConfig config = service.createValidationConfig()
+                .withSchema(schema)
                 .withProblemHandler(handler)
-                .withDefaultValues(true)
-                .buildReaderFactory()
+                .withDefaultValues(true);
+        return service.createReaderFactory(config.getAsMap())
                 .createReader(new StringReader(value.toString()));
     }
 

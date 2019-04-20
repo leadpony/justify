@@ -184,23 +184,41 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonSchemaBuilderFactory createSchemaBuilderFactory();
 
     /**
-     * Creates a builder instance which can be used for building configured instance
-     * of {@code JsonParserFactory} or {@code JsonReaderFactory}.
+     * Creates a configuration for {@code JsonParser} or {@code JsonReader} with
+     * validation functionality. The map generated from the configuration can be
+     * passed to the methods {@link #createParserFactory(Map)} and
+     * {@link #createReaderFactory(Map)}.
      *
-     * @param schema the JSON schema to apply while parsing or reading JSON documents.
-     * @return newly created instance of {@link JsonValidatorFactoryBuilder}.
-     * @throws NullPointerException if the specified {@code schema} is {@code null}.
+     * @return newly created configuration, never be {@code null}.
      */
-    JsonValidatorFactoryBuilder createValidatorFactoryBuilder(JsonSchema schema);
+    ValidationConfig createValidationConfig();
 
     /**
-     * Creates a parser factory for creating {@link JsonParser} instances. Parsers
+     * Creates a parser factory for creating {@code JsonParser} instances. Parsers
+     * created by the factory can validate JSON documents while parsing.
+     *
+     * <p>
+     * The factory is configured with the specified map of configuration properties.
+     * </p>
+     * <p>
+     * Recommended way to create the configuration properties is to generate it via
+     * {@link ValidationConfig#getAsMap()}. An instance of {@link ValidationConfig}
+     * can be created by calling {@link #createValidationConfig()}.
+     * </p>
+     *
+     * @param config the map of provider-specific properties to configure the JSON
+     *               parsers. The map may be empty or {@code null}.
+     * @return newly created instance of {@code JsonParserFactory}, which is defined
+     *         in the JSON Processing API.
+     */
+    JsonParserFactory createParserFactory(Map<String, ?> config);
+
+    /**
+     * Creates a parser factory for creating {@code JsonParser} instances. Parsers
      * created by the factory validate JSON documents while parsing.
      *
      * <p>
      * The factory is configured with the specified map of configuration properties.
-     * Provider implementations should ignore any unsupported configuration
-     * properties specified in the map.
      * </p>
      *
      * @param config         the map of provider-specific properties to configure
@@ -208,7 +226,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema         the JSON schema to apply when validating JSON document.
      * @param handlerFactory the factory to supply problem handlers, cannot be
      *                       {@code null}.
-     * @return newly created instance of {@link JsonParserFactory}, which is defined
+     * @return newly created instance of {@code JsonParserFactory}, which is defined
      *         in the JSON Processing API.
      * @throws NullPointerException if any of specified parameters is {@code null}.
      */
@@ -224,7 +242,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonParser}, which is defined in the
+     * @return newly created instance of {@code JsonParser}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -243,7 +261,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonParser}, which is defined in the
+     * @return newly created instance of {@code JsonParser}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -260,7 +278,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonParser}, which is defined in the
+     * @return newly created instance of {@code JsonParser}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -275,7 +293,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonParser}, which is defined in the
+     * @return newly created instance of {@code JsonParser}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws JsonException        if an I/O error occurs while creating parser.
@@ -284,12 +302,29 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonParser createParser(Path path, JsonSchema schema, ProblemHandler handler);
 
     /**
-     * Creates a reader factory for creating {@link JsonReader} instances. Readers
+     * Creates a reader factory for creating {@code JsonReader} instances. Readers
+     * created by the factory can validate JSON documents while reading.
+     * <p>
+     * The factory is configured with the specified map of configuration properties.
+     * </p>
+     * <p>
+     * Recommended way to create the configuration properties is to generate it via
+     * {@link ValidationConfig#getAsMap()}. An instance of {@link ValidationConfig}
+     * can be created by calling {@link #createValidationConfig()}.
+     * </p>
+     *
+     * @param config the map of provider specific properties to configure the JSON
+     *               readers. The map may be empty or {@code null}.
+     * @return newly created instance of {@code JsonReaderFactory}, which is defined
+     *         in the JSON Processing API.
+     */
+    JsonReaderFactory createReaderFactory(Map<String, ?> config);
+
+    /**
+     * Creates a reader factory for creating {@code JsonReader} instances. Readers
      * created by the factory validate JSON documents while reading.
      * <p>
      * The factory is configured with the specified map of configuration properties.
-     * Provider implementations should ignore any unsupported configuration
-     * properties specified in the map.
      * </p>
      *
      * @param config         the map of provider specific properties to configure
@@ -298,7 +333,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param handlerFactory the factory to supply problem handlers, cannot be
      *                       {@code null}.
      * @throws NullPointerException if any of specified parameters is {@code null}.
-     * @return newly created instance of {@link JsonReaderFactory}, which is defined
+     * @return newly created instance of {@code JsonReaderFactory}, which is defined
      *         in the JSON Processing API.
      */
     JsonReaderFactory createReaderFactory(Map<String, ?> config, JsonSchema schema,
@@ -313,7 +348,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonReader}, which is defined in the
+     * @return newly created instance of {@code JsonReader}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -330,7 +365,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonReader}, which is defined in the
+     * @return newly created instance of {@code JsonReader}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -345,7 +380,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonReader}, which is defined in the
+     * @return newly created instance of {@code JsonReader}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws NullPointerException if any of specified parameters is {@code null}.
@@ -360,7 +395,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param schema  the JSON schema to apply when validating JSON document.
      * @param handler the object which handles problems found during the validation,
      *                cannot be {@code null}.
-     * @return newly created instance of {@link JsonReader}, which is defined in the
+     * @return newly created instance of {@code JsonReader}, which is defined in the
      *         JSON Processing API. It must be closed by the method caller after
      *         use.
      * @throws JsonException        if an I/O error occurs while creating reader.
@@ -377,7 +412,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @param handlerFactory the factory to supply problem handlers, cannot be
      *                       {@code null}.
      * @throws NullPointerException if any of specified parameters is {@code null}.
-     * @return newly created instance of {@link JsonProvider}, which is defined in
+     * @return newly created instance of {@code JsonProvider}, which is defined in
      *         the JSON Processing API.
      */
     JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory);

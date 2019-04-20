@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonReaderFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
@@ -31,19 +30,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * A test class for {@link JsonValidatorFactoryBuilder}.
+ * A test class for {@link ValidationConfig}.
  *
  * @author leadpony
  */
-public class JsonValidatorFactoryBuilderTest {
+public class ValidationConfigTest {
 
     private static final JsonValidationService service = JsonValidationServices.get();
 
-    private JsonValidatorFactoryBuilder sut;
+    private ValidationConfig sut;
 
     @BeforeEach
     public void setUp() {
-        sut = service.createValidatorFactoryBuilder(JsonSchema.FALSE);
+        sut = service.createValidationConfig();
     }
 
     @Test
@@ -54,7 +53,7 @@ public class JsonValidatorFactoryBuilderTest {
     @Test
     public void getAsMap_returnsFilledMap() {
         Map<String, Object> expected = new HashMap<>();
-        expected.put(JsonValidatorFactoryBuilder.DEFAULT_VALUES, Boolean.TRUE);
+        expected.put(ValidationConfig.DEFAULT_VALUES, Boolean.TRUE);
 
         sut.withDefaultValues(true);
         assertThat(sut.getAsMap()).containsExactlyEntriesOf(expected);
@@ -69,7 +68,7 @@ public class JsonValidatorFactoryBuilderTest {
     public void getProperty_returnsValueIfExists() {
         sut.withDefaultValues(true);
 
-        assertThat(sut.getProperty(JsonValidatorFactoryBuilder.DEFAULT_VALUES))
+        assertThat(sut.getProperty(ValidationConfig.DEFAULT_VALUES))
             .contains(Boolean.TRUE);
     }
 
@@ -89,19 +88,21 @@ public class JsonValidatorFactoryBuilderTest {
         Map<String, Object> expected = new HashMap<>();
         expected.put("foo", true);
         expected.put("bar", false);
-        expected.put(JsonValidatorFactoryBuilder.DEFAULT_VALUES, true);
+        expected.put(ValidationConfig.DEFAULT_VALUES, true);
 
         sut.withDefaultValues(true).withProperties(properties);
 
-        assertThat(sut.getAsMap()).containsExactlyEntriesOf(expected);
+        assertThat(sut.getAsMap()).isEqualTo(expected);
     }
 
     @Test
     public void withProblemHandler_assignsProblemHandler() {
         List<Problem> problems = new ArrayList<>();
+
+        sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandler(problems::addAll);
 
-        JsonParserFactory factory = sut.buildParserFactory();
+        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -113,9 +114,11 @@ public class JsonValidatorFactoryBuilderTest {
     @Test
     public void withProblemHandlerFactory_assignsProblemHandlerFactory() {
         ProblemHandlerFactoryMock handlerFactory = new ProblemHandlerFactoryMock();
+
+        sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandlerFactory(handlerFactory);
 
-        JsonParserFactory factory = sut.buildParserFactory();
+        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -123,18 +126,6 @@ public class JsonValidatorFactoryBuilderTest {
 
         assertThat(handlerFactory.created).isEqualTo(1);
         assertThat(handlerFactory.problems).hasSize(1);
-    }
-
-    @Test
-    public void buildParserFactory_returnsParserFactory() {
-        JsonParserFactory factory = sut.buildParserFactory();
-        assertThat(factory).isNotNull();
-    }
-
-    @Test
-    public void buildReaderFactory_returnsParserFactory() {
-        JsonReaderFactory factory = sut.buildReaderFactory();
-        assertThat(factory).isNotNull();
     }
 
     private static class ProblemHandlerFactoryMock implements ProblemHandlerFactory {
