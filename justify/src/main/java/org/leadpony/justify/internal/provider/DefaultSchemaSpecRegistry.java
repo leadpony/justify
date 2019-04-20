@@ -33,8 +33,8 @@ import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
-import org.leadpony.justify.internal.schema.binder.KeywordBinder;
-import org.leadpony.justify.internal.schema.binder.KeywordBinders;
+import org.leadpony.justify.internal.schema.binding.KeywordBinder;
+import org.leadpony.justify.internal.schema.binding.KeywordBinders;
 import org.leadpony.justify.internal.schema.io.GenericSchemaReader;
 import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
@@ -174,28 +174,13 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
         }
 
         @Override
-        public boolean supportsFormatAttribute(String name) {
-            return formatAttributes.containsKey(name);
-        }
-
-        @Override
         public FormatAttribute getFormatAttribute(String name) {
             return formatAttributes.get(name);
         }
 
         @Override
-        public boolean supportsEncodingScheme(String name) {
-            return encodingSchemes.containsKey(name.toLowerCase());
-        }
-
-        @Override
         public ContentEncodingScheme getEncodingScheme(String name) {
             return encodingSchemes.get(name.toLowerCase());
-        }
-
-        @Override
-        public boolean supportsMimeType(String value) {
-            return mimeTypes.containsKey(value.toLowerCase());
         }
 
         @Override

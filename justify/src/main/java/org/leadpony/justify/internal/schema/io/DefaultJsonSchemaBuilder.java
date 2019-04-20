@@ -88,6 +88,9 @@ import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.spi.ContentEncodingScheme;
+import org.leadpony.justify.spi.ContentMimeType;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link JsonSchemaBuilder}.
@@ -526,8 +529,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
-        if (spec.supportsFormatAttribute(attribute)) {
-            Format format = Format.of(spec.getFormatAttribute(attribute));
+        FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
+        if (foundAttribute != null) {
+            Format format = Format.of(foundAttribute);
             addKeyword(format);
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
@@ -539,8 +543,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withLaxFormat(String attribute) {
         requireNonNull(attribute, "attribute");
         Format format = null;
-        if (spec.supportsFormatAttribute(attribute)) {
-            format = Format.of(spec.getFormatAttribute(attribute));
+        FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
+        if (foundAttribute != null) {
+            format = Format.of(foundAttribute);
         } else {
             format = Format.of(attribute);
         }
@@ -551,8 +556,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
-        if (spec.supportsEncodingScheme(value)) {
-            addKeyword(new ContentEncoding(spec.getEncodingScheme(value)));
+        ContentEncodingScheme scheme = spec.getEncodingScheme(value);
+        if (scheme != null) {
+            addKeyword(new ContentEncoding(scheme));
         } else {
             addKeyword(new UnknownContentEncoding(value));
         }
@@ -564,8 +570,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(value, "value");
         MediaType mediaType = MediaType.valueOf(value);
         String mimeType = mediaType.mimeType();
-        if (spec.supportsMimeType(mimeType)) {
-            addKeyword(new ContentMediaType(spec.getMimeType(mimeType), mediaType.parameters()));
+        ContentMimeType foundMimeType = spec.getMimeType(mimeType);
+        if (foundMimeType != null) {
+            addKeyword(new ContentMediaType(foundMimeType, mediaType.parameters()));
         } else {
             addKeyword(new UnknownContentMediaType(value));
         }

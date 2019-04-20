@@ -33,10 +33,10 @@ import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.schema.binder.KeywordBinder;
 import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
-import org.leadpony.justify.internal.schema.binder.BinderContext;
+import org.leadpony.justify.internal.schema.binding.BindingContext;
+import org.leadpony.justify.internal.schema.binding.KeywordBinder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -109,7 +109,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         return spec.getMimeType(value);
     }
 
-    private void parseKeyword(String name, BinderContext context) {
+    private void parseKeyword(String name, BindingContext context) {
         KeywordBinder binder = binders.get(name);
         if (binder != null) {
             binder.fromJson(parser, context);
@@ -118,7 +118,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         }
     }
 
-    private void parseUnknownKeyword(String keyword, BinderContext context) {
+    private void parseUnknownKeyword(String keyword, BindingContext context) {
         if (isStrictWithKeywords()) {
             ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_KEYWORD_UNKNOWN)
                     .withParameter("keyword", keyword);
@@ -147,7 +147,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
     }
 
     @SuppressWarnings("serial")
-    private class SchemaBuilder extends LinkedHashMap<String, Keyword> implements BinderContext {
+    private class SchemaBuilder extends LinkedHashMap<String, Keyword> implements BindingContext {
 
         private URI id;
         // The location of "$ref".
@@ -167,7 +167,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
             }
         }
 
-        /* As a BinderContext */
+        /* As a BindingContext */
 
         @Override
         public JsonSchema readSchema(Event event) {
