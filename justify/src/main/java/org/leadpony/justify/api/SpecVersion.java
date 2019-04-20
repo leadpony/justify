@@ -16,6 +16,11 @@
 package org.leadpony.justify.api;
 
 import java.net.URI;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The versions of the JSON Schema Specification.
@@ -24,18 +29,20 @@ import java.net.URI;
  */
 public enum SpecVersion {
     /**
-     * JSON Schema Draft-04.
+     * JSON Schema specification of Draft-04.
      */
     DRAFT_04("http://json-schema.org/draft-04/schema#"),
     /**
-     * JSON Schema Draft-06.
+     * JSON Schema specification of Draft-06.
      */
     DRAFT_06("http://json-schema.org/draft-06/schema#"),
     /**
-     * JSON Schema Draft-07.
+     * JSON Schema specification of Draft-07.
      */
-    DRAFT_07("http://json-schema.org/draft-07/schema#")
-    ;
+    DRAFT_07("http://json-schema.org/draft-07/schema#");
+
+    private static final Map<URI, SpecVersion> versionMap = Stream.of(SpecVersion.values())
+            .collect(Collectors.toMap(SpecVersion::id, Function.identity()));
 
     private final URI id;
 
@@ -44,7 +51,8 @@ public enum SpecVersion {
     }
 
     /**
-     * Returns the identifier of this version.
+     * Returns the identifier of this version, such as
+     * {@code "http://json-schema.org/draft-07/schema#"}.
      *
      * @return the identifier of this version, never be {@code null}.
      */
@@ -59,5 +67,25 @@ public enum SpecVersion {
      */
     public static SpecVersion current() {
         return DRAFT_07;
+    }
+
+    /**
+     * Returns the version of the specified ID.
+     *
+     * @param id the identifier of the version, such as
+     *           {@code "http://json-schema.org/draft-07/schema#"}.
+     * @return found version, never be {@code null}.
+     * @throws IllegalArgumentException if this enum type has no constant with the
+     *                                  specified identifier.
+     * @throws NullPointerException     if the specified {@code id} is {@code null}.
+     *
+     */
+    public static SpecVersion getById(URI id) {
+        Objects.requireNonNull(id, "id must not be null.");
+        SpecVersion version = versionMap.get(id);
+        if (version == null) {
+            throw new IllegalArgumentException();
+        }
+        return version;
     }
 }

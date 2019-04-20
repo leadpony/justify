@@ -51,35 +51,42 @@ public interface JsonSchemaReader extends Closeable {
      * The property used to specify whether the schema reader is strict with
      * keywords or not.
      */
-    String STRICT_KEYWORDS = "org.leadpony.justify.schema.strict-keywords";
+    String STRICT_KEYWORDS = "org.leadpony.justify.api.JsonSchemaReader.STRICT_KEYWORDS";
 
     /**
      * The property used to specify whether the schema reader is strict with formats
      * or not.
      */
-    String STRICT_FORMATS = "org.leadpony.justify.schema.strict-formats";
+    String STRICT_FORMATS = "org.leadpony.justify.api.JsonSchemaReader.STRICT_FORMATS";
 
     /**
      * The property used to specify whether the schema reader uses custom format
      * attributes or not.
      */
-    String CUSTOM_FORMATS = "org.leadpony.justify.schema.custom-formats";
+    String CUSTOM_FORMATS = "org.leadpony.justify.api.JsonSchemaReader.CUSTOM_FORMATS";
 
     /**
      * The property used to specify the list of schema resolvers.
      */
-    String RESOLVERS = "org.leadpony.justify.schema.resolvers";
+    String RESOLVERS = "org.leadpony.justify.api.JsonSchemaReader.RESOLVERS";
 
     /**
-     * The property used to specify the version of the JSON Schema specification.
+     * The property used to specify the default version of the JSON Schema
+     * specification.
      */
-    String SPEC_VERSION = "org.leadpony.justify.schema.spec-version";
+    String DEFAULT_SPEC_VERSION = "org.leadpony.justify.api.JsonSchemaReader.DEFAULT_SPEC_VERSION";
 
     /**
      * The property used to specify whether the schema reader validates the schema
      * against the metaschema or not.
      */
-    String SCHEMA_VALIDATION = "org.leadpony.justify.schema.schema-validation";
+    String SCHEMA_VALIDATION = "org.leadpony.justify.api.JsonSchemaReader.SCHEMA_VALIDATION";
+
+    /**
+     * The property used to specify whether the automatic detection of specification
+     * version is enabled or not.
+     */
+    String SPEC_VERSION_DETECTION = "org.leadpony.justify.api.JsonSchemaReader.SPEC_VERSION_DETECTION";
 
     /**
      * Returns a JSON schema that is represented in the input source. This method

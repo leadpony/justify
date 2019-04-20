@@ -1,0 +1,6 @@
+{
+    "$id": "https://example.org/example.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$comment": "$comment does not exist until Draft-07.", 
+    "type": "object"
+}

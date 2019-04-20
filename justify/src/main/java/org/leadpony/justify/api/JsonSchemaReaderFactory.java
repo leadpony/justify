@@ -28,14 +28,17 @@ import javax.json.JsonException;
  * <p>
  * The following code sample shows how to read a JSON schema from a string:
  * </p>
- * <pre><code>
+ *
+ * <pre>
+ * <code>
  * JsonValidationService service = JsonValidationService.newInstance();
  * JsonSchemaReaderFactory factory = service.createSchemaReaderFactory();
  * StringReader reader = new StringReader("{\"type\": \"integer\"}");
  * try (JsonSchemaReader reader = factory.createSchemaReader(reader)) {
  *     JsonSchema schema = reader.read();
  * }
- * </code></pre>
+ * </code>
+ * </pre>
  *
  * <p>
  * Any instance of this class is safe for use by multiple concurrent threads.
@@ -46,26 +49,28 @@ import javax.json.JsonException;
 public interface JsonSchemaReaderFactory {
 
     /**
-     * Creates a JSON schema reader from a byte stream.
-     * The character encoding of the stream is determined as described in RFC 7159.
+     * Creates a JSON schema reader from a byte stream. The character encoding of
+     * the stream is determined as described in RFC 7159.
      *
      * @param in the byte stream from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     *         It must be closed by the method caller after use.
+     * @return newly created instance of JSON schema reader. It must be closed by
+     *         the method caller after use.
      * @throws NullPointerException if the specified {@code in} is {@code null}.
      * @see JsonSchemaReader
      */
     JsonSchemaReader createSchemaReader(InputStream in);
 
     /**
-     * Creates a JSON schema reader from a byte stream encoded by the specified charset.
-     * The bytes of the stream will be decoded to characters using the specified charset.
+     * Creates a JSON schema reader from a byte stream encoded by the specified
+     * charset. The bytes of the stream will be decoded to characters using the
+     * specified charset.
      *
-     * @param in the byte stream from which a JSON schema is to be read.
+     * @param in      the byte stream from which a JSON schema is to be read.
      * @param charset the character set.
-     * @return newly created instance of JSON schema reader.
-     *         It must be closed by the method caller after use.
-     * @throws NullPointerException if the specified {@code in} or {@code charset} is {@code null}.
+     * @return newly created instance of JSON schema reader. It must be closed by
+     *         the method caller after use.
+     * @throws NullPointerException if the specified {@code in} or {@code charset}
+     *                              is {@code null}.
      * @see JsonSchemaReader
      */
     JsonSchemaReader createSchemaReader(InputStream in, Charset charset);
@@ -74,8 +79,8 @@ public interface JsonSchemaReaderFactory {
      * Creates a JSON schema reader from a character stream.
      *
      * @param reader the character stream from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     *         It must be closed by the method caller after use.
+     * @return newly created instance of JSON schema reader. It must be closed by
+     *         the method caller after use.
      * @throws NullPointerException if the specified {@code reader} is {@code null}.
      * @see JsonSchemaReader
      */
@@ -85,9 +90,9 @@ public interface JsonSchemaReaderFactory {
      * Creates a JSON schema reader from a path.
      *
      * @param path the path from which a JSON schema is to be read.
-     * @return newly created instance of JSON schema reader.
-     *         It must be closed by the method caller after use.
-     * @throws JsonException if an I/O error occurs while creating reader.
+     * @return newly created instance of JSON schema reader. It must be closed by
+     *         the method caller after use.
+     * @throws JsonException        if an I/O error occurs while creating reader.
      * @throws NullPointerException if the specified {@code path} is {@code null}.
      * @see JsonSchemaReader
      */

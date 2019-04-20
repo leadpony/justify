@@ -202,5 +202,10 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
         public ContentMimeType getMimeType(String value) {
             return mimeTypes.get(value.toLowerCase());
         }
+
+        @Override
+        public String toString() {
+            return version.toString();
+        }
     }
 }

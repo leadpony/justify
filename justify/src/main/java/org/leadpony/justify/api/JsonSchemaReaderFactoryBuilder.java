@@ -88,25 +88,25 @@ public interface JsonSchemaReaderFactoryBuilder {
     JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver);
 
     /**
-     * Activates or deactivates the custom format attributes provided through
-     * Service Provider Interface. By default, they are activated.
+     * Enables or disables the custom format attributes provided through Service
+     * Provider Interface. By default, they are enabled.
      *
-     * @param active {@code true} to activate the custom format attributes,
-     *               {@code false} to deactivate them.
+     * @param enabled {@code true} to enable the custom format attributes,
+     *                {@code false} to disable them.
      * @return this builder.
      */
-    JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active);
+    JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean enabled);
 
     /**
-     * Specifies the version of the JSON Schema specification. By default the latest
-     * version is assigned.
+     * Specifies the default version of the JSON Schema specification. By default
+     * the current version is assigned.
      *
-     * @param version the version of the JSON Schema specification.
+     * @param version the default version of the JSON Schema specification.
      * @return this buidler.
      * @throws NullPointerException if the specified {@code version} is
      *                              {@code null}.
      */
-    JsonSchemaReaderFactoryBuilder withSpecVersion(SpecVersion version);
+    JsonSchemaReaderFactoryBuilder withDefaultSpecVersion(SpecVersion version);
 
     /**
      * Specifies whether the schema reader validates the schema against the
@@ -117,4 +117,14 @@ public interface JsonSchemaReaderFactoryBuilder {
      * @return this builder.
      */
     JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enabled);
+
+    /**
+     * Enables or disables the automatic detection of specification version. By
+     * default this option is enabled.
+     *
+     * @param enabled {@code true} to enable the detection of specification version,
+     *                {@code false} to disable it.
+     * @return this builder.
+     */
+    JsonSchemaReaderFactoryBuilder withSpecVersionDetection(boolean enabled);
 }

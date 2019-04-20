@@ -128,7 +128,7 @@ public abstract class AbstractOfficialTest {
         specVersion = spec.value()[0];
         basePath = basePaths.get(specVersion);
         schemaReaderFactory = service.createSchemaReaderFactoryBuilder()
-                .withSpecVersion(specVersion)
+                .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
                 .withSchemaValidation(false)
                 .build();

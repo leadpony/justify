@@ -20,7 +20,6 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -35,7 +34,6 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
 import javax.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.api.JsonSchemaReader;
@@ -44,6 +42,7 @@ import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.ResettableInputStream;
 import org.leadpony.justify.internal.base.ResettableReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
@@ -57,11 +56,11 @@ import org.leadpony.justify.internal.validator.JsonValidator;
 public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private final JsonProvider jsonProvider;
-    private final JsonParserFactory jsonParserFactory;
+    protected final JsonParserFactory jsonParserFactory;
     private final JsonBuilderFactory jsonBuilderFactory;
 
     private final SchemaSpecRegistry specRegistry;
-    private final SpecVersion specVersion;
+    protected final SpecVersion defaultVersion;
     private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
@@ -70,43 +69,38 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new Builder(jsonProvider, specRegistry);
     }
 
-    private DefaultJsonSchemaReaderFactory(Builder builder) {
+    protected DefaultJsonSchemaReaderFactory(Builder builder) {
         this.jsonProvider = builder.jsonProvider;
         this.jsonParserFactory = jsonProvider.createParserFactory(null);
         this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
         this.specRegistry = builder.specRegistry;
         this.config = builder.getAsMap();
-        this.specVersion = (SpecVersion)this.config.get(JsonSchemaReader.SPEC_VERSION);
+        this.defaultVersion = (SpecVersion)this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
     }
 
     @Override
     public JsonSchemaReader createSchemaReader(InputStream in) {
         requireNonNull(in, "in");
+        SchemaSpec spec = getSpec(defaultVersion);
         JsonParser realParser = jsonParserFactory.createParser(in);
-        SchemaSpec spec = getSpec();
-        PointerAwareJsonParser parser = createParser(realParser, spec);
-        return createSchemaReader(parser, spec);
+        return createSpecificSchemaReader(realParser, spec);
     }
 
     @Override
     public JsonSchemaReader createSchemaReader(InputStream in, Charset charset) {
         requireNonNull(in, "in");
         requireNonNull(charset, "charset");
+        SchemaSpec spec = getSpec(defaultVersion);
         JsonParser realParser = jsonParserFactory.createParser(in, charset);
-        SchemaSpec spec = getSpec();
-        PointerAwareJsonParser parser = createParser(realParser, spec);
-        return createSchemaReader(parser, spec);
+        return createSpecificSchemaReader(realParser, spec);
     }
 
     @Override
     public JsonSchemaReader createSchemaReader(Reader reader) {
         requireNonNull(reader, "reader");
-        ResettableReader resettable = new ResettableReader(reader);
-        SpecVersion version = probeSpecVersion(jsonParserFactory.createParser(resettable));
-        JsonParser realParser = jsonParserFactory.createParser(resettable.createResettedReader());
-        SchemaSpec spec = getSpec(version);
-        PointerAwareJsonParser parser = createParser(realParser, spec);
-        return createSchemaReader(parser, spec);
+        SchemaSpec spec = getSpec(defaultVersion);
+        JsonParser realParser = jsonParserFactory.createParser(reader);
+        return createSpecificSchemaReader(realParser, spec);
     }
 
     @Override
@@ -122,12 +116,10 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
-    private SchemaSpec getSpec() {
-        return getSpec(this.specVersion);
-    }
-
-    private SchemaSpec getSpec(SpecVersion version) {
-        return specRegistry.getSpec(this.specVersion, testOption(JsonSchemaReader.CUSTOM_FORMATS));
+    protected SchemaSpec getSpec(SpecVersion version) {
+        return specRegistry.getSpec(
+                version,
+                testOption(JsonSchemaReader.CUSTOM_FORMATS));
     }
 
     private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
@@ -138,23 +130,8 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
-    private DefaultSchemaBuilderFactory createSchemaBuilderFactory(SpecVersion version) {
-        return new DefaultSchemaBuilderFactory(
-                jsonBuilderFactory,
-                specRegistry.getSpec(version, testOption(JsonSchemaReader.CUSTOM_FORMATS)));
-    }
-
-    private JsonSchemaReader createSchemaReader(PointerAwareJsonParser parser, SchemaSpec spec) {
-        return createGenericSchemReader(parser, spec);
-    }
-
-    @SuppressWarnings("unused")
-    private JsonSchemaReader createBuildingSchemReader(PointerAwareJsonParser parser) {
-        DefaultSchemaBuilderFactory schemaBuilder = createSchemaBuilderFactory(SpecVersion.current());
-        return new LegacySchemaReader(parser, schemaBuilder, config);
-    }
-
-    private JsonSchemaReader createGenericSchemReader(PointerAwareJsonParser parser, SchemaSpec spec) {
+    protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
+        PointerAwareJsonParser parser = createParser(realParser, spec);
         return new GenericSchemaReader(parser, jsonBuilderFactory, spec, config);
     }
 
@@ -169,44 +146,74 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return config.get(option) == Boolean.TRUE;
     }
 
-    private SpecVersion probeSpecVersion(JsonParser parser) {
-        try (JsonParser resource = parser){
-            if (parser.hasNext()) {
-                if (parser.next() == Event.START_OBJECT) {
-                    while (parser.hasNext()) {
-                        switch (parser.next()) {
-                        case KEY_NAME:
-                            if (parser.getString().equals("$schema")) {
-                                if (parser.next() == Event.VALUE_STRING) {
-                                    return findSpecVersion(parser.getString());
-                                }
-                            }
-                            break;
-                        case START_ARRAY:
-                            parser.skipArray();
-                            break;
-                        case START_OBJECT:
-                            parser.skipObject();
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
+    /**
+     * A factory type for creating schema readers detecting the spec version.
+     *
+     * @author leadpony
+     */
+    private static class DetectableJsonSchemaReaderFactory extends DefaultJsonSchemaReaderFactory {
+
+        private DetectableJsonSchemaReaderFactory(Builder builder) {
+            super(builder);
         }
-        return this.specVersion;
+
+        @Override
+        public JsonSchemaReader createSchemaReader(InputStream in) {
+            requireNonNull(in, "in");
+            ResettableInputStream probeStream = new ResettableInputStream(in);
+            JsonParser probeParser = jsonParserFactory.createParser(probeStream);
+            return new AbstractProbeSchemaReader(probeParser, defaultVersion) {
+                @Override
+                protected JsonSchemaReader createSchemaReader(SpecVersion version) {
+                    SchemaSpec spec = getSpec(version);
+                    JsonParser realParser = jsonParserFactory.createParser(
+                            probeStream.createResettedStream());
+                    return createSpecificSchemaReader(realParser, spec);
+                }
+            };
+        }
+
+        @Override
+        public JsonSchemaReader createSchemaReader(InputStream in, Charset charset) {
+            requireNonNull(in, "in");
+            requireNonNull(charset, "charset");
+            ResettableInputStream probeStream = new ResettableInputStream(in);
+            JsonParser probeParser = jsonParserFactory.createParser(probeStream, charset);
+            return new AbstractProbeSchemaReader(probeParser, defaultVersion) {
+                @Override
+                protected JsonSchemaReader createSchemaReader(SpecVersion version) {
+                    SchemaSpec spec = getSpec(version);
+                    JsonParser realParser = jsonParserFactory.createParser(
+                            probeStream.createResettedStream(), charset);
+                    return createSpecificSchemaReader(realParser, spec);
+                }
+            };
+        }
+
+        @Override
+        public JsonSchemaReader createSchemaReader(Reader reader) {
+            requireNonNull(reader, "reader");
+            ResettableReader probeReader = new ResettableReader(reader);
+            JsonParser probeParser = jsonParserFactory.createParser(probeReader);
+            return  new AbstractProbeSchemaReader(probeParser, defaultVersion) {
+                @Override
+                protected JsonSchemaReader createSchemaReader(SpecVersion version) {
+                    SchemaSpec spec = getSpec(version);
+                    JsonParser realParser = jsonParserFactory.createParser(
+                            probeReader.createResettedReader());
+                    return createSpecificSchemaReader(realParser, spec);
+                }
+            };
+        }
     }
 
-    private SpecVersion findSpecVersion(String value) {
-        URI uri = URI.create(value);
-        return this.specVersion;
-    }
-
+    /**
+     * A builder type for building instances of {@link JsonSchemaReaderFactory}.
+     *
+     * @author leadpony
+     */
     @SuppressWarnings("serial")
-    private static class Builder extends HashMap<String, Object>
-        implements JsonSchemaReaderFactoryBuilder {
+    private static class Builder extends HashMap<String, Object> implements JsonSchemaReaderFactoryBuilder {
 
         private final JsonProvider jsonProvider;
         private final SchemaSpecRegistry specRegistry;
@@ -217,11 +224,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         private Builder(JsonProvider jsonProvider, SchemaSpecRegistry specRegistry) {
             this.jsonProvider = jsonProvider;
             this.specRegistry = specRegistry;
-            put(JsonSchemaReader.CUSTOM_FORMATS, true);
-            put(JsonSchemaReader.RESOLVERS, resolvers);
-            put(JsonSchemaReader.SPEC_VERSION, SpecVersion.current());
-            put(JsonSchemaReader.SCHEMA_VALIDATION, true);
-            withSchemaResolver(specRegistry.getMetaschemaCatalog());
+            defaultize();
         }
 
         Map<String, Object> getAsMap() {
@@ -233,8 +236,15 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         @Override
         public JsonSchemaReaderFactory build() {
             checkState();
-            alreadyBuilt = true;
-            return new DefaultJsonSchemaReaderFactory(this);
+            try {
+                if (get(JsonSchemaReader.SPEC_VERSION_DETECTION) == Boolean.TRUE) {
+                    return new DetectableJsonSchemaReaderFactory(this);
+                } else {
+                    return new DefaultJsonSchemaReaderFactory(this);
+                }
+            } finally {
+                alreadyBuilt = true;
+            }
         }
 
         @Override
@@ -260,17 +270,17 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
 
         @Override
-        public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean active) {
+        public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean enabled) {
             checkState();
-            put(JsonSchemaReader.CUSTOM_FORMATS, active);
+            put(JsonSchemaReader.CUSTOM_FORMATS, enabled);
             return this;
         }
 
         @Override
-        public JsonSchemaReaderFactoryBuilder withSpecVersion(SpecVersion version) {
+        public JsonSchemaReaderFactoryBuilder withDefaultSpecVersion(SpecVersion version) {
             checkState();
             requireNonNull(version, "version");
-            put(JsonSchemaReader.SPEC_VERSION, version);
+            put(JsonSchemaReader.DEFAULT_SPEC_VERSION, version);
             return this;
         }
 
@@ -281,10 +291,29 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             return this;
         }
 
+        @Override
+        public JsonSchemaReaderFactoryBuilder withSpecVersionDetection(boolean enabled) {
+            checkState();
+            put(JsonSchemaReader.SPEC_VERSION_DETECTION, enabled);
+            return this;
+        }
+
         private void checkState() {
             if (alreadyBuilt) {
                 throw new IllegalStateException("already built.");
             }
+        }
+
+        /**
+         * Defaultizes this builder.
+         */
+        private void defaultize() {
+            put(JsonSchemaReader.CUSTOM_FORMATS, true);
+            put(JsonSchemaReader.RESOLVERS, resolvers);
+            put(JsonSchemaReader.DEFAULT_SPEC_VERSION, SpecVersion.current());
+            put(JsonSchemaReader.SCHEMA_VALIDATION, true);
+            put(JsonSchemaReader.SPEC_VERSION_DETECTION, true);
+            withSchemaResolver(specRegistry.getMetaschemaCatalog());
         }
     }
 }

@@ -15,40 +15,49 @@
  */
 package org.leadpony.justify.internal.base;
 
-import java.io.CharArrayWriter;
-import java.io.FilterReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 
 /**
- * A {@link Reader} type which can be reset once.
+ * A {@link InputStream} type which can be reset once.
  *
  * @author leadpony
  */
-public class ResettableReader extends FilterReader {
+public class ResettableInputStream extends FilterInputStream {
 
-    private final CharArrayWriter writer = new CharArrayWriter();
+    private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-    public ResettableReader(Reader in) {
+    public ResettableInputStream(InputStream in) {
         super(in);
     }
 
     @Override
     public int read() throws IOException {
-        int c = super.read();
-        if (c >= 0) {
-            writer.write(c);
+        int b = super.read();
+        if (b >= 0) {
+            out.write(b);
         }
-        return c;
+        return b;
     }
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
-        int actualLen = super.read(cbuf, off, len);
-        if (actualLen > 0) {
-            writer.write(cbuf, off, actualLen);
+    public int read(byte[] b) throws IOException {
+        int result = super.read(b);
+        if (result > 0) {
+            out.write(b);
         }
-        return actualLen;
+        return result;
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int result = super.read(b, off, len);
+        if (result > 0) {
+            out.write(b, off, len);
+        }
+        return result;
     }
 
     @Override
@@ -56,16 +65,16 @@ public class ResettableReader extends FilterReader {
         throw new UnsupportedOperationException();
     }
 
-    public Reader createResettedReader() {
-        return new SecondReader(in, writer.toCharArray());
+    public InputStream createResettedStream() {
+        return new SecondInputStream(in, out.toByteArray());
     }
 
-    private static class SecondReader extends FilterReader {
+    private static class SecondInputStream extends FilterInputStream {
 
-        private final char[] buffer;
+        private final byte[] buffer;
         private int index;
 
-        private SecondReader(Reader in, char[] buffer) {
+        private SecondInputStream(InputStream in, byte[] buffer) {
             super(in);
             this.buffer = buffer;
         }
@@ -80,17 +89,17 @@ public class ResettableReader extends FilterReader {
         }
 
         @Override
-        public int read(char[] cbuf, int off, int len) throws IOException {
+        public int read(byte[] b, int off, int len) throws IOException {
             if (index < buffer.length) {
                 if (index + len <= buffer.length) {
-                    System.arraycopy(buffer, index, cbuf, off, len);
+                    System.arraycopy(buffer, index, b, off, len);
                     index += len;
                     return len;
                 } else {
-                    final int firstLen =  buffer.length - index;
-                    System.arraycopy(buffer, index, cbuf, off, firstLen);
+                    final int firstLen = buffer.length - index;
+                    System.arraycopy(buffer, index, b, off, firstLen);
                     index += firstLen;
-                    int secondLen = super.read(cbuf, off + firstLen, len - firstLen);
+                    int secondLen = super.read(b, off + firstLen, len - firstLen);
                     if (secondLen < 0) {
                         return firstLen;
                     } else {
@@ -98,7 +107,7 @@ public class ResettableReader extends FilterReader {
                     }
                 }
             } else {
-                return super.read(cbuf, off, len);
+                return super.read(b, off, len);
             }
         }
 

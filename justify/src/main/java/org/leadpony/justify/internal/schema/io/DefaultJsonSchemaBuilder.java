@@ -83,20 +83,18 @@ import org.leadpony.justify.internal.keyword.combiner.PatternProperties;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
 import org.leadpony.justify.internal.keyword.combiner.PropertyNames;
 import org.leadpony.justify.internal.keyword.combiner.Then;
-import org.leadpony.justify.internal.keyword.combiner.Unknown;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Id;
-import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.SchemaReference;
 
 /**
- * The default implementation of {@link Draft07SchemaBuilder}.
+ * The default implementation of {@link JsonSchemaBuilder}.
  *
  * @author leadpony
  */
-class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
+class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private final JsonBuilderFactory builderFactory;
     private final SchemaSpec spec;
@@ -111,7 +109,7 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
      * @param builderFactory the factory for producing builders of JSON values.
      * @param spec           the schema specification.
      */
-    public Draft07SchemaBuilderImpl(
+    public DefaultJsonSchemaBuilder(
             JsonBuilderFactory builderFactory,
             SchemaSpec spec) {
         this.builderFactory = builderFactory;
@@ -609,21 +607,6 @@ class Draft07SchemaBuilderImpl implements Draft07SchemaBuilder {
     public JsonSchemaBuilder withDefault(JsonValue value) {
         requireNonNull(value, "value");
         addKeyword(new Default(value));
-        return this;
-    }
-
-    @Override
-    public JsonSchemaBuilder withRef(URI ref) {
-        requireNonNull(ref, "ref");
-        addKeyword(new Ref(ref));
-        return this;
-    }
-
-    @Override
-    public JsonSchemaBuilder withUnknown(String name, JsonSchema subschema) {
-        requireNonNull(name, "name");
-        requireNonNull(subschema, "subschema");
-        addKeyword(new Unknown(name, subschema));
         return this;
     }
 

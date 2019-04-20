@@ -46,7 +46,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-public class GenericSchemaReader extends AbstractSchemaReader {
+public class GenericSchemaReader extends AbstractBasicSchemaReader {
 
     private final JsonBuilderFactory jsonBuilderFactory;
     private final SchemaSpec spec;
@@ -138,7 +138,7 @@ public class GenericSchemaReader extends AbstractSchemaReader {
         }
         URI expected = spec.getVersion().id();
         if (URIs.COMPARATOR.compare(expected, actual) != 0) {
-            ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_METASCHEMA);
+            ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_VERSION_UNEXPECTED);
             builder.withParameter("expected", expected)
                    .withParameter("actual", actual);
             addProblem(builder);

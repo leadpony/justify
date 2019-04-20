@@ -47,11 +47,11 @@ public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
      * {@inheritDoc}
      */
     @Override
-    public Draft07SchemaBuilderImpl createBuilder() {
+    public DefaultJsonSchemaBuilder createBuilder() {
         return createBuilderForDraft07();
     }
 
-    public Draft07SchemaBuilderImpl createBuilderForDraft07() {
-        return new Draft07SchemaBuilderImpl(builderFactory, spec);
+    public DefaultJsonSchemaBuilder createBuilderForDraft07() {
+        return new DefaultJsonSchemaBuilder(builderFactory, spec);
     }
 }
