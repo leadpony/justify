@@ -8,7 +8,7 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 
 ## Key Features
 
-* Compliant with [JSON Schema Specification] Draft-07.
+* Compliant with [JSON Schema Specification] Draft-07, -06, and -04.
 * Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
 * Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
@@ -32,7 +32,7 @@ the following two dependencies are all you need to add to your pom.xml.
 <dependency>
   <groupId>org.leadpony.justify</groupId>
   <artifactId>justify</artifactId>
-  <version>0.15.0</version>
+  <version>0.16.0</version>
 </dependency>
 
 <dependency>
@@ -145,7 +145,7 @@ Displays all available options including those shown above.
 
 ## Conformance to Specification
 
-All assertion keywords described in [JSON Schema Specification] Draft-07, including `default`, are now supported.
+All validation keywords, including `default`, described in [JSON Schema Specification] Draft-07, -06, and -04 are supported.
 * type
 * enum
 * const
@@ -220,13 +220,17 @@ will be filled with the default value and modified to:
 
 Both `JsonParser` and `JsonReader` support the feature. `JsonParser` produces additional events caused by the default values and `JsonReader` expands objects and arrays with the additional values.
 
-By default, this feature is disabled and the instance never be modified. The following code shows how to explicitly enable the feature for the readers.
+By default, this feature is disabled and the instance never be modified. The following code shows how to explicitly enable the feature for the parsers and readers.
 
 ```java
-JsonReaderFactory readerFactory = service.createValidatorFactoryBuilder(schema)
-        .withProblemHandler(handler)
-        .withDefaultValues(true) // Enables the default values.
-        .buildReaderFactory(); // or buildParserFactory() for parsers.
+ValidationConfig config = service.createValidationConfig();
+config.withSchema(schema)
+      .withProblemHandler(handler)
+      .withDefaultValues(true);  // This enables the feature.
+// For retrieving parser factory
+JsonParserFactory parserFactory = service.createParserFactory(config.getAsMap());
+// Or for retrieving reader factory
+JsonReaderFactory readerFactory = service.createReaderFactory(config.getAsMap());
 ```
 
 For more information, please see [the code sample](https://github.com/leadpony/justify-examples/tree/master/justify-examples-defaultvalue).
