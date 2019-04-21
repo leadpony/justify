@@ -210,7 +210,8 @@ public interface JsonSchema {
      *
      * @param context the context where the evaluator will reside.
      * @param type    the type of the JSON instance against which this schema will
-     *                be evaluated.
+     *                be evaluated. For integers, {@link InstanceType#NUMBER} will
+     *                be passed instead of {@link InstanceType#INTEGER}.
      *
      * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} is {@code null}.
@@ -225,7 +226,8 @@ public interface JsonSchema {
      *
      * @param context the context where the evaluator will reside.
      * @param type    the type of the JSON instance against which this schema will
-     *                be evaluated.
+     *                be evaluated. For integers, {@link InstanceType#NUMBER} will
+     *                be passed instead of {@link InstanceType#INTEGER}.
      *
      * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} is {@code null}.

@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Full support of JSON Schema specification Draft-06 and Draft-04.
 - `SpecVersion` enum type to define the supported versions of JSON Schema specification.
-- `JsonSchemaReaderFactoryBuilder#withDefaultSpecVersion()` to specify the default version of JSON Schema specification.
-- Automatic detection of the JSON Schema specification version based on the `$schema` keyword values. This feature is enabled by default and can be disabled with `JsonSchemaReaderFactoryBuilder#withSpecVersionDetection()`.
-- `JsonSchemaReaderFactoryBuilder#withSchemaValidation()` to enable or disable the validation of schemas against the metaschemas. By default this option is enabled as before.
+- `JsonSchemaReaderFactoryBuilder.withDefaultSpecVersion()` to specify the default version of JSON Schema specification.
+- Automatic detection of the JSON Schema specification version based on the `$schema` keyword values. This feature is enabled by default and can be disabled with `JsonSchemaReaderFactoryBuilder.withSpecVersionDetection()`.
+- `JsonSchemaReaderFactoryBuilder.withSchemaValidation()` to enable or disable the validation of schemas against the metaschemas. By default this option is enabled as before.
 - `ValidationConfig` interface to build configuration properties, which can be passed to `JsonParserFactory` or `JsonReaderFactory` type.
+
+### Changed
+- `type` parameters in `JsonSchema.createEvaluator()` and `JsonSchema.createNegatedEvaluator()` now receive `InstanceType.NUMBER` instead of `InstanceType.INTEGER` for integer type.
+- `FormatAttribute.valueType()` now must return `InstanceType.NUMBER` instead of `InstanceType.INTEGER` for integer type.
 
 ### Removed
 - `JsonValidatorFactoryBuilder` type introduced in the previous release. This type is superseded by new `ValidationConfig`.
@@ -31,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `getPointer()` method in `Problem` interface which provides the location of the problem in the JSON instance as a JSON pointer. (Proposed originally by @mshaposhnik and the implementation is supported by @erdi)
 - `ProblemPrinterBuilder` interface to build configured problem printers, such as printers with problem locations omitted.
-- `JsonValidationService#createProblemPrinterBuilder()` to create instances of `ProblemPrinterBuilder`.
+- `JsonValidationService.createProblemPrinterBuilder()` to create instances of `ProblemPrinterBuilder`.
 
 ### Changed
 - New problem printer outputs the messages including JSON pointers in addition to line and column numbers by default.
@@ -43,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.13.0 - 2019-02-27
 ### Added
-- `JsonSchemaReaderFactoryBuilder#withCustomFormatAttributes()` method for deactivating custom format attributes.
+- `JsonSchemaReaderFactoryBuilder.withCustomFormatAttributes()` method for deactivating custom format attributes.
 - [CLI] Options to resolve remote schema references. (Issue #4 proposed by @kerrykimbrough)
 
 ### Changed
@@ -51,14 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.12.0 - 2019-02-08
 ### Added
-- `JsonSchema#containsKeyword()` which tests whether a schema contains the specified keyword or not.
-- `JsonSchema#defaultValue()` which returns the value of the `default` keyword.
-- `JsonSchema#hasAbsoluteId()` which tests whether a schema has an `$id` whose  value is an absolute URI.
-- `JsonSchema#getInPlaceSubschemas()` which returns the subschemas which will be applied to the same instance location as the owning schema.
+- `JsonSchema.containsKeyword()` which tests whether a schema contains the specified keyword or not.
+- `JsonSchema.defaultValue()` which returns the value of the `default` keyword.
+- `JsonSchema.hasAbsoluteId()` which tests whether a schema has an `$id` whose  value is an absolute URI.
+- `JsonSchema.getInPlaceSubschemas()` which returns the subschemas which will be applied to the same instance location as the owning schema.
 - Detection of infinite recursive looping while reading schemas.
 
 ### Changed
-- `JsonSchema#subschemas()` and `subschemaAt()` were renamed to `getSubschemas()` and `getSubschemaAt()`, respectively.
+- `JsonSchema.subschemas()` and `subschemaAt()` were renamed to `getSubschemas()` and `getSubschemaAt()`, respectively.
 
 ### Fixed
 - A bug which was causing `JsonSchemaReader` to throw a `ClassCastException` when the schema has both `$id` and `$ref` keywords. (Issue #2 reported by @avstp)
@@ -69,10 +73,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `comment()`, `title()` and `description()` methods to `JsonSchema` interface
   to obtain the keyword value respectively.
 - `JsonSchemaReaderFactory` and `JsonSchemaReaderFactoryBuilder` as API interfaces.
-- `JsonSchemaReaderFactoryBuilder#withStrictWithKeywords()`.
+- `JsonSchemaReaderFactoryBuilder.withStrictWithKeywords()`.
   With this option enabled, the schema reader reports a problem when it
   encounters an unrecognized schema keyword.
-- `JsonSchemaReaderFactoryBuilder#withStrictWithFormats()`.
+- `JsonSchemaReaderFactoryBuilder.withStrictWithFormats()`.
   With this option enabled, the schema reader reports a problem when it
   encounters an unrecognized format attribute.
 - [CLI] `-strict` option which forces the schema validator to report

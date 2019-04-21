@@ -54,8 +54,12 @@ public interface FormatAttribute {
     /**
      * Returns the type of the value expected by this attribute.
      *
-     * @return the expected type of the value, never be {@code null}. For integers
-     *         this method must return {@link InstanceType#NUMBER}.
+     * <p>
+     * For integers this method must return {@link InstanceType#NUMBER} instead of
+     * {@link InstanceType#INTEGER}.
+     * </p>
+     *
+     * @return the expected type of the value, never be {@code null}.
      */
     InstanceType valueType();
 
