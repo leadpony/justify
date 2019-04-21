@@ -25,9 +25,14 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParserFactory;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,22 +48,41 @@ public class KnownExampleTest {
     private static final JsonValidationService service = JsonValidationServices.get();
     private static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
+    private static final String BASE_PATH = "/org/json_schema/examples/draft7/";
+
     public static Stream<Arguments> fixtures() {
         return Stream.of(
-                Arguments.of("/org/json_schema/examples/arrays.json", true),
-                Arguments.of("/org/json_schema/examples/fstab.json", true),
-                Arguments.of("/org/json_schema/examples/fstab-invalid.json", false),
-                Arguments.of("/org/json_schema/examples/geographical-location.json", true),
-                Arguments.of("/org/json_schema/examples/person.json", true),
-                Arguments.of("/org/json_schema/examples/product.json", true),
-                Arguments.of("/org/json_schema/examples/product-invalid.json", false)
+                Arguments.of("arrays.schema.json", "arrays.json", true),
+                Arguments.of("fstab.schema.json", "fstab.json", true),
+                Arguments.of("fstab.schema.json","fstab-invalid.json", false),
+                Arguments.of("geographical-location.schema.json", "geographical-location.json", true),
+                Arguments.of("person.schema.json", "person.json", true),
+                Arguments.of("product.schema.json", "product.json", true),
+                Arguments.of("product.schema.json", "product-invalid.json", false)
                 );
     }
 
     @ParameterizedTest()
     @MethodSource("fixtures")
-    public void testExample(String instanceName, boolean valid) throws IOException {
-        String schemaName = getSchemaNameFor(instanceName);
+    public void testWithJsonParser(String schemaName, String instanceName, boolean valid) throws IOException {
+        JsonSchema schema = readSchemaFromResource(schemaName);
+        List<Problem> problems = new ArrayList<>();
+        ProblemHandler handler = problems::addAll;
+        try (JsonParser parser = service.createParser(getResourceAsStream(instanceName), schema, handler)) {
+            while (parser.hasNext()) {
+                parser.next();
+            }
+        }
+        if (!problems.isEmpty()) {
+            printer.handleProblems(problems);
+        }
+        assertThat(problems.isEmpty()).isEqualTo(valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
+    }
+
+    @ParameterizedTest()
+    @MethodSource("fixtures")
+    public void testWithJsonReader(String schemaName, String instanceName, boolean valid) throws IOException {
         JsonSchema schema = readSchemaFromResource(schemaName);
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
@@ -74,16 +98,37 @@ public class KnownExampleTest {
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
     }
 
-    private static String getSchemaNameFor(String instanceName) {
-        int lastSlash = instanceName.lastIndexOf('/');
-        String filename = instanceName.substring(lastSlash + 1);
-        int lastDot = filename.lastIndexOf('.');
-        String simpleName = filename.substring(0, lastDot);
-        if (simpleName.endsWith("-invalid")) {
-            simpleName = simpleName.substring(0, simpleName.length() - 8);
+    @ParameterizedTest()
+    @MethodSource("fixtures")
+    @Disabled
+    public void testWithJsonParserFromValue(String schemaName, String instanceName, boolean valid) throws IOException {
+        JsonSchema schema = readSchemaFromResource(schemaName);
+        JsonValue value = readJsonFromResource(instanceName);
+        List<Problem> problems = new ArrayList<>();
+        ProblemHandler handler = problems::addAll;
+
+        JsonParserFactory factory = service.createParserFactory(null, schema, p->handler);
+        JsonParser parser = null;
+        switch (value.getValueType()) {
+        case ARRAY:
+            parser = factory.createParser((JsonArray)value);
+            break;
+        case OBJECT:
+            parser = factory.createParser((JsonObject)value);
+            break;
+        default:
+            return;
         }
-        String parentName = instanceName.substring(0, lastSlash + 1);
-        return parentName + simpleName + ".schema.json";
+        while (parser.hasNext()) {
+            parser.next();
+        }
+        parser.close();
+
+        if (!problems.isEmpty()) {
+            printer.handleProblems(problems);
+        }
+        assertThat(problems.isEmpty()).isEqualTo(valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
     }
 
     private JsonSchema readSchemaFromResource(String name) throws IOException {
@@ -99,6 +144,6 @@ public class KnownExampleTest {
     }
 
     private InputStream getResourceAsStream(String name) {
-        return getClass().getResourceAsStream(name);
+        return getClass().getResourceAsStream(BASE_PATH + name);
     }
 }
