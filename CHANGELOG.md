@@ -6,9 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- `JsonSchemaReaderFactoryBuilder#withSpecVersion()` to specify the JSON Schema specification version.
-- Support of JSON Schema specification Draft-06.
-- `JsonSchemaReaderFactoryBuilder#withSchemaValidation()` to enable or disable the validation of schemas against the metaschemas. By default the validation is enabled as before.
+- Full support of JSON Schema specification Draft-06 and Draft-04.
+- `SpecVersion` enum type to define the supported versions of JSON Schema specification.
+- `JsonSchemaReaderFactoryBuilder#withDefaultSpecVersion()` to specify the default version of JSON Schema specification.
+- Automatic detection of the JSON Schema specification version based on the `$schema` keyword values. This feature is enabled by default and can be disabled with `JsonSchemaReaderFactoryBuilder#withSpecVersionDetection()`.
+- `JsonSchemaReaderFactoryBuilder#withSchemaValidation()` to enable or disable the validation of schemas against the metaschemas. By default this option is enabled as before.
+- `ValidationConfig` interface to build configuration properties, which can be passed to `JsonParserFactory` or `JsonReaderFactory` type.
+
+### Removed
+- `JsonValidatorFactoryBuilder` type introduced in the previous release. This type is superseded by new `ValidationConfig`.
 
 ### Fixed
 - A bug of `oneOf` which was causing the validation to produce false result in case that two or more subschemas are evaluated eventually as valid  by different parser events. (Issue #13)   
