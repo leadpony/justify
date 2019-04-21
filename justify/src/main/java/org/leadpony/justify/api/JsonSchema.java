@@ -56,6 +56,11 @@ import javax.json.JsonValue;
  * </code>
  * </pre>
  *
+ * <p>
+ * Any instance of this class is safe for use by multiple concurrent threads
+ * after schema reading or schema building once completed.
+ * </p>
+ *
  * @author leadpony
  */
 public interface JsonSchema {
@@ -202,6 +207,7 @@ public interface JsonSchema {
      * <p>
      * Note that this method is not intended to be used directly by end users.
      * </p>
+     *
      * @param context the context where the evaluator will reside.
      * @param type    the type of the JSON instance against which this schema will
      *                be evaluated.
@@ -216,6 +222,7 @@ public interface JsonSchema {
      * <p>
      * Note that this method is not intended to be used directly by end users.
      * </p>
+     *
      * @param context the context where the evaluator will reside.
      * @param type    the type of the JSON instance against which this schema will
      *                be evaluated.
