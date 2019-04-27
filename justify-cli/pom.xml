@@ -7,7 +7,7 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify-cli</artifactId>
-    <version>0.16.0</version>
+    <version>0.17.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify.cli</name>
     <description>
@@ -35,27 +35,27 @@
             <dependency>
                 <groupId>org.fusesource.jansi</groupId>
                 <artifactId>jansi</artifactId>
-                <version>1.17.1</version>
+                <version>1.18</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.4.0</version>
+                <version>5.4.2</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-params</artifactId>
-                <version>5.4.0</version>
+                <version>5.4.2</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.12.0</version>
+                <version>3.12.2</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>9.4.15.v20190215</version>
+                <version>9.4.17.v20190418</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
