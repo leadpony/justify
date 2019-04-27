@@ -145,55 +145,20 @@ Displays all available options including those shown above.
 
 ## Conformance to Specification
 
-All validation keywords, including `default`, described in [JSON Schema Specification] Draft-07, -06, and -04 are supported.
-* type
-* enum
-* const
-* multipleOf
-* maximum/exclusiveMaximum
-* minimum/exclusiveMinimum
-* maxLength
-* minLength
-* pattern
-* items
-* additionalItems
-* maxItems
-* minItems
-* uniqueItems
-* contains
-* maxProperties
-* minProperties
-* required
-* properties
-* patternProperties
-* additionalProperties
-* dependencies
-* propertyNames
-* if/then/else
-* allOf
-* anyOf
-* oneOf
-* not
-* definitions
-* title
-* description
-* format
-  * date-time/date/time
-  * email (compliant with [RFC 5322])
-  * idn-email (compliant with [RFC 6531])
-  * hostname (compliant with [RFC 1034])
-  * idn-hostname (compliant with [RFC 5890])
-  * ipv4 (compliant with [RFC 2673])
-  * ipv6 (compliant with [RFC 4291])
-  * json-pointer (compliant with [RFC 6901])
-  * relative-json-pointer
-  * uri/uri-reference (compliant with [RFC 3986])
-  * iri/iri-reference (compliant with [RFC 3987])
-  * uri-template (compliant with [RFC 6570])
-  * regex (compliant with [ECMA 262])
-* contentEncoding, with built-in "base64" support.
-* contentMediaType, with built-in "application/json" support.
-* default
+This library supports all validation keywords, including `default`, described in [JSON Schema Specification] Draft-07, -06, and -04.
+
+The following table shows _the number of failures_ occurred while testing popular JSON validators written in JVM languages against [JSON Schema Test Suite] as of 2019-04-26.
+
+| Software | Version | Draft-07 | Draft-06 | Draft-04 |
+| --- | --- | ---: | ---: | ---: |
+| [everit-org/json-schema] | 1.11.1 | 21 | 8 | 9 |
+| [java-json-tools/json-schema-validator] | 2.2.10 | n/a | n/a | 11 |
+| Justify | 0.16.0 | 0 | 0 | 0 |
+| [networknt/json-schema-validator] | 1.0.6 | n/a | n/a | 24 |
+
+The code of these tests is available at [JSON Schema Conformance Test].
+
+This software is one of the most correct implementation of the JSON Schema Specification.
 
 ## Completion by `default` Keyword
 
@@ -247,17 +212,6 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [Java API for JSON Binding (JSR 367)]: http://json-b.net/
 [JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
-[RFC 1034]: https://tools.ietf.org/html/rfc1034.html
-[RFC 2673]: https://tools.ietf.org/html/rfc2673.html
-[RFC 3986]: https://tools.ietf.org/html/rfc3986.html
-[RFC 3987]: https://tools.ietf.org/html/rfc3987.html
-[RFC 4291]: https://tools.ietf.org/html/rfc4291.html
-[RFC 5322]: https://tools.ietf.org/html/rfc5322.html
-[RFC 5890]: https://tools.ietf.org/html/rfc5890.html
-[RFC 6531]: https://tools.ietf.org/html/rfc6531.html
-[RFC 6570]: https://tools.ietf.org/html/rfc6570.html
-[RFC 6901]: https://tools.ietf.org/html/rfc6901.html
-[ECMA 262]: https://www.ecma-international.org/publications/standards/Ecma-262.htm
 [Justify Examples]: https://github.com/leadpony/justify-examples
 [Justify CLI]: https://github.com/leadpony/justify-cli
 [API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
@@ -267,3 +221,9 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [The list of implementations]: https://json-schema.org/implementations.html  
 [Releases]: https://github.com/leadpony/justify/releases/latest
 [Changelog]: CHANGELOG.md
+
+[everit-org/json-schema]: https://github.com/everit-org/json-schema
+[java-json-tools/json-schema-validator]: https://github.com/java-json-tools/json-schema-validator
+[networknt/json-schema-validator]: https://github.com/networknt/json-schema-validator
+
+[JSON Schema Conformance Test]: https://github.com/leadpony/json-schema-conformance-test
