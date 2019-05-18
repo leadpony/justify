@@ -17,23 +17,24 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javax.json.version>1.1.4</javax.json.version>
-        <javax.json.bind.version>1.0</javax.json.bind.version>
-        <jsonp.impl.groupId>org.glassfish</jsonp.impl.groupId>
-        <jsonp.impl.artifactId>javax.json</jsonp.impl.artifactId>
-        <jsonp.impl.version>1.1.3</jsonp.impl.version>
-        <jsonb.impl.groupId>org.eclipse</jsonb.impl.groupId>
-        <jsonb.impl.artifactId>yasson</jsonb.impl.artifactId>
-        <jsonb.impl.version>1.0.3</jsonb.impl.version>
+        <jsonp.version>1.1.5</jsonp.version>
+        <jsonb.version>1.0</jsonb.version>
+        <jsonp.provider.groupId>org.glassfish</jsonp.provider.groupId>
+        <jsonp.provider.artifactId>jakarta.json</jsonp.provider.artifactId>
+        <jsonp.provider.version>${jsonp.version}</jsonp.provider.version>
+        <jsonp.provider.classifier>module</jsonp.provider.classifier>
+        <jsonb.provider.groupId>org.eclipse</jsonb.provider.groupId>
+        <jsonb.provider.artifactId>yasson</jsonb.provider.artifactId>
+        <jsonb.provider.version>1.0.3</jsonb.provider.version>
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>${javax.json.version}</version>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+            <version>${jsonp.version}</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
@@ -59,21 +60,22 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${jsonp.impl.groupId}</groupId>
-            <artifactId>${jsonp.impl.artifactId}</artifactId>
-            <version>${jsonp.impl.version}</version>
+            <groupId>${jsonp.provider.groupId}</groupId>
+            <artifactId>${jsonp.provider.artifactId}</artifactId>
+            <version>${jsonp.provider.version}</version>
+            <classifier>${jsonp.provider.classifier}</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.json.bind</groupId>
             <artifactId>javax.json.bind-api</artifactId>
-            <version>${javax.json.bind.version}</version>
+            <version>${jsonb.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${jsonb.impl.groupId}</groupId>
-            <artifactId>${jsonb.impl.artifactId}</artifactId>
-            <version>${jsonb.impl.version}</version>
+            <groupId>${jsonb.provider.groupId}</groupId>
+            <artifactId>${jsonb.provider.artifactId}</artifactId>
+            <version>${jsonb.provider.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -84,7 +86,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.8.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -94,7 +96,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.1.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -239,9 +241,10 @@
         <profile>
             <id>test-with-johnzon</id>
             <properties>
-                <jsonp.impl.groupId>org.apache.johnzon</jsonp.impl.groupId>
-                <jsonp.impl.artifactId>johnzon-core</jsonp.impl.artifactId>
-                <jsonp.impl.version>1.1.11</jsonp.impl.version>
+                <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
+                <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
+                <jsonp.provider.version>1.1.11</jsonp.provider.version>
+                <jsonp.provider.classifier></jsonp.provider.classifier>
             </properties>
         </profile>
         <profile>
