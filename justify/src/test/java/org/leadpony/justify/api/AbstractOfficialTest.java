@@ -17,10 +17,16 @@ package org.leadpony.justify.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -107,15 +113,18 @@ public abstract class AbstractOfficialTest {
     static final JsonValidationService service = JsonValidationServices.get();
     static final ProblemHandler printer = service.createProblemPrinter(log::info);
 
+    static final Path TEST_SUITE_HOME = Paths.get("..", "JSON-Schema-Test-Suite");
+    static final Path TESTS_PATH = TEST_SUITE_HOME.resolve("tests");
+
     @SuppressWarnings("serial")
-    private static final Map<SpecVersion, String> basePaths = new EnumMap<SpecVersion, String>(SpecVersion.class) {{
-        put(SpecVersion.DRAFT_04, "/org/json_schema/tests/draft4/");
-        put(SpecVersion.DRAFT_06, "/org/json_schema/tests/draft6/");
-        put(SpecVersion.DRAFT_07, "/org/json_schema/tests/draft7/");
+    private static final Map<SpecVersion, String> DRAFT_PATHS = new EnumMap<SpecVersion, String>(SpecVersion.class) {{
+        put(SpecVersion.DRAFT_04, "draft4");
+        put(SpecVersion.DRAFT_06, "draft6");
+        put(SpecVersion.DRAFT_07, "draft7");
     }};
 
     private static SpecVersion specVersion;
-    private static String basePath;
+    private static Path basePath;
     private static JsonSchemaReaderFactory schemaReaderFactory;
 
     private static JsonValue lastValue;
@@ -126,7 +135,7 @@ public abstract class AbstractOfficialTest {
         Class<?> testClass = testInfo.getTestClass().get();
         Spec spec = testClass.getAnnotation(Spec.class);
         specVersion = spec.value()[0];
-        basePath = basePaths.get(specVersion);
+        basePath = TESTS_PATH.resolve(DRAFT_PATHS.get(specVersion));
         schemaReaderFactory = service.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
@@ -239,7 +248,7 @@ public abstract class AbstractOfficialTest {
         if (name.startsWith("/")) {
             return name;
         } else {
-            return basePath + name;
+            return basePath.resolve(name).toString();
         }
     }
 
@@ -270,22 +279,33 @@ public abstract class AbstractOfficialTest {
     }
 
     private static InputStream openResource(String name) {
-        return AbstractOfficialTest.class.getResourceAsStream(name);
+        if (name.startsWith("/")) {
+            return AbstractOfficialTest.class.getResourceAsStream(name);
+        } else {
+            try {
+                return new FileInputStream(name);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+        }
     }
 
     private static class LocalSchemaResolver implements JsonSchemaResolver {
 
-        private static final String BASE_PATH = "/org/json_schema/remotes";
+        private static final Path REMOTE_PATH = TEST_SUITE_HOME.resolve("remotes");
 
         @Override
         public JsonSchema resolveSchema(URI id) {
-            String path = BASE_PATH + id.getPath();
-            InputStream in = openResource(path);
-            if (in == null) {
+            String rootless = id.getPath().substring(1);
+            Path path = REMOTE_PATH.resolve(rootless);
+            try {
+                try (JsonSchemaReader reader = service.createSchemaReader(
+                        Files.newInputStream(path))) {
+                    return reader.read();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
                 return null;
-            }
-            try (JsonSchemaReader reader = service.createSchemaReader(in)) {
-                return reader.read();
             }
         }
     }

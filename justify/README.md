@@ -11,7 +11,7 @@ The following tools are required to build this software.
 The commands below build the software and install it into your local Maven repository.
 
 ```bash
-$ git clone https://github.com/leadpony/justify.git
+$ git clone --recursive https://github.com/leadpony/justify.git
 $ cd justify/justify/
 $ mvn clean install
 ```
