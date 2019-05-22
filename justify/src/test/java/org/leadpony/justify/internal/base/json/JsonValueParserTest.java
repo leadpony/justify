@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,32 +30,22 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.internal.base.json.DefaultValueParser;
 
 /**
- * A test class for {@link DefaultValueParser}.
+ * A test class for {@link JsonValueParser}.
  *
  * @author leadpony
  */
-public class DefaultValueParserTest {
-
-    private static JsonProvider provider;
-
-    @BeforeAll
-    public static void setUpOnce() {
-        provider = JsonProvider.provider();
-    }
+public class JsonValueParserTest {
 
     public static Stream<Arguments> fixtures() {
-        InputStream in = DefaultValueParserTest.class.getResourceAsStream("jsonvalue.json");
+        InputStream in = JsonValueParserTest.class.getResourceAsStream("jsonvalue.json");
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
                 .map(JsonValue::asJsonObject)
@@ -85,9 +76,11 @@ public class DefaultValueParserTest {
     private static JsonParser createParser(JsonValue value) {
         switch (value.getValueType()) {
         case ARRAY:
-            return DefaultValueParser.fillingWith((JsonArray) value, provider);
+            return new JsonValueParser((List<JsonValue>)(JsonArray) value);
+            //return DefaultValueParser.fillingWith((JsonArray) value, provider);
         case OBJECT:
-            return DefaultValueParser.fillingWith((JsonObject) value, provider);
+            return new JsonValueParser((Map<String, JsonValue>)(JsonObject) value);
+            //return DefaultValueParser.fillingWith((JsonObject) value, provider);
         default:
             throw new UnsupportedOperationException();
         }

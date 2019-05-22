@@ -28,7 +28,7 @@ import javax.json.stream.JsonParser;
  *
  * @author leadpony
  */
-public abstract class JsonParserDecorator extends AbstractJsonParser {
+public abstract class JsonParserDecorator extends AbstractStreamJsonParser {
 
     private JsonParser parser;
 

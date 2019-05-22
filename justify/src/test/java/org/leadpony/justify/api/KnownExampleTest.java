@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -32,10 +31,8 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * A test class for testing the examples provided by json-schema.org.
@@ -50,25 +47,39 @@ public class KnownExampleTest {
 
     private static final String BASE_PATH = "/org/json_schema/examples/draft7/";
 
-    public static Stream<Arguments> fixtures() {
-        return Stream.of(
-                Arguments.of("arrays.schema.json", "arrays.json", true),
-                Arguments.of("fstab.schema.json", "fstab.json", true),
-                Arguments.of("fstab.schema.json","fstab-invalid.json", false),
-                Arguments.of("geographical-location.schema.json", "geographical-location.json", true),
-                Arguments.of("person.schema.json", "person.json", true),
-                Arguments.of("product.schema.json", "product.json", true),
-                Arguments.of("product.schema.json", "product-invalid.json", false)
-                );
+    /**
+     * Well known JSON schema examples.
+     *
+     * @author leadpony
+     */
+    public enum Example {
+        ARRAY("arrays.schema.json", "arrays.json", true),
+        FSTAB("fstab.schema.json", "fstab.json", true),
+        FSTAB_INVALID("fstab.schema.json","fstab-invalid.json", false),
+        GEOGRAPHICAL_LOCATION("geographical-location.schema.json", "geographical-location.json", true),
+        PERSON("person.schema.json", "person.json", true),
+        PRODUCT("product.schema.json", "product.json", true),
+        PRODUCT_INVALID("product.schema.json", "product-invalid.json", false)
+        ;
+
+        Example(String schema, String instance, boolean valid) {
+            this.schema = schema;
+            this.instance = instance;
+            this.valid = valid;
+        }
+
+        final String schema;
+        final String instance;
+        final boolean valid;
     }
 
     @ParameterizedTest()
-    @MethodSource("fixtures")
-    public void testWithJsonParser(String schemaName, String instanceName, boolean valid) throws IOException {
-        JsonSchema schema = readSchemaFromResource(schemaName);
+    @EnumSource(Example.class)
+    public void testWithJsonParser(Example example) throws IOException {
+        JsonSchema schema = readSchemaFromResource(example.schema);
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonParser parser = service.createParser(getResourceAsStream(instanceName), schema, handler)) {
+        try (JsonParser parser = service.createParser(getResourceAsStream(example.instance), schema, handler)) {
             while (parser.hasNext()) {
                 parser.next();
             }
@@ -76,34 +87,33 @@ public class KnownExampleTest {
         if (!problems.isEmpty()) {
             printer.handleProblems(problems);
         }
-        assertThat(problems.isEmpty()).isEqualTo(valid);
-        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
+        assertThat(problems.isEmpty()).isEqualTo(example.valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
     }
 
     @ParameterizedTest()
-    @MethodSource("fixtures")
-    public void testWithJsonReader(String schemaName, String instanceName, boolean valid) throws IOException {
-        JsonSchema schema = readSchemaFromResource(schemaName);
+    @EnumSource(Example.class)
+    public void testWithJsonReader(Example example) throws IOException {
+        JsonSchema schema = readSchemaFromResource(example.schema);
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
         JsonValue value = null;
-        try (JsonReader reader = service.createReader(getResourceAsStream(instanceName), schema, handler)) {
+        try (JsonReader reader = service.createReader(getResourceAsStream(example.instance), schema, handler)) {
             value = reader.readValue();
         }
         if (!problems.isEmpty()) {
             printer.handleProblems(problems);
         }
         assertThat(value).isNotNull();
-        assertThat(problems.isEmpty()).isEqualTo(valid);
-        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
+        assertThat(problems.isEmpty()).isEqualTo(example.valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
     }
 
     @ParameterizedTest()
-    @MethodSource("fixtures")
-    @Disabled
-    public void testWithJsonParserFromValue(String schemaName, String instanceName, boolean valid) throws IOException {
-        JsonSchema schema = readSchemaFromResource(schemaName);
-        JsonValue value = readJsonFromResource(instanceName);
+    @EnumSource(Example.class)
+    public void testWithJsonParserFromValue(Example example) throws IOException {
+        JsonSchema schema = readSchemaFromResource(example.schema);
+        JsonValue value = readJsonFromResource(example.instance);
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
 
@@ -127,8 +137,8 @@ public class KnownExampleTest {
         if (!problems.isEmpty()) {
             printer.handleProblems(problems);
         }
-        assertThat(problems.isEmpty()).isEqualTo(valid);
-        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(schemaName));
+        assertThat(problems.isEmpty()).isEqualTo(example.valid);
+        assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
     }
 
     private JsonSchema readSchemaFromResource(String name) throws IOException {

@@ -30,26 +30,26 @@ import javax.json.stream.JsonParserFactory;
 
 /**
  * Decorator class of {@link JsonParserFactory}.
- * 
+ *
  * @author leadpony
  */
 public class JsonParserFactoryDecorator implements JsonParserFactory {
-    
+
     private final JsonParserFactory real;
-    
+
     /**
      * Constructs this object.
-     * 
+     *
      * @param real the underlying JSON parser factory to be decorated.
      */
     public JsonParserFactoryDecorator(JsonParserFactory real) {
         requireNonNull(real, "real");
         this.real = real;
     }
-    
+
     /**
      * Returns the underlying real JSON parser factory.
-     * 
+     *
      * @return the underlying JSON parser factory, never be {@code null}.
      */
     public JsonParserFactory realFactory() {
@@ -71,14 +71,26 @@ public class JsonParserFactoryDecorator implements JsonParserFactory {
         return real.createParser(in, charset);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Note that this method creates custom parsers instead of underlying parsers.
+     */
     @Override
     public JsonParser createParser(JsonObject obj) {
-        return real.createParser(obj);
+        requireNonNull(obj, "obj");
+        return new JsonValueParser(obj);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Note that this method creates custom parsers instead of underlying parsers.
+     */
     @Override
     public JsonParser createParser(JsonArray array) {
-        return real.createParser(array);
+        requireNonNull(array, "array");
+        return new JsonValueParser(array);
     }
 
     @Override

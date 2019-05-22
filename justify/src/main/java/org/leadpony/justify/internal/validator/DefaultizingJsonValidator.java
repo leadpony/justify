@@ -25,7 +25,7 @@ import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.base.json.DefaultValueParser;
+import org.leadpony.justify.internal.base.json.JsonValueParser;
 
 /**
  * A JSON validator which will fill the missing values with default values.
@@ -108,9 +108,9 @@ public class DefaultizingJsonValidator extends JsonValidator {
 
     private JsonParser createDefaultValueParser() {
         if (!defaultProperties.isEmpty()) {
-            return DefaultValueParser.fillingWith(defaultProperties, getJsonProvider());
+            return new JsonValueParser(defaultProperties);
         } else if (!defaultItems.isEmpty()) {
-            return DefaultValueParser.fillingWith(defaultItems, getJsonProvider());
+            return new JsonValueParser(defaultItems);
         }
         throw new IllegalStateException();
     }

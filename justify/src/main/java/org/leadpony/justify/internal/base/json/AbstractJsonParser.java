@@ -27,14 +27,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParsingException;
@@ -48,71 +42,9 @@ import org.leadpony.justify.internal.base.Message;
  */
 abstract class AbstractJsonParser implements JsonParser {
 
-    private final JsonProvider jsonProvider;
-    private final JsonBuilderFactory builderFactory;
     private Event currentEvent;
 
-    /**
-     * Constructs this parser.
-     *
-     * @param jsonProvider the JSON provider.
-     */
-    protected AbstractJsonParser(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
-        this.builderFactory = jsonProvider.createBuilderFactory(null);
-    }
-
-    /* JsonParser */
-
-    @Override
-    public final Event next() {
-        Event event = fetchNextEvent();
-        event = process(event);
-        this.currentEvent = event;
-        postprocess();
-        return event;
-    }
-
-    @Override
-    public JsonArray getArray() {
-        if (this.currentEvent != Event.START_ARRAY) {
-            throw newIllegalStateException("getArray");
-        }
-        return buildArray();
-    }
-
-    @Override
-    public JsonObject getObject() {
-        if (this.currentEvent != Event.START_OBJECT) {
-            throw newIllegalStateException("getObject");
-        }
-        return buildObject();
-    }
-
-    @Override
-    public JsonValue getValue() {
-        switch (this.currentEvent) {
-        case START_ARRAY:
-            return buildArray();
-        case START_OBJECT:
-            return buildObject();
-        case VALUE_TRUE:
-            return JsonValue.TRUE;
-        case VALUE_FALSE:
-            return JsonValue.FALSE;
-        case VALUE_NULL:
-            return JsonValue.NULL;
-        case KEY_NAME:
-        case VALUE_STRING:
-            return getJsonString();
-        case VALUE_NUMBER:
-            return getJsonNumber();
-        case END_ARRAY:
-        case END_OBJECT:
-        default:
-            throw newIllegalStateException("getValue");
-        }
-    }
+    /* As a JsonParser */
 
     @Override
     public void skipArray() {
@@ -174,60 +106,22 @@ abstract class AbstractJsonParser implements JsonParser {
         return StreamSupport.stream(new JsonValueSpliterator(), false);
     }
 
-    /* AbstractJsonParser */
-
-    public final JsonProvider getJsonProvider() {
-        return jsonProvider;
-    }
-
-    public final JsonBuilderFactory getJsonBuilderFactory() {
-        return builderFactory;
-    }
+    /* As a AbstractJsonParser */
 
     /**
-     * Returns the location of the last char.
+     * Returns the current event.
      *
-     * @return the location of the last char.
+     * @return the current event.
      */
-    public JsonLocation getLastCharLocation() {
-        return SimpleJsonLocation.before(getLocation());
-    }
-
-    /**
-     * Return the current parser event.
-     *
-     * @return the current parser event.
-     */
-    public final Event getCurrentEvent() {
+    protected final Event getCurrentEvent() {
         return currentEvent;
     }
 
-    public JsonValue getJsonString() {
-        return jsonProvider.createValue(getString());
+    protected final void setCurrentEvent(Event event) {
+        this.currentEvent = event;
     }
 
-    public JsonValue getJsonNumber() {
-        if (isIntegralNumber()) {
-            return jsonProvider.createValue(getLong());
-        } else {
-            return jsonProvider.createValue(getBigDecimal());
-        }
-    }
-
-    protected abstract Event fetchNextEvent();
-
-    /**
-     * Processes the currrent parser event.
-     *
-     * @param event the current parser event.
-     * @return the event to be delivered to the client.
-     */
-    protected Event process(Event event) {
-        return event;
-    }
-
-    protected void postprocess() {
-    }
+    protected abstract JsonLocation getLastCharLocation();
 
     /**
      * Checks if this parser is in array or object scope.
@@ -237,40 +131,6 @@ abstract class AbstractJsonParser implements JsonParser {
      */
     protected abstract boolean isInCollection();
 
-    private JsonArray buildArray() {
-        JsonArrayBuilder builder = getJsonBuilderFactory().createArrayBuilder();
-        while (hasNext()) {
-            Event event = next();
-            if (event == Event.END_ARRAY) {
-                return builder.build();
-            }
-            builder.add(getValue());
-        }
-        throw newParsingException(
-                Event.START_OBJECT,
-                Event.START_ARRAY,
-                Event.VALUE_STRING,
-                Event.VALUE_NUMBER,
-                Event.VALUE_TRUE,
-                Event.VALUE_FALSE,
-                Event.VALUE_NULL,
-                Event.END_ARRAY);
-    }
-
-    private JsonObject buildObject() {
-        JsonObjectBuilder builder = getJsonBuilderFactory().createObjectBuilder();
-        while (hasNext()) {
-            Event event = next();
-            if (event == Event.END_OBJECT) {
-                return builder.build();
-            }
-            String name = getString();
-            next();
-            builder.add(name, getValue());
-        }
-        throw newParsingException(Event.KEY_NAME, Event.END_OBJECT);
-    }
-
     /**
      * Creates an instance of {@link IllegalStateException} for the specified
      * method.
@@ -278,7 +138,7 @@ abstract class AbstractJsonParser implements JsonParser {
      * @param method the name of the method.
      * @return the newly created exception.
      */
-    protected IllegalStateException newIllegalStateException(String method) {
+    protected final IllegalStateException newIllegalStateException(String method) {
         Map<String, Object> args = new HashMap<>();
         args.put("method", method);
         args.put("event", getCurrentEvent());
@@ -286,14 +146,14 @@ abstract class AbstractJsonParser implements JsonParser {
         return new IllegalStateException(message);
     }
 
-    private JsonParsingException newParsingException(Event... expected) {
+    protected final JsonParsingException newParsingException(Event... expected) {
         Map<String, Object> args = new HashMap<>();
         args.put("expected", Arrays.asList(expected));
         String message = Message.PARSER_UNEXPECTED_EOI.format(args);
         return new JsonParsingException(message, getLastCharLocation());
     }
 
-    private JsonException newInternalError() {
+    protected final JsonException newInternalError() {
         return new JsonException("Internal error");
     }
 

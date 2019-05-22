@@ -51,7 +51,7 @@ public class PointerAwareJsonParserTest {
     }
 
     public static Stream<Arguments> fixtures() {
-        InputStream in = DefaultValueParserTest.class.getResourceAsStream("json-pointer.json");
+        InputStream in = PointerAwareJsonParserTest.class.getResourceAsStream("json-pointer.json");
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
                 .map(JsonValue::asJsonObject)
