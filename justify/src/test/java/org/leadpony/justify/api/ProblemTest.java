@@ -58,6 +58,17 @@ public class ProblemTest {
     }
 
     @Test
+    public void getMessage_shouldReturnDifferentMessageByLocale() {
+        Problem problem = createProblem(SCHEMA, INSTANCE);
+        String message1 = problem.getMessage(Locale.ENGLISH);
+        String message2 = problem.getMessage(Locale.JAPANESE);
+
+        assertThat(message1).isNotEmpty();
+        assertThat(message2).isNotEmpty();
+        assertThat(message1).isNotEqualTo(message2);
+    }
+
+    @Test
     public void getContextualMessage_shouldReturnMessageIncludingLocation() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String message = problem.getContextualMessage(Locale.ROOT);
