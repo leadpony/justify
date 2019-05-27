@@ -33,8 +33,8 @@ import javax.json.JsonValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.justify.api.JsonSchema;
 
 /**
@@ -87,22 +87,52 @@ public class JsonSchemaTest {
         assertThat(actual).isNull();
     }
 
-    private static final String SCHEMA = "{ \"type\": \"integer\", \"minimum\": 0 }";
+    enum KeywordExistenceTestCase {
+        FIRST_KEYWORD_IN_SCHEMA(
+                "{ \"type\": \"integer\", \"minimum\": 0 }",
+                "type", true
+                ),
+        LAST_KEYWORD_IN_SCHEMA(
+                FIRST_KEYWORD_IN_SCHEMA.schema,
+                "minimum", true
+                ),
+        FIRST_VALUE_IN_SCHEMA(
+                FIRST_KEYWORD_IN_SCHEMA.schema,
+                "integer", false
+                ),
+        LAST_VALUE_IN_SCHEMA(
+                FIRST_KEYWORD_IN_SCHEMA.schema,
+                "required", false
+                ),
+        /*
+        UNRECOGNIZED_KEYWORD(
+                "{ \"unknown\": \"value\"}",
+                "unknown", true
+                ),
+        UNRECOGNIZED_KEYWORD_WITH_OBJECT(
+                "{ \"unknown\": {\"type\": \"value\"} }",
+                "unknown", true
+                ),
+        */
+        ;
 
-    @ParameterizedTest
-    @ValueSource(strings= { "type", "minimum" })
-    public void containsKeyword_shouldReturnTrue(String keyword) {
-        JsonSchema schema = fromString(SCHEMA);
-        boolean actual = schema.containsKeyword(keyword);
-        assertThat(actual).isTrue();
+        final String schema;
+        final String keyword;
+        final boolean existence;
+
+        KeywordExistenceTestCase(String schema, String keyword, boolean existence) {
+            this.schema = schema;
+            this.keyword = keyword;
+            this.existence = existence;
+        }
     }
 
     @ParameterizedTest
-    @ValueSource(strings= { "interger", "required" })
-    public void containsKeyword_shouldReturnFalse(String keyword) {
-        JsonSchema schema = fromString(SCHEMA);
-        boolean actual = schema.containsKeyword(keyword);
-        assertThat(actual).isFalse();
+    @EnumSource(KeywordExistenceTestCase.class)
+    public void containsKeywordShouldReturnBooleanAsExpected(KeywordExistenceTestCase test) {
+        JsonSchema schema = fromString(test.schema);
+        boolean actual = schema.containsKeyword(test.keyword);
+        assertThat(actual).isEqualTo(test.existence);
     }
 
     private static final String SUBSCHEMAS_JSON = "/org/leadpony/justify/api/subschemas.json";
