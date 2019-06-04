@@ -29,16 +29,22 @@ import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
 
 /**
- * Unknown keyword containing subschema.
+ * A keyword containing referenceable subschema.
  *
  * @author leadpony
  */
-public class Unknown extends Combiner {
+public class Referenceable extends Combiner {
 
     private final String name;
     private final JsonSchema subschema;
 
-    public Unknown(String name, JsonSchema subschema) {
+    /**
+     * Constructs this keyword.
+     *
+     * @param name the name of this keyword.
+     * @param subschema the subschema contained by this keyword.
+     */
+    public Referenceable(String name, JsonSchema subschema) {
         this.name = name;
         this.subschema = subschema;
     }

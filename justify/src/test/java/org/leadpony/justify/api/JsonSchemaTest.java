@@ -104,16 +104,18 @@ public class JsonSchemaTest {
                 FIRST_KEYWORD_IN_SCHEMA.schema,
                 "required", false
                 ),
-        /*
-        UNRECOGNIZED_KEYWORD(
+        UNRECOGNIZED_KEYWORD_HAVING_STRING(
                 "{ \"unknown\": \"value\"}",
                 "unknown", true
                 ),
-        UNRECOGNIZED_KEYWORD_WITH_OBJECT(
-                "{ \"unknown\": {\"type\": \"value\"} }",
+        UNRECOGNIZED_KEYWORD_HAVINNG_OBJECT(
+                "{ \"unknown\": {\"key\": \"value\"} }",
                 "unknown", true
                 ),
-        */
+        UNRECOGNIZED_KEYWORD_HAVINNG_ARRAY(
+                "{ \"unknown\": [1, 2, 3] }",
+                "unknown", true
+                ),
         ;
 
         final String schema;

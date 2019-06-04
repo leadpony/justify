@@ -28,7 +28,8 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.Keyword;
-import org.leadpony.justify.internal.keyword.combiner.Unknown;
+import org.leadpony.justify.internal.keyword.Unknown;
+import org.leadpony.justify.internal.keyword.combiner.Referenceable;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
@@ -126,9 +127,9 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         }
         Event event = parser.next();
         if (canReadSchema(event)) {
-            context.addKeyword(new Unknown(keyword, readSchema(event)));
+            context.addKeyword(new Referenceable(keyword, readSchema(event)));
         } else {
-            skipValue(event);
+            context.addKeyword(new Unknown(keyword, parser.getValue()));
         }
     }
 
