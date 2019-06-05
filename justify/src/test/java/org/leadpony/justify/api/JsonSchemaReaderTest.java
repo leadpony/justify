@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidatingException;
+import org.leadpony.justify.test.helper.JsonAssertions;
 
 /**
  * A test class for testing the {@link JsonSchemaReader} implementation.

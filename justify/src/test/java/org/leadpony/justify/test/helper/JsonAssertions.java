@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.api;
+package org.leadpony.justify.test.helper;
 
 import java.io.StringReader;
 

@@ -167,6 +167,34 @@ public interface JsonSchema {
     }
 
     /**
+     * Returns the value of the specified schema keyword as a {@code JsonValue}.
+     *
+     * @param keyword the name of the schema keyword, such as {@code "type"}.
+     * @return keyword value if this schema contains the keyword, or {@code null} if
+     *         this schema does not contain the keyword.
+     * @throws NullPointerException if the specified {@code keyword} is
+     *                              {@code null}.
+     */
+    default JsonValue getKeywordValue(String keyword) {
+        return null;
+    }
+
+    /**
+     * Returns the value of the specified schema keyword as a {@code JsonValue}.
+     *
+     * @param keyword      the name of the schema keyword, such as {@code "type"}.
+     * @param defaultValue the value to be returned if this schema does not contain
+     *                     the keyword. This value can be {@code null}.
+     * @return keyword value if this schema contains the keyword, or
+     *         {@code defaultValue} if this schema does not contain the keyword.
+     * @throws NullPointerException if the specified {@code keyword} is
+     *                              {@code null}.
+     */
+    default JsonValue getKeywordValue(String keyword, JsonValue defaultValue) {
+        return defaultValue;
+    }
+
+    /**
      * Returns all of the subschemas contained in this schema.
      *
      * @return the stream of subschemas contained in this schema.

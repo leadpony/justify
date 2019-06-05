@@ -102,6 +102,23 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     }
 
     @Override
+    public JsonValue getKeywordValue(String keyword) {
+        return getKeywordValue(keyword, null);
+    }
+
+    @Override
+    public JsonValue getKeywordValue(String keyword, JsonValue defaultValue) {
+        requireNonNull(keyword, "keyword");
+        Keyword found = keywordMap.get(keyword);
+        if (found == null) {
+            return defaultValue;
+        }
+        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
+        found.addToJson(builder, builderFactory);
+        return builder.build().get(keyword);
+    }
+
+    @Override
     public Stream<JsonSchema> getSubschemas() {
         return keywordMap.values().stream()
                 .filter(Keyword::hasSubschemas)

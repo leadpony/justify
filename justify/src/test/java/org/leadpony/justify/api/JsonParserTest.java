@@ -45,6 +45,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
+import org.leadpony.justify.test.helper.JsonAssertions;
 
 /**
  * A test class for testing validations using {@link JsonParser} .

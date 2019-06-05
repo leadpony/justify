@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.test.helper.JsonResources;
 
 /**
  * A test class for tesing the {@link JsonSchema} implementation.
@@ -87,7 +88,7 @@ public class JsonSchemaTest {
         assertThat(actual).isNull();
     }
 
-    enum KeywordExistenceTestCase {
+    enum ContainsKeywordTestCase {
         FIRST_KEYWORD_IN_SCHEMA(
                 "{ \"type\": \"integer\", \"minimum\": 0 }",
                 "type", true
@@ -122,7 +123,7 @@ public class JsonSchemaTest {
         final String keyword;
         final boolean existence;
 
-        KeywordExistenceTestCase(String schema, String keyword, boolean existence) {
+        ContainsKeywordTestCase(String schema, String keyword, boolean existence) {
             this.schema = schema;
             this.keyword = keyword;
             this.existence = existence;
@@ -130,11 +131,51 @@ public class JsonSchemaTest {
     }
 
     @ParameterizedTest
-    @EnumSource(KeywordExistenceTestCase.class)
-    public void containsKeywordShouldReturnBooleanAsExpected(KeywordExistenceTestCase test) {
+    @EnumSource(ContainsKeywordTestCase.class)
+    public void containsKeywordShouldReturnBooleanAsExpected(ContainsKeywordTestCase test) {
         JsonSchema schema = fromString(test.schema);
         boolean actual = schema.containsKeyword(test.keyword);
         assertThat(actual).isEqualTo(test.existence);
+    }
+
+    static class GetKeywordValueTestCase {
+
+        final JsonValue schema;
+        final String keyword;
+        final JsonValue value;
+
+        GetKeywordValueTestCase(JsonValue schema, String keyword, JsonValue value) {
+            this.schema = schema;
+            this.keyword = keyword;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return schema.toString();
+        }
+    }
+
+    public static Stream<GetKeywordValueTestCase> getKeywordValueShouldReturnValueAsExpected() {
+        return JsonResources.getJsonObjectStream("/org/leadpony/justify/api/keyword-value.json")
+                .flatMap(object->{
+                    JsonValue schema = object.get("schema");
+                    return object.getJsonArray("tests").stream()
+                        .map(JsonValue::asJsonObject)
+                        .map(test->new GetKeywordValueTestCase(
+                                schema,
+                                test.getString("keyword"),
+                                test.get("value")
+                                ));
+                });
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void getKeywordValueShouldReturnValueAsExpected(GetKeywordValueTestCase test) {
+        JsonSchema schema = fromString(test.schema.toString());
+        JsonValue actual = schema.getKeywordValue(test.keyword);
+        assertThat(actual).isEqualTo(test.value);
     }
 
     private static final String SUBSCHEMAS_JSON = "/org/leadpony/justify/api/subschemas.json";

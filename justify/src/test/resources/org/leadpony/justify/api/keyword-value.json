@@ -1,0 +1,96 @@
+[
+    {
+        "schema": {
+            "type": "integer",
+            "maximum": 42
+        },
+        "tests": [
+            {
+                "keyword": "type",
+                "value": "integer"
+            },
+            {
+                "keyword": "maximum",
+                "value": 42
+            }
+        ]
+    },
+    {
+        "schema": {
+            "properties": {
+                "first": {},
+                "second": {}
+            },
+            "additionalProperties": false
+        },
+        "tests": [
+            {
+                "keyword": "additionalProperties",
+                "value": false
+            }
+        ]
+    },
+    {
+        "schema": {
+            "type": ["integer", "string"]
+        },
+        "tests": [
+            {
+                "keyword": "type",
+                "value": ["integer", "string"]
+            }
+        ]
+    },
+    {
+        "schema": {
+            "if": {
+                "exclusiveMaximum": 0
+            },
+            "then": {
+                "minimum": -10
+            },
+            "else": {
+                "multipleOf": 2
+            }
+        },
+        "tests": [
+            {
+                "keyword": "if",
+                "value": {
+                    "exclusiveMaximum": 0
+                }
+            },
+            {
+                "keyword": "then",
+                "value": {
+                    "minimum": -10
+                }
+            },
+            {
+                "keyword": "else",
+                "value": {
+                    "multipleOf": 2
+                }
+            }
+        ]
+    },
+    {
+        "schema": {
+            "errorMessage": "some message here",
+            "severity": 42
+        },
+        "tests": [
+            {
+                "keyword": "errorMessage",
+                "value": "some message here"
+            },
+            {
+                "keyword": "severity",
+                "value": 42
+            },
+            {
+                "keyword": "nonexistent"
+            }
+        ]
+    }
+]

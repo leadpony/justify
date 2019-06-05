@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.schema.binding;
 
-import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.stream.JsonParser;
@@ -49,7 +49,7 @@ class TypeBinder extends AbstractBinder {
                 // Ignores the exception.
             }
         } else if (event == Event.START_ARRAY) {
-            Set<InstanceType> types = EnumSet.noneOf(InstanceType.class);
+            Set<InstanceType> types = new LinkedHashSet<>();
             while ((event = parser.next()) != Event.END_ARRAY) {
                 if (event == Event.VALUE_STRING) {
                     try {
