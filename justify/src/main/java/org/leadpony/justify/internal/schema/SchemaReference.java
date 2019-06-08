@@ -20,16 +20,18 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
 import java.util.Map;
-
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.AbstractEmptyMap;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -135,7 +137,7 @@ public class SchemaReference extends AbstractJsonSchema {
      *
      * @author leadpony
      */
-    private class NonexistentSchema implements JsonSchema {
+    private class NonexistentSchema extends AbstractEmptyMap<String, Keyword> implements ObjectJsonSchema {
 
         @Override
         public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
@@ -161,7 +163,7 @@ public class SchemaReference extends AbstractJsonSchema {
 
         @Override
         public JsonValue toJson() {
-            return JsonValue.FALSE;
+            return JsonValue.EMPTY_JSON_OBJECT;
         }
     }
 }

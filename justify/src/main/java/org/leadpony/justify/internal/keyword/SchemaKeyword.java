@@ -23,25 +23,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 
 /**
  * Super type of all keywords that can compose a JSON schema.
  *
  * @author leadpony
  */
-public interface SchemaKeyword extends Evaluatable {
-
-    /**
-     * Returns the name of this keyword.
-     *
-     * @return the name of this keyword, never be {@code null}.
-     */
-    String name();
+public interface SchemaKeyword extends Keyword, Evaluatable {
 
     /**
      * Returns the JSON schema enclosing this keyword.
@@ -75,14 +66,6 @@ public interface SchemaKeyword extends Evaluatable {
     default Set<InstanceType> getSupportedTypes() {
         return EnumSet.allOf(InstanceType.class);
     }
-
-    /**
-     * Returns the value of this keyword as an instance of {@code JsonProvider}.
-     *
-     * @param jsonProvider the instance of {@code JsonProvider}.
-     * @return the value of this keyword, cannot be {@code null}.
-     */
-    JsonValue getValueAsJson(JsonProvider jsonProvider);
 
     /**
      * Adds this keyword to the list if this keyword is evaluatables.

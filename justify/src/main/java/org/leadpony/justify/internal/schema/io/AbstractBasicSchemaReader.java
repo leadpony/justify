@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -54,7 +54,8 @@ abstract class AbstractBasicSchemaReader extends AbstractSchemaReader implements
     protected final PointerAwareJsonParser parser;
 
     // schemas having $id keyword.
-    private final Set<JsonSchema> identifiedSchemas = new HashSet<>();
+    private final Set<JsonSchema> identifiedSchemas =
+            Collections.newSetFromMap(new IdentityHashMap<JsonSchema, Boolean>());
 
     private final Map<URI, JsonSchema> idSchemaMap = new HashMap<>();
     private final List<Reference> references = new ArrayList<>();

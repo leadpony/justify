@@ -19,11 +19,13 @@ package org.leadpony.justify.api;
 import javax.json.stream.JsonParser.Event;
 
 /**
- * A skeletal implementation of simple JSON schema.
+ * A skeletal implementation of special JSON schemas.
  *
  * @author leadpony
  */
-abstract class SimpleJsonSchema implements JsonSchema {
+abstract class SpecialJsonSchema implements JsonSchema {
+
+    /* As a JsonSchema */
 
     protected final Evaluator alwaysFalse(EvaluatorContext context) {
         JsonSchema self = this;

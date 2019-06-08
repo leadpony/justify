@@ -19,7 +19,10 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
+import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.json.JsonBuilderFactory;
@@ -27,7 +30,9 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -40,7 +45,7 @@ import org.leadpony.justify.internal.keyword.core.Schema;
  *
  * @author leadpony
  */
-abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
+abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implements ObjectJsonSchema, Resolvable {
 
     private URI id;
 
@@ -48,14 +53,16 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     private final JsonService jsonService;
 
     protected AbstractJsonSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
-        this.keywordMap = keywords;
+        this.keywordMap = Collections.unmodifiableMap(keywords);
         this.jsonService = jsonService;
-        keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
+        this.keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
         this.id = id;
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
         }
     }
+
+    /* As a JsonSchema */
 
     @Override
     public boolean hasId() {
@@ -98,6 +105,11 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     }
 
     @Override
+    public boolean isBoolean() {
+        return false;
+    }
+
+    @Override
     public boolean containsKeyword(String keyword) {
         requireNonNull(keyword, "keyword");
         return keywordMap.containsKey(keyword);
@@ -111,7 +123,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     @Override
     public JsonValue getKeywordValue(String keyword, JsonValue defaultValue) {
         requireNonNull(keyword, "keyword");
-        SchemaKeyword found = keywordMap.get(keyword);
+        Keyword found = keywordMap.get(keyword);
         if (found == null) {
             return defaultValue;
         }
@@ -146,10 +158,20 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     public JsonValue toJson() {
         JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonObjectBuilder builder = jsonService.createObjectBuilder();
-        for (SchemaKeyword keyword : this.keywordMap.values()) {
+        for (Keyword keyword : this.keywordMap.values()) {
             builder.add(keyword.name(), keyword.getValueAsJson(jsonProvider));
         }
         return builder.build();
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 
     @Override
@@ -174,13 +196,38 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
         return hasId() && id().isAbsolute();
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T extends SchemaKeyword> T getKeyword(String name) {
-        return (T)keywordMap.get(name);
+    /* As a Map */
+
+    @Override
+    public int size() {
+        return keywordMap.size();
     }
 
-    protected Map<String, SchemaKeyword> getKeywordsAsMap() {
-        return keywordMap;
+    @Override
+    public boolean containsKey(Object key) {
+        return keywordMap.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return keywordMap.containsValue(value);
+    }
+
+    @Override
+    public Keyword get(Object key) {
+        return keywordMap.get(key);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<Entry<String, Keyword>> entrySet() {
+        Set<?> entrySet = this.keywordMap.entrySet();
+        return (Set<Entry<String, Keyword>>) entrySet;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends Keyword> T getKeyword(String name) {
+        return (T)keywordMap.get(name);
     }
 
     /**

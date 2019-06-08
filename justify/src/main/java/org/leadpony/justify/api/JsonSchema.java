@@ -23,11 +23,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.json.JsonException;
-import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 /**
- * A JSON schema.
+ * An immutable JSON schema.
  *
  * <p>
  * A JSON schema can be read from {@link InputStream} or {@link Reader}. The
@@ -149,8 +149,16 @@ public interface JsonSchema {
      * @return {@code true} if this schema is a boolean schema, {@code false}
      *         otherwise.
      */
-    default boolean isBoolean() {
-        return false;
+    boolean isBoolean();
+
+    /**
+     * Returns this JSON schema as a {@code ObjectJsonSchema}.
+     *
+     * @return the instance of {@code ObjectJsonSchema}.
+     * @throws ClassCastException if this JSON schema is not a {@code ObjectJsonSchema}.
+     */
+    default ObjectJsonSchema asObjectJsonSchema() {
+        return ObjectJsonSchema.class.cast(this);
     }
 
     /**
@@ -263,6 +271,13 @@ public interface JsonSchema {
     Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type);
 
     /**
+     * Returns the value type of JSON representing this schema.
+     *
+     * @return the value type of JSON.
+     */
+    ValueType getJsonValueType();
+
+    /**
      * Returns the JSON representation of this schema.
      *
      * @return the JSON representation of this schema, never be {@code null}.
@@ -294,90 +309,17 @@ public interface JsonSchema {
      * The JSON schema which is always evaluated as true. Any JSON instance satisfy
      * this schema.
      */
-    JsonSchema TRUE = new SimpleJsonSchema() {
-
-        @Override
-        public boolean isBoolean() {
-            return true;
-        }
-
-        @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
-        }
-
-        @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return alwaysFalse(context);
-        }
-
-        @Override
-        public JsonValue toJson() {
-            return JsonValue.TRUE;
-        }
-
-        @Override
-        public String toString() {
-            return "true";
-        }
-    };
+    JsonSchema TRUE = new BooleanJsonSchema.True();
 
     /**
      * The JSON schema which is always evaluated as false. Any JSON instance does
      * not satisfy this schema.
      */
-    JsonSchema FALSE = new SimpleJsonSchema() {
-
-        @Override
-        public boolean isBoolean() {
-            return true;
-        }
-
-        @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
-            return alwaysFalse(context);
-        }
-
-        @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
-        }
-
-        @Override
-        public JsonValue toJson() {
-            return JsonValue.FALSE;
-        }
-
-        @Override
-        public String toString() {
-            return "false";
-        }
-    };
+    JsonSchema FALSE = new BooleanJsonSchema.False();
 
     /**
-     * The JSON Schema represented by an empty JSON object. This schema is always
+     * The JSON schema represented by an empty JSON object. This schema is always
      * evaluated as true.
      */
-    JsonSchema EMPTY = new SimpleJsonSchema() {
-
-        @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
-            return Evaluator.ALWAYS_TRUE;
-        }
-
-        @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return alwaysFalse(context);
-        }
-
-        @Override
-        public JsonValue toJson() {
-            return JsonObject.EMPTY_JSON_OBJECT;
-        }
-
-        @Override
-        public String toString() {
-            return "{}";
-        }
-    };
+    ObjectJsonSchema EMPTY = new EmptyJsonSchema();
 }
