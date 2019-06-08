@@ -16,9 +16,8 @@
 
 package org.leadpony.justify.internal.schema.io;
 
-import javax.json.JsonBuilderFactory;
-
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
+import org.leadpony.justify.internal.base.json.JsonService;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
@@ -27,19 +26,17 @@ import org.leadpony.justify.api.JsonSchemaBuilderFactory;
  */
 public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
-    private final JsonBuilderFactory builderFactory;
+    private final JsonService jsonService;
     private final SchemaSpec spec;
 
     /**
      * Constructs this factory.
      *
-     * @param builderFactory the factory for producing builders of JSON values.
-     * @param spec           the schema specification.
+     * @param jsonService the JSON service.
+     * @param spec        the schema specification.
      */
-    public DefaultSchemaBuilderFactory(
-            JsonBuilderFactory builderFactory,
-            SchemaSpec spec) {
-        this.builderFactory = builderFactory;
+    public DefaultSchemaBuilderFactory(JsonService jsonService, SchemaSpec spec) {
+        this.jsonService = jsonService;
         this.spec = spec;
     }
 
@@ -48,10 +45,6 @@ public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
      */
     @Override
     public DefaultJsonSchemaBuilder createBuilder() {
-        return createBuilderForDraft07();
-    }
-
-    public DefaultJsonSchemaBuilder createBuilderForDraft07() {
-        return new DefaultJsonSchemaBuilder(builderFactory, spec);
+        return new DefaultJsonSchemaBuilder(jsonService, spec);
     }
 }

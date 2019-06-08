@@ -42,7 +42,7 @@ public class JsonValidationServiceTest {
     }
 
     @Test
-    public void createSchemaReader_shouldThrowJsonExceptionIfPathDoesNotExist() {
+    public void createSchemaReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
         Throwable thrown = catchThrowable(()->{
             Path path = Paths.get("nonexistent.schema.json");
             service.createSchemaReader(path);
@@ -55,7 +55,7 @@ public class JsonValidationServiceTest {
     }
 
     @Test
-    public void readSchema_shouldThrowJsonExceptionIfPathDoesNotExist() {
+    public void readSchemaShouldThrowJsonExceptionIfPathDoesNotExist() {
         Throwable thrown = catchThrowable(()->{
             Path path = Paths.get("nonexistent.schema.json");
             service.readSchema(path);
@@ -68,7 +68,7 @@ public class JsonValidationServiceTest {
     }
 
     @Test
-    public void createParser_shouldThrowJsonExceptionIfPathDoesNotExist() {
+    public void createParserShouldThrowJsonExceptionIfPathDoesNotExist() {
         Throwable thrown = catchThrowable(()->{
             Path path = Paths.get("nonexistent.json");
             service.createParser(path, JsonSchema.TRUE, problems->{});
@@ -81,7 +81,7 @@ public class JsonValidationServiceTest {
     }
 
     @Test
-    public void createReader_shouldThrowJsonExceptionIfPathDoesNotExist() {
+    public void createReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
         Throwable thrown = catchThrowable(()->{
             Path path = Paths.get("nonexistent.json");
             service.createReader(path, JsonSchema.TRUE, problems->{});
@@ -91,5 +91,10 @@ public class JsonValidationServiceTest {
             .isInstanceOf(JsonException.class)
             .hasCauseInstanceOf(IOException.class)
             .hasMessageContaining("nonexistent.json");
+    }
+
+    @Test
+    public void getJsonProviderShouldReturnValidJsonProvider() {
+        assertThat(service.getJsonProvider()).isNotNull();
     }
 }

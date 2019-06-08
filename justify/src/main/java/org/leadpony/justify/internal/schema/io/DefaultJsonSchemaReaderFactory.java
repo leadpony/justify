@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
@@ -45,6 +43,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ResettableInputStream;
 import org.leadpony.justify.internal.base.ResettableReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
@@ -55,24 +54,22 @@ import org.leadpony.justify.internal.validator.JsonValidator;
  */
 public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
-    private final JsonProvider jsonProvider;
+    private final JsonService jsonService;
     protected final JsonParserFactory jsonParserFactory;
-    private final JsonBuilderFactory jsonBuilderFactory;
 
     private final SchemaSpecRegistry specRegistry;
     protected final SpecVersion defaultVersion;
     private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
-            JsonProvider jsonProvider,
+            JsonService jsonService,
             SchemaSpecRegistry specRegistry) {
-        return new Builder(jsonProvider, specRegistry);
+        return new Builder(jsonService, specRegistry);
     }
 
     protected DefaultJsonSchemaReaderFactory(Builder builder) {
-        this.jsonProvider = builder.jsonProvider;
-        this.jsonParserFactory = jsonProvider.createParserFactory(null);
-        this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
+        this.jsonService = builder.jsonService;
+        this.jsonParserFactory = this.jsonService.getJsonParserFactory();
         this.specRegistry = builder.specRegistry;
         this.config = builder.getAsMap();
         this.defaultVersion = (SpecVersion)this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
@@ -124,15 +121,15 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
         if (testOption(JsonSchemaReader.SCHEMA_VALIDATION)) {
-            return new JsonValidator(realParser, spec.getMetaschema(), jsonProvider);
+            return new JsonValidator(realParser, spec.getMetaschema(), jsonService.getJsonProvider());
         } else {
-            return new DefaultPointerAwareJsonParser(realParser, jsonProvider);
+            return new DefaultPointerAwareJsonParser(realParser, jsonService.getJsonProvider());
         }
     }
 
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
-        return new GenericSchemaReader(parser, jsonBuilderFactory, spec, config);
+        return new GenericSchemaReader(parser, jsonService, spec, config);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
@@ -215,14 +212,14 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     @SuppressWarnings("serial")
     private static class Builder extends HashMap<String, Object> implements JsonSchemaReaderFactoryBuilder {
 
-        private final JsonProvider jsonProvider;
+        private final JsonService jsonService;
         private final SchemaSpecRegistry specRegistry;
         private boolean alreadyBuilt = false;
 
         private List<JsonSchemaResolver> resolvers = new ArrayList<>();
 
-        private Builder(JsonProvider jsonProvider, SchemaSpecRegistry specRegistry) {
-            this.jsonProvider = jsonProvider;
+        private Builder(JsonService jsonService, SchemaSpecRegistry specRegistry) {
+            this.jsonService = jsonService;
             this.specRegistry = specRegistry;
             defaultize();
         }

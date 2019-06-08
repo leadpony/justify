@@ -18,16 +18,15 @@ package org.leadpony.justify.internal.schema;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonBuilderFactory;
+import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.core.Id;
 
@@ -36,11 +35,12 @@ import org.leadpony.justify.internal.keyword.core.Id;
  */
 public class SchemaCatalogTest {
 
-    private static JsonBuilderFactory jsonBuilderFactory;
+    private static JsonService jsonService;
 
     @BeforeAll
     public static void setUp() {
-        jsonBuilderFactory = Json.createBuilderFactory(Collections.emptyMap());
+        JsonProvider jsonProvider = JsonProvider.provider();
+        jsonService = new JsonService(jsonProvider);
     }
 
     @Test
@@ -56,6 +56,6 @@ public class SchemaCatalogTest {
     private static JsonSchema createSchema(URI id) {
         Map<String, Keyword> keywords = new HashMap<>();
         keywords.put("$id", new Id(id));
-        return BasicSchema.newSchema(id, keywords, jsonBuilderFactory);
+        return BasicSchema.newSchema(id, keywords, jsonService);
     }
 }

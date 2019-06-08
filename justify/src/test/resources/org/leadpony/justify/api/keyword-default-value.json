@@ -1,0 +1,30 @@
+[
+    {
+        "schema": {
+            "a": "hello",
+            "b": null
+        },
+        "tests": [
+            {
+                "keyword": "a",
+                "defaultValue": "bonjour",
+                "value": "hello"
+            },
+            {
+                "keyword": "b",
+                "defaultValue": 42,
+                "value": null
+            },
+            {
+                "keyword": "c",
+                "defaultValue": "bonjour",
+                "value": "bonjour"
+            },
+            {
+                "keyword": "c",
+                "defaultValue": 365,
+                "value": 365
+            }
+        ]
+    }
+]

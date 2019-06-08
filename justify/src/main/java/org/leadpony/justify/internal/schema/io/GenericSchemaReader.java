@@ -19,13 +19,13 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.URIs;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.Unknown;
@@ -49,17 +49,17 @@ import org.leadpony.justify.spi.FormatAttribute;
  */
 public class GenericSchemaReader extends AbstractBasicSchemaReader {
 
-    private final JsonBuilderFactory jsonBuilderFactory;
+    private final JsonService jsonService;
     private final SchemaSpec spec;
     private final Map<String, KeywordBinder> binders;
 
     public GenericSchemaReader(
             PointerAwareJsonParser parser,
-            JsonBuilderFactory jsonBuilderFactory,
+            JsonService jsonService,
             SchemaSpec spec,
             Map<String, Object> config) {
         super(parser, config);
-        this.jsonBuilderFactory = jsonBuilderFactory;
+        this.jsonService = jsonService;
         this.spec = spec;
         this.binders = spec.getKeywordBinders();
     }
@@ -85,7 +85,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
             throw newParsingException();
         }
 
-        JsonSchema schema = builder.build(jsonBuilderFactory);
+        JsonSchema schema = builder.build(jsonService);
         if (schema.hasId()) {
             addIdentifiedSchema(schema);
         }
@@ -156,15 +156,15 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         // The pointer of "$ref".
         private String refPointer;
 
-        JsonSchema build(JsonBuilderFactory builderFactory) {
+        JsonSchema build(JsonService jsonService) {
             if (isEmpty()) {
                 return JsonSchema.EMPTY;
             } else if (containsKey("$ref")) {
-                SchemaReference reference = new SchemaReference(this.id, this, builderFactory);
+                SchemaReference reference = new SchemaReference(this.id, this, jsonService);
                 addSchemaReference(reference, refLocation, refPointer);
                 return reference;
             } else {
-                return BasicSchema.newSchema(this.id, this, builderFactory);
+                return BasicSchema.newSchema(this.id, this, jsonService);
             }
         }
 

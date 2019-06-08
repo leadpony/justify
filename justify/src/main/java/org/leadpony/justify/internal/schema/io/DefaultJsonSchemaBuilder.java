@@ -33,13 +33,13 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.internal.base.MediaType;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
@@ -99,7 +99,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  */
 class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
-    private final JsonBuilderFactory builderFactory;
+    private final JsonService jsonService;
     private final SchemaSpec spec;
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI id;
@@ -109,17 +109,15 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     /**
      * Constructs this builder.
      *
-     * @param builderFactory the factory for producing builders of JSON values.
-     * @param spec           the schema specification.
+     * @param jsonService the JSON service.
+     * @param spec        the schema specification.
      */
-    public DefaultJsonSchemaBuilder(
-            JsonBuilderFactory builderFactory,
-            SchemaSpec spec) {
-        this.builderFactory = builderFactory;
+    public DefaultJsonSchemaBuilder(JsonService jsonService, SchemaSpec spec) {
+        this.jsonService = jsonService;
         this.spec = spec;
     }
 
-    /* Draft07SchemaBuilder interface */
+    /* As a JsonSchemaBuilder */
 
     @Override
     public JsonSchema build() {
@@ -127,9 +125,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         if (keywords.isEmpty()) {
             return JsonSchema.EMPTY;
         } else if (keywords.containsKey("$ref")) {
-            return new SchemaReference(id, keywords, builderFactory);
+            return new SchemaReference(id, keywords, jsonService);
         } else {
-            return BasicSchema.newSchema(id, keywords, builderFactory);
+            return BasicSchema.newSchema(id, keywords, jsonService);
         }
     }
 
@@ -370,7 +368,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(name, "name");
         requireNonNull(subschema, "subschema");
         getBuilder("properties", PropertiesBuilder::new)
-            .append(name, subschema);
+                .append(name, subschema);
         return this;
     }
 
@@ -378,7 +376,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withProperties(Map<String, JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         getBuilder("properties", PropertiesBuilder::new)
-            .append(subschemas);
+                .append(subschemas);
         return this;
     }
 
@@ -388,7 +386,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(subschema, "subschema");
         Pattern compiled = Pattern.compile(pattern);
         getBuilder("patternProperties", PatternPropertiesBuilder::new)
-            .append(compiled, subschema);
+                .append(compiled, subschema);
         return this;
     }
 
@@ -400,7 +398,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
             compiledMap.put(Pattern.compile(pattern), subschema);
         });
         getBuilder("patternProperties", PatternPropertiesBuilder::new)
-            .append(compiledMap);
+                .append(compiledMap);
         return this;
     }
 
@@ -416,7 +414,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(name, "name");
         requireNonNull(subschema, "subschema");
         getBuilder("dependencies", DependenciesBuilder::new)
-            .append(name, subschema);
+                .append(name, subschema);
         return this;
     }
 
@@ -432,7 +430,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(name, "name");
         requireNonNull(requiredProperties, "requiredProperties");
         getBuilder("dependencies", DependenciesBuilder::new)
-            .append(name, requiredProperties);
+                .append(name, requiredProperties);
         return this;
     }
 
@@ -440,7 +438,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withDependencies(Map<String, Object> values) {
         requireNonNull(values, "values");
         getBuilder("dependencies", DependenciesBuilder::new)
-            .append(values);
+                .append(values);
         return this;
     }
 
@@ -584,7 +582,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(name, "name");
         requireNonNull(schema, "schema");
         getBuilder("definitions", DefinitionsBuilder::new)
-            .append(name, schema);
+                .append(name, schema);
         return this;
     }
 
@@ -592,7 +590,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withDefinitions(Map<String, JsonSchema> schemas) {
         requireNonNull(schemas, "schemas");
         getBuilder("definitions", DefinitionsBuilder::new)
-            .append(schemas);
+                .append(schemas);
         return this;
     }
 
@@ -625,7 +623,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     private <T extends KeywordBuilder> T getBuilder(String name, Supplier<T> supplier) {
         T builder = null;
         if (builders.containsKey(name)) {
-            builder = (T)builders.get(name);
+            builder = (T) builders.get(name);
         } else {
             builder = supplier.get();
             builders.put(name, builder);

@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 
@@ -29,6 +28,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
@@ -60,24 +60,23 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
     /**
      * Loads new instance of this class.
      *
-     * @param jsonProvider       the JSON provider.
-     * @param jsonBuilderFactory the JSON builder factory.
+     * @param jsonService the JSON service.
      * @return newly created instance.
      */
-    static SchemaSpecRegistry load(JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
+    static SchemaSpecRegistry load(JsonService jsonService) {
         DefaultSchemaSpecRegistry registry = new DefaultSchemaSpecRegistry();
-        registry.createSpecs(jsonProvider, jsonBuilderFactory);
+        registry.createSpecs(jsonService);
         return registry;
     }
 
     private DefaultSchemaSpecRegistry() {
     }
 
-    private void createSpecs(JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
-        buildSimpleSpecs(jsonProvider, jsonBuilderFactory);
+    private void createSpecs(JsonService jsonService) {
+        buildSimpleSpecs(jsonService);
         buildCustomSpecs();
         this.encodingSchemes.putAll(ContentAttributes.encodingSchemes());
-        this.mimeTypes.putAll(ContentAttributes.mimeTypes(jsonProvider));
+        this.mimeTypes.putAll(ContentAttributes.mimeTypes(jsonService.getJsonProvider()));
     }
 
     /* As a SchemaSpecRegistry */
@@ -98,13 +97,13 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
 
     /* */
 
-    private void buildSimpleSpecs(JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
+    private void buildSimpleSpecs(JsonService jsonService) {
         for (SpecVersion version : SpecVersion.values()) {
             SimpleSpec spec = new SimpleSpec(
                     version,
                     KeywordBinders.getBinders(version),
                     FormatAttributes.getAttributes(version));
-            catalog.addSchema(spec.loadMetaschema(jsonProvider, jsonBuilderFactory));
+            catalog.addSchema(spec.loadMetaschema(jsonService));
             simpleSpecs.put(version, spec);
         }
     }
@@ -143,12 +142,13 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
             this.metaschema = other.metaschema;
         }
 
-        JsonSchema loadMetaschema(JsonProvider jsonProvider, JsonBuilderFactory jsonBuilderFactory) {
+        JsonSchema loadMetaschema(JsonService jsonService) {
             String name = getVersion().toString().toLowerCase() + ".json";
             InputStream in = getClass().getResourceAsStream(name);
+            JsonProvider jsonProvider = jsonService.getJsonProvider();
             JsonParser realParser = jsonProvider.createParser(in);
             PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-            try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonBuilderFactory, this, Collections.emptyMap())) {
+            try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonService, this, Collections.emptyMap())) {
                 this.metaschema = reader.read();
             }
             return this.metaschema;

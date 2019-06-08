@@ -28,6 +28,7 @@ import javax.json.JsonValue;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
@@ -43,11 +44,11 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     private URI id;
 
     private final Map<String, Keyword> keywordMap;
-    private final JsonBuilderFactory builderFactory;
+    private final JsonService jsonService;
 
-    protected AbstractJsonSchema(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+    protected AbstractJsonSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
         this.keywordMap = keywords;
-        this.builderFactory = builderFactory;
+        this.jsonService = jsonService;
         keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
         this.id = id;
         if (hasAbsoluteId()) {
@@ -113,8 +114,8 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
         if (found == null) {
             return defaultValue;
         }
-        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
-        found.addToJson(builder, builderFactory);
+        JsonObjectBuilder builder = jsonService.createObjectBuilder();
+        found.addToJson(builder, jsonService.getJsonBuilderFactory());
         return builder.build().get(keyword);
     }
 
@@ -144,7 +145,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     @Override
     public JsonValue toJson() {
-        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
+        JsonObjectBuilder builder = jsonService.createObjectBuilder();
         addToJson(builder);
         return builder.build();
     }
@@ -186,7 +187,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
      * @return the JSON builder factory.
      */
     protected JsonBuilderFactory getBuilderFactory() {
-        return builderFactory;
+        return jsonService.getJsonBuilderFactory();
     }
 
     /**
@@ -195,6 +196,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
      * @param builder the builder for building JSON object, never be {@code null}.
      */
     protected void addToJson(JsonObjectBuilder builder) {
+        JsonBuilderFactory builderFactory = getBuilderFactory();
         for (Keyword keyword : this.keywordMap.values()) {
             keyword.addToJson(builder, builderFactory);
         }

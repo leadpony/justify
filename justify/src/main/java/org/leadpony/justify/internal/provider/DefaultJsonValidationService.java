@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonException;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
@@ -52,6 +51,7 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.ValidationConfig;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
@@ -67,11 +67,8 @@ import org.leadpony.justify.internal.validator.JsonValidatorFactory;
  *
  * @author leadpony
  */
-class DefaultJsonValidationService implements JsonValidationService {
+class DefaultJsonValidationService extends JsonService implements JsonValidationService {
 
-    private final JsonProvider jsonProvider;
-    private final JsonBuilderFactory jsonBuilderFactory;
-    private final JsonParserFactory parserFactory;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
     private final SchemaSpecRegistry specRegistry;
 
@@ -83,10 +80,8 @@ class DefaultJsonValidationService implements JsonValidationService {
      *                       metaschema.
      */
     DefaultJsonValidationService(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
-        this.jsonBuilderFactory = jsonProvider.createBuilderFactory(null);
-        this.parserFactory = jsonProvider.createParserFactory(null);
-        this.specRegistry = DefaultSchemaSpecRegistry.load(jsonProvider, jsonBuilderFactory);
+        super(jsonProvider);
+        this.specRegistry = DefaultSchemaSpecRegistry.load(this);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
     }
 
@@ -104,7 +99,7 @@ class DefaultJsonValidationService implements JsonValidationService {
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return DefaultJsonSchemaReaderFactory.builder(jsonProvider, specRegistry);
+        return DefaultJsonSchemaReaderFactory.builder(this, specRegistry);
     }
 
     /**
@@ -164,9 +159,9 @@ class DefaultJsonValidationService implements JsonValidationService {
             config = Collections.emptyMap();
         }
         if (config.containsKey(ValidationConfig.SCHEMA)) {
-            return new JsonValidatorFactory(jsonProvider, parserFactory, config);
+            return new JsonValidatorFactory(getJsonProvider(), getJsonParserFactory(), config);
         } else {
-            return jsonProvider.createParserFactory(config);
+            return getJsonProvider().createParserFactory(config);
         }
     }
 
@@ -194,7 +189,7 @@ class DefaultJsonValidationService implements JsonValidationService {
         requireNonNull(in, "in");
         requireNonNull(schema, "schema");
         requireNonNull(handler, "handler");
-        JsonParser parser = parserFactory.createParser(in);
+        JsonParser parser = getJsonParserFactory().createParser(in);
         return createValidator(parser, schema, handler);
     }
 
@@ -207,7 +202,7 @@ class DefaultJsonValidationService implements JsonValidationService {
         requireNonNull(charset, "charset");
         requireNonNull(schema, "schema");
         requireNonNull(handler, "handler");
-        JsonParser parser = parserFactory.createParser(in, charset);
+        JsonParser parser = getJsonParserFactory().createParser(in, charset);
         return createValidator(parser, schema, handler);
     }
 
@@ -219,7 +214,7 @@ class DefaultJsonValidationService implements JsonValidationService {
         requireNonNull(reader, "reader");
         requireNonNull(schema, "schema");
         requireNonNull(handler, "handler");
-        JsonParser parser = parserFactory.createParser(reader);
+        JsonParser parser = getJsonParserFactory().createParser(reader);
         return createValidator(parser, schema, handler);
     }
 
@@ -253,7 +248,7 @@ class DefaultJsonValidationService implements JsonValidationService {
             JsonParserFactory parserFactory = createParserFactory(config);
             return new DefaultJsonReaderFactory(parserFactory);
         } else {
-            return jsonProvider.createReaderFactory(config);
+            return getJsonProvider().createReaderFactory(config);
         }
     }
 
@@ -316,7 +311,7 @@ class DefaultJsonValidationService implements JsonValidationService {
     public JsonProvider createJsonProvider(JsonSchema schema, ProblemHandlerFactory handlerFactory) {
         requireNonNull(schema, "schema");
         requireNonNull(handlerFactory, "handlerFactory");
-        return new ValidatingJsonProvider(jsonProvider, schema, handlerFactory);
+        return new ValidatingJsonProvider(getJsonProvider(), schema, handlerFactory);
     }
 
     /**
@@ -348,7 +343,7 @@ class DefaultJsonValidationService implements JsonValidationService {
 
     private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
         return new DefaultSchemaBuilderFactory(
-                jsonBuilderFactory,
+                this,
                 specRegistry.getSpec(SpecVersion.DRAFT_07, true));
     }
 
@@ -369,7 +364,7 @@ class DefaultJsonValidationService implements JsonValidationService {
      */
     @SuppressWarnings("resource")
     private JsonParser createValidator(JsonParser parser, JsonSchema schema, ProblemHandler handler) {
-        return new JsonValidator(parser, schema, jsonProvider)
+        return new JsonValidator(parser, schema, getJsonProvider())
                 .withHandler(handler);
     }
 

@@ -23,12 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -45,26 +44,26 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    public static JsonSchema newSchema(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
+    public static JsonSchema newSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
         List<Evaluatable> evaluatables = collectEvaluatables(keywords);
         if (evaluatables.isEmpty()) {
-            return new None(id, keywords, builderFactory);
+            return new None(id, keywords, jsonService);
         } else if (evaluatables.size() == 1) {
-            return new One(id, keywords, builderFactory, evaluatables.get(0));
+            return new One(id, keywords, jsonService, evaluatables.get(0));
         } else {
-            return new Many(id, keywords, builderFactory, evaluatables);
+            return new Many(id, keywords, jsonService, evaluatables);
         }
     }
 
     /**
      * Constructs this schema.
      *
-     * @param id             the identifier of this schema, may be {@code null}.
-     * @param keywords       all keywords.
-     * @param builderFactory the factory to create JSON builders.
+     * @param id          the identifier of this schema, may be {@code null}.
+     * @param keywords    all keywords.
+     * @param jsonService ths JSON service.
      */
-    protected BasicSchema(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
-        super(id, keywords, builderFactory);
+    protected BasicSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+        super(id, keywords, jsonService);
     }
 
     @Override
@@ -104,8 +103,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class None extends BasicSchema {
 
-        private None(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory) {
-            super(id, keywords, builderFactory);
+        private None(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+            super(id, keywords, jsonService);
         }
 
         @Override
@@ -128,8 +127,8 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final Evaluatable evaluatable;
 
-        private One(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory, Evaluatable evaluatable) {
-            super(id, keywords, builderFactory);
+        private One(URI id, Map<String, Keyword> keywords, JsonService jsonService, Evaluatable evaluatable) {
+            super(id, keywords, jsonService);
             this.evaluatable = evaluatable;
         }
 
@@ -153,8 +152,9 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final List<Evaluatable> evaluatables;
 
-        private Many(URI id, Map<String, Keyword> keywords, JsonBuilderFactory builderFactory, List<Evaluatable> evaluatables) {
-            super(id, keywords, builderFactory);
+        private Many(URI id, Map<String, Keyword> keywords, JsonService jsonService,
+                List<Evaluatable> evaluatables) {
+            super(id, keywords, jsonService);
             this.evaluatables = evaluatables;
         }
 

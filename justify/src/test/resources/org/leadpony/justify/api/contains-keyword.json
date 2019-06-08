@@ -1,0 +1,62 @@
+[
+    {
+        "schema": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "tests": [
+            {
+                "keyword": "type",
+                "result": true
+            },
+            {
+                "keyword": "minimum",
+                "result": true
+            },
+            {
+                "keyword": "integer",
+                "result": false
+            },
+            {
+                "keyword": "required",
+                "result": false
+            }
+        ]
+    },
+    {
+        "schema": {
+            "customKeyword": "hello"
+        },
+        "tests": [
+            {
+                "keyword": "customKeyword",
+                "result": true
+            }
+        ]
+    },
+    {
+        "schema": {
+            "customKeyword": {
+                "greeting": "hello",
+                "language": "English"
+            }
+        },
+        "tests": [
+            {
+                "keyword": "customKeyword",
+                "result": true
+            }
+        ]
+    },
+    {
+        "schema": {
+            "customKeyword": [1, 2, 3]
+        },
+        "tests": [
+            {
+                "keyword": "customKeyword",
+                "result": true
+            }
+        ]
+    }
+]
