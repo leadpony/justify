@@ -20,7 +20,7 @@ import java.util.Map;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.combiner.Properties;
 
 /**
@@ -37,7 +37,7 @@ class PropertiesBinder extends AbstractSchemaMapBinder {
     }
 
     @Override
-    public Keyword createKeyword(Map<String, JsonSchema> subschemas) {
+    public SchemaKeyword createKeyword(Map<String, JsonSchema> subschemas) {
         return new Properties(subschemas);
     }
 }

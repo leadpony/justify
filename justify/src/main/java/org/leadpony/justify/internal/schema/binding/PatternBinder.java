@@ -23,7 +23,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * A binder type for "pattern" keyword.
@@ -52,7 +52,7 @@ class PatternBinder extends AbstractBinder {
         }
     }
 
-    private Keyword createKeyword(Pattern value) {
+    private SchemaKeyword createKeyword(Pattern value) {
         return new org.leadpony.justify.internal.keyword.assertion.Pattern(value);
     }
 }

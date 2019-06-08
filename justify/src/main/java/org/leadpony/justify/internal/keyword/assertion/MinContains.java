@@ -24,7 +24,7 @@ import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * The type representing "minContains" keyword.
@@ -54,6 +54,6 @@ public class MinContains extends AbstractKeyword {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }

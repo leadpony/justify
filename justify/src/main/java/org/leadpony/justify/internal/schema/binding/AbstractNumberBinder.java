@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -37,5 +37,5 @@ abstract class AbstractNumberBinder extends AbstractBinder {
         }
     }
 
-    public abstract Keyword createKeyword(BigDecimal value);
+    public abstract SchemaKeyword createKeyword(BigDecimal value);
 }

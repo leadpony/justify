@@ -23,7 +23,7 @@ import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.FormatAttribute;
 
@@ -59,6 +59,6 @@ public class Format extends AbstractAssertion {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }

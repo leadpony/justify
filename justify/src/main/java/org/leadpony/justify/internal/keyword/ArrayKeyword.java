@@ -26,7 +26,7 @@ import org.leadpony.justify.api.InstanceType;
  * 
  * @author leadpony
  */
-public interface ArrayKeyword extends Keyword {
+public interface ArrayKeyword extends SchemaKeyword {
 
     @Override
     default boolean supportsType(InstanceType type) {

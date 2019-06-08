@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -34,7 +34,7 @@ abstract class AbstractUriBinder extends AbstractBinder {
         if (event == Event.VALUE_STRING) {
             try {
                 URI uri = parse(parser.getString());
-                Keyword keyword = createKeyword(uri);
+                SchemaKeyword keyword = createKeyword(uri);
                 addKeyword(keyword, context);
             } catch (URISyntaxException e) {
                 // Ignores the exception
@@ -44,9 +44,9 @@ abstract class AbstractUriBinder extends AbstractBinder {
         }
     }
 
-    protected abstract Keyword createKeyword(URI value);
+    protected abstract SchemaKeyword createKeyword(URI value);
 
-    protected void addKeyword(Keyword keyword, BindingContext context) {
+    protected void addKeyword(SchemaKeyword keyword, BindingContext context) {
         context.addKeyword(keyword);
     }
 

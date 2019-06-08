@@ -17,7 +17,7 @@ package org.leadpony.justify.internal.schema.binding;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.MaxItems;
 
 /**
@@ -34,7 +34,7 @@ class MaxItemsBinder extends AbstractNonNegativeBinder {
     }
 
     @Override
-    public Keyword createKeyword(int value) {
+    public SchemaKeyword createKeyword(int value) {
         return new MaxItems(value);
     }
 }

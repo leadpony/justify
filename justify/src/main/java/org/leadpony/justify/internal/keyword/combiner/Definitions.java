@@ -27,7 +27,7 @@ import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -53,7 +53,7 @@ public class Definitions extends Combiner {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 
     @Override

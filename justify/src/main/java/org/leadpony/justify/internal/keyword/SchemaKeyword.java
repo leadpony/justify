@@ -34,7 +34,7 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-public interface Keyword extends Evaluatable {
+public interface SchemaKeyword extends Evaluatable {
 
     /**
      * Returns the name of this keyword.
@@ -90,7 +90,7 @@ public interface Keyword extends Evaluatable {
      * @param evaluatables the list of evaluatable objects.
      * @param keywords     all keywords in the enclosing schema.
      */
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 
     /**

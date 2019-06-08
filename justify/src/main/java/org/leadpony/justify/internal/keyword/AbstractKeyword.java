@@ -32,11 +32,11 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
- * Skeletal implementation of {@link Keyword}.
+ * Skeletal implementation of {@link SchemaKeyword}.
  *
  * @author leadpony
  */
-public abstract class AbstractKeyword implements Keyword, ProblemBuilderFactory {
+public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFactory {
 
     // the schema enclosing this keyword.
     private JsonSchema schema;

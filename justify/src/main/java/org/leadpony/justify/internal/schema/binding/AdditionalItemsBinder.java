@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.schema.binding;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.combiner.AdditionalItems;
 
 /**
@@ -35,7 +35,7 @@ class AdditionalItemsBinder extends AbstractSchemaBinder {
     }
 
     @Override
-    public Keyword createKeyword(JsonSchema subschema) {
+    public SchemaKeyword createKeyword(JsonSchema subschema) {
         return new AdditionalItems(subschema);
     }
 }

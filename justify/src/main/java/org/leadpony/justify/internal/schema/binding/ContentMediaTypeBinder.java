@@ -22,7 +22,7 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -48,7 +48,7 @@ class ContentMediaTypeBinder extends AbstractBinder {
             try {
                 MediaType mediaType = MediaType.valueOf(name);
                 ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
-                Keyword keyword = (mimeType != null)
+                SchemaKeyword keyword = (mimeType != null)
                         ? new ContentMediaType(mimeType, mediaType.parameters())
                         : new UnknownContentMediaType(name);
                 context.addKeyword(keyword);

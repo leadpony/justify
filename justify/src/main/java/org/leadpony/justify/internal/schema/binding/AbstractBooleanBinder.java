@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.schema.binding;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -41,5 +41,5 @@ abstract class AbstractBooleanBinder extends AbstractBinder {
         }
     }
 
-    public abstract Keyword createKeyword(boolean value);
+    public abstract SchemaKeyword createKeyword(boolean value);
 }

@@ -20,7 +20,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -44,7 +44,7 @@ class ContentEncodingBinder extends AbstractBinder {
         if (event == Event.VALUE_STRING) {
             String name = parser.getString();
             ContentEncodingScheme scheme = context.getEncodingScheme(name);
-            Keyword keyword = (scheme != null)
+            SchemaKeyword keyword = (scheme != null)
                     ? new ContentEncoding(scheme)
                     : new UnknownContentEncoding(name);
             context.addKeyword(keyword);

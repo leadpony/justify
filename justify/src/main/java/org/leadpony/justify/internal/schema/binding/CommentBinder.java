@@ -17,7 +17,7 @@ package org.leadpony.justify.internal.schema.binding;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.core.Comment;
 
 /**
@@ -34,7 +34,7 @@ class CommentBinder extends AbstractStringBinder {
     }
 
     @Override
-    public Keyword createKeyword(String value) {
+    public SchemaKeyword createKeyword(String value) {
         return new Comment(value);
     }
 }

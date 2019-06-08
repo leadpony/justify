@@ -19,7 +19,7 @@ import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
@@ -54,7 +54,7 @@ public interface BindingContext {
 
     ContentMimeType getMimeType(String value);
 
-    void addKeyword(Keyword keyword);
+    void addKeyword(SchemaKeyword keyword);
 
     void addKeyword(Id keyword);
 

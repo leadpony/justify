@@ -23,7 +23,7 @@ import java.util.Map;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * The type for combining subschemas.
@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.keyword.Keyword;
 public abstract class Combiner extends AbstractKeyword {
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         evaluatables.add(this);
     }
 

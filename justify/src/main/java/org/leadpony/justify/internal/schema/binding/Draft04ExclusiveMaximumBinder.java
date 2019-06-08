@@ -17,7 +17,7 @@ package org.leadpony.justify.internal.schema.binding;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.Draft04Maximum;
 
 /**
@@ -34,7 +34,7 @@ class Draft04ExclusiveMaximumBinder extends AbstractBooleanBinder {
     }
 
     @Override
-    public Keyword createKeyword(boolean value) {
+    public SchemaKeyword createKeyword(boolean value) {
         return new Draft04Maximum.ExclusiveMaximum(value);
     }
 }

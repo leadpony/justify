@@ -25,7 +25,7 @@ import javax.json.spi.JsonProvider;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * An assertion keyword representing "minimum" for Draft-04.
@@ -41,7 +41,7 @@ public class Draft04Minimum extends Maximum {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         if (keywords.containsKey("exclusiveMinimum")) {
             ExclusiveMinimum keyword = (ExclusiveMinimum) keywords.get("exclusiveMinimum");
             exclusive = keyword.value;

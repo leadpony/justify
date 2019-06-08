@@ -30,7 +30,7 @@ import javax.json.spi.JsonProvider;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Schema;
@@ -44,10 +44,10 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     private URI id;
 
-    private final Map<String, Keyword> keywordMap;
+    private final Map<String, SchemaKeyword> keywordMap;
     private final JsonService jsonService;
 
-    protected AbstractJsonSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+    protected AbstractJsonSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
         this.keywordMap = keywords;
         this.jsonService = jsonService;
         keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
@@ -111,7 +111,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     @Override
     public JsonValue getKeywordValue(String keyword, JsonValue defaultValue) {
         requireNonNull(keyword, "keyword");
-        Keyword found = keywordMap.get(keyword);
+        SchemaKeyword found = keywordMap.get(keyword);
         if (found == null) {
             return defaultValue;
         }
@@ -121,16 +121,16 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     @Override
     public Stream<JsonSchema> getSubschemas() {
         return keywordMap.values().stream()
-                .filter(Keyword::hasSubschemas)
-                .flatMap(Keyword::getSubschemas);
+                .filter(SchemaKeyword::hasSubschemas)
+                .flatMap(SchemaKeyword::getSubschemas);
     }
 
     @Override
     public Stream<JsonSchema> getInPlaceSubschemas() {
         return keywordMap.values().stream()
-                .filter(Keyword::hasSubschemas)
-                .filter(Keyword::isInPlace)
-                .flatMap(Keyword::getSubschemas);
+                .filter(SchemaKeyword::hasSubschemas)
+                .filter(SchemaKeyword::isInPlace)
+                .flatMap(SchemaKeyword::getSubschemas);
     }
 
     @Override
@@ -146,7 +146,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     public JsonValue toJson() {
         JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonObjectBuilder builder = jsonService.createObjectBuilder();
-        for (Keyword keyword : this.keywordMap.values()) {
+        for (SchemaKeyword keyword : this.keywordMap.values()) {
             builder.add(keyword.name(), keyword.getValueAsJson(jsonProvider));
         }
         return builder.build();
@@ -175,11 +175,11 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Keyword> T getKeyword(String name) {
+    protected <T extends SchemaKeyword> T getKeyword(String name) {
         return (T)keywordMap.get(name);
     }
 
-    protected Map<String, Keyword> getKeywordsAsMap() {
+    protected Map<String, SchemaKeyword> getKeywordsAsMap() {
         return keywordMap;
     }
 
@@ -194,7 +194,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     private JsonSchema searchKeywordsForSubschema(String jsonPointer) {
         JsonPointerTokenizer tokenizer = new JsonPointerTokenizer(jsonPointer);
-        Keyword keyword = keywordMap.get(tokenizer.next());
+        SchemaKeyword keyword = keywordMap.get(tokenizer.next());
         if (keyword != null) {
             JsonSchema candidate = keyword.getSubschema(tokenizer);
             if (candidate != null) {

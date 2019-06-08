@@ -22,7 +22,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -49,5 +49,5 @@ abstract class AbstractSchemaListBinder extends AbstractBinder {
         }
     }
 
-    public abstract Keyword createKeyword(List<JsonSchema> subschemas);
+    public abstract SchemaKeyword createKeyword(List<JsonSchema> subschemas);
 }

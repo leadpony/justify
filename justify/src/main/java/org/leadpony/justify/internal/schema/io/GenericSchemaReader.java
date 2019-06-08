@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.Unknown;
 import org.leadpony.justify.internal.keyword.combiner.Referenceable;
 import org.leadpony.justify.internal.keyword.core.Id;
@@ -148,7 +148,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
     }
 
     @SuppressWarnings("serial")
-    private class SchemaBuilder extends LinkedHashMap<String, Keyword> implements BindingContext {
+    private class SchemaBuilder extends LinkedHashMap<String, SchemaKeyword> implements BindingContext {
 
         private URI id;
         // The location of "$ref".
@@ -191,7 +191,7 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         }
 
         @Override
-        public void addKeyword(Keyword keyword) {
+        public void addKeyword(SchemaKeyword keyword) {
             put(keyword.name(), keyword);
         }
 

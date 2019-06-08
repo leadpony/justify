@@ -20,17 +20,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * Assertion on JSON instances.
  *
  * @author leadpony
  */
-public interface Assertion extends Keyword {
+public interface Assertion extends SchemaKeyword {
 
     @Override
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         evaluatables.add(this);
     }
 }

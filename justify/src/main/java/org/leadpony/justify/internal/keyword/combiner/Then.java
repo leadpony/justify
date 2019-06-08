@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * "Then" conditional keyword.
@@ -45,6 +45,6 @@ public class Then extends Conditional {
      * Evaluation will be done by "if" keyword.
      */
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }

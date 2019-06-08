@@ -31,7 +31,7 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -111,9 +111,9 @@ public class ContentMediaType extends AbstractAssertion {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         if (keywords.containsKey("contentEncoding")) {
-            Keyword keyword = keywords.get("contentEncoding");
+            SchemaKeyword keyword = keywords.get("contentEncoding");
             if (keyword instanceof ContentEncoding) {
                 this.encodingScheme = ((ContentEncoding) keyword).scheme();
             } else {

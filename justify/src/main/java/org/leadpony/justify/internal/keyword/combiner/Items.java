@@ -39,7 +39,7 @@ import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * "items" combiner.
@@ -199,7 +199,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         @Override
-        public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+        public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
             if (keywords.containsKey("additionalItems")) {
                 AdditionalItems additionalItems = (AdditionalItems)keywords.get("additionalItems");
                 this.defaultSchema = additionalItems.getSubschema();

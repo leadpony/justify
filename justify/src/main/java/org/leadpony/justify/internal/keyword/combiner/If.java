@@ -25,7 +25,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * "If" conditional keyword.
@@ -67,7 +67,7 @@ public class If extends Conditional {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         if (keywords.containsKey("then")) {
             thenSchema = ((UnaryCombiner) keywords.get("then")).getSubschema();
         }

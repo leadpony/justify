@@ -40,7 +40,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -101,7 +101,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private final JsonService jsonService;
     private final SchemaSpec spec;
-    private final Map<String, Keyword> keywords = new LinkedHashMap<>();
+    private final Map<String, SchemaKeyword> keywords = new LinkedHashMap<>();
     private URI id;
 
     private final Map<String, KeywordBuilder> builders = new HashMap<>();
@@ -615,7 +615,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         return this;
     }
 
-    private void addKeyword(Keyword keyword) {
+    private void addKeyword(SchemaKeyword keyword) {
         this.keywords.put(keyword.name(), keyword);
     }
 
@@ -633,14 +633,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private void finishBuilders() {
         for (KeywordBuilder builder : builders.values()) {
-            Keyword keyword = builder.build();
+            SchemaKeyword keyword = builder.build();
             keywords.put(keyword.name(), keyword);
         }
     }
 
     private static interface KeywordBuilder {
 
-        Keyword build();
+        SchemaKeyword build();
     }
 
     private static abstract class AbstractKeywordBuilder<K, V> implements KeywordBuilder {
@@ -658,21 +658,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private static class PropertiesBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
-        public Keyword build() {
+        public SchemaKeyword build() {
             return new Properties(map);
         }
     }
 
     private static class PatternPropertiesBuilder extends AbstractKeywordBuilder<Pattern, JsonSchema> {
 
-        public Keyword build() {
+        public SchemaKeyword build() {
             return new PatternProperties(map);
         }
     }
 
     private static class DefinitionsBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
-        public Keyword build() {
+        public SchemaKeyword build() {
             return new Definitions(map);
         }
     }
@@ -680,7 +680,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     private static class DependenciesBuilder extends AbstractKeywordBuilder<String, Object> {
 
         @Override
-        public Keyword build() {
+        public SchemaKeyword build() {
             return new Dependencies(map);
         }
     }

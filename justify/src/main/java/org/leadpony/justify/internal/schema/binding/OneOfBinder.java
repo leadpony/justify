@@ -20,7 +20,7 @@ import java.util.List;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.combiner.OneOf;
 
 /**
@@ -37,7 +37,7 @@ class OneOfBinder extends AbstractSchemaListBinder {
     }
 
     @Override
-    public Keyword createKeyword(List<JsonSchema> subschemas) {
+    public SchemaKeyword createKeyword(List<JsonSchema> subschemas) {
         return new OneOf(subschemas);
     }
 }

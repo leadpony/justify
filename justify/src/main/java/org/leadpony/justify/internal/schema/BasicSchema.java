@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -44,7 +44,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    public static JsonSchema newSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+    public static JsonSchema newSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
         List<Evaluatable> evaluatables = collectEvaluatables(keywords);
         if (evaluatables.isEmpty()) {
             return new None(id, keywords, jsonService);
@@ -62,7 +62,7 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      * @param keywords    all keywords.
      * @param jsonService ths JSON service.
      */
-    protected BasicSchema(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+    protected BasicSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
         super(id, keywords, jsonService);
     }
 
@@ -90,9 +90,9 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
                 .withSchema(this);
     }
 
-    private static List<Evaluatable> collectEvaluatables(Map<String, Keyword> keywords) {
+    private static List<Evaluatable> collectEvaluatables(Map<String, SchemaKeyword> keywords) {
         List<Evaluatable> evaluatables = new ArrayList<>();
-        for (Keyword keyword : keywords.values()) {
+        for (SchemaKeyword keyword : keywords.values()) {
             keyword.addToEvaluatables(evaluatables, keywords);
         }
         return evaluatables;
@@ -103,7 +103,7 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
      */
     private static class None extends BasicSchema {
 
-        private None(URI id, Map<String, Keyword> keywords, JsonService jsonService) {
+        private None(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
             super(id, keywords, jsonService);
         }
 
@@ -127,7 +127,7 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final Evaluatable evaluatable;
 
-        private One(URI id, Map<String, Keyword> keywords, JsonService jsonService, Evaluatable evaluatable) {
+        private One(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService, Evaluatable evaluatable) {
             super(id, keywords, jsonService);
             this.evaluatable = evaluatable;
         }
@@ -152,7 +152,7 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
 
         private final List<Evaluatable> evaluatables;
 
-        private Many(URI id, Map<String, Keyword> keywords, JsonService jsonService,
+        private Many(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService,
                 List<Evaluatable> evaluatables) {
             super(id, keywords, jsonService);
             this.evaluatables = evaluatables;

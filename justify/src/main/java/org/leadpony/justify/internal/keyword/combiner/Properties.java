@@ -32,7 +32,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.Keyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * An assertion keyword representing "properties".
@@ -60,7 +60,7 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, Keyword> keywords) {
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         super.addToEvaluatables(evaluatables, keywords);
         if (keywords.containsKey("patternProperties")) {
             this.patternProperties = (PatternProperties) keywords.get("patternProperties");
