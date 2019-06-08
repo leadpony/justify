@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.Keyword;
@@ -54,8 +54,8 @@ public class Format extends AbstractAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), attribute);
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return jsonProvider.createValue(attribute);
     }
 
     @Override

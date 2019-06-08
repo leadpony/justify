@@ -20,8 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -70,10 +70,10 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
-        names.forEach(arrayBuilder::add);
-        builder.add(name(), arrayBuilder);
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
+        names.forEach(builder::add);
+        return builder.build();
     }
 
     private class AssertionEvaluator extends ShallowEvaluator {

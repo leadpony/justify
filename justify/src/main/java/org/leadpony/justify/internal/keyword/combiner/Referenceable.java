@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -55,8 +55,8 @@ public class Referenceable extends Combiner {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), subschema.toJson());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return subschema.toJson();
     }
 
     @Override

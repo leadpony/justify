@@ -16,9 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 /**
  * An annotation keyword representing "default".
@@ -37,7 +36,7 @@ public class Default extends Annotation<JsonValue> {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return value();
     }
 }

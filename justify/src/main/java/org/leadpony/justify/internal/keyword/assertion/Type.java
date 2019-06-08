@@ -21,8 +21,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -138,8 +138,8 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-            builder.add("type", expectedType.name().toLowerCase());
+        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+            return jsonProvider.createValue(expectedType.name().toLowerCase());
         }
 
         private boolean testType(InstanceType type) {
@@ -207,13 +207,13 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-            JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
+        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+            JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
             expectedTypes.stream()
-                    .map(InstanceType::name)
-                    .map(String::toLowerCase)
-                    .forEach(arrayBuilder::add);
-            builder.add("type", arrayBuilder);
+                .map(InstanceType::name)
+                .map(String::toLowerCase)
+                .forEach(builder::add);
+            return builder.build();
         }
 
         private boolean testType(InstanceType type) {

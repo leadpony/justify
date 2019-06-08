@@ -470,7 +470,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     ProblemPrinterBuilder createProblemPrinterBuilder(Consumer<String> lineConsumer);
 
     /**
-     * Returns the underlying JSON provider.
+     * Returns the underlying JSON provider used by this service.
      *
      * @return the underlying JSON provider, never be {@code null}.
      */

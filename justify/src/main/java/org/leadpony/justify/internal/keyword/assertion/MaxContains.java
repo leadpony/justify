@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -49,8 +49,8 @@ public class MaxContains extends AbstractKeyword {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), limit);
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return jsonProvider.createValue(limit);
     }
 
     @Override

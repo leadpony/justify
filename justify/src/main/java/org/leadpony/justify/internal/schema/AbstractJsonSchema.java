@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
@@ -114,9 +115,7 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
         if (found == null) {
             return defaultValue;
         }
-        JsonObjectBuilder builder = jsonService.createObjectBuilder();
-        found.addToJson(builder, jsonService.getJsonBuilderFactory());
-        return builder.build().get(keyword);
+        return found.getValueAsJson(jsonService.getJsonProvider());
     }
 
     @Override
@@ -145,8 +144,11 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
 
     @Override
     public JsonValue toJson() {
+        JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonObjectBuilder builder = jsonService.createObjectBuilder();
-        addToJson(builder);
+        for (Keyword keyword : this.keywordMap.values()) {
+            builder.add(keyword.name(), keyword.getValueAsJson(jsonProvider));
+        }
         return builder.build();
     }
 
@@ -188,18 +190,6 @@ abstract class AbstractJsonSchema implements JsonSchema, Resolvable {
      */
     protected JsonBuilderFactory getBuilderFactory() {
         return jsonService.getJsonBuilderFactory();
-    }
-
-    /**
-     * Adds this schema to the JSON representation.
-     *
-     * @param builder the builder for building JSON object, never be {@code null}.
-     */
-    protected void addToJson(JsonObjectBuilder builder) {
-        JsonBuilderFactory builderFactory = getBuilderFactory();
-        for (Keyword keyword : this.keywordMap.values()) {
-            keyword.addToJson(builder, builderFactory);
-        }
     }
 
     private JsonSchema searchKeywordsForSubschema(String jsonPointer) {

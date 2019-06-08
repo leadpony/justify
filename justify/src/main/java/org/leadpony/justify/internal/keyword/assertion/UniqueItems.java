@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -67,8 +67,8 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), unique);
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return unique ? JsonValue.TRUE : JsonValue.FALSE;
     }
 
     /**

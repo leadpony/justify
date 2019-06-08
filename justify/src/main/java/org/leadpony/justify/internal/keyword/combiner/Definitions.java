@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -45,10 +46,10 @@ public class Definitions extends Combiner {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonObjectBuilder childBuilder = builderFactory.createObjectBuilder();
-        definitionMap.forEach((k, v)->childBuilder.add(k, v.toJson()));
-        builder.add(name(), childBuilder.build());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
+        this.definitionMap.forEach((k, v)->builder.add(k, v.toJson()));
+        return builder.build();
     }
 
     @Override

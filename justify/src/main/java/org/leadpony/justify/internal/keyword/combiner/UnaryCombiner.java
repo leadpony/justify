@@ -19,33 +19,33 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
 
 /**
  * Combiner operating on single subschema.
- * 
+ *
  * @author leadpony
  */
 abstract class UnaryCombiner extends Combiner {
-    
+
     private final JsonSchema subschema;
-    
+
     protected UnaryCombiner(JsonSchema subschema) {
         this.subschema = subschema;
     }
-    
+
     JsonSchema getSubschema() {
         return subschema;
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), subschema.toJson());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return subschema.toJson();
     }
-    
+
     @Override
     public boolean hasSubschemas() {
         return true;

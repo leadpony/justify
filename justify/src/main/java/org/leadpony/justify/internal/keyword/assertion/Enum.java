@@ -19,9 +19,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
@@ -46,10 +45,10 @@ public class Enum extends AbstractEqualityAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
-        expected.forEach(arrayBuilder::add);
-        builder.add("enum", arrayBuilder);
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
+        expected.forEach(builder::add);
+        return builder.build();
     }
 
     @Override

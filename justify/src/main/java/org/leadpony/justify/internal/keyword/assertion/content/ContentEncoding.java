@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.content;
 import java.util.EnumSet;
 import java.util.Set;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -96,8 +96,8 @@ public class ContentEncoding extends AbstractAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), scheme.name());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return jsonProvider.createValue(scheme.name());
     }
 
     private boolean test(String src) {

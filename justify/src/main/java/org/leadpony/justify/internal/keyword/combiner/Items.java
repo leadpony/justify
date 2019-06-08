@@ -23,9 +23,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -94,8 +93,8 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         @Override
-        public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-            builder.add(name(), subschema.toJson());
+        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+            return subschema.toJson();
         }
 
         @Override
@@ -191,10 +190,12 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         }
 
         @Override
-        public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-            JsonArrayBuilder itemsBuilder = builderFactory.createArrayBuilder();
-            subschemas.stream().map(JsonSchema::toJson).forEachOrdered(itemsBuilder::add);
-            builder.add(name(), itemsBuilder.build());
+        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+            JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
+            this.subschemas.stream()
+                .map(JsonSchema::toJson)
+                .forEachOrdered(builder::add);
+            return builder.build();
         }
 
         @Override

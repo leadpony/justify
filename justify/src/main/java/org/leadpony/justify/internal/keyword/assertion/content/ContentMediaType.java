@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -106,8 +106,8 @@ public class ContentMediaType extends AbstractAssertion {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return jsonProvider.createValue(value());
     }
 
     @Override

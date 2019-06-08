@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.internal.keyword;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 /**
  * A keyword type providing a single value as metadata.
@@ -38,7 +38,7 @@ public abstract class AbstractMetadataKeyword<T> extends AbstractKeyword {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        builder.add(name(), value().toString());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        return jsonProvider.createValue(value().toString());
     }
 }

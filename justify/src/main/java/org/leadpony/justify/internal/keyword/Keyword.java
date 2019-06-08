@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -77,14 +77,12 @@ public interface Keyword extends Evaluatable {
     }
 
     /**
-     * Adds this keyword to the specified JSON object.
+     * Returns the value of this keyword as an instance of {@code JsonProvider}.
      *
-     * @param builder        the builder for building a JSON object, cannot be
-     *                       {@code null}.
-     * @param builderFactory the factory for producing builders, cannot be
-     *                       {@code null}.
+     * @param jsonProvider the instance of {@code JsonProvider}.
+     * @return the value of this keyword, cannot be {@code null}.
      */
-    void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
+    JsonValue getValueAsJson(JsonProvider jsonProvider);
 
     /**
      * Adds this keyword to the list if this keyword is evaluatables.

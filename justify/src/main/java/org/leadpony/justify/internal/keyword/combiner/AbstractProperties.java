@@ -22,8 +22,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -68,10 +69,10 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonObjectBuilder propertiesBuilder = builderFactory.createObjectBuilder();
-        propertyMap.forEach((key, value)->propertiesBuilder.add(key.toString(), value.toJson()));
-        builder.add(name(), propertiesBuilder.build());
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
+        this.propertyMap.forEach((key, value)->builder.add(key.toString(), value.toJson()));
+        return builder.build();
     }
 
     @Override

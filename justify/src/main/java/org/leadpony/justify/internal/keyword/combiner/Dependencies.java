@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -90,12 +92,12 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonObjectBuilder dependencyBuilder = builderFactory.createObjectBuilder();
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
         for (Dependency dependency : this.dependencyMap.values()) {
-            dependency.addToJson(dependencyBuilder, builderFactory);
+            builder.add(dependency.getProperty(), dependency.getValue(jsonProvider));
         }
-        builder.add(name(), dependencyBuilder.build());
+        return builder.build();
     }
 
     @Override
@@ -215,6 +217,8 @@ public class Dependencies extends Combiner implements ObjectKeyword {
          */
         abstract Evaluator createNegatedEvaluator(EvaluatorContext context);
 
+        abstract JsonValue getValue(JsonProvider jsonProvider);
+
         abstract void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory);
     }
 
@@ -245,6 +249,11 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         Evaluator createNegatedEvaluator(EvaluatorContext context) {
             Evaluator subschemaEvaluator = subschema.createNegatedEvaluator(context, InstanceType.OBJECT);
             return new NegatedSchemaDependencyEvaluator(context, getProperty(), subschemaEvaluator);
+        }
+
+        @Override
+        JsonValue getValue(JsonProvider jsonProvider) {
+            return subschema.toJson();
         }
 
         @Override
@@ -390,6 +399,13 @@ public class Dependencies extends Combiner implements ObjectKeyword {
         @Override
         Evaluator createNegatedEvaluator(EvaluatorContext context) {
             return new NegatedPropertyDependencyEvaluator(context, getProperty(), requiredProperties);
+        }
+
+        @Override
+        JsonValue getValue(JsonProvider jsonProvider) {
+            JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
+            this.requiredProperties.forEach(builder::add);
+            return builder.build();
         }
 
         @Override

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
@@ -57,12 +57,12 @@ abstract class NaryBooleanLogic extends Combiner {
     }
 
     @Override
-    public void addToJson(JsonObjectBuilder builder, JsonBuilderFactory builderFactory) {
-        JsonArrayBuilder arrayBuilder = builderFactory.createArrayBuilder();
+    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
+        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
         this.subschemas.stream()
                 .map(JsonSchema::toJson)
-                .forEach(arrayBuilder::add);
-        builder.add(name(), arrayBuilder);
+                .forEach(builder::add);
+        return builder.build();
     }
 
     @Override
