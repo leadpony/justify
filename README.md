@@ -54,7 +54,7 @@ Please add exactly one dependency to the `pom.xml` as shown below.
 <dependency>
     <groupId>org.apache.johnzon</groupId>
     <artifactId>johnzon-core</artifactId>
-    <version>1.1.11</version>
+    <version>1.1.12</version>
 </dependency>
 ```
 

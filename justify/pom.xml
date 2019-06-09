@@ -7,7 +7,7 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>0.17.0</version>
+    <version>0.18.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify</name>
     <description>
@@ -243,7 +243,7 @@
             <properties>
                 <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
                 <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.1.11</jsonp.provider.version>
+                <jsonp.provider.version>1.1.12</jsonp.provider.version>
                 <jsonp.provider.classifier></jsonp.provider.classifier>
             </properties>
         </profile>
