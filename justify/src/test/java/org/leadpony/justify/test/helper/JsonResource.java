@@ -23,22 +23,32 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
-import org.leadpony.justify.api.JsonSchemaTest;
-
 /**
- * A utility class operating on JSON resources.
+ * A JSON resource.
  *
  * @author leadpony
  */
-public final class JsonResources {
+public final class JsonResource {
 
-    public static Stream<JsonObject> getJsonObjectStream(String name) {
-        InputStream in = JsonSchemaTest.class.getResourceAsStream(name);
+    private final String name;
+
+    public static JsonResource of(String name) {
+        return new JsonResource(name);
+    }
+
+    private JsonResource(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Generates a stream of JSON objects from this resource.
+     *
+     * @return a stream of JSON objects.
+     */
+    public Stream<JsonObject> asObjectStream() {
+        InputStream in = getClass().getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream().map(JsonValue::asJsonObject);
         }
-    }
-
-    private JsonResources() {
     }
 }

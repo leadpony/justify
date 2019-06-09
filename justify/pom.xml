@@ -18,14 +18,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jsonp.version>1.1.5</jsonp.version>
-        <jsonb.version>1.0</jsonb.version>
+        <jsonb.version>1.0.1</jsonb.version>
         <jsonp.provider.groupId>org.glassfish</jsonp.provider.groupId>
         <jsonp.provider.artifactId>jakarta.json</jsonp.provider.artifactId>
         <jsonp.provider.version>${jsonp.version}</jsonp.provider.version>
         <jsonp.provider.classifier>module</jsonp.provider.classifier>
         <jsonb.provider.groupId>org.eclipse</jsonb.provider.groupId>
         <jsonb.provider.artifactId>yasson</jsonb.provider.artifactId>
-        <jsonb.provider.version>1.0.3</jsonb.provider.version>
+        <jsonb.provider.version>1.0.4</jsonb.provider.version>
         <junit.jupiter.version>5.4.2</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
     </properties>
@@ -67,8 +67,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.json.bind</groupId>
-            <artifactId>javax.json.bind-api</artifactId>
+            <groupId>jakarta.json.bind</groupId>
+            <artifactId>jakarta.json.bind-api</artifactId>
             <version>${jsonb.version}</version>
             <scope>test</scope>
         </dependency>

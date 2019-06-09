@@ -1,0 +1,37 @@
+[
+    {
+        "schema": {},
+        "keys": []
+    },
+    {
+        "schema": {
+            "type": "object",
+            "required": ["firstName", "lastName"],
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "age": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "keys": ["type", "required", "properties"]
+    },
+    {
+        "schema": {
+            "a": "hello",
+            "b": 42,
+            "c": {
+                "greeting": "hello",
+                "language": "English"
+            },
+            "d": [1, 2, 4]
+        },
+        "keys": ["a", "b", "c", "d"]
+    }
+]

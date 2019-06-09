@@ -20,7 +20,8 @@ import java.util.Map;
 import javax.json.JsonValue.ValueType;
 
 /**
- * A JSON schema type represented by a JSON object.
+ * A JSON schema type represented by a JSON object. This type can be viewed as
+ * an immutable map of {@link Keyword}.
  *
  * @author leadpony
  */
@@ -38,6 +39,8 @@ public interface ObjectJsonSchema extends JsonSchema, Map<String, Keyword> {
 
     /**
      * {@inheritDoc}
+     *
+     * @return this instance.
      */
     @Override
     default ObjectJsonSchema asObjectJsonSchema() {

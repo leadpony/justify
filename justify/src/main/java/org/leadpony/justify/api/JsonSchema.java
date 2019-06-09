@@ -57,6 +57,10 @@ import javax.json.JsonValue.ValueType;
  * </pre>
  *
  * <p>
+ * All instances of this type except {@link JsonSchema#TRUE} and
+ * {@link JsonSchema#FALSE} can be casted to {@link ObjectJsonSchema}.
+ * </p>
+ * <p>
  * Any instance of this class is safe for use by multiple concurrent threads
  * after schema reading or schema building once completed.
  * </p>
@@ -155,7 +159,8 @@ public interface JsonSchema {
      * Returns this JSON schema as a {@code ObjectJsonSchema}.
      *
      * @return the instance of {@code ObjectJsonSchema}.
-     * @throws ClassCastException if this JSON schema is not a {@code ObjectJsonSchema}.
+     * @throws ClassCastException if this instance is not a
+     *                            {@code ObjectJsonSchema}.
      */
     default ObjectJsonSchema asObjectJsonSchema() {
         return ObjectJsonSchema.class.cast(this);
