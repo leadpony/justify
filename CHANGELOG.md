@@ -4,9 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 0.17.0 - 2019-06-09
+### Added
+- `Keyword` interface which represents a keyword contained in a JSON schema.
+- `ObjectJsonSchema` interface which is a JSON schema represented by a JSON object. This type can be viewed as an immutable map of `Keyword` instances.
+- `JsonSchema.asObjectJsonSchema()`, which can cast an instance of `JsonSchema` to `ObjectJsonSchema`.
+- `JsonSchema.getJsonValueType()`, which returns the value type of JSON value returned by `toJson()`.
+- `JsonSchema.getKeywordValue(String)` and `JsonSchema.getKeywordValue(String, JsonValue)`, both return the value of the specified schema keyword as a `JsonValue`.
+- `JsonParser` created by `JsonParserFactory.createParser(JsonArray)` or `JsonParserFactory.createParser(JsonObject)` now can validate the value even when using this library with the JSON-P Reference Implementation. (Issue #14 reported by @atomictag)
+- `JsonValidationService.getJsonProvider()` which returns the underlying `JsonProvider` instance used by the service.
+
 ### Changed
-- The Maven coordinates of the dependency providing the JSON Processing API was migrated to `jakarta.json:jakarta.json-api`. When using with the Reference Implementation, the Maven coordinates of the implementation now shoud be `org.glassfish:jakarta.json` with classifier `module`.
+- The Maven coordinates of the dependency which provides the JSON Processing API was now migrated to `jakarta.json:jakarta.json-api`. When using this library with the Reference Implementation, the Maven coordinates of the implementation now should be `org.glassfish:jakarta.json` with its classifier as `module`.
+- The constant `JsonSchema.EMPTY` now has a type of `ObjectJsonSchema`.
+
+### Fixed
+- A bug which was causing unrecognized keywords to disappear from the effective schema. Note that ill-formed keywords reserved in the JSON Schema specification are not retained even in this release. This restriction should be fixed in the future release.  (Issue #16 reported by @atomictag)
+- A bug which was causing `JsonParser.getString()` to throw  `NullPointerException` instead of `IllegalStateException` when the method was called before the initial invocation of `next()`.
+- A bug which was causing the order of values given by `type` keyword to be changed while reading schemas.
 
 ## 0.16.0 - 2019-04-21
 ### Added

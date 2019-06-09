@@ -23,33 +23,38 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Java API f
 
 ### Minimum Setup
 
-This software is available in the [Maven Central Repository].
-In runtime the library requires one of [Java API for JSON Processing (JSR 374)] implementations.
-If your choice is [Reference Implementation] of the API,
-the following two dependencies are all you need to add to your pom.xml.
-
+This software is available in the [Maven Central Repository] and the following `dependency` element should be added to your `pom.xml`.
 ```xml
 <dependency>
-  <groupId>org.leadpony.justify</groupId>
-  <artifactId>justify</artifactId>
-  <version>0.16.0</version>
-</dependency>
-
-<dependency>
-  <groupId>org.glassfish</groupId>
-  <artifactId>javax.json</artifactId>
-  <version>1.1.3</version>
+    <groupId>org.leadpony.justify</groupId>
+    <artifactId>justify</artifactId>
+    <version>0.17.0</version>
 </dependency>
 ```
 
-Alternatively, the latter dependency can be replaced with other implementation
-such as [Apache Johnzon] as below.
+Besides the library itself, one of [Java API for JSON Processing (JSR 374)] implementations is needed in runtime.
+This library supports the following implementations and you can select whichever you prefer.
+1. [Reference Implementation]
+2. [Apache Johnzon]
 
+Please add exactly one dependency to the `pom.xml` as shown below.
+
+#### Reference Implementation
 ```xml
 <dependency>
-  <groupId>org.apache.johnzon</groupId>
-  <artifactId>johnzon-core</artifactId>
-  <version>1.1.11</version>
+    <groupId>org.glassfish</groupId>
+    <artifactId>jakarta.json</artifactId>
+    <classifier>module</classifier>
+    <version>1.1.5</version>
+</dependency>
+```
+
+#### Apache Johnzon
+```xml
+<dependency>
+    <groupId>org.apache.johnzon</groupId>
+    <artifactId>johnzon-core</artifactId>
+    <version>1.1.11</version>
 </dependency>
 ```
 
@@ -147,14 +152,14 @@ Displays all available options including those shown above.
 
 This library supports all validation keywords, including `default`, described in [JSON Schema Specification] Draft-07, -06, and -04.
 
-The following table shows _the number of failures_ occurred while testing popular JSON validators written in JVM languages against [JSON Schema Test Suite] as of 2019-04-26.
+The following table shows _the number of failures_ occurred while testing popular JSON validators written in JVM languages against [JSON Schema Test Suite] as of 2019-06-09.
 
 | Software | Version | Draft-07 | Draft-06 | Draft-04 |
 | --- | --- | ---: | ---: | ---: |
 | [everit-org/json-schema] | 1.11.1 | 21 | 8 | 9 |
 | [java-json-tools/json-schema-validator] | 2.2.10 | n/a | n/a | 11 |
-| Justify | 0.16.0 | 0 | 0 | 0 |
-| [networknt/json-schema-validator] | 1.0.6 | n/a | n/a | 24 |
+| Justify | 0.17.0 | 0 | 0 | 0 |
+| [networknt/json-schema-validator] | 1.0.12 | n/a | n/a | 39 |
 
 The code of these tests is available at [JSON Schema Conformance Test].
 
