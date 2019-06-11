@@ -36,22 +36,22 @@ import org.junit.jupiter.api.Test;
  */
 public class ValidationConfigTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private ValidationConfig sut;
 
     @BeforeEach
     public void setUp() {
-        sut = service.createValidationConfig();
+        sut = SERVICE.createValidationConfig();
     }
 
     @Test
-    public void getAsMap_returnsEmptyMapByDefault() {
+    public void getAsMapShouldReturnEmptyMapByDefault() {
         assertThat(sut.getAsMap()).isEmpty();
     }
 
     @Test
-    public void getAsMap_returnsFilledMap() {
+    public void getAsMapShouldReturnFilledMap() {
         Map<String, Object> expected = new HashMap<>();
         expected.put(ValidationConfig.DEFAULT_VALUES, Boolean.TRUE);
 
@@ -60,12 +60,12 @@ public class ValidationConfigTest {
     }
 
     @Test
-    public void getProperty_returnsEmptyIfNotExist() {
+    public void getPropertyShouldReturnEmptyIfNotExist() {
         assertThat(sut.getProperty("nonexistent")).isEmpty();
     }
 
     @Test
-    public void getProperty_returnsValueIfExists() {
+    public void getPropertyShouldReturnValueIfExists() {
         sut.withDefaultValues(true);
 
         assertThat(sut.getProperty(ValidationConfig.DEFAULT_VALUES))
@@ -73,14 +73,14 @@ public class ValidationConfigTest {
     }
 
     @Test
-    public void setProperty_assignsPropertyValue() {
+    public void setPropertyShouldAssignPropertyValue() {
         sut.setProperty("foo", true);
 
         assertThat(sut.getProperty("foo")).contains(true);
     }
 
     @Test
-    public void withProperties_assignsMultipleProperties() {
+    public void withPropertiesShouldAssignMultipleProperties() {
         Map<String, Object> properties = new HashMap<>();
         properties.put("foo", true);
         properties.put("bar", false);
@@ -96,13 +96,13 @@ public class ValidationConfigTest {
     }
 
     @Test
-    public void withProblemHandler_assignsProblemHandler() {
+    public void withProblemHandlerShouldAssignProblemHandler() {
         List<Problem> problems = new ArrayList<>();
 
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandler(problems::addAll);
 
-        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -112,13 +112,13 @@ public class ValidationConfigTest {
     }
 
     @Test
-    public void withProblemHandlerFactory_assignsProblemHandlerFactory() {
+    public void withProblemHandlerFactoryShouldAssignProblemHandlerFactory() {
         ProblemHandlerFactoryMock handlerFactory = new ProblemHandlerFactoryMock();
 
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandlerFactory(handlerFactory);
 
-        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -128,10 +128,15 @@ public class ValidationConfigTest {
         assertThat(handlerFactory.problems).hasSize(1);
     }
 
+    /**
+     * A mock class of {@link ProblemHandlerFactory}.
+     *
+     * @author leadpony
+     */
     private static class ProblemHandlerFactoryMock implements ProblemHandlerFactory {
 
-        int created;
-        List<Problem> problems = new ArrayList<>();
+        private int created;
+        private List<Problem> problems = new ArrayList<>();
 
         @Override
         public ProblemHandler createProblemHandler(JsonParser parser) {

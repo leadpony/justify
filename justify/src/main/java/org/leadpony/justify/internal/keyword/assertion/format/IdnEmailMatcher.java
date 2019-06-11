@@ -18,11 +18,11 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
  * Matcher for internationalized email addresses.
- * 
+ *
  * @author leadpony
  */
-class IdnEmailMatcher extends EmailMatcher  {
-    
+class IdnEmailMatcher extends EmailMatcher {
+
     IdnEmailMatcher(CharSequence input) {
         super(input);
     }
@@ -35,7 +35,7 @@ class IdnEmailMatcher extends EmailMatcher  {
             return true;
         }
     }
-    
+
     @Override
     protected boolean checkAtomLetter(int c) {
         if (c < 128) {
@@ -44,7 +44,7 @@ class IdnEmailMatcher extends EmailMatcher  {
             return true;
         }
     }
-    
+
     @Override
     protected boolean checkDomainLiteralLetter(int c) {
         if (c < 128) {
@@ -53,7 +53,7 @@ class IdnEmailMatcher extends EmailMatcher  {
             return true;
         }
     }
-    
+
     @Override
     protected boolean checkCommentLetter(int c) {
         if (c < 128) {

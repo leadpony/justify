@@ -28,7 +28,7 @@ interface ProblemFormatter {
 
     String formatProblem(Problem problem, Locale locale);
 
-    default String formatBranchingProblem(Problem problem, Locale locale) {;
+    default String formatBranchingProblem(Problem problem, Locale locale) {
         return problem.getMessage(locale);
     }
 }

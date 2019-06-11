@@ -42,7 +42,7 @@ class ProblemPrinter implements ProblemHandler {
      *                     localized.
      * @param formatter    the formatter for formatting each message for a problem.
      */
-    public ProblemPrinter(Consumer<String> lineConsumer, Locale locale, ProblemFormatter formatter) {
+    ProblemPrinter(Consumer<String> lineConsumer, Locale locale, ProblemFormatter formatter) {
         this.lineConsumer = lineConsumer;
         this.locale = locale;
         this.formatter = formatter;

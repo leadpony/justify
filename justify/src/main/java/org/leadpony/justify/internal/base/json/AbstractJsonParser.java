@@ -157,7 +157,14 @@ abstract class AbstractJsonParser implements JsonParser {
         return new JsonException("Internal error");
     }
 
-    private static abstract class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
+    /**
+     * A base implementation of spliterators.
+     *
+     * @author leadpony
+     *
+     * @param <T> the type of value to be returned.
+     */
+    private abstract static class AbstractSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
 
         protected AbstractSpliterator() {
             super(Long.MAX_VALUE, Spliterator.ORDERED);
@@ -170,6 +177,11 @@ abstract class AbstractJsonParser implements JsonParser {
         }
     }
 
+    /**
+     * A spliterator to produce {@code JsonValue}.
+     *
+     * @author leadpony
+     */
     private class JsonArraySpliterator extends AbstractSpliterator<JsonValue> {
 
         @Override
@@ -184,6 +196,11 @@ abstract class AbstractJsonParser implements JsonParser {
         }
     }
 
+    /**
+     * A spliterator to produce properties of a {@code JsonObject}.
+     *
+     * @author leadpony
+     */
     private class JsonObjectSpliterator extends AbstractSpliterator<Map.Entry<String, JsonValue>> {
 
         @Override
@@ -218,6 +235,11 @@ abstract class AbstractJsonParser implements JsonParser {
         }
     }
 
+    /**
+     * A spliterator to produce items of a {@code JsonArray}.
+     *
+     * @author leadpony
+     */
     private class JsonValueSpliterator extends AbstractSpliterator<JsonValue> {
 
         @Override

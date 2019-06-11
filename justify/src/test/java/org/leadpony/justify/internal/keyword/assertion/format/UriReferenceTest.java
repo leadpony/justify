@@ -28,22 +28,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link UriReference} class.
- * 
+ * A test class for {@link UriReference}.
+ *
  * @author leadpony
  */
 public class UriReferenceTest {
-    
+
     // System under test
     private static UriReference sut;
 
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new UriReference(true);
     }
-    
+
     public static Stream<UriFixture> uris() {
         return UriFixture.load("uri.json")
                 .filter(UriFixture::isValid);
@@ -51,9 +51,8 @@ public class UriReferenceTest {
 
     public static Stream<UriFixture> uriRefs() {
         List<String> files = Arrays.asList(
-            "uri-ref.json",
-            "/com/sporkmonger/addressable/uri.json"
-        );
+                "uri-ref.json",
+                "/com/sporkmonger/addressable/uri.json");
         return files.stream().flatMap(UriFixture::load);
     }
 
@@ -61,7 +60,7 @@ public class UriReferenceTest {
     @MethodSource("uris")
     public void testUri(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         assertThat(valid).isEqualTo(fixture.isValid());
     }
 
@@ -69,7 +68,7 @@ public class UriReferenceTest {
     @MethodSource("uriRefs")
     public void testUriReference(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         assertThat(valid).isEqualTo(fixture.isValid());
     }
 }

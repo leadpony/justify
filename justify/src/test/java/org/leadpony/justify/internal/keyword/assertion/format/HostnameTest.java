@@ -25,20 +25,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Hostname} class.
- * 
+ * A test class for {@link Hostname}.
+ *
  * @author leadpony
  */
 public class HostnameTest {
 
     // System under test
     private static Hostname sut;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Hostname();
     }
-    
+
     public static Stream<Fixture> provideFixtures() {
         return Fixture.load("hostname.json");
     }

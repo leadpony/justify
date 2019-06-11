@@ -55,7 +55,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     protected AbstractJsonSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
         this.keywordMap = Collections.unmodifiableMap(keywords);
         this.jsonService = jsonService;
-        this.keywordMap.forEach((k, v)->v.setEnclosingSchema(this));
+        this.keywordMap.forEach((k, v) -> v.setEnclosingSchema(this));
         this.id = id;
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
@@ -227,7 +227,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
 
     @SuppressWarnings("unchecked")
     protected <T extends Keyword> T getKeyword(String name) {
-        return (T)keywordMap.get(name);
+        return (T) keywordMap.get(name);
     }
 
     /**
@@ -257,8 +257,8 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
 
     private void resolveSubschemas(URI baseUri) {
         getSubschemas()
-            .filter(s->!s.hasAbsoluteId())
-            .filter(s->s instanceof Resolvable)
-            .forEach(s->((Resolvable)s).resolve(baseUri));
+                .filter(s -> !s.hasAbsoluteId())
+                .filter(s -> s instanceof Resolvable)
+                .forEach(s -> ((Resolvable) s).resolve(baseUri));
     }
 }

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  *
  * @author leadpony
  */
-class Fixture {
+final class Fixture {
 
     private static final Path BASE_DIR = Paths.get("target", "test-classes");
     private static final URI BASE_URL = URI.create("http://localhost:1234/");

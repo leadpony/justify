@@ -42,7 +42,7 @@ abstract class AbstractFormatAttribute implements FormatAttribute {
      */
     @Override
     public boolean test(JsonValue value) {
-        String string = ((JsonString)value).getString();
+        String string = ((JsonString) value).getString();
         return test(string);
     }
 

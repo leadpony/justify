@@ -18,19 +18,19 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
  * Matcher for internationalized hostnames.
- * 
+ *
  * @author leadpony
  */
 class IdnHostnameMatcher extends HostnameMatcher {
-    
+
     IdnHostnameMatcher(CharSequence input) {
         super(input);
     }
- 
+
     IdnHostnameMatcher(CharSequence input, int start, int end) {
         super(input, start, end);
     }
-    
+
     @Override
     protected boolean checkFirstLabelLetter(int c) {
         if (c < 128) {
@@ -39,7 +39,7 @@ class IdnHostnameMatcher extends HostnameMatcher {
             return checkCodePointAllowed(c);
         }
     }
-    
+
     @Override
     protected boolean checkLabelLetter(int c) {
         if (c < 128) {

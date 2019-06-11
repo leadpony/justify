@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.base.json;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,22 +48,22 @@ public class JsonValueParserTest {
         InputStream in = JsonValueParserTest.class.getResourceAsStream("jsonvalue.json");
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
-                .map(JsonValue::asJsonObject)
-                .map(object->{
-                    JsonValue value = object.get("value");
-                    List<Event> events = object.get("events")
-                            .asJsonArray().stream()
-                            .map(event->((JsonString)event).getString())
-                            .map(Event::valueOf)
-                            .collect(Collectors.toList());
-                    return Arguments.of(value, events);
-                });
+                    .map(JsonValue::asJsonObject)
+                    .map(object -> {
+                        JsonValue value = object.get("value");
+                        List<Event> events = object.get("events")
+                                .asJsonArray().stream()
+                                .map(event -> ((JsonString) event).getString())
+                                .map(Event::valueOf)
+                                .collect(Collectors.toList());
+                        return Arguments.of(value, events);
+                    });
         }
     }
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void next_shouldReturnEvent(JsonValue value, List<Event> events) {
+    public void nextShouldReturnEvent(JsonValue value, List<Event> events) {
         List<Event> actual = new ArrayList<>();
         JsonParser parser = createParser(value);
         while (parser.hasNext()) {
@@ -76,11 +76,11 @@ public class JsonValueParserTest {
     private static JsonParser createParser(JsonValue value) {
         switch (value.getValueType()) {
         case ARRAY:
-            return new JsonValueParser((List<JsonValue>)(JsonArray) value);
-            //return DefaultValueParser.fillingWith((JsonArray) value, provider);
+            return new JsonValueParser((List<JsonValue>) (JsonArray) value);
+        // return DefaultValueParser.fillingWith((JsonArray) value, provider);
         case OBJECT:
-            return new JsonValueParser((Map<String, JsonValue>)(JsonObject) value);
-            //return DefaultValueParser.fillingWith((JsonObject) value, provider);
+            return new JsonValueParser((Map<String, JsonValue>) (JsonObject) value);
+        // return DefaultValueParser.fillingWith((JsonObject) value, provider);
         default:
             throw new UnsupportedOperationException();
         }

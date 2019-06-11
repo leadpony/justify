@@ -23,7 +23,7 @@ import org.leadpony.justify.api.InstanceType;
 
 /**
  * Keyword for arrays.
- * 
+ *
  * @author leadpony
  */
 public interface ArrayKeyword extends SchemaKeyword {
@@ -32,7 +32,7 @@ public interface ArrayKeyword extends SchemaKeyword {
     default boolean supportsType(InstanceType type) {
         return type == InstanceType.ARRAY;
     }
-    
+
     @Override
     default Set<InstanceType> getSupportedTypes() {
         return EnumSet.of(InstanceType.ARRAY);

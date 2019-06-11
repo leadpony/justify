@@ -42,6 +42,8 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
 /**
  * A skeletal implementation for "properties" and "patternProperties" keywords.
  *
+ * @param <K> the type of schema keys.
+ *
  * @author leadpony
  */
 public abstract class AbstractProperties<K> extends Combiner implements ObjectKeyword {
@@ -71,14 +73,14 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
-        this.propertyMap.forEach((key, value)->builder.add(key.toString(), value.toJson()));
+        this.propertyMap.forEach((key, value) -> builder.add(key.toString(), value.toJson()));
         return builder.build();
     }
 
     @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         if (keywords.containsKey("additionalProperties")) {
-            AdditionalProperties additionalProperties = (AdditionalProperties)keywords.get("additionalProperties");
+            AdditionalProperties additionalProperties = (AdditionalProperties) keywords.get("additionalProperties");
             this.defaultSchema = additionalProperties.getSubschema();
         }
     }
@@ -93,12 +95,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         return propertyMap.values().stream();
     }
 
-    public void addProperty(K key, JsonSchema subschema) {
-        propertyMap.put(key, subschema);
-    }
-
     protected abstract boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer);
 
+    /**
+     * An evaluator of this keyword.
+     *
+     * @author leadpony
+     */
     private class PropertiesEvaluator extends AbstractConjunctivePropertiesEvaluator implements Consumer<JsonSchema> {
 
         private final JsonSchema defaultSchema;
@@ -134,7 +137,13 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
         }
     }
 
-    private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator implements Consumer<JsonSchema> {
+    /**
+     * An evaluator of the negeted version of this keyword.
+     *
+     * @author leadpony
+     */
+    private class NegatedPropertiesEvaluator extends AbstractDisjunctivePropertiesEvaluator
+            implements Consumer<JsonSchema> {
 
         private final JsonSchema defaultSchema;
         private String currentKeyName;

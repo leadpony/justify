@@ -26,22 +26,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Regex} class.
- * 
+ * A test class for {@link Regex}.
+ *
  * @author leadpony
  */
 public class RegexTest {
 
     // System under test
     private static Regex sut;
-    
+
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Regex();
     }
-    
+
     public static Stream<RegexFixture> provideFixtures() {
         return RegexFixture.load("regex.json");
     }

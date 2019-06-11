@@ -141,8 +141,7 @@ public enum Message implements BaseMessage {
     /* Problem messages for JSON reader */
 
     READER_UNEXPECTED_EOI,
-    READER_READ_ERROR,
-    ;
+    READER_READ_ERROR;
 
     private static final String BUNDLE_BASE_NAME = "org/leadpony/justify/internal/messages";
 

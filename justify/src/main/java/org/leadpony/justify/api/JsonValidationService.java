@@ -94,7 +94,7 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonSchemaReaderFactory createSchemaReaderFactory();
 
     /**
-     * Creates a builder for building a JSON schema reader factory
+     * Creates a builder for building a JSON schema reader factory.
      *
      * @return newly created instance of JSON schema reader factory builder.
      */

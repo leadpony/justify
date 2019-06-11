@@ -23,7 +23,7 @@ import org.leadpony.justify.api.InstanceType;
 
 /**
  * Keyword for numeric types.
- * 
+ *
  * @author leadpony
  */
 public interface NumericKeyword extends SchemaKeyword {
@@ -32,7 +32,7 @@ public interface NumericKeyword extends SchemaKeyword {
     default boolean supportsType(InstanceType type) {
         return type.isNumeric();
     }
-    
+
     @Override
     default Set<InstanceType> getSupportedTypes() {
         return EnumSet.of(InstanceType.NUMBER, InstanceType.INTEGER);

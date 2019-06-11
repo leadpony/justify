@@ -23,7 +23,7 @@ import org.leadpony.justify.spi.JsonValidationProvider;
 
 /**
  * Default implementation of {@link JsonValidationProvider}.
- * 
+ *
  * @author leadpony
  */
 public class DefaultJsonValidationProvider extends JsonValidationProvider {

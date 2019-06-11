@@ -26,8 +26,6 @@ import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,27 +36,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonbTest {
 
-    private static final Logger log = Logger.getLogger(JsonbTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final Logger LOG = Logger.getLogger(JsonbTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
-    private static final String PERSON_SCHEMA =
-            "{" +
-            "\"type\":\"object\"," +
-            "\"properties\":{" +
-            "\"name\": {\"type\":\"string\"}," +
-            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
-            "}," +
-            "\"required\":[\"name\"]" +
-            "}";
+    private static final String PERSON_SCHEMA = "{"
+            + "\"type\":\"object\","
+            + "\"properties\":{"
+            + "\"name\": {\"type\":\"string\"},"
+            + "\"age\": {\"type\":\"integer\", \"minimum\":0}"
+            + "},"
+            + "\"required\":[\"name\"]"
+            + "}";
 
     @Test
-    public void fromJson_deserializes() {
+    public void fromJsonShouldDeserialize() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
-        JsonSchema s = service.readSchema(new StringReader(schema));
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll);
+        JsonProvider provider = SERVICE.createJsonProvider(s, parser -> problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 
@@ -68,22 +65,27 @@ public class JsonbTest {
     }
 
     @Test
-    public void fromJson_throwsExceptionIfInvalid() {
+    public void fromJsonShouldThrowExceptionIfInvalid() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": \"46\"}";
 
-        JsonSchema s = service.readSchema(new StringReader(schema));
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = service.createJsonProvider(s, parser->problems::addAll);
+        JsonProvider provider = SERVICE.createJsonProvider(s, parser -> problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 
         assertThat(person.name).isEqualTo("John Smith");
         assertThat(person.age).isEqualTo(46);
         assertThat(problems).isNotEmpty();
-        problems.stream().map(Object::toString).forEach(log::info);
+        problems.stream().map(Object::toString).forEach(LOG::info);
     }
 
+    /**
+     * A POJO class.
+     *
+     * @author leadpony
+     */
     public static class Person {
         public String name;
         public int age;

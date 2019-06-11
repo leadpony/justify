@@ -30,24 +30,24 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
-* Test cases for {@link IdnProperty} class.
-* 
+ * A test class for {@link IdnProperty}.
+ *
  * @author leadpony
  */
 public class IdnPropertyTest {
-    
+
     private static final String TABLE_6_2_0 = "/org/iana/idna-tables-properties-" + getUnicodeVersion() + ".csv";
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("fixtures")
     @EnabledOnJre(JRE.JAVA_8)
-    public void test_of(Fixture fixture) {
+    public void ofShouldReturnIdnPropertyAsExpected(Fixture fixture) {
         for (int codePoint = fixture.startCodePoint; codePoint <= fixture.endCodePoint; codePoint++) {
             IdnProperty actual = IdnProperty.of(codePoint);
             assertThat(actual).isEqualTo(fixture.expected);
         }
     }
-    
+
     public static Stream<Fixture> fixtures() throws IOException {
         InputStream in = IdnPropertyTest.class.getResourceAsStream(TABLE_6_2_0);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -55,7 +55,7 @@ public class IdnPropertyTest {
                 .skip(1) // Skips header line.
                 .map(IdnPropertyTest::mapLine);
     }
-    
+
     private static Fixture mapLine(String line) {
         String[] tokens = line.split(",");
         IdnProperty property = IdnProperty.valueOf(tokens[1]);
@@ -67,7 +67,7 @@ public class IdnPropertyTest {
         }
         return new Fixture(start, end, property);
     }
-    
+
     private static String getUnicodeVersion() {
         String specVersion = System.getProperty("java.specification.version");
         switch (specVersion) {
@@ -78,19 +78,24 @@ public class IdnPropertyTest {
             return "8.0";
         }
     }
-    
+
+    /**
+     * A test fixture for {@link IdnProperty}.
+     *
+     * @author leadpony
+     */
     private static class Fixture {
-        
+
         final int startCodePoint;
         final int endCodePoint;
         final IdnProperty expected;
-        
+
         Fixture(int start, int end, IdnProperty expected) {
             this.startCodePoint = start;
             this.endCodePoint = end;
             this.expected = expected;
         }
-        
+
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder();
@@ -101,9 +106,9 @@ public class IdnPropertyTest {
             b.append(" ; ").append(expected);
             return b.toString();
         }
-        
+
         private String toHexString(int codePoint) {
-            return String.format("%04X",codePoint);
+            return String.format("%04X", codePoint);
         }
     }
 }

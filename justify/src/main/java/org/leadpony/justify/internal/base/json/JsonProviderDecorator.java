@@ -39,32 +39,32 @@ import javax.json.stream.JsonParserFactory;
 
 /**
  * Decorator class of {@link JsonProvider}.
- * 
+ *
  * @author leadpony
  */
 public class JsonProviderDecorator extends JsonProvider {
-    
+
     private final JsonProvider real;
-    
+
     /**
      * Constructs this object.
-     * 
+     *
      * @param real the underlying JSON provider to be decorated.
      */
     public JsonProviderDecorator(JsonProvider real) {
         requireNonNull(real, "real");
         this.real = real;
     }
-    
+
     /**
      * Returns the underlying real JSON provider.
-     * 
+     *
      * @return the underlying JSON provider, never be {@code null}.
      */
     public JsonProvider realProvider() {
         return real;
     }
-    
+
     @Override
     public JsonArrayBuilder createArrayBuilder() {
         return real.createArrayBuilder();

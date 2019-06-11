@@ -42,8 +42,8 @@ public class DefaultizingJsonValidator extends JsonValidator {
     /**
      * Constructs this parser.
      *
-     * @param realParser the underlying JSON parser.
-     * @param rootSchema the root JSON schema to be evaluated during validation.
+     * @param realParser   the underlying JSON parser.
+     * @param rootSchema   the root JSON schema to be evaluated during validation.
      * @param jsonProvider the JSON provider.
      */
     public DefaultizingJsonValidator(JsonParser realParser, JsonSchema rootSchema, JsonProvider jsonProvider) {
@@ -51,6 +51,11 @@ public class DefaultizingJsonValidator extends JsonValidator {
         this.realParser = realParser;
     }
 
+    /**
+     * Checks if this validator is filling a default value.
+     *
+     * @return {@code true} if this validator is filling, {@code false} otherwise.
+     */
     public boolean isFilling() {
         return getCurrentParser() != realParser;
     }

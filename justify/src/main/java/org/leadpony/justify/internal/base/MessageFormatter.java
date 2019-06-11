@@ -41,17 +41,18 @@ class MessageFormatter {
     /**
      * Constructs this formatter.
      *
-     * @param input the original message.
+     * @param input  the original message.
      * @param bundle the resource bundle to be used for localization.
      */
     MessageFormatter(String input, ResourceBundle bundle) {
         this.input = input;
         this.bundle = bundle;
-        this.offset= 0;
+        this.offset = 0;
     }
 
     /**
      * Formats the message.
+     *
      * @param arguments the values for variables.
      * @return the formatted message.
      */
@@ -131,16 +132,16 @@ class MessageFormatter {
     }
 
     private String stringToString(Object object) {
-        return (String)object;
+        return (String) object;
     }
 
     private String localizedToString(Object object) {
-        Localizable localized = (Localizable)object;
+        Localizable localized = (Localizable) object;
         return localized.getLocalized(bundle.getLocale());
     }
 
     private String enumToString(Object object) {
-        Enum<?> actual = (Enum<?>)object;
+        Enum<?> actual = (Enum<?>) object;
         String className = actual.getClass().getSimpleName();
         String key = className + "." + actual.name();
         if (bundle.containsKey(key)) {
@@ -151,14 +152,14 @@ class MessageFormatter {
     }
 
     private String collectionToString(Object object, Function<String, String> modifier) {
-        Collection<?> actual = (Collection<?>)object;
+        Collection<?> actual = (Collection<?>) object;
         StringBuilder sb = new StringBuilder();
         return sb.append("[")
-                 .append(actual.stream()
-                               .map(item->stringify(item, modifier))
-                               .collect(Collectors.joining(", ")))
-                 .append("]")
-                 .toString();
+                .append(actual.stream()
+                        .map(item -> stringify(item, modifier))
+                        .collect(Collectors.joining(", ")))
+                .append("]")
+                .toString();
     }
 
     /**
@@ -166,7 +167,7 @@ class MessageFormatter {
      *
      * @author leadpony
      */
-    private static enum Modifier implements Function<String, String> {
+    private enum Modifier implements Function<String, String> {
 
         CAPITALIZE() {
             @Override
@@ -189,8 +190,7 @@ class MessageFormatter {
                         .append('"')
                         .toString();
             }
-        }
-        ;
+        };
 
         @Override
         public String apply(String t) {

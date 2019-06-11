@@ -71,8 +71,9 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
 
     /**
      * Creates an evaluator for this keyword.
+     *
      * @param context the context of the evaluator to create.
-     * @param type the type of the instance, cannot be {@code null}.
+     * @param type    the type of the instance, cannot be {@code null}.
      */
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
@@ -80,8 +81,9 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
 
     /**
      * Creates an evaluator for the negation of this keyword.
+     *
      * @param context the context of the evaluator to create.
-     * @param type the type of the instance, cannot be {@code null}.
+     * @param type    the type of the instance, cannot be {@code null}.
      */
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
@@ -110,7 +112,12 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
                 .withKeyword(name());
     }
 
-    private class TypeMismatchEvaluator extends AbstractEvaluator {
+    /**
+     * An evaluator used when the type does not matched to the expected.
+     *
+     * @author leadpony
+     */
+    private final class TypeMismatchEvaluator extends AbstractEvaluator {
 
         private final InstanceType actual;
 
@@ -123,14 +130,14 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             Set<InstanceType> expected = getSupportedTypes();
             ProblemBuilder builder = createProblemBuilder(getContext())
-                                    .withParameter("actual", actual);
+                    .withParameter("actual", actual);
             if (expected.size() > 1) {
                 builder.withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
-                       .withParameter("expected", expected);
+                        .withParameter("expected", expected);
             } else {
                 InstanceType first = expected.iterator().next();
                 builder.withMessage(Message.INSTANCE_PROBLEM_TYPE)
-                       .withParameter("expected", first);
+                        .withParameter("expected", first);
             }
             dispatcher.dispatchProblem(builder.build());
             return Result.FALSE;

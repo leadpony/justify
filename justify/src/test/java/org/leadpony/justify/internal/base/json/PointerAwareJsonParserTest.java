@@ -54,21 +54,21 @@ public class PointerAwareJsonParserTest {
         InputStream in = PointerAwareJsonParserTest.class.getResourceAsStream("json-pointer.json");
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
-                .map(JsonValue::asJsonObject)
-                .map(object->{
-                    JsonValue value = object.get("data");
-                    List<String> events = object.get("pointers")
-                            .asJsonArray().stream()
-                            .map(event->((JsonString)event).getString())
-                            .collect(Collectors.toList());
-                    return Arguments.of(value, events);
-                });
+                    .map(JsonValue::asJsonObject)
+                    .map(object -> {
+                        JsonValue value = object.get("data");
+                        List<String> events = object.get("pointers")
+                                .asJsonArray().stream()
+                                .map(event -> ((JsonString) event).getString())
+                                .collect(Collectors.toList());
+                        return Arguments.of(value, events);
+                    });
         }
     }
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void toPointer_shouldReturnCorrectJsonPointer(JsonValue json, List<String> pointers) {
+    public void toPointerShouldReturnCorrectJsonPointer(JsonValue json, List<String> pointers) {
         String source = json.toString();
         List<String> actual = new ArrayList<>();
         try (PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(createRealParser(source), provider)) {

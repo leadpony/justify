@@ -36,10 +36,9 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class SpecDetectionTest {
 
-    static final Logger log = Logger.getLogger(SpecDetectionTest.class.getName());
-
-    static final JsonValidationService service = JsonValidationServices.get();
-    static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    static final Logger LOG = Logger.getLogger(SpecDetectionTest.class.getName());
+    static final JsonValidationService SERVICE = JsonValidationServices.get();
+    static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     public static Stream<Arguments> supportedVersions() {
         return Stream.of(
@@ -54,13 +53,12 @@ public class SpecDetectionTest {
                 Arguments.of(SpecVersion.DRAFT_07, "detect-draft04.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_07, "detect-draft06.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_07, "detect-draft07.schema.json"),
-                Arguments.of(SpecVersion.DRAFT_07, "detect-unspecified.schema.json")
-                );
+                Arguments.of(SpecVersion.DRAFT_07, "detect-unspecified.schema.json"));
     }
 
     @ParameterizedTest
     @MethodSource("supportedVersions")
-    public void stream_detectsVersion(SpecVersion defaultVersion, String schemaName) {
+    public void streamShouldDetectVersion(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, true);
         InputStream in = createStream(schemaName);
         try (JsonSchemaReader reader = factory.createSchemaReader(in)) {
@@ -70,7 +68,7 @@ public class SpecDetectionTest {
 
     @ParameterizedTest
     @MethodSource("supportedVersions")
-    public void streamWithCharset_detectsVersion(SpecVersion defaultVersion, String schemaName) {
+    public void streamWithCharsetShouldDetectVersion(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, true);
         InputStream in = createStream(schemaName);
         try (JsonSchemaReader reader = factory.createSchemaReader(in, StandardCharsets.UTF_8)) {
@@ -80,7 +78,7 @@ public class SpecDetectionTest {
 
     @ParameterizedTest
     @MethodSource("supportedVersions")
-    public void reader_detectsVersion(SpecVersion defaultVersion, String schemaName) {
+    public void readerShouldDetectVersion(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, true);
         Reader in = createReader(schemaName);
         try (JsonSchemaReader reader = factory.createSchemaReader(in)) {
@@ -95,18 +93,17 @@ public class SpecDetectionTest {
                 Arguments.of(SpecVersion.DRAFT_06, "detect-unsupported.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_06, "detect-illegal.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_07, "detect-unsupported.schema.json"),
-                Arguments.of(SpecVersion.DRAFT_07, "detect-illegal.schema.json")
-                );
+                Arguments.of(SpecVersion.DRAFT_07, "detect-illegal.schema.json"));
     }
 
     @ParameterizedTest
     @MethodSource("unsupportedVersions")
-    public void stream_throwsIfUnsupportedVersion(SpecVersion defaultVersion, String schemaName) {
+    public void streamShouldThrowIfUnsupportedVersion(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, true);
         InputStream in = createStream(schemaName);
         JsonSchemaReader reader = factory.createSchemaReader(in);
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             reader.read();
         });
 
@@ -114,18 +111,18 @@ public class SpecDetectionTest {
 
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
-        JsonValidatingException e = (JsonValidatingException)thrown;
-        printer.handleProblems(e.getProblems());
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        PRINTER.handleProblems(e.getProblems());
     }
 
     @ParameterizedTest
     @MethodSource("unsupportedVersions")
-    public void reader_throwsIfUnsupportedVersion(SpecVersion defaultVersion, String schemaName) {
+    public void readerShouldThrowIfUnsupportedVersion(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, true);
         Reader in = createReader(schemaName);
         JsonSchemaReader reader = factory.createSchemaReader(in);
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             reader.read();
         });
 
@@ -133,21 +130,20 @@ public class SpecDetectionTest {
 
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
-        JsonValidatingException e = (JsonValidatingException)thrown;
-        printer.handleProblems(e.getProblems());
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        PRINTER.handleProblems(e.getProblems());
     }
 
     public static Stream<Arguments> matchedVersions() {
         return Stream.of(
                 Arguments.of(SpecVersion.DRAFT_04, "detect-draft04.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_06, "detect-draft06.schema.json"),
-                Arguments.of(SpecVersion.DRAFT_07, "detect-draft07.schema.json")
-                );
+                Arguments.of(SpecVersion.DRAFT_07, "detect-draft07.schema.json"));
     }
 
     @ParameterizedTest
     @MethodSource("matchedVersions")
-    public void streamWithoutDetection_succeeds(SpecVersion defaultVersion, String schemaName) {
+    public void streamWithoutDetectionShouldSucceed(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, false);
         InputStream in = createStream(schemaName);
         try (JsonSchemaReader reader = factory.createSchemaReader(in)) {
@@ -157,7 +153,7 @@ public class SpecDetectionTest {
 
     @ParameterizedTest
     @MethodSource("matchedVersions")
-    public void readerWithoutDetection_succeeds(SpecVersion defaultVersion, String schemaName) {
+    public void readerWithoutDetectionShouldSucceed(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, false);
         Reader in = createReader(schemaName);
         try (JsonSchemaReader reader = factory.createSchemaReader(in)) {
@@ -172,18 +168,17 @@ public class SpecDetectionTest {
                 Arguments.of(SpecVersion.DRAFT_06, "detect-draft04.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_06, "detect-draft07.schema.json"),
                 Arguments.of(SpecVersion.DRAFT_07, "detect-draft04.schema.json"),
-                Arguments.of(SpecVersion.DRAFT_07, "detect-draft06.schema.json")
-                );
+                Arguments.of(SpecVersion.DRAFT_07, "detect-draft06.schema.json"));
     }
 
     @ParameterizedTest
     @MethodSource("unmatchedVersions")
-    public void streamWithoutDetection_throws(SpecVersion defaultVersion, String schemaName) {
+    public void streamWithoutDetectionShouldThrow(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, false);
         InputStream in = createStream(schemaName);
         JsonSchemaReader reader = factory.createSchemaReader(in);
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             reader.read();
         });
 
@@ -191,18 +186,18 @@ public class SpecDetectionTest {
 
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
-        JsonValidatingException e = (JsonValidatingException)thrown;
-        printer.handleProblems(e.getProblems());
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        PRINTER.handleProblems(e.getProblems());
     }
 
     @ParameterizedTest
     @MethodSource("unmatchedVersions")
-    public void readerWithoutDetection_throws(SpecVersion defaultVersion, String schemaName) {
+    public void readerWithoutDetectionShouldThrow(SpecVersion defaultVersion, String schemaName) {
         JsonSchemaReaderFactory factory = createFactory(defaultVersion, false);
         Reader in = createReader(schemaName);
         JsonSchemaReader reader = factory.createSchemaReader(in);
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             reader.read();
         });
 
@@ -210,14 +205,14 @@ public class SpecDetectionTest {
 
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
-        JsonValidatingException e = (JsonValidatingException)thrown;
-        printer.handleProblems(e.getProblems());
+        JsonValidatingException e = (JsonValidatingException) thrown;
+        PRINTER.handleProblems(e.getProblems());
     }
 
     /* helpers */
 
     private static JsonSchemaReaderFactory createFactory(SpecVersion defaultVersion, boolean detection) {
-        return service.createSchemaReaderFactoryBuilder()
+        return SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(defaultVersion)
                 .withStrictWithKeywords(true)
                 .withSchemaValidation(true)

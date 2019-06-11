@@ -16,7 +16,7 @@
 
 /**
  * Provides content keywords.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.keyword.assertion.content;

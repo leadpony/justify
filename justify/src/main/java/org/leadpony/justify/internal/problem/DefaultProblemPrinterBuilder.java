@@ -36,19 +36,19 @@ import org.leadpony.justify.internal.base.Message;
  */
 public class DefaultProblemPrinterBuilder implements ProblemPrinterBuilder {
 
-    private static final ProblemFormatter SIMPLE_FORMAT = (problem, locale)->{
+    private static final ProblemFormatter SIMPLE_FORMAT = (problem, locale) -> {
         return problem.getMessage(locale);
     };
 
-    private static final ProblemFormatter LOCATION_ONLY_FORMAT = (problem, locale)->{
+    private static final ProblemFormatter LOCATION_ONLY_FORMAT = (problem, locale) -> {
         return Message.LINE_WITH_LOCATION.format(formatArgs(problem, locale), locale);
     };
 
-    private static final ProblemFormatter POINTER_ONLY_FORMAT = (problem, locale)->{
+    private static final ProblemFormatter POINTER_ONLY_FORMAT = (problem, locale) -> {
         return Message.LINE_WITH_POINTER.format(formatArgs(problem, locale), locale);
     };
 
-    private static final ProblemFormatter LOCATION_AND_POINTER_FORMAT = (problem, locale)->{
+    private static final ProblemFormatter LOCATION_AND_POINTER_FORMAT = (problem, locale) -> {
         return Message.LINE_WITH_BOTH.format(formatArgs(problem, locale), locale);
     };
 
@@ -64,7 +64,7 @@ public class DefaultProblemPrinterBuilder implements ProblemPrinterBuilder {
     @Override
     public ProblemHandler build() {
         return new ProblemPrinter(lineConsumer, locale, createFormatter());
-     }
+    }
 
     @Override
     public ProblemPrinterBuilder withLocale(Locale locale) {

@@ -24,42 +24,42 @@ import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParsingException;
 
 /**
- * {@code JsonValidatingException} indicates that some exception happened 
+ * {@code JsonValidatingException} indicates that some exception happened
  * while validating a JSON document.
- * 
+ *
  * @author leadpony
  */
 @SuppressWarnings("serial")
 public class JsonValidatingException extends JsonParsingException {
-    
+
     private final List<Problem> problems;
-    
+
     /**
      * Constructs a new runtime exception.
-     * 
+     *
      * @param problems the problems found while validating the JSON document.
      */
     public JsonValidatingException(List<Problem> problems) {
         super(null, extractFirstLocation(problems));
         this.problems = Collections.unmodifiableList(problems);
     }
-    
+
     /**
      * Returns all problems found in the validation process.
-     * 
+     *
      * @return unmodifiable collection of problems, which never be {@code null}.
      */
     public List<Problem> getProblems() {
         return problems;
     }
-    
+
     /**
      * Returns the detail message string of this exception.
      * <p>
-     * The message is composed of multiple lines 
+     * The message is composed of multiple lines
      * and each line corresponds to a problem found in the validation process.
      * </p>
-     * 
+     *
      * @return the detail message string of this exception instance.
      */
     @Override
@@ -68,7 +68,7 @@ public class JsonValidatingException extends JsonParsingException {
                 .map(Problem::getContextualMessage)
                 .collect(Collectors.joining("\n"));
     }
-    
+
     private static JsonLocation extractFirstLocation(List<Problem> problems) {
         if (problems.isEmpty()) {
             return null;

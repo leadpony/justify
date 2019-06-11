@@ -27,7 +27,7 @@ import org.leadpony.justify.spi.ContentMimeType;
 /**
  * @author leadpony
  */
-public class ContentAttributes {
+public final class ContentAttributes {
 
     static final Base64 BASE64 = new Base64();
 

@@ -20,15 +20,15 @@ import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
 
 /**
  * Matcher for hostnames.
- * 
+ *
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc1123">RFC 1123</a>
  */
 class HostnameMatcher extends FormatMatcher {
-    
-    static int MAX_LABEL_CHARS = 63;
+
+    static final int MAX_LABEL_CHARS = 63;
     static final int MAX_DOMAIN_CHARS = 253;
-    
+
     HostnameMatcher(CharSequence input) {
         super(input);
     }
@@ -47,7 +47,7 @@ class HostnameMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     private void subdomain() {
         label();
         while (hasNext()) {
@@ -55,15 +55,15 @@ class HostnameMatcher extends FormatMatcher {
                 label();
             } else {
                 fail();
-            };
+            }
         }
     }
-    
+
     /**
      * Parses the domain label.
      * <p>
-     * Note that RFC 1123 relaxed the restriction on on the first character 
-     * to allow either a letter or a digit.
+     * Note that RFC 1123 relaxed the restriction on on the first character to allow
+     * either a letter or a digit.
      * </p>
      */
     private void label() {
@@ -89,7 +89,7 @@ class HostnameMatcher extends FormatMatcher {
             fail();
         }
     }
-    
+
     protected boolean checkFirstLabelLetter(int c) {
         return isAlphanumeric(c);
     }

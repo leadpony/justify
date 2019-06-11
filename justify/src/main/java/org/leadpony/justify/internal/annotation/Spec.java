@@ -23,13 +23,13 @@ import java.lang.annotation.Target;
 
 import org.leadpony.justify.api.SpecVersion;
 
-@Retention(RUNTIME)
-@Target(TYPE)
 /**
  * Supported versions of the JSON Schema specification.
  *
  * @author leadpony
  */
+@Retention(RUNTIME)
+@Target(TYPE)
 public @interface Spec {
 
     /**

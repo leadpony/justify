@@ -131,6 +131,12 @@ public class ProblemBuilder {
         return this;
     }
 
+    /**
+     * Specifies branches of problems.
+     *
+     * @param branches the branches of problems.
+     * @return this builder.
+     */
     public ProblemBuilder withBranches(List<ProblemList> branches) {
         for (ProblemList branch : branches) {
             withBranch(branch);
@@ -151,7 +157,12 @@ public class ProblemBuilder {
         }
     }
 
-    private static abstract class AbstractProblem implements Problem {
+    /**
+     * A skeletal implementation of {@link Problem}.
+     *
+     * @author leadpony
+     */
+    private abstract static class AbstractProblem implements Problem {
 
         private final JsonSchema schema;
         private final String keyword;

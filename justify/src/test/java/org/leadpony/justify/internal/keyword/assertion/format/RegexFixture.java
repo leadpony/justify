@@ -26,9 +26,11 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
+ * A test fixture class for regex.
+ *
  * @author leadpony
  */
-public class RegexFixture {
+public final class RegexFixture {
 
     private final String pattern;
     private final boolean valid;
@@ -42,14 +44,13 @@ public class RegexFixture {
             return array.stream()
                     .map(JsonValue::asJsonObject)
                     .map(RegexFixture::new)
-                    .filter(f->!f.skip)
-                    ;
+                    .filter(f -> !f.skip);
         }
     }
-    
+
     /**
      * Constructs this fixture.
-     * 
+     *
      * @param object the JSON object containing the fixture.
      */
     private RegexFixture(JsonObject object) {
@@ -64,15 +65,15 @@ public class RegexFixture {
             this.skip = object.getBoolean("skip");
         }
     }
-  
+
     String pattern() {
         return pattern;
     }
-    
+
     boolean result() {
         return valid;
     }
-    
+
     String flags() {
         return flags;
     }

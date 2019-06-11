@@ -30,8 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchemaReader;
-import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.test.helper.JsonAssertions;
 
 /**
@@ -41,12 +39,11 @@ import org.leadpony.justify.test.helper.JsonAssertions;
  */
 public class JsonSchemaReaderTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
-
-    private static final Logger log = Logger.getLogger(JsonSchemaReaderTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(JsonSchemaReaderTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private static void print(Throwable thrown) {
-        log.info(thrown.toString());
+        LOG.info(thrown.toString());
     }
 
     public static Stream<Arguments> schemas() {
@@ -56,14 +53,13 @@ public class JsonSchemaReaderTest {
                 Arguments.of(" {}", null),
                 Arguments.of("{\"type\":", JsonParsingException.class),
                 Arguments.of("{\"type\":\"number\"", JsonParsingException.class),
-                Arguments.of("{\"type\":\"number\"},", null)
-                );
+                Arguments.of("{\"type\":\"number\"},", null));
     }
 
     @ParameterizedTest(name = "{index}")
     @MethodSource("schemas")
-    public void read_shouldThrowIfSchemaIsInvalid(String schemaJson, Class<?> exceptionClass) {
-        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schemaJson));
+    public void readShouldThrowIfSchemaIsInvalid(String schemaJson, Class<?> exceptionClass) {
+        JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(schemaJson));
         Throwable thrown = catchThrowable(() -> reader.read());
         if (exceptionClass != null) {
             assertThat(thrown).isInstanceOf(exceptionClass);
@@ -74,15 +70,15 @@ public class JsonSchemaReaderTest {
     }
 
     @Test
-    public void read_shouldReadSchemaMetadata() {
-        String source = "{" +
-                "\"$schema\": \"http://json-schema.org/draft-07/schema#\"," +
-                "\"$id\": \"http://example.com/product.schema.json\"," +
-                "\"title\": \"Product\"," +
-                "\"description\": \"A product from Acme's catalog\"," +
-                "\"$comment\": \"As an example.\"" +
-                "}";
-        JsonSchema schema = service.readSchema(new StringReader(source));
+    public void readShouldReadSchemaMetadata() {
+        String source = "{"
+                + "\"$schema\": \"http://json-schema.org/draft-07/schema#\","
+                + "\"$id\": \"http://example.com/product.schema.json\","
+                + "\"title\": \"Product\","
+                + "\"description\": \"A product from Acme's catalog\","
+                + "\"$comment\": \"As an example.\""
+                + "}";
+        JsonSchema schema = SERVICE.readSchema(new StringReader(source));
 
         assertThat(schema.hasId()).isTrue();
         assertThat(schema.schema()).isEqualTo(URI.create("http://json-schema.org/draft-07/schema#"));
@@ -97,9 +93,9 @@ public class JsonSchemaReaderTest {
     private static final String SCHEMA_INCLUDING_UNKNOWN_KEYWORD = "{ \"type\": \"string\", \"foo\": 42 }";
 
     @Test
-    public void read_shouldThrowIfStrictWithKeywords() {
+    public void readShouldThrowIfStrictWithKeywords() {
         String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(true)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithKeywords(true)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -110,21 +106,22 @@ public class JsonSchemaReaderTest {
     }
 
     @Test
-    public void read_shouldNotThrowIfNotStrictWithKeywords() {
+    public void readShouldNotThrowIfNotStrictWithKeywords() {
         String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithKeywords(false)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithKeywords(false)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
         assertThat(thrown).isNull();
     }
 
-    private static final String SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE = "{ \"type\": \"string\", \"format\": \"foo\" }";
+    private static final String SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE
+        = "{ \"type\": \"string\", \"format\": \"foo\" }";
 
     @Test
-    public void read_shouldThrowIfStrictWithFormats() {
+    public void readShouldThrowIfStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithFormats(true)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithFormats(true)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -135,9 +132,9 @@ public class JsonSchemaReaderTest {
     }
 
     @Test
-    public void read_shouldNotThrowIfNotStrictWithFormats() {
+    public void readShouldNotThrowIfNotStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictWithFormats(false)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithFormats(false)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());

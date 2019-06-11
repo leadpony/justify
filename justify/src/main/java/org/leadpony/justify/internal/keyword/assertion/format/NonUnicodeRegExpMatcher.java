@@ -17,18 +17,18 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
- * {@link RegExpMatcher} for non unicode mode. 
+ * {@link RegExpMatcher} for non unicode mode.
  * <p>
  * All characters in the input will be interpreted as BMP code points.
  * </p>
- * 
+ *
  * @author leadpony
  */
 class NonUnicodeRegExpMatcher extends RegExpMatcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      */
     NonUnicodeRegExpMatcher(CharSequence input) {
@@ -43,7 +43,7 @@ class NonUnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     @Override
     protected int codePointAt(CharSequence input, int index) {
         return input.charAt(index);

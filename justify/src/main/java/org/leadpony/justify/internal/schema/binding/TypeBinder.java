@@ -66,7 +66,7 @@ class TypeBinder extends AbstractBinder {
         }
     }
 
-    private static final InstanceType getType(JsonParser parser) {
+    private static InstanceType getType(JsonParser parser) {
         String name = parser.getString().toUpperCase();
         return InstanceType.valueOf(name);
     }

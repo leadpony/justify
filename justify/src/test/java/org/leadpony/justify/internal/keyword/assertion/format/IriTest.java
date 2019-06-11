@@ -26,22 +26,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Iri} class.
- * 
+ * A test class for {@link Iri}.
+ *
  * @author leadpony
  */
 public class IriTest {
-    
+
     // System under test
     private static Iri sut;
 
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Iri();
     }
-    
+
     public static Stream<UriFixture> uris() {
         return UriFixture.load("uri.json")
                 .filter(UriFixture::isValid);
@@ -51,7 +51,7 @@ public class IriTest {
         return UriFixture.load("/com/sporkmonger/addressable/uri.json")
                 .filter(UriFixture::isValid);
     }
-    
+
     public static Stream<UriFixture> iris() {
         return UriFixture.load("iri.json");
     }

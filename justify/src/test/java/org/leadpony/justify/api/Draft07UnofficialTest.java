@@ -27,13 +27,13 @@ import org.leadpony.justify.internal.annotation.Spec;
 @Spec(SpecVersion.DRAFT_07)
 public class Draft07UnofficialTest extends AbstractOfficialTest {
 
-    private static final String[] mandatory = {
+    private static final String[] MANDATORY = {
             "/org/leadpony/justify/api/instance/additionalProperties.json",
             "/org/leadpony/justify/api/instance/if-then-else.json",
     };
 
     public static Stream<Fixture> mandatory() {
-        return generateFixtures(mandatory);
+        return generateFixtures(MANDATORY);
     }
 
     @ParameterizedTest

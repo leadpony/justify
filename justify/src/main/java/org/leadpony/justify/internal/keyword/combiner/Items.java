@@ -141,6 +141,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         private Evaluator createForbiddenItemsEvaluator(EvaluatorContext context) {
             return new AbstractConjunctiveItemsEvaluator(context) {
                 private int itemIndex;
+
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -153,6 +154,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         private Evaluator createNegatedForbiddenItemsEvaluator(EvaluatorContext context) {
             return new AbstractDisjunctiveItemsEvaluator(context, this) {
                 private int itemIndex;
+
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -193,15 +195,15 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         public JsonValue getValueAsJson(JsonProvider jsonProvider) {
             JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
             this.subschemas.stream()
-                .map(JsonSchema::toJson)
-                .forEachOrdered(builder::add);
+                    .map(JsonSchema::toJson)
+                    .forEachOrdered(builder::add);
             return builder.build();
         }
 
         @Override
         public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
             if (keywords.containsKey("additionalItems")) {
-                AdditionalItems additionalItems = (AdditionalItems)keywords.get("additionalItems");
+                AdditionalItems additionalItems = (AdditionalItems) keywords.get("additionalItems");
                 this.defaultSchema = additionalItems.getSubschema();
             }
             evaluatables.add(this);
@@ -239,7 +241,8 @@ public abstract class Items extends Combiner implements ArrayKeyword {
             }
         }
 
-        private Evaluator createSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema, InstanceType type) {
+        private Evaluator createSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
+                InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
                 return new RedundantItemEvaluator(context, itemIndex, subschema);
             } else {
@@ -247,7 +250,8 @@ public abstract class Items extends Combiner implements ArrayKeyword {
             }
         }
 
-        private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema, InstanceType type) {
+        private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
+                InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 return new RedundantItemEvaluator(context, itemIndex, subschema);
             } else {
@@ -258,6 +262,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         private Evaluator createItemsEvaluator(EvaluatorContext context) {
             return new AbstractConjunctiveItemsEvaluator(context) {
                 private int itemIndex;
+
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -273,6 +278,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
             return new AbstractDisjunctiveItemsEvaluator(context, this) {
                 private int itemIndex;
+
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -306,6 +312,11 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         }
     }
 
+    /**
+     * An evaluator which will inject default values of items.
+     *
+     * @author leadpony
+     */
     private static class ItemsDefaultEvaluator extends EvaluatorDecorator {
 
         private final List<JsonValue> defaultValues;
@@ -330,7 +341,7 @@ public abstract class Items extends Combiner implements ArrayKeyword {
 
         private void supplyDefaultValues(int size) {
             if (size < defaultValues.size()) {
-                List<JsonValue> valuesToPut= new ArrayList<>();
+                List<JsonValue> valuesToPut = new ArrayList<>();
                 int i = size;
                 while (i < defaultValues.size()) {
                     JsonValue value = defaultValues.get(i++);

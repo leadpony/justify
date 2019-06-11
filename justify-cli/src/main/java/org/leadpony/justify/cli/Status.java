@@ -36,7 +36,7 @@ enum Status {
 
     private final int code;
 
-    private Status(int code) {
+    Status(int code) {
         this.code = code;
     }
 

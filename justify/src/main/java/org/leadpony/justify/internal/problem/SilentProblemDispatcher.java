@@ -24,7 +24,7 @@ import org.leadpony.justify.api.ProblemDispatcher;
 /**
  * @author leadpony
  */
-public class SilentProblemDispatcher implements ProblemDispatcher {
+public final class SilentProblemDispatcher implements ProblemDispatcher {
 
     public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
 

@@ -26,22 +26,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Uri} class.
- * 
+ * A test class for {@link Uri}.
+ *
  * @author leadpony
  */
 public class UriTest {
-    
+
     // System under test
     private static Uri sut;
 
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Uri(true);
     }
-    
+
     public static Stream<UriFixture> uris() {
         return UriFixture.load("uri.json");
     }
@@ -54,7 +54,7 @@ public class UriTest {
     @MethodSource("uris")
     public void testUri(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         assertThat(valid).isEqualTo(fixture.isValid());
     }
 
@@ -62,7 +62,7 @@ public class UriTest {
     @MethodSource("uriRefs")
     public void testUriRef(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         if (fixture.isRelative()) {
             assertThat(valid).isFalse();
         } else {

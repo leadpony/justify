@@ -16,7 +16,7 @@
 
 /**
  * Provides validation keywords combining subschemas.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.keyword.combiner;

@@ -377,7 +377,7 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      *
      * @author leadpony
      */
-    private class ValidatingJsonProvider extends JsonProviderDecorator {
+    private final class ValidatingJsonProvider extends JsonProviderDecorator {
 
         private final JsonSchema schema;
         private final ProblemHandlerFactory handlerFactory;

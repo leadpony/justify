@@ -60,7 +60,7 @@ interface Location {
     }
 
     /**
-     * Opens an input stream from this location,
+     * Opens an input stream from this location.
      *
      * @return newly created input stream.
      * @throws IOException if an I/O error has occurred.

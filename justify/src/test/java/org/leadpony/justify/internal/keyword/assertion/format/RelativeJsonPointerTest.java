@@ -25,20 +25,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link RelativeJsonPointer} class.
- * 
+ * A test class for {@link RelativeJsonPointer}.
+ *
  * @author leadpony
  */
 public class RelativeJsonPointerTest {
 
     // System under test
     private static RelativeJsonPointer sut;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new RelativeJsonPointer();
     }
-    
+
     public static Stream<Fixture> provideFixtures() {
         return Fixture.load("relative-json-pointer.json");
     }

@@ -42,6 +42,6 @@ class SchemaBinder extends AbstractUriBinder {
 
     @Override
     protected void addKeyword(SchemaKeyword keyword, BindingContext context) {
-        context.addKeyword((Schema)keyword);
+        context.addKeyword((Schema) keyword);
     }
 }

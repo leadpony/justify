@@ -23,7 +23,7 @@ import org.leadpony.justify.api.InstanceType;
 /**
  * @author leadpony
  */
-public class Draft04Type {
+public final class Draft04Type {
 
     public static Type of(InstanceType type) {
         return new Single(type);
@@ -38,14 +38,22 @@ public class Draft04Type {
     }
 
     private static InstanceType getNarrowType(InstanceType type, EvaluatorContext context) {
-        if (type == InstanceType.NUMBER &&
-                context.getParser().isIntegralNumber()) {
+        if (type == InstanceType.NUMBER
+                && context.getParser().isIntegralNumber()) {
             return InstanceType.INTEGER;
         } else {
             return type;
         }
     }
 
+    private Draft04Type() {
+    }
+
+    /**
+     * A type keyword with a single value.
+     *
+     * @author leadpony
+     */
     static class Single extends Type.Single {
 
         Single(InstanceType expectedType) {
@@ -58,6 +66,11 @@ public class Draft04Type {
         }
     }
 
+    /**
+     * A type keyword with multiples values.
+     *
+     * @author leadpony
+     */
     static class Multiple extends Type.Multiple {
 
         Multiple(Set<InstanceType> types) {

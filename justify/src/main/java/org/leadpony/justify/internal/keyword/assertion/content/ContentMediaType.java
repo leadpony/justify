@@ -144,7 +144,7 @@ public class ContentMediaType extends AbstractAssertion {
      */
     String value() {
         StringBuilder builder =  new StringBuilder(mimeType.toString());
-        parameters.forEach((key, value)->{
+        parameters.forEach((key, value) -> {
             builder.append("; ").append(key).append('=').append(value);
         });
         return builder.toString();

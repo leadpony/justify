@@ -30,17 +30,16 @@ enum ValidateOption implements Option {
     INSTANCE("-i"),
     REFERENCE("-r"),
     CATALOG("-catalog"),
-    STRICT("-strict"),
-    ;
+    STRICT("-strict");
 
     private final String[] names;
 
-    private static final Map<String, ValidateOption> options = new HashMap<>();
+    private static final Map<String, ValidateOption> OPTIONS = new HashMap<>();
 
     static {
         for (ValidateOption value : values()) {
             for (String name : value.names) {
-                options.put(name, value);
+                OPTIONS.put(name, value);
             }
         }
     }
@@ -50,7 +49,7 @@ enum ValidateOption implements Option {
      *
      * @param names the names of this option.
      */
-    private ValidateOption(String... names) {
+    ValidateOption(String... names) {
         this.names = names;
     }
 
@@ -109,8 +108,8 @@ enum ValidateOption implements Option {
      * @throws NoSuchElementException if no such option exists.
      */
     static ValidateOption byName(String name) {
-        if (options.containsKey(name)) {
-            return options.get(name);
+        if (OPTIONS.containsKey(name)) {
+            return OPTIONS.get(name);
         } else {
             throw new NoSuchElementException();
         }

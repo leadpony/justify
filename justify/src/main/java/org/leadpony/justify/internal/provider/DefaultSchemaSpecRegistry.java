@@ -47,7 +47,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
+final class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
 
     private final Map<SpecVersion, SimpleSpec> simpleSpecs = new HashMap<>();
     private final Map<SpecVersion, SimpleSpec> customSpecs = new HashMap<>();
@@ -120,6 +120,11 @@ class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
         }
     }
 
+    /**
+     * A simple implementation of {@link SchemaSpec}.
+     *
+     * @author leadpony
+     */
     private class SimpleSpec implements SchemaSpec {
 
         private final SpecVersion version;

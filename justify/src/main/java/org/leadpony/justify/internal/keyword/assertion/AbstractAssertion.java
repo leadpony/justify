@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
- * Skeletal implementation of {@link Assertion}.
- * 
+ * A skeletal implementation of {@link Assertion}.
+ *
  * @author leadpony
  */
 public abstract class AbstractAssertion extends AbstractKeyword implements Assertion {

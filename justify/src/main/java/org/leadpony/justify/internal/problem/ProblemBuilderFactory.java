@@ -31,7 +31,8 @@ public interface ProblemBuilderFactory {
     /**
      * Default instance of this type.
      */
-    static ProblemBuilderFactory DEFAULT = new ProblemBuilderFactory() {};
+    ProblemBuilderFactory DEFAULT = new ProblemBuilderFactory() {
+    };
 
     /**
      * Creates new instance of this builder.
@@ -49,7 +50,7 @@ public interface ProblemBuilderFactory {
      * Creates new instance of this builder.
      *
      * @param location the location where problem occurred, cannot be {@code null}.
-     * @param pointer the JSON pointer where problem occurred, can be {@code null}.
+     * @param pointer  the JSON pointer where problem occurred, can be {@code null}.
      * @return newly created instance of {@link ProblemBuilder}.
      */
     default ProblemBuilder createProblemBuilder(JsonLocation location, String pointer) {

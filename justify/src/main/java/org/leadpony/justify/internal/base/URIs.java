@@ -38,7 +38,7 @@ public final class URIs {
         return uri.resolve("#");
     }
 
-    public static final Comparator<URI> COMPARATOR = (URI x, URI y)->{
+    public static final Comparator<URI> COMPARATOR = (URI x, URI y) -> {
         return withFragment(x).compareTo(withFragment(y));
     };
 

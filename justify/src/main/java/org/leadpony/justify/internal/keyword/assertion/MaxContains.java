@@ -39,6 +39,11 @@ public class MaxContains extends AbstractKeyword {
         this.limit = limit;
     }
 
+    /**
+     * Return the value of this keyword.
+     *
+     * @return the value of this keyword.
+     */
     public int value() {
         return limit;
     }

@@ -15,9 +15,6 @@
  */
 package org.leadpony.justify.api;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -30,9 +27,9 @@ import javax.json.JsonValue.ValueType;
  * An immutable JSON schema.
  *
  * <p>
- * A JSON schema can be read from {@link InputStream} or {@link Reader}. The
- * following example shows how to read a JSON schema from a
- * {@link StringReader}:
+ * A JSON schema can be read from {@link java.io.InputStream} or
+ * {@link java.io.Reader}. The following example shows how to read a JSON schema
+ * from a {@link java.io.StringReader}:
  * </p>
  *
  * <pre>

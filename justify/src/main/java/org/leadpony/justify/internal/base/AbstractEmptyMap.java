@@ -22,66 +22,69 @@ import java.util.Set;
 
 /**
  * @author leadpony
+ *
+ * @param <K> the type of the key.
+ * @param <V> the type of the value.
  */
 public abstract class AbstractEmptyMap<K, V> implements Map<K, V> {
 
     @Override
-    public int size() {
+    public final int size() {
         return 0;
     }
 
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return false;
     }
 
     @Override
-    public boolean containsValue(Object value) {
+    public final boolean containsValue(Object value) {
         return false;
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public final boolean containsKey(Object key) {
         return false;
     }
 
     @Override
-    public V get(Object key) {
+    public final V get(Object key) {
         return null;
     }
 
     @Override
-    public Set<Entry<K, V>> entrySet() {
+    public final Set<Entry<K, V>> entrySet() {
         return Collections.emptySet();
     }
 
     @Override
-    public V put(K key, V value) {
+    public final V put(K key, V value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public V remove(Object key) {
+    public final V remove(Object key) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
+    public final void putAll(Map<? extends K, ? extends V> m) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void clear() {
+    public final void clear() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<K> keySet() {
+    public final Set<K> keySet() {
         return Collections.emptySet();
     }
 
     @Override
-    public Collection<V> values() {
+    public final Collection<V> values() {
         return Collections.emptySet();
     }
 }

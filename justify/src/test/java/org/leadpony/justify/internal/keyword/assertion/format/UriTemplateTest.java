@@ -26,22 +26,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link UriTemplate} class.
- * 
+ * A test class for {@link UriTemplate}.
+ *
  * @author leadpony
  */
 public class UriTemplateTest {
-    
+
     // System under test
     private static UriTemplate sut;
 
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new UriTemplate();
     }
-    
+
     public static Stream<UriFixture> provideFixtures() {
         return UriFixture.load("uri-template.json");
     }
@@ -50,7 +50,7 @@ public class UriTemplateTest {
     @MethodSource("provideFixtures")
     public void testUriTemplate(UriFixture fixture) {
         Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value()); 
+        boolean valid = sut.test(fixture.value());
         assertThat(valid).isEqualTo(fixture.isValid());
     }
 }

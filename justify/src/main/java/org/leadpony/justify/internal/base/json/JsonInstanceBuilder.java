@@ -25,28 +25,41 @@ import javax.json.stream.JsonParser.Event;
 
 /**
  * Event-driven builder of JSON instance.
- * 
+ *
  * @author leadpony
  */
 public class JsonInstanceBuilder {
-    
+
     private final RootVisitor rootVisitor = new RootVisitor();
     private final JsonBuilderFactory builderFactory;
     private Visitor currentVisitor = rootVisitor;
-    
+
     public JsonInstanceBuilder(JsonBuilderFactory builderFactory) {
         this.builderFactory = builderFactory;
     }
-    
+
+    /**
+     * Appends a new parser event.
+     *
+     * @param event  the event to append.
+     * @param parser the JSON parser.
+     * @return {@code true} if this builder should be continued, or {@code false} if
+     *         this builder is completed.
+     */
     public boolean append(Event event, JsonParser parser) {
         this.currentVisitor = this.currentVisitor.visit(event, parser);
-        return (this.currentVisitor != this.rootVisitor); 
+        return (this.currentVisitor != this.rootVisitor);
     }
-    
+
+    /**
+     * Builds a JSON value.
+     *
+     * @return the built JSON value.
+     */
     public JsonValue build() {
         return rootVisitor.rootValue();
     }
-    
+
     private static JsonValue getLiteral(Event event, JsonParser parser) {
         switch (event) {
         case VALUE_TRUE:
@@ -64,18 +77,29 @@ public class JsonInstanceBuilder {
             return null;
         }
     }
-    
-    private static interface Visitor {
-        
+
+    /**
+     * A visitor of JSON values.
+     *
+     * @author leadpony
+     *
+     */
+    private interface Visitor {
+
         Visitor visit(Event event, JsonParser parser);
-        
+
         void append(JsonValue value);
     }
-    
+
+    /**
+     * A visitor of root values.
+     *
+     * @author leadpony
+     */
     private class RootVisitor implements Visitor {
-        
+
         private JsonValue value;
-        
+
         @Override
         public Visitor visit(Event event, JsonParser parser) {
             switch (event) {
@@ -101,22 +125,27 @@ public class JsonInstanceBuilder {
         public void append(JsonValue value) {
             this.value = value;
         }
-        
+
         public JsonValue rootValue() {
             return value;
         }
     }
 
+    /**
+     * A visitor of JSON arrays.
+     *
+     * @author leadpony
+     */
     private class ArrayVisitor implements Visitor {
-        
+
         private final Visitor parent;
         private final JsonArrayBuilder builder;
-        
+
         ArrayVisitor(Visitor parent) {
             this.parent = parent;
             this.builder = builderFactory.createArrayBuilder();
         }
-        
+
         @Override
         public Visitor visit(Event event, JsonParser parser) {
             switch (event) {
@@ -124,9 +153,9 @@ public class JsonInstanceBuilder {
                 return new ArrayVisitor(this);
             case START_OBJECT:
                 return new ObjectVisitor(this);
-            case VALUE_TRUE:    
-            case VALUE_FALSE:    
-            case VALUE_NULL:    
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+            case VALUE_NULL:
             case VALUE_NUMBER:
             case VALUE_STRING:
                 append(getLiteral(event, parser));
@@ -146,17 +175,22 @@ public class JsonInstanceBuilder {
         }
     }
 
+    /**
+     * A visitor of JSON objects.
+     *
+     * @author leadpony
+     */
     private class ObjectVisitor implements Visitor {
-        
+
         private final Visitor parent;
         private final JsonObjectBuilder builder;
         private String propertyName;
-        
+
         ObjectVisitor(Visitor parent) {
             this.parent = parent;
             this.builder = builderFactory.createObjectBuilder();
         }
-        
+
         @Override
         public Visitor visit(Event event, JsonParser parser) {
             switch (event) {
@@ -167,9 +201,9 @@ public class JsonInstanceBuilder {
             case KEY_NAME:
                 this.propertyName = parser.getString();
                 break;
-            case VALUE_TRUE:    
-            case VALUE_FALSE:    
-            case VALUE_NULL:    
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+            case VALUE_NULL:
             case VALUE_NUMBER:
             case VALUE_STRING:
                 builder.add(this.propertyName, getLiteral(event, parser));

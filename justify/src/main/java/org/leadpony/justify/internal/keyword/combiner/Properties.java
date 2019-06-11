@@ -121,11 +121,12 @@ public class Properties extends AbstractProperties<String> {
      *
      * @author leadpony
      */
-    private static class PropertiesDefaultEvaluator extends EvaluatorDecorator {
+    private static final class PropertiesDefaultEvaluator extends EvaluatorDecorator {
 
         private final Map<String, JsonValue> defaultValues;
 
-        private PropertiesDefaultEvaluator(Evaluator evaluator, EvaluatorContext context, Map<String, JsonValue> defaultValues) {
+        private PropertiesDefaultEvaluator(Evaluator evaluator, EvaluatorContext context,
+                Map<String, JsonValue> defaultValues) {
             super(evaluator, context);
             this.defaultValues = new LinkedHashMap<>(defaultValues);
         }

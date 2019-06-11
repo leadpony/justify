@@ -63,11 +63,10 @@ enum Message {
     SCHEMA_FAILED,
     CATALOG_FAILED,
 
-    ACCESS_FAILED,
-    ;
+    ACCESS_FAILED;
 
     private static final String BUNDLE_NAME = Message.class.getPackage().getName() + ".messages";
-    private static final ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME);
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     /**
      * Returns this message as a string.
@@ -76,7 +75,7 @@ enum Message {
      */
     @Override
     public String toString() {
-        return bundle.getString(name());
+        return BUNDLE.getString(name());
     }
 
     /**

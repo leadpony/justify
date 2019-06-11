@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author leadpony
  */
-public class MediaType {
+public final class MediaType {
 
     private final String mimeType;
     private final Map<String, String> parameters;

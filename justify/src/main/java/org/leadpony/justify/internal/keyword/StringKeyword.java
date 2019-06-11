@@ -23,7 +23,7 @@ import org.leadpony.justify.api.InstanceType;
 
 /**
  * Keyword for string type.
- * 
+ *
  * @author leadpony
  */
 public interface StringKeyword extends SchemaKeyword {
@@ -32,7 +32,7 @@ public interface StringKeyword extends SchemaKeyword {
     default boolean supportsType(InstanceType type) {
         return type == InstanceType.STRING;
     }
-    
+
     @Override
     default Set<InstanceType> getSupportedTypes() {
         return EnumSet.of(InstanceType.STRING);

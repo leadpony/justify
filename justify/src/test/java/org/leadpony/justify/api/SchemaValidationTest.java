@@ -26,10 +26,6 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchemaReader;
-import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * A test class for testing schema validations.
@@ -38,8 +34,8 @@ import org.leadpony.justify.api.ProblemHandler;
  */
 public class SchemaValidationTest {
 
-    private static final Logger log = Logger.getLogger(SchemaValidationTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final Logger LOG = Logger.getLogger(SchemaValidationTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private static final String[] TESTS = {
             "schema/schema.json",
@@ -89,7 +85,7 @@ public class SchemaValidationTest {
             "schema/validation/optional/contentMediaType.json",
         };
 
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     public static Stream<SchemaFixture> provideAllFixtures() {
         return Stream.of(TESTS).flatMap(SchemaFixture::newStream);
@@ -99,7 +95,7 @@ public class SchemaValidationTest {
     @MethodSource("provideAllFixtures")
     public void testSchemaValidation(SchemaFixture fixture) {
         String value = fixture.schema().toString();
-        try (JsonSchemaReader reader = service.createSchemaReader(new StringReader(value))) {
+        try (JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(value))) {
             reader.read();
             assertThat(true).isEqualTo(fixture.hasValidSchema());
         } catch (JsonValidatingException e) {
@@ -129,10 +125,10 @@ public class SchemaValidationTest {
 
     @ParameterizedTest
     @MethodSource("provideValidFixtures")
-    public void toJson_shouldProduceOriginalJson(SchemaFixture fixture) {
+    public void toJsonShouldProduceOriginalJson(SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchema schema = null;
-        try (JsonSchemaReader reader = service.createSchemaReader(new StringReader(value))) {
+        try (JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(value))) {
             schema = reader.read();
         }
 
@@ -141,8 +137,8 @@ public class SchemaValidationTest {
 
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
-            log.info(fixture.displayName());
-            printer.handleProblems(problems);
+            LOG.info(fixture.displayName());
+            PRINTER.handleProblems(problems);
         }
     }
 }

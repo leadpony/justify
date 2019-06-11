@@ -76,7 +76,12 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
         return builder.build();
     }
 
-    private class AssertionEvaluator extends ShallowEvaluator {
+    /**
+     * An evaluator of this keyword.
+     *
+     * @author leadpony
+     */
+    private final class AssertionEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 
@@ -114,7 +119,12 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
         }
     }
 
-    private class NegatedAssertionEvaluator extends ShallowEvaluator {
+    /**
+     * An evaluator of negated version of this keyword.
+     *
+     * @author leadpony
+     */
+    private final class NegatedAssertionEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 

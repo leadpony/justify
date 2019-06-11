@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+F * Copyright 2018-2019 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,25 @@ import org.leadpony.justify.internal.base.AsciiCode;
 
 /**
  * Matcher for IPv4 addresses.
- * 
+ *
  * @author leadpony
  */
 class Ipv4Matcher extends FormatMatcher {
-    
+
     private boolean allowLeadingZeros = false;
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     Ipv4Matcher(CharSequence input) {
         super(input);
     }
-    
+
     /**
      * Allows leading zeros for each decimal byte.
-     * 
+     *
      * @return this matcher.
      */
     Ipv4Matcher withLeadingZerosAllowed() {
@@ -48,7 +48,7 @@ class Ipv4Matcher extends FormatMatcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      * @param start the start index, inclusive.
      * @param end the end index, exclusive.
@@ -61,19 +61,19 @@ class Ipv4Matcher extends FormatMatcher {
     boolean all() {
         return dottedQuad();
     }
-    
+
     boolean dottedQuad() {
         final int mark = pos();
-        if (decbyte() && next() == '.' &&
-            decbyte() && next() == '.' &&
-            decbyte() && next() == '.' &&
-            decbyte() && !hasNext()) {
+        if (decbyte() && next() == '.'
+            && decbyte() && next() == '.'
+            && decbyte() && next() == '.'
+            && decbyte() && !hasNext()) {
             return true;
         } else {
             return backtrack(mark);
         }
     }
-    
+
     boolean decbyte() {
         if (!hasNext()) {
             return false;
@@ -87,7 +87,7 @@ class Ipv4Matcher extends FormatMatcher {
         if (value == 0 && !this.allowLeadingZeros) {
             return !hasNext() || peek() == '.';
         }
-        
+
         if (hasNext() && peek() != '.') {
             // 2nd digit
             c = next();
@@ -113,7 +113,7 @@ class Ipv4Matcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     static int digitToValue(int codePoint) {
         return codePoint - '0';
     }

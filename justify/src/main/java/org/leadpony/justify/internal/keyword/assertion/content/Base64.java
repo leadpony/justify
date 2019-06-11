@@ -24,7 +24,7 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**
  * Content encoding scheme representing "base64".
- * 
+ *
  * @author leadpony
  */
 class Base64 implements ContentEncodingScheme {

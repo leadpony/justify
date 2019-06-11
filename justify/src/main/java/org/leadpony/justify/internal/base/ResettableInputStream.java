@@ -34,7 +34,7 @@ public class ResettableInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read() throws IOException {
+    public final int read() throws IOException {
         int b = super.read();
         if (b >= 0) {
             out.write(b);
@@ -43,7 +43,7 @@ public class ResettableInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
+    public final int read(byte[] b) throws IOException {
         int result = super.read(b);
         if (result > 0) {
             out.write(b);
@@ -52,7 +52,7 @@ public class ResettableInputStream extends FilterInputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public final int read(byte[] b, int off, int len) throws IOException {
         int result = super.read(b, off, len);
         if (result > 0) {
             out.write(b, off, len);
@@ -61,15 +61,19 @@ public class ResettableInputStream extends FilterInputStream {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public final long skip(long n) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    public InputStream createResettedStream() {
+    public final InputStream createResettedStream() {
         return new SecondInputStream(in, out.toByteArray());
     }
 
-    private static class SecondInputStream extends FilterInputStream {
+    /**
+     *
+     * @author leadpony
+     */
+    private static final class SecondInputStream extends FilterInputStream {
 
         private final byte[] buffer;
         private int index;

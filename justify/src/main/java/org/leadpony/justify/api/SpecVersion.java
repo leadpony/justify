@@ -41,12 +41,12 @@ public enum SpecVersion {
      */
     DRAFT_07("http://json-schema.org/draft-07/schema#");
 
-    private static final Map<URI, SpecVersion> versionMap = Stream.of(SpecVersion.values())
+    private static final Map<URI, SpecVersion> VERSION_MAP = Stream.of(SpecVersion.values())
             .collect(Collectors.toMap(SpecVersion::id, Function.identity()));
 
     private final URI id;
 
-    private SpecVersion(String id) {
+    SpecVersion(String id) {
         this.id = URI.create(id);
     }
 
@@ -82,7 +82,7 @@ public enum SpecVersion {
      */
     public static SpecVersion getById(URI id) {
         Objects.requireNonNull(id, "id must not be null.");
-        SpecVersion version = versionMap.get(id);
+        SpecVersion version = VERSION_MAP.get(id);
         if (version == null) {
             throw new IllegalArgumentException();
         }

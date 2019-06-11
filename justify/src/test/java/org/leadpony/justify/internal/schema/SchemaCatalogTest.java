@@ -44,7 +44,7 @@ public class SchemaCatalogTest {
     }
 
     @Test
-    public void resolveSchema_returnsSchema() {
+    public void resolveSchemaShouldReturnSchema() {
         SchemaCatalog catalog = new SchemaCatalog();
         JsonSchema schema = createSchema(URI.create("http://example.com/root.json#"));
         catalog.addSchema(schema);

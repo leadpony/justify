@@ -39,7 +39,7 @@ public class Int32FormatAttribute implements FormatAttribute {
 
     @Override
     public boolean test(JsonValue value) {
-        JsonNumber number = (JsonNumber)value;
+        JsonNumber number = (JsonNumber) value;
         if (!number.isIntegral()) {
             return false;
         }

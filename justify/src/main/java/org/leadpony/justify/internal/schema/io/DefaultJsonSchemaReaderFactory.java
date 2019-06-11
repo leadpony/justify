@@ -72,7 +72,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         this.jsonParserFactory = this.jsonService.getJsonParserFactory();
         this.specRegistry = builder.specRegistry;
         this.config = builder.getAsMap();
-        this.defaultVersion = (SpecVersion)this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
+        this.defaultVersion = (SpecVersion) this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
     }
 
     @Override
@@ -113,6 +113,12 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
+    /**
+     * Returns the instance of {@link SchemaSpec} for the specified version.
+     *
+     * @param version the version of the specification.
+     * @return the instance of {@link SchemaSpec}
+     */
     protected SchemaSpec getSpec(SpecVersion version) {
         return specRegistry.getSpec(
                 version,
@@ -127,6 +133,13 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
     }
 
+    /**
+     * Creates a schema reader for the specified version of specification.
+     *
+     * @param realParser the real JSON parser.
+     * @param spec the specification.
+     * @return newly created schema reader.
+     */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
         return new GenericSchemaReader(parser, jsonService, spec, config);
@@ -148,7 +161,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      *
      * @author leadpony
      */
-    private static class DetectableJsonSchemaReaderFactory extends DefaultJsonSchemaReaderFactory {
+    private static final class DetectableJsonSchemaReaderFactory extends DefaultJsonSchemaReaderFactory {
 
         private DetectableJsonSchemaReaderFactory(Builder builder) {
             super(builder);
@@ -192,7 +205,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             requireNonNull(reader, "reader");
             ResettableReader probeReader = new ResettableReader(reader);
             JsonParser probeParser = jsonParserFactory.createParser(probeReader);
-            return  new AbstractProbeSchemaReader(probeParser, defaultVersion) {
+            return new AbstractProbeSchemaReader(probeParser, defaultVersion) {
                 @Override
                 protected JsonSchemaReader createSchemaReader(SpecVersion version) {
                     SchemaSpec spec = getSpec(version);
@@ -210,7 +223,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      * @author leadpony
      */
     @SuppressWarnings("serial")
-    private static class Builder extends HashMap<String, Object> implements JsonSchemaReaderFactoryBuilder {
+    private static final class Builder extends HashMap<String, Object> implements JsonSchemaReaderFactoryBuilder {
 
         private final JsonService jsonService;
         private final SchemaSpecRegistry specRegistry;

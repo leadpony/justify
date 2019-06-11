@@ -38,7 +38,8 @@ public class ConditionalEvaluator extends AbstractEvaluator {
     private Result thenResult;
     private Result elseResult;
 
-    public ConditionalEvaluator(EvaluatorContext context, Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
+    public ConditionalEvaluator(EvaluatorContext context, Evaluator ifEvaluator, Evaluator thenEvaluator,
+            Evaluator elseEvaluator) {
         super(context);
         assert ifEvaluator != null;
         assert thenEvaluator != null;
@@ -71,7 +72,8 @@ public class ConditionalEvaluator extends AbstractEvaluator {
         return Result.PENDING;
     }
 
-    private Result updateEvaluation(Result result, Evaluator evaluator, Event event,int depth, ProblemDispatcher dispatcher) {
+    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, int depth,
+            ProblemDispatcher dispatcher) {
         if (result == Result.PENDING) {
             return evaluator.evaluate(event, depth, dispatcher);
         } else {
@@ -81,7 +83,7 @@ public class ConditionalEvaluator extends AbstractEvaluator {
 
     private Result finalizeEvaluation(Result result, DeferredEvaluator evaluator, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
-            evaluator.problems().forEach(problem->dispatcher.dispatchProblem(problem));
+            evaluator.problems().forEach(problem -> dispatcher.dispatchProblem(problem));
         }
         return result;
     }

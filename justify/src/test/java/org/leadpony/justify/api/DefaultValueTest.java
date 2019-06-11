@@ -43,9 +43,9 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class DefaultValueTest {
 
-    private static final Logger log = Logger.getLogger(DefaultValueTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(DefaultValueTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     /**
      * A fixture for this test.
@@ -77,6 +77,11 @@ public class DefaultValueTest {
         }
     }
 
+    /**
+     * A error found by the validation.
+     *
+     * @author leadpony
+     */
     private static class Error {
 
         final String pointer;
@@ -88,7 +93,7 @@ public class DefaultValueTest {
         }
     }
 
-    private static final String[] files = {
+    private static final String[] FILES = {
             "default-properties.json",
             "default-properties-invalid.json",
             "default-items.json",
@@ -96,7 +101,7 @@ public class DefaultValueTest {
     };
 
     public static Stream<Fixture> fixtures() {
-        return Stream.of(files).flatMap(DefaultValueTest::readFixtures);
+        return Stream.of(FILES).flatMap(DefaultValueTest::readFixtures);
     }
 
     private static Stream<Fixture> readFixtures(String name) {
@@ -137,7 +142,7 @@ public class DefaultValueTest {
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void jsonReader_shouldFillWithDefaultValues(Fixture fixture) {
+    public void readValueShouldFillWithDefaultValues(Fixture fixture) {
         JsonSchema schema = readSchema(fixture.schema);
         List<Problem> problems = new ArrayList<>();
         JsonValue actual = null;
@@ -163,7 +168,7 @@ public class DefaultValueTest {
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void jsonParser_shouldGenerateAdditionalEvents(Fixture fixture) {
+    public void nextShouldGenerateAdditionalEvents(Fixture fixture) {
         JsonSchema schema = readSchema(fixture.schema);
         List<Problem> problems = new ArrayList<>();
         List<Event> expected = getExpectedEvents(fixture.result);
@@ -199,24 +204,24 @@ public class DefaultValueTest {
 
     private JsonSchema readSchema(JsonValue value) {
         StringReader reader = new StringReader(value.toString());
-        return service.readSchema(reader);
+        return SERVICE.readSchema(reader);
     }
 
     private JsonParser createJsonParser(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withProblemHandler(handler)
                 .withDefaultValues(true);
-        return service.createParserFactory(config.getAsMap())
+        return SERVICE.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(value.toString()));
     }
 
     private JsonReader createJsonReader(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withProblemHandler(handler)
                 .withDefaultValues(true);
-        return service.createReaderFactory(config.getAsMap())
+        return SERVICE.createReaderFactory(config.getAsMap())
                 .createReader(new StringReader(value.toString()));
     }
 
@@ -232,6 +237,6 @@ public class DefaultValueTest {
     }
 
     private static void printProblems(List<Problem> problems) {
-        printer.handleProblems(problems);
+        PRINTER.handleProblems(problems);
     }
 }

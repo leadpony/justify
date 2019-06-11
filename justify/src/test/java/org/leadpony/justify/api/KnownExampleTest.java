@@ -41,9 +41,9 @@ import org.junit.jupiter.params.provider.EnumSource;
  */
 public class KnownExampleTest {
 
-    private static final Logger log = Logger.getLogger(KnownExampleTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(KnownExampleTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     private static final String BASE_PATH = "/org/json_schema/examples/draft7/";
 
@@ -55,12 +55,11 @@ public class KnownExampleTest {
     public enum Example {
         ARRAY("arrays.schema.json", "arrays.json", true),
         FSTAB("fstab.schema.json", "fstab.json", true),
-        FSTAB_INVALID("fstab.schema.json","fstab-invalid.json", false),
+        FSTAB_INVALID("fstab.schema.json", "fstab-invalid.json", false),
         GEOGRAPHICAL_LOCATION("geographical-location.schema.json", "geographical-location.json", true),
         PERSON("person.schema.json", "person.json", true),
         PRODUCT("product.schema.json", "product.json", true),
-        PRODUCT_INVALID("product.schema.json", "product-invalid.json", false)
-        ;
+        PRODUCT_INVALID("product.schema.json", "product-invalid.json", false);
 
         Example(String schema, String instance, boolean valid) {
             this.schema = schema;
@@ -79,13 +78,13 @@ public class KnownExampleTest {
         JsonSchema schema = readSchemaFromResource(example.schema);
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonParser parser = service.createParser(getResourceAsStream(example.instance), schema, handler)) {
+        try (JsonParser parser = SERVICE.createParser(getResourceAsStream(example.instance), schema, handler)) {
             while (parser.hasNext()) {
                 parser.next();
             }
         }
         if (!problems.isEmpty()) {
-            printer.handleProblems(problems);
+            PRINTER.handleProblems(problems);
         }
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
@@ -98,11 +97,11 @@ public class KnownExampleTest {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
         JsonValue value = null;
-        try (JsonReader reader = service.createReader(getResourceAsStream(example.instance), schema, handler)) {
+        try (JsonReader reader = SERVICE.createReader(getResourceAsStream(example.instance), schema, handler)) {
             value = reader.readValue();
         }
         if (!problems.isEmpty()) {
-            printer.handleProblems(problems);
+            PRINTER.handleProblems(problems);
         }
         assertThat(value).isNotNull();
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
@@ -117,14 +116,14 @@ public class KnownExampleTest {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
 
-        JsonParserFactory factory = service.createParserFactory(null, schema, p->handler);
+        JsonParserFactory factory = SERVICE.createParserFactory(null, schema, p -> handler);
         JsonParser parser = null;
         switch (value.getValueType()) {
         case ARRAY:
-            parser = factory.createParser((JsonArray)value);
+            parser = factory.createParser((JsonArray) value);
             break;
         case OBJECT:
-            parser = factory.createParser((JsonObject)value);
+            parser = factory.createParser((JsonObject) value);
             break;
         default:
             return;
@@ -135,7 +134,7 @@ public class KnownExampleTest {
         parser.close();
 
         if (!problems.isEmpty()) {
-            printer.handleProblems(problems);
+            PRINTER.handleProblems(problems);
         }
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
@@ -143,7 +142,7 @@ public class KnownExampleTest {
 
     private JsonSchema readSchemaFromResource(String name) throws IOException {
         try (InputStream in = getResourceAsStream(name)) {
-            return service.readSchema(in);
+            return SERVICE.readSchema(in);
         }
     }
 

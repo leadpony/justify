@@ -25,20 +25,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link IdnEmail} class.
- * 
+ * A test class for {@link IdnEmail}.
+ *
  * @author leadpony
  */
 public class IdnEmailTest {
 
     // System under test
     private static Email sut;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new IdnEmail();
     }
-    
+
     public static Stream<Fixture> provideEmails() {
         return EmailTest.provideEmails();
     };

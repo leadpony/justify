@@ -33,12 +33,11 @@ class Console {
         DEFAULT(""),
         SUCCESS("\u001b[92m"),
         WARNING("\u001b[93m"),
-        DANGER("\u001b[91m"),
-        ;
+        DANGER("\u001b[91m");
 
         private final String code;
 
-        private Color(String code) {
+        Color(String code) {
             this.code = code;
         }
 

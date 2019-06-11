@@ -35,7 +35,7 @@ import javax.json.JsonValue;
  *
  * @author leadpony
  */
-class ProblemLocationFixture {
+final class ProblemLocationFixture {
 
     private final String name;
     private final String schema;

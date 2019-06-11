@@ -28,7 +28,7 @@ import org.leadpony.justify.api.InstanceType;
  */
 public final class ParserEvents {
 
-    private static final EnumSet<Event> valueEvents = EnumSet.of(
+    private static final EnumSet<Event> VALUE_EVENTS = EnumSet.of(
             Event.START_ARRAY,
             Event.START_OBJECT,
             Event.VALUE_STRING,
@@ -78,7 +78,7 @@ public final class ParserEvents {
     }
 
     public static boolean isValue(Event event) {
-        return valueEvents.contains(event);
+        return VALUE_EVENTS.contains(event);
     }
 
     /**
@@ -103,8 +103,9 @@ public final class ParserEvents {
             return Event.VALUE_FALSE;
         case NULL:
             return Event.VALUE_NULL;
+        default:
+            throw new IllegalStateException();
         }
-        throw new IllegalStateException();
     }
 
     private ParserEvents() {

@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.api;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringReader;
 import java.util.List;
@@ -36,8 +36,13 @@ import org.leadpony.justify.test.helper.JsonResource;
  */
 public class ObjectJsonSchemaTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
+    /**
+     * A test case for {@link ObjectJsonSchema#get(Object)}.
+     *
+     * @author leadpony
+     */
     static class GetTestCase {
 
         final JsonValue schema;
@@ -54,15 +59,14 @@ public class ObjectJsonSchemaTest {
     public static Stream<GetTestCase> getShouldReturnKeywordIfExists() {
         return JsonResource.of("/org/leadpony/justify/api/jsonschema-containskeyword.json")
                 .asObjectStream()
-                .flatMap(object->{
+                .flatMap(object -> {
                     JsonValue schema = object.get("schema");
                     return object.getJsonArray("tests").stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(test->new GetTestCase(
-                                schema,
-                                test.getString("keyword"),
-                                test.getBoolean("result")
-                                ));
+                            .map(JsonValue::asJsonObject)
+                            .map(test -> new GetTestCase(
+                                    schema,
+                                    test.getString("keyword"),
+                                    test.getBoolean("result")));
                 });
     }
 
@@ -87,6 +91,11 @@ public class ObjectJsonSchemaTest {
         assertThat(actual).isEqualTo(test.result);
     }
 
+    /**
+     * A test case for {@link ObjectJsonSchema#keySet()}.
+     *
+     * @author leadpony
+     */
     static class KeySetTestCase {
 
         final JsonValue schema;
@@ -105,13 +114,12 @@ public class ObjectJsonSchemaTest {
     public static Stream<KeySetTestCase> keySetShouldReturnAllKeys() {
         return JsonResource.of("/org/leadpony/justify/api/objectjsonschema-keyset.json")
                 .asObjectStream()
-                .map(object->new KeySetTestCase(
+                .map(object -> new KeySetTestCase(
                         object.get("schema"),
                         object.getJsonArray("keys").stream()
-                            .map(v->(JsonString)v)
-                            .map(JsonString::getString)
-                            .collect(Collectors.toList()))
-                );
+                                .map(v -> (JsonString) v)
+                                .map(JsonString::getString)
+                                .collect(Collectors.toList())));
     }
 
     @ParameterizedTest
@@ -143,6 +151,6 @@ public class ObjectJsonSchemaTest {
     }
 
     private static ObjectJsonSchema fromString(String string) {
-        return service.readSchema(new StringReader(string)).asObjectJsonSchema();
+        return SERVICE.readSchema(new StringReader(string)).asObjectJsonSchema();
     }
 }

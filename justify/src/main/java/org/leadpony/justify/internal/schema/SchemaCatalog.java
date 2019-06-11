@@ -31,6 +31,11 @@ public class SchemaCatalog implements JsonSchemaResolver {
 
     private final Map<URI, JsonSchema> map = new HashMap<>();
 
+    /**
+     * Adds a schema to this catalog.
+     *
+     * @param schema the schema to add.
+     */
     public void addSchema(JsonSchema schema) {
         if (schema.hasAbsoluteId()) {
             map.put(normalizeId(schema.id()), schema);

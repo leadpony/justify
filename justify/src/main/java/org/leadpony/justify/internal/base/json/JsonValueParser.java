@@ -36,7 +36,7 @@ import javax.json.stream.JsonLocation;
  *
  * @author leadpony
  */
-public class JsonValueParser extends AbstractJsonParser {
+public final class JsonValueParser extends AbstractJsonParser {
 
     private static final Scope GLOBAL_SCOPE = new GlobalScope();
     private Scope scope;
@@ -186,7 +186,7 @@ public class JsonValueParser extends AbstractJsonParser {
         return getCurrentEvent() != null;
     }
 
-    private final void setScope(Scope scope) {
+    private void setScope(Scope scope) {
         this.scope = scope;
     }
 
@@ -194,6 +194,11 @@ public class JsonValueParser extends AbstractJsonParser {
         return VALUE_EVENTS[value.getValueType().ordinal()];
     }
 
+    /**
+     * A scope in the JSON value.
+     *
+     * @author leadpony
+     */
     interface Scope {
 
         Event getEvent(JsonValueParser parser);
@@ -205,6 +210,11 @@ public class JsonValueParser extends AbstractJsonParser {
         JsonValue getValue();
     }
 
+    /**
+     * A most outer scope.
+     *
+     * @author leadpony
+     */
     static class GlobalScope implements Scope {
 
         @Override
@@ -218,6 +228,11 @@ public class JsonValueParser extends AbstractJsonParser {
         }
     }
 
+    /**
+     * A scope of JSON arrays or JSON objects.
+     *
+     * @author leadpony
+     */
     abstract static  class CollectionScope implements Scope {
 
         private final Scope outerScope;
@@ -231,6 +246,11 @@ public class JsonValueParser extends AbstractJsonParser {
         }
     }
 
+    /**
+     * A scope of JSON arrays.
+     *
+     * @author leadpony
+     */
     static class ArrayScope extends CollectionScope {
 
         private final List<JsonValue> items;
@@ -281,6 +301,11 @@ public class JsonValueParser extends AbstractJsonParser {
             this.currentValue = value;
         }
 
+        /**
+         * A state in a array scope.
+         *
+         * @author leadpony
+         */
         enum ArrayState {
             START() {
                 @Override
@@ -321,6 +346,11 @@ public class JsonValueParser extends AbstractJsonParser {
         }
     }
 
+    /**
+     * A scope of JSON objects.
+     *
+     * @author leadpony
+     */
     static class ObjectScope extends CollectionScope {
 
         private final Iterator<Map.Entry<String, JsonValue>> iterator;
@@ -374,6 +404,11 @@ public class JsonValueParser extends AbstractJsonParser {
             this.state = state;
         }
 
+        /**
+         * A state in a object scope.
+         *
+         * @author leadpony
+         */
         enum ObjectState {
             START() {
                 @Override

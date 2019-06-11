@@ -45,9 +45,9 @@ abstract class AbstractBinder implements KeywordBinder {
      *         otherwise.
      */
     protected boolean canReadSubschema(Event event) {
-        return event == Event.START_OBJECT ||
-                event == Event.VALUE_TRUE ||
-                event == Event.VALUE_FALSE;
+        return event == Event.START_OBJECT
+                || event == Event.VALUE_TRUE
+                || event == Event.VALUE_FALSE;
     }
 
     /**

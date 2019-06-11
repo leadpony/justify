@@ -26,16 +26,16 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * URI test fixture.
- * 
+ * A test fixture class for URI.
+ *
  * @author leadpony
  */
 class UriFixture {
-    
+
     private final String value;
     private final boolean relative;
     private final boolean valid;
-    
+
     static Stream<UriFixture> load(String name) {
         InputStream in = UriFixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
@@ -45,25 +45,25 @@ class UriFixture {
                     .map(UriFixture::new);
         }
     }
-    
+
     protected UriFixture(JsonObject object) {
         this.value = object.getString("value");
         this.relative = object.getBoolean("relative", false);
         this.valid = object.getBoolean("valid");
     }
-    
+
     String value() {
         return value;
     }
-    
+
     boolean isRelative() {
         return relative;
     }
-    
+
     boolean isValid() {
         return valid;
     }
-    
+
     @Override
     public String toString() {
         return value();

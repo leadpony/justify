@@ -60,18 +60,23 @@ public class Draft04Minimum extends Maximum {
 
     @Override
     protected Message getMessageForTest() {
-        return exclusive ?
-                Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM :
-                Message.INSTANCE_PROBLEM_MINIMUM;
+        return exclusive
+                ? Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM
+                : Message.INSTANCE_PROBLEM_MINIMUM;
     }
 
     @Override
     protected Message getMessageForNegatedTest() {
-        return exclusive ?
-                Message.INSTANCE_PROBLEM_MAXIMUM :
-                Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM;
+        return exclusive
+                ? Message.INSTANCE_PROBLEM_MAXIMUM
+                : Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM;
     }
 
+    /**
+     * A keyword of "exclusiveMinimum" in the Draft-04.
+     *
+     * @author leadpony
+     */
     public static class ExclusiveMinimum extends AbstractKeyword {
 
         private final boolean value;

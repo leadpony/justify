@@ -34,12 +34,12 @@ import org.leadpony.justify.internal.annotation.Spec;
 @Spec(SpecVersion.DRAFT_07)
 class CustomFormatAttributeTest extends AbstractOfficialTest {
 
-    private static final String[] files = {
+    private static final String[] FILES = {
             "/org/leadpony/justify/spi/customFormat.json",
     };
 
     static Stream<Fixture> fixtures() {
-        return generateFixtures(files);
+        return generateFixtures(FILES);
     }
 
     @ParameterizedTest

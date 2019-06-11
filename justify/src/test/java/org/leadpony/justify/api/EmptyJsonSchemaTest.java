@@ -15,11 +15,9 @@
  */
 package org.leadpony.justify.api;
 
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import javax.json.JsonValue.ValueType;
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.api.JsonSchema;
 
 /**
  * A test type for {@link JsonSchema#EMPTY}.

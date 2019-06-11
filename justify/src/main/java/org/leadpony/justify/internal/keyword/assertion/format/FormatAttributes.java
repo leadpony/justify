@@ -25,9 +25,9 @@ import org.leadpony.justify.spi.FormatAttribute;
 /**
  * @author leadpony
  */
-public class FormatAttributes {
+public final class FormatAttributes {
 
-    private static final FormatAttribute[] attributeList = {
+    private static final FormatAttribute[] ATTRIBUTE_LIST = {
             new Date(),
             new DateTime(),
             new Email(),
@@ -47,10 +47,10 @@ public class FormatAttributes {
             new UriTemplate()
     };
 
-    private static final Map<SpecVersion, Map<String, FormatAttribute>> attributesBySpec = groupAttributesBySpec();
+    private static final Map<SpecVersion, Map<String, FormatAttribute>> ATTRIBUTE_BY_SPEC = groupAttributesBySpec();
 
     public static Map<String, FormatAttribute> getAttributes(SpecVersion version) {
-        return attributesBySpec.get(version);
+        return ATTRIBUTE_BY_SPEC.get(version);
     }
 
     private static Map<SpecVersion, Map<String, FormatAttribute>> groupAttributesBySpec() {
@@ -60,7 +60,7 @@ public class FormatAttributes {
             map.put(version, new HashMap<>());
         }
 
-        for (FormatAttribute attribute : attributeList) {
+        for (FormatAttribute attribute : ATTRIBUTE_LIST) {
             Spec spec = attribute.getClass().getAnnotation(Spec.class);
             if (spec != null) {
                 for (SpecVersion version : spec.value()) {

@@ -24,41 +24,43 @@ import org.leadpony.justify.internal.base.AsciiCode;
 
 /**
  * The base matcher for ECMA262 regular expression pattern.
- * 
+ *
  * @author leadpony
  */
 abstract class RegExpMatcher extends FormatMatcher {
-    
+
     @SuppressWarnings("serial")
-    private static final BitSet syntaxCharSet = new BitSet() {{
-        set('^');
-        set('$');
-        set('\\');
-        set('.');
-        set('*');
-        set('+');
-        set('?');
-        set('(');
-        set(')');
-        set('[');
-        set(']');
-        set('{');
-        set('}');
-        set('|');
-    }};
-    
+    private static final BitSet SYNTAX_CHAR_SET = new BitSet() {
+        {
+            set('^');
+            set('$');
+            set('\\');
+            set('.');
+            set('*');
+            set('+');
+            set('?');
+            set('(');
+            set(')');
+            set('[');
+            set(']');
+            set('{');
+            set('}');
+            set('|');
+        }
+    };
+
     private int maxCapturingGroupNumber;
     private int leftCapturingParentheses;
-    
+
     private Set<String> groups;
     private Set<String> groupReferences;
-    
+
     protected int lastNumericValue;
     private ClassAtom lastClassAtom;
-    
+
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      */
     RegExpMatcher(CharSequence input) {
@@ -75,21 +77,21 @@ abstract class RegExpMatcher extends FormatMatcher {
         checkGroupReferences();
         return true;
     }
-    
+
     /**
      * Returns all group names.
-     * 
+     *
      * @return all names of the found groups.
      */
     Set<String> groupNames() {
         return groups;
     }
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if Pattern contains multiple GroupSpecifiers 
-     * whose enclosed RegExpIdentifierNames have the same StringValue.</li>
+     * <li>It is a Syntax Error if Pattern contains multiple GroupSpecifiers whose
+     * enclosed RegExpIdentifierNames have the same StringValue.</li>
      * </ul>
      */
     private void disjunction() {
@@ -99,7 +101,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             alternative();
         }
     }
-    
+
     /**
      * Alternative can be empty.
      */
@@ -110,7 +112,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
         }
     }
-    
+
     private boolean term() {
         if (assertion()) {
             return true;
@@ -119,7 +121,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     private boolean assertion() {
         final int mark = pos();
         int c = next();
@@ -146,7 +148,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-  
+
     private boolean quantifier() {
         if (quantifierPrefix()) {
             if (hasNext('?')) {
@@ -156,12 +158,12 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if the MV of the first DecimalDigits 
-     * is larger than the MV of the second DecimalDigits.</li>
+     * <li>It is a Syntax Error if the MV of the first DecimalDigits is larger than
+     * the MV of the second DecimalDigits.</li>
      * </ul>
      */
     private boolean quantifierPrefix() {
@@ -198,14 +200,14 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-    
+
     private boolean atom() {
         if (patternCharacter() || characterClass()) {
             return true;
         }
         final int mark = pos();
         int c = peek();
-        if (c == '.' ) {
+        if (c == '.') {
             next();
             return true;
         } else if (c == '\\') {
@@ -230,7 +232,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
- 
+
     protected boolean syntaxCharacter() {
         if (hasNext() && isSyntaxCharacter(peek())) {
             next();
@@ -238,23 +240,21 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     private boolean patternCharacter() {
         if (hasNext() && !isSyntaxCharacter(peek())) {
             next();
             return true;
-        } 
+        }
         return false;
     }
 
     /**
      * Early error:
      * <ul>
-     * <li>
-     * It is a Syntax Error if the enclosing Pattern does not contain 
-     * a GroupSpecifier with an enclosed RegExpIdentifierName whose 
-     * StringValue equals the StringValue of the RegExpIdentifierName of 
-     * this production's GroupName.
+     * <li>It is a Syntax Error if the enclosing Pattern does not contain a
+     * GroupSpecifier with an enclosed RegExpIdentifierName whose StringValue equals
+     * the StringValue of the RegExpIdentifierName of this production's GroupName.
      * </li>
      * </ul>
      */
@@ -263,7 +263,8 @@ abstract class RegExpMatcher extends FormatMatcher {
             return true;
         } else if (characterEscape()) {
             return true;
-        } if (hasNext('k')) {
+        }
+        if (hasNext('k')) {
             next();
             if (groupName(true)) {
                 return true;
@@ -271,15 +272,15 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     private boolean characterEscape() {
         if (!hasNext()) {
             return false;
         }
-        if (controlEscape() ||
-            hexEscapeSequence() ||
-            regExpUnicodeEscapeSequence() ||
-            identityEscape()) {
+        if (controlEscape()
+                || hexEscapeSequence()
+                || regExpUnicodeEscapeSequence()
+                || identityEscape()) {
             return true;
         }
         final int mark = pos();
@@ -297,7 +298,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-   
+
     private boolean controlEscape() {
         if (!hasNext()) {
             return false;
@@ -324,22 +325,22 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return withClassAtomOf(value);
     }
-    
+
     private boolean controlLetter() {
         if (!hasNext()) {
             return false;
         }
-        int c  = peek();
+        int c = peek();
         if (isControlLetter(c)) {
             next();
             return withClassAtomOf(c % 32);
-        } 
+        }
         return false;
     }
 
     /**
      * group specifier can be empty.
-     * 
+     *
      * @return always {@code true}
      */
     private boolean groupSpecifier() {
@@ -354,7 +355,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         // empty
         return true;
     }
-    
+
     private boolean groupName(boolean reference) {
         if (!hasNext('<')) {
             return false;
@@ -376,7 +377,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-   
+
     private boolean regExpIdentifierName() {
         if (!regExpIdentifierStart()) {
             return false;
@@ -385,20 +386,20 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of 
-     * "$", or "_", or the UTF16Encoding of a code point matched by the UnicodeIDStart
-     * lexical grammar production. </li>
+     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of "$",
+     * or "_", or the UTF16Encoding of a code point matched by the UnicodeIDStart
+     * lexical grammar production.</li>
      * </ul>
      */
     private boolean regExpIdentifierStart() {
         if (!hasNext()) {
             return false;
         }
-        final int mark = pos(); 
+        final int mark = pos();
         int c = peek();
         if (isRegExpIdentifierStart(c)) {
             next();
@@ -415,21 +416,21 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of 
-     * "$", or "_", or the UTF16Encoding of either <ZWNJ> or <ZWJ>, 
-     * or the UTF16Encoding of a Unicode code point that would be matched by 
-     * the UnicodeIDContinue lexical grammar production. </li>
+     * <li>It is a Syntax Error if SV(RegExpUnicodeEscapeSequence) is none of "$",
+     * or "_", or the UTF16Encoding of either <ZWNJ> or <ZWJ>, or the UTF16Encoding
+     * of a Unicode code point that would be matched by the UnicodeIDContinue
+     * lexical grammar production.</li>
      * </ul>
      */
     private boolean regExpIdentifierPart() {
         if (!hasNext()) {
             return false;
         }
-        final int mark = pos(); 
+        final int mark = pos();
         int c = peek();
         if (isRegExpIdentifierPart(c)) {
             next();
@@ -446,7 +447,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-  
+
     protected boolean regExpUnicodeEscapeSequence() {
         if (!hasNext('u')) {
             return false;
@@ -458,14 +459,14 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-    
+
     protected abstract boolean identityEscape();
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if the CapturingGroupNumber of DecimalEscape
-     * is larger than NcapturingParens.</li>
+     * <li>It is a Syntax Error if the CapturingGroupNumber of DecimalEscape is
+     * larger than NcapturingParens.</li>
      * </ul>
      */
     private boolean decimalEscape() {
@@ -474,14 +475,14 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         int number = digitToValue(next());
         while (hasNext() && AsciiCode.isDigit(peek())) {
-            number = number * 10  + digitToValue(next());
+            number = number * 10 + digitToValue(next());
         }
         if (number > this.maxCapturingGroupNumber) {
             this.maxCapturingGroupNumber = number;
         }
         return true;
     }
-    
+
     private boolean characterClassEscape() {
         if (testCharacterClassEscape()) {
             this.lastClassAtom = ClassAtom.CHARACTER_CLASS;
@@ -489,7 +490,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     private boolean characterClass() {
         if (!hasNext('[')) {
             return false;
@@ -506,7 +507,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-    
+
     /**
      * Multiple class ranges.
      */
@@ -517,17 +518,18 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
         }
     }
-    
+
     /**
      * Early error:
      * <ul>
-     * <li>It is a Syntax Error if IsCharacterClass of the first ClassAtom 
-     * is true or IsCharacterClass of the second ClassAtom is true. </li>
+     * <li>It is a Syntax Error if IsCharacterClass of the first ClassAtom is true
+     * or IsCharacterClass of the second ClassAtom is true.</li>
      * <li>It is a Syntax Error if IsCharacterClass of the first ClassAtom is false
-     * and IsCharacterClass of the second ClassAtom is false and the CharacterValue 
-     * of the first ClassAtom is larger than the CharacterValue of the second 
+     * and IsCharacterClass of the second ClassAtom is false and the CharacterValue
+     * of the first ClassAtom is larger than the CharacterValue of the second
      * ClassAtom.</li>
      * </ul>
+     *
      * @return
      */
     private boolean nonemptyClassRanges() {
@@ -550,7 +552,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     private boolean nonemptyClassRangesNoDash() {
         final int mark = pos();
         if (classAtomNoDash()) {
@@ -577,7 +579,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return classAtomNoDash();
         }
     }
-    
+
     private boolean classAtomNoDash() {
         if (!hasNext()) {
             return false;
@@ -597,7 +599,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return withClassAtomOf(next());
         }
     }
-    
+
     private boolean classEscape() {
         if (!hasNext()) {
             return false;
@@ -611,7 +613,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return characterClassEscape() || characterEscape();
     }
-    
+
     private boolean decimalDigits() {
         if (!hasNext()) {
             return false;
@@ -629,7 +631,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     private boolean hexEscapeSequence() {
         if (!hasNext('x')) {
             return false;
@@ -642,7 +644,7 @@ abstract class RegExpMatcher extends FormatMatcher {
                 if (hasNext()) {
                     int second = next();
                     if (AsciiCode.isHexDigit(second)) {
-                        int value = AsciiCode.hexDigitToValue(first) * 16 
+                        int value = AsciiCode.hexDigitToValue(first) * 16
                                 + AsciiCode.hexDigitToValue(second);
                         return withClassAtomOf(value);
                     }
@@ -669,18 +671,18 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return backtrack(mark);
     }
-   
+
     protected boolean testCharacterClassEscape() {
         int c = peek();
-        if (c == 'd' || c == 'D' ||
-            c == 's' || c == 'S' ||
-            c == 'w' || c == 'W') {
+        if (c == 'd' || c == 'D'
+                || c == 's' || c == 'S'
+                || c == 'w' || c == 'W') {
             next();
             return true;
         }
         return false;
     }
-    
+
     private boolean capturingGroup() {
         this.leftCapturingParentheses++;
         disjunction();
@@ -689,10 +691,10 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     /**
      * Assigns a new class atom and returns {@code true}.
-     * 
+     *
      * @param codePoint the code point of the class atom.
      * @return {@code true}.
      */
@@ -700,7 +702,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         this.lastClassAtom = ClassAtom.of(codePoint);
         return true;
     }
-   
+
     private void addGroup(String name) {
         if (this.groups == null) {
             this.groups = new HashSet<>();
@@ -711,7 +713,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             this.groups.add(name);
         }
     }
-    
+
     private void addGroupReference(String name) {
         if (this.groupReferences == null) {
             this.groupReferences = new HashSet<>();
@@ -725,13 +727,13 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return this.groups.contains(name);
     }
-    
+
     /**
-     * It is a Syntax Error if the MV of the first DecimalDigits is 
-     * larger than the MV of the second DecimalDigits.
-     * 
-     * @param first the first decimal digits.
-     * @param second the second  decimal digits.
+     * It is a Syntax Error if the MV of the first DecimalDigits is larger than the
+     * MV of the second DecimalDigits.
+     *
+     * @param first  the first decimal digits.
+     * @param second the second decimal digits.
      * @return {@code true} if the test passed.
      */
     private static boolean checkQuantifierRange(int first, int second) {
@@ -741,7 +743,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return earlyError();
         }
     }
-    
+
     private static boolean checkClassRange(ClassAtom lower, ClassAtom upper) {
         if (lower.isCharacterClass() || upper.isCharacterClass()) {
             return earlyError();
@@ -750,7 +752,7 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     private boolean checkCapturingNumber() {
         if (this.maxCapturingGroupNumber <= this.leftCapturingParentheses) {
             return true;
@@ -758,7 +760,7 @@ abstract class RegExpMatcher extends FormatMatcher {
             return earlyError();
         }
     }
-    
+
     private boolean checkGroupReferences() {
         if (this.groupReferences == null) {
             return true;
@@ -770,28 +772,28 @@ abstract class RegExpMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     protected static boolean isSyntaxCharacter(int c) {
-        return syntaxCharSet.get(c);
+        return SYNTAX_CHAR_SET.get(c);
     }
-   
+
     protected static boolean isNonZeroDigit(int c) {
         return c >= '1' && c <= '9';
     }
-    
+
     protected static boolean isRegExpIdentifierStart(int c) {
-        return Character.isUnicodeIdentifierStart(c) || 
-               c == '$' || 
-               c == '_';
+        return Character.isUnicodeIdentifierStart(c)
+                || c == '$'
+                || c == '_';
     }
-    
+
     protected static boolean isRegExpIdentifierPart(int c) {
-        return Character.isUnicodeIdentifierPart(c) || 
-               c == '$' ||
-               c == '\u200c' || 
-               c == '\u200d';
+        return Character.isUnicodeIdentifierPart(c)
+                || c == '$'
+                || c == '\u200c'
+                || c == '\u200d';
     }
-    
+
     protected static boolean isControlLetter(int c) {
         return AsciiCode.isAlphabetic(c);
     }
@@ -799,32 +801,37 @@ abstract class RegExpMatcher extends FormatMatcher {
     protected static int digitToValue(int c) {
         return (c - '0');
     }
-    
+
     protected static boolean optional(boolean result) {
         return true;
     }
-    
+
     /**
      * Throws early error defined in the specification.
-     * 
+     *
      * @return always {@code false}.
      */
     protected static boolean earlyError() {
         return fail();
     }
-    
-    static interface ClassAtom {
-        
+
+    /**
+     * A class atom.
+     *
+     * @author leadpony
+     */
+    interface ClassAtom {
+
         boolean isCharacterClass();
 
         int codePoint();
-        
+
         static ClassAtom of(int c) {
             return new DefaultClassAtom(c);
         }
 
-        static ClassAtom CHARACTER_CLASS = new ClassAtom() {
-            
+        ClassAtom CHARACTER_CLASS = new ClassAtom() {
+
             @Override
             public boolean isCharacterClass() {
                 return true;
@@ -836,20 +843,20 @@ abstract class RegExpMatcher extends FormatMatcher {
             }
         };
     }
-    
+
     /**
      * Class atom with a code point.
-     * 
+     *
      * @author leadpony
      */
     private static class DefaultClassAtom implements ClassAtom {
 
         private final int codePoint;
-        
+
         DefaultClassAtom(int codePoint) {
             this.codePoint = codePoint;
         }
-        
+
         @Override
         public boolean isCharacterClass() {
             return false;

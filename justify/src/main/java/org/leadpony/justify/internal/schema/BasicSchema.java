@@ -98,10 +98,10 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         return evaluatables;
     }
 
-    /*
+    /**
      * JSON Schema without any evalutable keywords.
      */
-    private static class None extends BasicSchema {
+    private static final class None extends BasicSchema {
 
         private None(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
             super(id, keywords, jsonService);
@@ -120,10 +120,10 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
     }
 
-    /*
+    /**
      * JSON Schema with single evalutable keyword.
      */
-    private static class One extends BasicSchema {
+    private static final class One extends BasicSchema {
 
         private final Evaluatable evaluatable;
 
@@ -145,10 +145,10 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
         }
     }
 
-    /*
+    /**
      * JSON Schema with multiple evalutable keywords.
      */
-    private static class Many extends BasicSchema {
+    private static final class Many extends BasicSchema {
 
         private final List<Evaluatable> evaluatables;
 

@@ -25,20 +25,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Ipv4} class.
- * 
+ * A test class for {@link Ipv4}.
+ *
  * @author leadpony
  */
 public class Ipv4Test {
 
     // System under test
     private static Ipv4 sut;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Ipv4();
     }
-    
+
     public static Stream<Fixture> provideFixtures() {
         return Fixture.load("ipv4.json");
     }

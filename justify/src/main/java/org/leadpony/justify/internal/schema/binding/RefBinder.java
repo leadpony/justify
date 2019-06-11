@@ -27,7 +27,7 @@ import org.leadpony.justify.internal.keyword.core.Ref;
  *
  * @author leadpony
  */
-@Spec({SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07})
+@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
 class RefBinder extends AbstractUriBinder {
 
     @Override
@@ -42,6 +42,6 @@ class RefBinder extends AbstractUriBinder {
 
     @Override
     protected void addKeyword(SchemaKeyword keyword, BindingContext context) {
-        context.addKeyword((Ref)keyword);
+        context.addKeyword((Ref) keyword);
     }
 }

@@ -20,18 +20,18 @@ import org.leadpony.justify.internal.base.AsciiCode;
 
 /**
  * Matcher for IPv6 addresses.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see RFC 4291, section 2.2
  */
 class Ipv6Matcher extends Ipv4Matcher {
-    
+
     private static final int MAX_PIECES = 8;
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     Ipv6Matcher(CharSequence input) {
@@ -40,15 +40,15 @@ class Ipv6Matcher extends Ipv4Matcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      * @param start the start index, inclusive.
-     * @param end the end index, exclusive.
+     * @param end   the end index, exclusive.
      */
     Ipv6Matcher(CharSequence input, int start, int end) {
         super(input, start, end);
     }
-    
+
     @Override
     boolean all() {
         int pieces = 0;
@@ -64,7 +64,7 @@ class Ipv6Matcher extends Ipv4Matcher {
                 return false;
             }
         }
-        
+
         while (pieces < MAX_PIECES && h16()) {
             pieces++;
             if (!hasNext()) {
@@ -82,7 +82,7 @@ class Ipv6Matcher extends Ipv4Matcher {
                 return false;
             }
         }
-        
+
         if (hasNext()) {
             if (ipv4address()) {
                 pieces += 2;
@@ -90,18 +90,18 @@ class Ipv6Matcher extends Ipv4Matcher {
                 return false;
             }
         }
-        
+
         if (compressed) {
             return pieces <= MAX_PIECES;
         } else {
             return pieces == MAX_PIECES;
         }
     }
-    
+
     boolean ipv4address() {
         return dottedQuad();
     }
-    
+
     boolean h16() {
         final int mark = pos();
         if (hasNext() && AsciiCode.isHexDigit(peek())) {

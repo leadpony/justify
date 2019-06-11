@@ -36,13 +36,12 @@ public class LocationTest {
                 Arguments.of("test.json"),
                 Arguments.of("target/test.json"),
                 Arguments.of("../test.json"),
-                Arguments.of("/root/test.json")
-        );
+                Arguments.of("/root/test.json"));
     }
 
     @ParameterizedTest
     @MethodSource("validLocal")
-    public void at_shouldReturnLocalResource(String string) throws MalformedURLException {
+    public void atShouldReturnLocalResource(String string) throws MalformedURLException {
         Location actual = Location.at(string);
         assertThat(actual).isNotNull();
         assertThat(actual.toURL().getProtocol()).isEqualTo("file");
@@ -51,27 +50,25 @@ public class LocationTest {
     public static Stream<Arguments> validRemote() throws MalformedURLException {
         return Stream.of(
                 Arguments.of("http://localhost/test.json", new URL("http://localhost/test.json")),
-                Arguments.of("https://example.org/test.json", new URL("https://example.org/test.json"))
-        );
+                Arguments.of("https://example.org/test.json", new URL("https://example.org/test.json")));
     }
 
     @ParameterizedTest
     @MethodSource("validRemote")
-    public void at_shouldReturnRemoteResource(String string, URL expected) throws MalformedURLException {
+    public void atShouldReturnRemoteResource(String string, URL expected) throws MalformedURLException {
         Location actual = Location.at(string);
         assertThat(actual.toURL()).isEqualTo(expected);
     }
 
     public static Stream<Arguments> invalidRemote() throws MalformedURLException {
         return Stream.of(
-                Arguments.of("")
-        );
+                Arguments.of(""));
     }
 
     @ParameterizedTest
     @MethodSource("invalidRemote")
-    public void at_shouldThrowException(String string) {
-        Throwable thrown = catchThrowable(()->{
+    public void atShouldThrowException(String string) {
+        Throwable thrown = catchThrowable(() -> {
             Location.at(string);
         });
         assertThat(thrown).isNotNull().isInstanceOf(IllegalArgumentException.class);

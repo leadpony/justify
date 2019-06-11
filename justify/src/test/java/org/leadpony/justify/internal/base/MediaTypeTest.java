@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.internal.base;
 
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 public class MediaTypeTest {
 
     @Test
-    public void valueOf_shouldProduceMediaTypeWithoutParameters() {
+    public void valueOfShouldProduceMediaTypeWithoutParameters() {
         MediaType mediaType = MediaType.valueOf("application/json");
 
         assertThat(mediaType.mimeType()).isEqualTo("application/json");
@@ -35,38 +35,37 @@ public class MediaTypeTest {
     }
 
     @Test
-    public void valueOf_shouldProduceMediaTypeWithParameter() {
+    public void valueOfShouldProduceMediaTypeWithParameter() {
         MediaType mediaType = MediaType.valueOf("text/html; charset=utf-8");
 
         assertThat(mediaType.mimeType()).isEqualTo("text/html");
         assertThat(mediaType.parameters())
-            .hasSize(1)
-            .containsEntry("charset", "utf-8");
+                .hasSize(1)
+                .containsEntry("charset", "utf-8");
     }
 
     @Test
-    public void valueOf_shouldProduceMediaTypeWithParameters() {
+    public void valueOfShouldProduceMediaTypeWithParameters() {
         MediaType mediaType = MediaType.valueOf("text/html; param1=foo; param2=bar");
 
         assertThat(mediaType.mimeType()).isEqualTo("text/html");
         assertThat(mediaType.parameters())
-            .hasSize(2)
-            .containsEntry("param1", "foo")
-            .containsEntry("param2", "bar")
-            ;
+                .hasSize(2)
+                .containsEntry("param1", "foo")
+                .containsEntry("param2", "bar");
     }
 
     @Test
-    public void valueOf_shouldThrowExceptionIfEmpty() {
-        Throwable thrown = catchThrowable(()->{
+    public void valueOfShouldThrowExceptionIfEmpty() {
+        Throwable thrown = catchThrowable(() -> {
             MediaType.valueOf("");
         });
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    public void valueOf_shouldThrowExceptionIfTypeIsEmpty() {
-        Throwable thrown = catchThrowable(()->{
+    public void valueOfShouldThrowExceptionIfTypeIsEmpty() {
+        Throwable thrown = catchThrowable(() -> {
             MediaType.valueOf("; charset=utf-8");
         });
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);

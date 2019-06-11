@@ -42,14 +42,14 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultValueParsingTest {
 
-    private static final Logger log = Logger.getLogger(DefaultValueParsingTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final Logger LOG = Logger.getLogger(DefaultValueParsingTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     @Test
-    public void getString_returnsString() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getStringShouldReturnString() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -61,10 +61,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getString_returnsKeyName() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getStringShouldReturnKeyName() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -75,30 +75,30 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getString_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": {} } }" +
-                "}");
+    public void getStringShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": {} } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getString();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void isIntegralNumber_returnsTrue() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 365 } }" +
-                "}");
+    public void isIntegralNumberShouldReturnTrue() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 365 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -110,10 +110,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void isIntegralNumber_returnsFalse() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 3.14 } }" +
-                "}");
+    public void isIntegralNumberShouldReturnFalse() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 3.14 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -125,30 +125,30 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void isIntegralNumber_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void isIntegralNumberShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.isIntegralNumber();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getInt_returnsInteger() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 365 } }" +
-                "}");
+    public void getIntShouldReturnInteger() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 365 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -160,30 +160,30 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getInt_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getIntShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getInt();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getLong_returnsLongInteger() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 9223372036854775807 } }" +
-                "}");
+    public void getLongShouldReturnLongInteger() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 9223372036854775807 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -195,30 +195,30 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getLong_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getLongShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getLong();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getBigDecimal_returnsBigDecimal() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 3.14 } }" +
-                "}");
+    public void getBigDecimalShouldReturnBigDecimal() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 3.14 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -231,30 +231,30 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getBigDecimal_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getBigDecimalShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getBigDecimal();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getArray_returnsJsonArray() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": [1,2,3] } }" +
-                "}");
+    public void getArrayShouldReturnJsonArray() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": [1,2,3] } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -267,10 +267,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getArray_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": [1,2,3] } }" +
-                "}");
+    public void getArrayShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": [1,2,3] } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -278,20 +278,20 @@ public class DefaultValueParsingTest {
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getArray();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getObject_returnsJsonObject() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }" +
-                "}");
+    public void getObjectShouldReturnJsonObject() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -304,10 +304,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getObject_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }" +
-                "}");
+    public void getObjectShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -315,20 +315,20 @@ public class DefaultValueParsingTest {
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getObject();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getValue_returnsJsonObject() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }" +
-                "}");
+    public void getValueShouldReturnJsonObject() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": { \"greeting\" : \"hello\" } } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -341,10 +341,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getValue_returnsJsonArray() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": [1,2,3] } }" +
-                "}");
+    public void getValueShouldReturnJsonArray() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": [1,2,3] } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -357,10 +357,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getValue_returnsJsonString() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getValueShouldReturnJsonString() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -370,15 +370,15 @@ public class DefaultValueParsingTest {
             JsonValue expected = readValue("\"hello\"");
             JsonValue actual = parser.getValue();
             assertThat(actual).isEqualTo(expected);
-            assertThat(((JsonString)actual).getString()).isEqualTo("hello");
+            assertThat(((JsonString) actual).getString()).isEqualTo("hello");
         }
     }
 
     @Test
-    public void getValue_returnsBigDecimalJsonNumber() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 3.14 } }" +
-                "}");
+    public void getValueShouldReturnBigDecimalJsonNumber() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 3.14 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -388,15 +388,15 @@ public class DefaultValueParsingTest {
             JsonValue expected = readValue("3.14");
             JsonValue actual = parser.getValue();
             assertThat(actual).isEqualTo(expected);
-            assertThat(((JsonNumber)actual).bigDecimalValue()).isEqualTo(new BigDecimal("3.14"));
+            assertThat(((JsonNumber) actual).bigDecimalValue()).isEqualTo(new BigDecimal("3.14"));
         }
     }
 
     @Test
-    public void getValue_returnsIntegerJsonNumber() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": 365 } }" +
-                "}");
+    public void getValueShouldReturnIntegerJsonNumber() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": 365 } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -406,15 +406,15 @@ public class DefaultValueParsingTest {
             JsonValue expected = readValue("365");
             JsonValue actual = parser.getValue();
             assertThat(actual).isEqualTo(expected);
-            assertThat(((JsonNumber)actual).intValue()).isEqualTo(365);
+            assertThat(((JsonNumber) actual).intValue()).isEqualTo(365);
         }
     }
 
     @Test
-    public void getValue_returnsJsonTrue() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": true } }" +
-                "}");
+    public void getValueShouldReturnJsonTrue() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": true } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -426,10 +426,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getValue_returnsJsonFalse() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": false } }" +
-                "}");
+    public void getValueShouldReturnJsonFalse() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": false } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -441,10 +441,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getValue_returnsJsonNull() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": null } }" +
-                "}");
+    public void getValueShouldReturnJsonNull() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": null } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -456,10 +456,10 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getValue_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": {} } }" +
-                "}");
+    public void getValueShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": {} } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -467,20 +467,20 @@ public class DefaultValueParsingTest {
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getValue();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getArrayStream_returnsFilledValues() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": [1,2,3] } }" +
-                "}");
+    public void getArrayStreamShouldReturnFilledValues() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": [1,2,3] } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
             parser.next();
@@ -494,29 +494,29 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getArrayStream_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": [1,2,3] } }" +
-                "}");
+    public void getArrayStreamShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": [1,2,3] } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
-            parser.next();  // {
-            parser.next();  // "a"
+            parser.next(); // {
+            parser.next(); // "a"
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getArrayStream();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getObjectStream_returnsAllWithDefauleValue() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"first\": { \"default\": 1 } }" +
-                "}");
+    public void getObjectStreamShouldReturnAllWithDefauleValue() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"first\": { \"default\": 1 } }"
+                + "}");
 
         String json = "{ \"second\": 2, \"third\" : 3 }";
         try (JsonParser parser = createParser(json, schema)) {
@@ -534,55 +534,55 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void getObjectStream_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"first\": { \"default\": 1 } }" +
-                "}");
+    public void getObjectStreamShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"first\": { \"default\": 1 } }"
+                + "}");
 
         String json = "{ \"second\": 2, \"third\" : 3 }";
         try (JsonParser parser = createParser(json, schema)) {
             parser.next();
             parser.next();
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getObjectStream();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void getValueStream_throwsIllegalStateException() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": \"hello\" } }" +
-                "}");
+    public void getValueStreamShouldThrowIllegalStateException() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": \"hello\" } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
-            parser.next();  // {
+            parser.next(); // {
 
-            Throwable thrown = catchThrowable(()->{
+            Throwable thrown = catchThrowable(() -> {
                 parser.getValueStream();
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
     @Test
-    public void skipArary_skipArrayEnclosingDefaultValues() {
-        JsonSchema schema = readSchema("{" +
-                "\"items\": {" +
-                "\"properties\": { \"a\": { \"default\": [] } }" +
-                "}" +
-                "}");
+    public void skipAraryShouldSkipArrayEnclosingDefaultValues() {
+        JsonSchema schema = readSchema("{"
+                + "\"items\": {"
+                + "\"properties\": { \"a\": { \"default\": [] } }"
+                + "}"
+                + "}");
 
         String json = "[{}, {}, {}]";
 
         try (JsonParser parser = createParser(json, schema)) {
-            parser.next();  // [
+            parser.next(); // [
 
             parser.skipArray();
 
@@ -591,13 +591,13 @@ public class DefaultValueParsingTest {
     }
 
     @Test
-    public void skipObject_skipObjectEnclosingDefaultValues() {
-        JsonSchema schema = readSchema("{" +
-                "\"properties\": { \"a\": { \"default\": {} } }" +
-                "}");
+    public void skipObjectShouldSkipObjectEnclosingDefaultValues() {
+        JsonSchema schema = readSchema("{"
+                + "\"properties\": { \"a\": { \"default\": {} } }"
+                + "}");
 
         try (JsonParser parser = createParser("{}", schema)) {
-            parser.next();  // {
+            parser.next(); // {
 
             parser.skipObject();
 
@@ -606,14 +606,14 @@ public class DefaultValueParsingTest {
     }
 
     private static JsonSchema readSchema(String json) {
-        return service.readSchema(new StringReader(json));
+        return SERVICE.readSchema(new StringReader(json));
     }
 
     private static JsonParser createParser(String json, JsonSchema schema) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withDefaultValues(true);
-        return service.createParserFactory(config.getAsMap())
+        return SERVICE.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(json));
     }
 

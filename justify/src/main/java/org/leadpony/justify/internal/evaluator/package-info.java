@@ -16,7 +16,7 @@
 
 /**
  * Provides various kinds of Evaluators.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.evaluator;

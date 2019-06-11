@@ -16,7 +16,7 @@
 
 /**
  * Provides keywords for annotation.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.keyword.annotation;

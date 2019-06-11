@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  * @author leadpony
  */
 class VerboseUriMatcher extends UriMatcher {
- 
-    private static final Logger log = Logger.getLogger(VerboseUriMatcher.class.getName());
-    
+
+    private static final Logger LOG = Logger.getLogger(VerboseUriMatcher.class.getName());
+
     private final List<String> components = new ArrayList<>();
 
     VerboseUriMatcher(CharSequence input) {
@@ -43,7 +43,7 @@ class VerboseUriMatcher extends UriMatcher {
         }
         return result;
     }
-    
+
     boolean scheme() {
         final int start = pos();
         if (super.scheme()) {
@@ -145,14 +145,13 @@ class VerboseUriMatcher extends UriMatcher {
     }
 
     private void printComponents() {
-        if (!log.isLoggable(Level.FINE)) {
+        if (!LOG.isLoggable(Level.FINE)) {
             return;
         }
         StringBuilder b = new StringBuilder();
         b.append(input())
-         .append(" -> ")
-         .append(components.stream().collect(Collectors.joining(", ", "[", "]")))
-         ;
-        log.fine(b.toString());
+                .append(" -> ")
+                .append(components.stream().collect(Collectors.joining(", ", "[", "]")));
+        LOG.fine(b.toString());
     }
 }

@@ -35,6 +35,11 @@ abstract class BooleanJsonSchema extends SpecialJsonSchema {
         return toJson().getValueType();
     }
 
+    /**
+     * The boolean JSON schema of {@code true}.
+     *
+     * @author leadpony
+     */
     static class True extends BooleanJsonSchema {
 
         @Override
@@ -58,6 +63,11 @@ abstract class BooleanJsonSchema extends SpecialJsonSchema {
         }
     }
 
+    /**
+     * The boolean JSON schema of {@code false}.
+     *
+     * @author leadpony
+     */
     static class False extends BooleanJsonSchema {
 
         @Override

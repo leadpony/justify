@@ -23,11 +23,11 @@ import org.leadpony.justify.api.Problem;
 
 /**
  * List specialized for {@link Problem}.
- * 
+ *
  * @author leadpony
  */
 public interface ProblemList extends List<Problem> {
-    
+
     default boolean isResolvable() {
         for (Problem problem : this) {
             if (!problem.isResolvable()) {
@@ -36,15 +36,21 @@ public interface ProblemList extends List<Problem> {
         }
         return true;
     }
-    
+
     /**
      * Creates a new instance of this type.
+     *
      * @return newly created list.
      */
     static ProblemList newList() {
+        /**
+         * An array list of problems.
+         *
+         * @author leadpony
+         */
         @SuppressWarnings("serial")
         class ArrayProblemList extends ArrayList<Problem> implements ProblemList {
-        };
+        }
         return new ArrayProblemList();
     }
 }

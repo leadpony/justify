@@ -18,17 +18,18 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
  * Matcher for URI reference conformant to RFC 3986.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3986">
- * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
+ *      "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC
+ *      3986</a>
  */
 class UriReferenceMatcher extends UriMatcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     UriReferenceMatcher(CharSequence input) {

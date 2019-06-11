@@ -44,7 +44,7 @@ public class AllOf extends NaryBooleanLogic {
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         getSubschemas().distinct()
-                .map(s->s.createEvaluator(context, type))
+                .map(s -> s.createEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;
     }
@@ -53,7 +53,7 @@ public class AllOf extends NaryBooleanLogic {
     protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
         getSubschemas().distinct()
-                .map(s->s.createNegatedEvaluator(context, type))
+                .map(s -> s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;
     }

@@ -41,10 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.test.helper.JsonAssertions;
 
 /**
@@ -54,37 +50,35 @@ import org.leadpony.justify.test.helper.JsonAssertions;
  */
 public class JsonParserTest {
 
-    private static final Logger log = Logger.getLogger(JsonParserTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(JsonParserTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
-    private static final String PERSON_SCHEMA =
-            "{" +
-            "\"type\":\"object\"," +
-            "\"properties\":{" +
-            "\"name\": {\"type\":\"string\"}," +
-            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
-            "}," +
-            "\"required\":[\"name\"]" +
-            "}";
+    private static final String PERSON_SCHEMA = "{"
+            + "\"type\":\"object\","
+            + "\"properties\":{"
+            + "\"name\": {\"type\":\"string\"},"
+            + "\"age\": {\"type\":\"integer\", \"minimum\":0}"
+            + "},"
+            + "\"required\":[\"name\"]"
+            + "}";
 
-    private static final String INTEGER_ARRAY_SCHEMA =
-            "{" +
-            "\"type\":\"array\"," +
-            "\"items\":{\"type\":\"integer\"}" +
-            "}";
+    private static final String INTEGER_ARRAY_SCHEMA = "{"
+            + "\"type\":\"array\","
+            + "\"items\":{\"type\":\"integer\"}"
+            + "}";
 
     private static JsonParser newParser(String instance) {
         return Json.createParser(new StringReader(instance));
     }
 
     private static JsonParser newParser(String instance, String schema, ProblemHandler handler) {
-        JsonSchema s = service.readSchema(new StringReader(schema));
-        return service.createParser(new StringReader(instance), s, handler);
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        return SERVICE.createParser(new StringReader(instance), s, handler);
     }
 
     @Test
-    public void hasNext_returnsTrueAtFirst() {
+    public void hasNextShouldReturnTrueAtFirst() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
@@ -96,7 +90,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void hasNext_returnsFalseAtLast() {
+    public void hasNextShouldReturnFalseAtLast() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
@@ -109,7 +103,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void next_returnsAllEvents() {
+    public void nextShouldReturnAllEvents() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
@@ -133,7 +127,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void next_returnsAllEventsEventIfInvalid() {
+    public void nextShouldReturnAllEventsEventIfInvalid() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": \"young\"}";
 
@@ -157,7 +151,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void next_throwsExceptionIfInvalid() {
+    public void nextShouldThrowExceptionIfInvalid() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":46, \"age\": \"John Smith\"}";
 
@@ -186,14 +180,14 @@ public class JsonParserTest {
     }
 
     @Test
-    public void next_throwsExceptionIfDoesNotHaveNext() {
+    public void nextShouldThrowExceptionIfDoesNotHaveNext() {
         String schema = "{\"type\":\"string\"}";
         String instance = "\"foo\"";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable thrown = catchThrowable(()->sut.next());
+        Throwable thrown = catchThrowable(() -> sut.next());
         sut.close();
 
         assertThat(thrown).isInstanceOf(NoSuchElementException.class);
@@ -201,7 +195,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getLocation_returnsLocation() {
+    public void getLocationShouldReturnLocation() {
         String schema = "{\"type\":\"string\"}";
         String instance = "\"foo\"";
 
@@ -221,7 +215,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getString_returnsString() {
+    public void getStringShouldReturnString() {
         String schema = "{\"type\":\"string\"}";
         String instance = "\"foo\"";
 
@@ -236,7 +230,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getInt_returnsInteger() {
+    public void getIntShouldRturnInteger() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
@@ -251,7 +245,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getLong_returnsLong() {
+    public void getLongShouldReturnLong() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "9223372036854775807";
 
@@ -266,7 +260,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getBigDecimal_returnsBigDecimal() {
+    public void getBigDecimalShouldReturnBigDecimal() {
         String schema = "{\"type\":\"number\"}";
         String instance = "12.34";
 
@@ -281,7 +275,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArray_returnsArray() {
+    public void getArrayShouldReturnArray() {
         String schema = INTEGER_ARRAY_SCHEMA;
         String instance = "[1,2,3]";
 
@@ -301,36 +295,36 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArray_throwsExceptionIfNotArray() {
+    public void getArrayShouldThrowExceptionIfNotArray() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable thrown = catchThrowable(()->sut.getArray());
+        Throwable thrown = catchThrowable(() -> sut.getArray());
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
-    public void getArray_throwsExceptionIfNotClosed() {
+    public void getArrayShouldThrowExceptionIfNotClosed() {
         String schema = INTEGER_ARRAY_SCHEMA;
         String instance = "[1,2,3";
 
         JsonParser parser = newParser(instance);
         parser.next();
-        Throwable expected = catchThrowable(()->parser.getArray());
+        Throwable expected = catchThrowable(() -> parser.getArray());
         parser.close();
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable actual = catchThrowable(()->sut.getArray());
+        Throwable actual = catchThrowable(() -> sut.getArray());
         sut.close();
 
         assertThat(actual).hasSameClassAs(expected);
@@ -338,7 +332,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObject_returnsObject() {
+    public void getObjectShouldReturnObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
@@ -358,36 +352,36 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObject_throwsExceptionIfNotObject() {
+    public void getObjectShouldThrowExceptionIfNotObject() {
         String schema = INTEGER_ARRAY_SCHEMA;
         String instance = "[1,2,3]";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable thrown = catchThrowable(()->sut.getObject());
+        Throwable thrown = catchThrowable(() -> sut.getObject());
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
-    public void getObject_throwsExceptionIfNotClosed() {
+    public void getObjectShouldThrowExceptionIfNotClosed() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46";
 
         JsonParser parser = newParser(instance);
         parser.next();
-        Throwable expected = catchThrowable(()->parser.getObject());
+        Throwable expected = catchThrowable(() -> parser.getObject());
         parser.close();
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable actual = catchThrowable(()->sut.getObject());
+        Throwable actual = catchThrowable(() -> sut.getObject());
         sut.close();
 
         assertThat(actual).hasSameClassAs(expected);
@@ -395,7 +389,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void skipArray_skipsArray() {
+    public void skipArrayShouldSkipArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
 
@@ -411,7 +405,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void skipArray_skipsArrayNotClosed() {
+    public void skipArrayShouldSkipArrayNotClosed() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[";
 
@@ -429,7 +423,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void skipObject_skipsObject() {
+    public void skipObjectShouldSkipObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
@@ -445,7 +439,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void skipObject_skipsObjectNotClosed() {
+    public void skipObjectShouldSkipObjectNotClosed() {
         String schema = "{\"type\":\"object\"}";
         String instance = "{";
 
@@ -463,7 +457,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArrayStream_returnsStream() {
+    public void getArrayStreamShouldReturnStream() {
         String schema = "{ \"type\":\"array\" }";
         String instance = "[ true, false, null ]";
 
@@ -478,7 +472,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArrayStream_returnsStreamReporingProblem() {
+    public void getArrayStreamShouldReturnStreamReporingProblem() {
         String schema = "{ \"minItems\": 4 }";
         // invalid
         String instance = "[ true, false, null ]";
@@ -494,7 +488,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArrayStream_returnsStreamThrowingException() {
+    public void getArrayStreamShouldReturnStreamThrowingException() {
         String schema = "true";
         // ill-formed
         String instance = "[ \"key\" : 123 ]";
@@ -503,8 +497,9 @@ public class JsonParserTest {
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
         Stream<JsonValue> stream = sut.getArrayStream();
-        Throwable thrown = catchThrowable(()->{
-            stream.forEach(entry->{});
+        Throwable thrown = catchThrowable(() -> {
+            stream.forEach(entry -> {
+            });
         });
         sut.close();
 
@@ -512,7 +507,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getArrayStream_throwsIllegalStateException() {
+    public void getArrayStreamShouldThrowIllegalStateException() {
         String schema = "true";
         String instance = "[ 1, 2, 3 ]";
 
@@ -520,18 +515,18 @@ public class JsonParserTest {
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
         sut.next();
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.getArrayStream();
         });
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
-    public void getObjectStream_returnsStream() {
+    public void getObjectStreamShouldReturnStream() {
         String schema = "{ \"type\": \"object\" }";
         String instance = "{ \"key\": 123 }";
 
@@ -552,7 +547,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObjectStream_returnsStreamReportingProblems() {
+    public void getObjectStreamShouldReturnStreamReportingProblems() {
         String schema = "{ \"required\": [\"bar\"] }";
         // invalid
         String instance = "{ \"foo\" : 123 }";
@@ -574,7 +569,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObjectStream_returnsStreamThrowingException() {
+    public void getObjectStreamShouldReturnStreamThrowingException() {
         String schema = "true";
         // ill-formed
         String instance = "{ \"key\", 123 }";
@@ -583,8 +578,9 @@ public class JsonParserTest {
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
         Stream<Map.Entry<String, JsonValue>> stream = sut.getObjectStream();
-        Throwable thrown = catchThrowable(()->{
-            stream.forEach(entry->{});
+        Throwable thrown = catchThrowable(() -> {
+            stream.forEach(entry -> {
+            });
         });
         sut.close();
 
@@ -592,7 +588,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getObjectStream_throwsIllegalStateException() {
+    public void getObjectStreamShouldThrowIllegalStateException() {
         String schema = "true";
         String instance = "{ \"key\": 123 }";
 
@@ -600,18 +596,18 @@ public class JsonParserTest {
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
         sut.next();
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.getObjectStream();
         });
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
-    public void getValueStream_returnsValueStream() {
+    public void getValueStreamShouldReturnValueStream() {
         String schema = "{\"type\":\"integer\"}";
         String instance = "42";
 
@@ -625,48 +621,47 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getValueStream_throwsIllegalStateException() {
+    public void getValueStreamShouldThrowIllegalStateException() {
         String schema = "true";
         String instance = "{ \"key\": 123 }";
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.getValueStream();
         });
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     public static Stream<Arguments> argumentsForGetValue() {
         return Stream.of(
-            Arguments.of("{\"type\":\"boolean\"}", "true", true ),
-            Arguments.of("{\"type\":\"string\"}", "true", false ),
-            Arguments.of("{\"type\":\"boolean\"}", "false", true ),
-            Arguments.of("{\"type\":\"string\"}", "false", false ),
-            Arguments.of("{\"type\":\"null\"}", "null", true ),
-            Arguments.of("{\"type\":\"string\"}", "null", false ),
-            Arguments.of("{\"type\":\"string\"}", "\"foo\"", true ),
-            Arguments.of("{\"type\":\"integer\"}", "\"foo\"", false ),
-            Arguments.of("{\"type\":\"integer\"}", "42", true),
-            Arguments.of("{\"type\":\"integer\"}", "9223372036854775807", true),
-            Arguments.of("{\"type\":\"string\"}", "42", false),
-            Arguments.of("{\"type\":\"number\"}", "3.14", true),
-            Arguments.of("{\"type\":\"string\"}", "3.14", false),
-            Arguments.of(INTEGER_ARRAY_SCHEMA, "[1,2,3]", true),
-            Arguments.of(INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false),
-            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true),
-            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false)
-        );
+                Arguments.of("{\"type\":\"boolean\"}", "true", true),
+                Arguments.of("{\"type\":\"string\"}", "true", false),
+                Arguments.of("{\"type\":\"boolean\"}", "false", true),
+                Arguments.of("{\"type\":\"string\"}", "false", false),
+                Arguments.of("{\"type\":\"null\"}", "null", true),
+                Arguments.of("{\"type\":\"string\"}", "null", false),
+                Arguments.of("{\"type\":\"string\"}", "\"foo\"", true),
+                Arguments.of("{\"type\":\"integer\"}", "\"foo\"", false),
+                Arguments.of("{\"type\":\"integer\"}", "42", true),
+                Arguments.of("{\"type\":\"integer\"}", "9223372036854775807", true),
+                Arguments.of("{\"type\":\"string\"}", "42", false),
+                Arguments.of("{\"type\":\"number\"}", "3.14", true),
+                Arguments.of("{\"type\":\"string\"}", "3.14", false),
+                Arguments.of(INTEGER_ARRAY_SCHEMA, "[1,2,3]", true),
+                Arguments.of(INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false),
+                Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true),
+                Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false));
     }
 
     @ParameterizedTest
     @MethodSource("argumentsForGetValue")
-    public void getValue_returnsValue(String schema, String data, boolean valid) {
+    public void getValueShouldReturnsValue(String schema, String data, boolean valid) {
         JsonParser parser = newParser(data);
         parser.next();
         JsonValue expected = parser.getValue();
@@ -684,7 +679,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void getValue_throwsIllegalStateException() {
+    public void getValueShouldThrowIllegalStateException() {
         String schema = "true";
         String instance = "{}";
 
@@ -692,18 +687,18 @@ public class JsonParserTest {
         JsonParser sut = newParser(instance, schema, problems::addAll);
         sut.next();
         sut.next();
-        Throwable thrown = catchThrowable(()->sut.getValue());
+        Throwable thrown = catchThrowable(() -> sut.getValue());
         sut.close();
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            printer.handleProblems(problems);
+            PRINTER.handleProblems(problems);
         }
     }
 }

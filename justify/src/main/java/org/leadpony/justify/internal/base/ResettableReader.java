@@ -34,7 +34,7 @@ public class ResettableReader extends FilterReader {
     }
 
     @Override
-    public int read() throws IOException {
+    public final int read() throws IOException {
         int c = super.read();
         if (c >= 0) {
             writer.write(c);
@@ -43,7 +43,7 @@ public class ResettableReader extends FilterReader {
     }
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
+    public final int read(char[] cbuf, int off, int len) throws IOException {
         int actualLen = super.read(cbuf, off, len);
         if (actualLen > 0) {
             writer.write(cbuf, off, actualLen);
@@ -52,15 +52,19 @@ public class ResettableReader extends FilterReader {
     }
 
     @Override
-    public long skip(long n) throws IOException {
+    public final long skip(long n) throws IOException {
         throw new UnsupportedOperationException();
     }
 
-    public Reader createResettedReader() {
+    public final Reader createResettedReader() {
         return new SecondReader(in, writer.toCharArray());
     }
 
-    private static class SecondReader extends FilterReader {
+    /**
+     *
+     * @author leadpony
+     */
+    private static final class SecondReader extends FilterReader {
 
         private final char[] buffer;
         private int index;

@@ -15,11 +15,10 @@
  */
 package org.leadpony.justify.api;
 
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import javax.json.JsonValue.ValueType;
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.api.JsonSchema;
 
 /**
  * A test type for {@link JsonSchema#TRUE}.
@@ -37,7 +36,7 @@ public class TrueJsonSchemaTest {
 
     @Test
     public void asObjectJsonSchemaShouldThrowClassCastException() {
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             schema.asObjectJsonSchema();
         });
         assertThat(thrown).isInstanceOf(ClassCastException.class);

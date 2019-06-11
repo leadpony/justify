@@ -43,7 +43,8 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private long evaluationsAsTrue;
     private final Event closingEvent;
 
-    ExclusiveEvaluator(EvaluatorContext context, Event closingEvent, Stream<Evaluator> operands, Stream<Evaluator> negated) {
+    ExclusiveEvaluator(EvaluatorContext context, Event closingEvent, Stream<Evaluator> operands,
+            Stream<Evaluator> negated) {
         super(context);
         this.operands = createEvaluators(operands);
         this.negated = createEvaluators(negated);

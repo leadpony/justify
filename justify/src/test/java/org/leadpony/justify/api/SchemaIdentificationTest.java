@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.api;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.api.JsonSchema;
 
 /**
  * A test class for testing schema identifier resolutions.
@@ -35,7 +34,7 @@ import org.leadpony.justify.api.JsonSchema;
  */
 public class SchemaIdentificationTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private static final String RESOURCE_NAME = "identification.json";
 
@@ -62,7 +61,7 @@ public class SchemaIdentificationTest {
 
     private static JsonSchema loadSchema() throws IOException {
         try (InputStream in = SchemaIdentificationTest.class.getResourceAsStream(RESOURCE_NAME)) {
-            return service.readSchema(in);
+            return SERVICE.readSchema(in);
         }
     }
 
@@ -71,6 +70,6 @@ public class SchemaIdentificationTest {
             identifiers.add(schema.id());
         }
         schema.getSubschemas()
-            .forEach(s->collectIdentifiers(s, identifiers));
+                .forEach(s -> collectIdentifiers(s, identifiers));
     }
 }

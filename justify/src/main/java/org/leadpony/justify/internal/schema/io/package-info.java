@@ -16,7 +16,7 @@
 
 /**
  * Provides JSON schema reader.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.schema.io;

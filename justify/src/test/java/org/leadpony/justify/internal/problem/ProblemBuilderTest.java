@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.problem;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringReader;
 import java.util.Locale;
@@ -55,8 +55,8 @@ public class ProblemBuilderTest {
     }
 
     @Test
-    public void build_shouldBuildProblem() {
-        ProblemBuilderFactory factory = new ProblemBuilderFactory() {};
+    public void buildShouldBuildProblem() {
+        ProblemBuilderFactory factory = new ProblemBuilderFactory() { };
         ProblemBuilder builder = factory.createProblemBuilder(this.parser.getLocation(), "");
         Problem problem = builder
                 .withMessage(Message.INSTANCE_PROBLEM_TYPE)
@@ -68,7 +68,6 @@ public class ProblemBuilderTest {
         assertThat(problem.getMessage(Locale.ROOT)).isEqualTo(expectedMessage);
         assertThat(problem.parametersAsMap())
             .hasSize(2)
-            .containsKeys("actual", "expected")
-            ;
+            .containsKeys("actual", "expected");
     }
 }

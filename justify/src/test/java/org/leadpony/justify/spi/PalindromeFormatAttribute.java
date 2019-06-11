@@ -39,7 +39,7 @@ public class PalindromeFormatAttribute implements FormatAttribute {
 
     @Override
     public boolean test(JsonValue value) {
-        String string = ((JsonString)value).getString();
+        String string = ((JsonString) value).getString();
         int i = 0;
         int j = string.length() - 1;
         while (i < j) {

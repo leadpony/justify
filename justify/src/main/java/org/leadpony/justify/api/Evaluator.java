@@ -69,7 +69,7 @@ public interface Evaluator {
     /**
      * The evaluator which evaluates anything as true.
      */
-    static Evaluator ALWAYS_TRUE = new Evaluator() {
+    Evaluator ALWAYS_TRUE = new Evaluator() {
         @Override
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             return Result.TRUE;

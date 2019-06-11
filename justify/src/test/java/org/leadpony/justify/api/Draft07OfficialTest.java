@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.annotation.Spec;
 @Spec(SpecVersion.DRAFT_07)
 public class Draft07OfficialTest extends AbstractOfficialTest {
 
-    private static final String[] mandatory = {
+    private static final String[] MANDATORY = {
             "additionalItems.json",
             "additionalProperties.json",
             "allOf.json",
@@ -68,10 +68,10 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
     };
 
     public static Stream<Fixture> mandatory() {
-        return generateFixtures(mandatory);
+        return generateFixtures(MANDATORY);
     }
 
-    private static final String[] optional = {
+    private static final String[] OPTIONAL = {
             "optional/bignum.json",
             "optional/content.json",
             "optional/ecmascript-regex.json",
@@ -97,7 +97,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
     };
 
     public static Stream<Fixture> optional() {
-        return generateFixtures(optional);
+        return generateFixtures(OPTIONAL);
     }
 
     @ParameterizedTest

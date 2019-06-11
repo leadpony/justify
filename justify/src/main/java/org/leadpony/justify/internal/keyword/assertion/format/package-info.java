@@ -16,7 +16,7 @@
 
 /**
  * Provides the format keyword and built-in format attributes.
- * 
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal.keyword.assertion.format;

@@ -27,12 +27,13 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
- * A skeletal implementation of {@link ChildrenEvaluator}
- * specifialized for JSON objects.
+ * A skeletal implementation of {@link ChildrenEvaluator} specifialized for JSON
+ * objects.
  *
  * @author leadpony
  */
-public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLogicalEvaluator implements ChildrenEvaluator {
+public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLogicalEvaluator
+        implements ChildrenEvaluator {
 
     private Result finalResult = Result.TRUE;
     private Evaluator firstChildEvaluator;

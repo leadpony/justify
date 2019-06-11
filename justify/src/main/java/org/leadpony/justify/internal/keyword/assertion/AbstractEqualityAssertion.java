@@ -38,38 +38,38 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return (event, depth, dispatcher)->{
-                if (builder.append(event, context.getParser())) {
-                    return Result.PENDING;
-                }
-                JsonValue value = builder.build();
-                if (testValue(value)) {
-                    return Result.TRUE;
-                }
-                ProblemBuilder problemBuilder = createProblemBuilder(context)
-                        .withParameter("actual", value);
-                dispatcher.dispatchProblem(createProblem(problemBuilder));
-                return Result.FALSE;
-            };
+        return (event, depth, dispatcher) -> {
+            if (builder.append(event, context.getParser())) {
+                return Result.PENDING;
+            }
+            JsonValue value = builder.build();
+            if (testValue(value)) {
+                return Result.TRUE;
+            }
+            ProblemBuilder problemBuilder = createProblemBuilder(context)
+                    .withParameter("actual", value);
+            dispatcher.dispatchProblem(createProblem(problemBuilder));
+            return Result.FALSE;
+        };
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return (event, depth, dispatcher)->{
-                if (builder.append(event, context.getParser())) {
-                    return Result.PENDING;
-                }
-                JsonValue value = builder.build();
-                if (!testValue(value)) {
-                    return Result.TRUE;
-                }
-                ProblemBuilder problemBuilder = createProblemBuilder(context)
-                        .withParameter("actual", value);
-                dispatcher.dispatchProblem(createNegatedProblem(problemBuilder));
-                return Result.FALSE;
-            };
+        return (event, depth, dispatcher) -> {
+            if (builder.append(event, context.getParser())) {
+                return Result.PENDING;
+            }
+            JsonValue value = builder.build();
+            if (!testValue(value)) {
+                return Result.TRUE;
+            }
+            ProblemBuilder problemBuilder = createProblemBuilder(context)
+                    .withParameter("actual", value);
+            dispatcher.dispatchProblem(createNegatedProblem(problemBuilder));
+            return Result.FALSE;
+        };
     }
 
     protected abstract boolean testValue(JsonValue value);

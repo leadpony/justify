@@ -54,8 +54,8 @@ abstract class AbstractBasicSchemaReader extends AbstractSchemaReader implements
     protected final PointerAwareJsonParser parser;
 
     // schemas having $id keyword.
-    private final Set<JsonSchema> identifiedSchemas =
-            Collections.newSetFromMap(new IdentityHashMap<JsonSchema, Boolean>());
+    private final Set<JsonSchema> identifiedSchemas = Collections
+            .newSetFromMap(new IdentityHashMap<JsonSchema, Boolean>());
 
     private final Map<URI, JsonSchema> idSchemaMap = new HashMap<>();
     private final List<Reference> references = new ArrayList<>();
@@ -71,9 +71,9 @@ abstract class AbstractBasicSchemaReader extends AbstractSchemaReader implements
         this.parser = parser;
         this.strictWithKeywords = config.get(STRICT_KEYWORDS) == Boolean.TRUE;
         this.strictWithFormats = config.get(STRICT_FORMATS) == Boolean.TRUE;
-        this.resolvers = (List<JsonSchemaResolver>)config.getOrDefault(RESOLVERS, Collections.emptyList());
+        this.resolvers = (List<JsonSchemaResolver>) config.getOrDefault(RESOLVERS, Collections.emptyList());
         if (parser instanceof JsonValidator) {
-            ((JsonValidator)parser).withHandler(this);
+            ((JsonValidator) parser).withHandler(this);
         }
     }
 
@@ -143,9 +143,9 @@ abstract class AbstractBasicSchemaReader extends AbstractSchemaReader implements
     protected abstract JsonSchema readObjectSchema();
 
     protected static boolean canReadSchema(Event event) {
-        return event == Event.START_OBJECT ||
-               event == Event.VALUE_TRUE ||
-               event == Event.VALUE_FALSE;
+        return event == Event.START_OBJECT
+                || event == Event.VALUE_TRUE
+                || event == Event.VALUE_FALSE;
     }
 
     protected void skipValue(Event event) {

@@ -36,16 +36,16 @@ import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
  */
 public class ProblemPrinterTest {
 
-    private static final Logger log = Logger.getLogger(ProblemPrinterTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final Logger LOG = Logger.getLogger(ProblemPrinterTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     @Test
-    public void defaultPrinter_shouldPrintBothLocationAndPointer() {
+    public void defaultPrinterShouldPrintBothLocationAndPointer() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinter(lines::add);
+        ProblemHandler printer = SERVICE.createProblemPrinter(lines::add);
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
@@ -54,12 +54,12 @@ public class ProblemPrinterTest {
     }
 
     @Test
-    public void printerBuiltByDefault_shouldPrintBothLocationAndPointer() {
+    public void printerBuiltByDefaultShouldPrintBothLocationAndPointer() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
                 .build();
         printer.handleProblems(problems);
 
@@ -69,12 +69,12 @@ public class ProblemPrinterTest {
     }
 
     @Test
-    public void printerBuiltWithLocationAndPointer_shouldPrintBothLocationAndPointer() {
+    public void printerBuiltWithLocationAndPointerShouldPrintBothLocationAndPointer() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
                 .withLocation(true).withPointer(true).build();
         printer.handleProblems(problems);
 
@@ -84,12 +84,12 @@ public class ProblemPrinterTest {
     }
 
     @Test
-    public void printerBuiltWithLocation_shouldPrintLocationOnly() {
+    public void printerBuiltWithLocationShouldPrintLocationOnly() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
                 .withPointer(false).build();
         printer.handleProblems(problems);
 
@@ -99,12 +99,12 @@ public class ProblemPrinterTest {
     }
 
     @Test
-    public void printerBuiltWithPointer_shouldPrintPointerOnly() {
+    public void printerBuiltWithPointerShouldPrintPointerOnly() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
                 .withLocation(false).build();
         printer.handleProblems(problems);
 
@@ -114,12 +114,12 @@ public class ProblemPrinterTest {
     }
 
     @Test
-    public void printerBuiltWithoutLocationAndPointer_shouldPrintMessageOnly() {
+    public void printerBuiltWithoutLocationAndPointerShouldPrintMessageOnly() {
         List<Problem> problems = Arrays.asList(
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
                 .withLocation(false).withPointer(false).build();
         printer.handleProblems(problems);
 
@@ -129,9 +129,14 @@ public class ProblemPrinterTest {
     }
 
     private void printLines(List<String> lines) {
-        lines.forEach(log::info);
+        lines.forEach(LOG::info);
     }
 
+    /**
+     * A mock of {@link Problem}.
+     *
+     * @author leadpony
+     */
     private static class MockProblem implements Problem {
 
         private final String message;

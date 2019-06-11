@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.api;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.io.StringReader;
@@ -36,7 +36,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.test.helper.JsonResource;
 
 /**
@@ -46,21 +45,21 @@ import org.leadpony.justify.test.helper.JsonResource;
  */
 public class JsonSchemaTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     @Test
-    public void defaultValue_shouldReturnValueIfExists() {
+    public void defaultValueShouldReturnValueIfExists() {
         String json = "{ \"default\": 42 }";
         JsonSchema schema = fromString(json);
         JsonValue actual = schema.defaultValue();
 
         assertThat(actual.getValueType()).isEqualTo(JsonValue.ValueType.NUMBER);
-        JsonNumber number = (JsonNumber)actual;
+        JsonNumber number = (JsonNumber) actual;
         assertThat(number.intValue()).isEqualTo(42);
     }
 
     @Test
-    public void defaultValue_shouldReturnNullIfNotExists() {
+    public void defaultValueShouldReturnNullIfNotExists() {
         String json = "{ \"type\": \"string\" }";
         JsonSchema schema = fromString(json);
         JsonValue actual = schema.defaultValue();
@@ -68,6 +67,11 @@ public class JsonSchemaTest {
         assertThat(actual).isNull();
     }
 
+    /**
+     * JSON Schema samples.
+     *
+     * @author leadpony
+     */
     enum JsonSchemaExample {
         TRUE("true", ValueType.TRUE),
         FALSE("false", ValueType.FALSE),
@@ -111,6 +115,11 @@ public class JsonSchemaTest {
         assertThat(actual).isEqualTo(test.schema);
     }
 
+    /**
+     * A test case for {@link JsonSchema#containsKeyword(String).
+     *
+     * @author leadpony
+     */
     static class ContainsKeywordTestCase {
 
         final JsonValue schema;
@@ -132,15 +141,14 @@ public class JsonSchemaTest {
     public static Stream<ContainsKeywordTestCase> containsKeywordShouldReturnBooleanAsExpected() {
         return JsonResource.of("/org/leadpony/justify/api/jsonschema-containskeyword.json")
                 .asObjectStream()
-                .flatMap(object->{
+                .flatMap(object -> {
                     JsonValue schema = object.get("schema");
                     return object.getJsonArray("tests").stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(test->new ContainsKeywordTestCase(
-                                schema,
-                                test.getString("keyword"),
-                                test.getBoolean("result")
-                                ));
+                            .map(JsonValue::asJsonObject)
+                            .map(test -> new ContainsKeywordTestCase(
+                                    schema,
+                                    test.getString("keyword"),
+                                    test.getBoolean("result")));
                 });
     }
 
@@ -152,6 +160,11 @@ public class JsonSchemaTest {
         assertThat(actual).isEqualTo(test.result);
     }
 
+    /**
+     * A test case for {@link JsonSchema#getKeywordValue(String).
+     *
+     * @author leadpony
+     */
     static class GetKeywordValueTestCase {
 
         final JsonValue schema;
@@ -173,15 +186,14 @@ public class JsonSchemaTest {
     public static Stream<GetKeywordValueTestCase> getKeywordValueShouldReturnValueAsExpected() {
         return JsonResource.of("/org/leadpony/justify/api/jsonschema-getkeywordvalue.json")
                 .asObjectStream()
-                .flatMap(object->{
+                .flatMap(object -> {
                     JsonValue schema = object.get("schema");
                     return object.getJsonArray("tests").stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(test->new GetKeywordValueTestCase(
-                                schema,
-                                test.getString("keyword"),
-                                test.get("value")
-                                ));
+                            .map(JsonValue::asJsonObject)
+                            .map(test -> new GetKeywordValueTestCase(
+                                    schema,
+                                    test.getString("keyword"),
+                                    test.get("value")));
                 });
     }
 
@@ -193,6 +205,11 @@ public class JsonSchemaTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    /**
+     * A test case for {@link JsonSchema#getKeywordValue(String, JsonValue).
+     *
+     * @author leadpony
+     */
     static class GetKeywordDefaultValueTestCase {
 
         final JsonValue schema;
@@ -216,16 +233,15 @@ public class JsonSchemaTest {
     public static Stream<GetKeywordDefaultValueTestCase> getKeywordValueShouldReturnDefaultValueAsExpected() {
         return JsonResource.of("/org/leadpony/justify/api/jsonschema-getkeywordvalue-default.json")
                 .asObjectStream()
-                .flatMap(object->{
+                .flatMap(object -> {
                     JsonValue schema = object.get("schema");
                     return object.getJsonArray("tests").stream()
-                        .map(JsonValue::asJsonObject)
-                        .map(test->new GetKeywordDefaultValueTestCase(
-                                schema,
-                                test.getString("keyword"),
-                                test.get("defaultValue"),
-                                test.get("value")
-                                ));
+                            .map(JsonValue::asJsonObject)
+                            .map(test -> new GetKeywordDefaultValueTestCase(
+                                    schema,
+                                    test.getString("keyword"),
+                                    test.get("defaultValue"),
+                                    test.get("value")));
                 });
     }
 
@@ -243,15 +259,15 @@ public class JsonSchemaTest {
         InputStream in = JsonSchemaTest.class.getResourceAsStream(SUBSCHEMAS_JSON);
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
-                .map(JsonValue::asJsonObject)
-                .map(object->{
-                    String schema = object.get("schema").toString();
-                    List<String> subschemas = object.get(keyName).asJsonArray()
-                           .stream()
-                           .map(v->((JsonString)v).getString())
-                           .collect(Collectors.toList());
-                    return Arguments.of(schema, subschemas);
-               });
+                    .map(JsonValue::asJsonObject)
+                    .map(object -> {
+                        String schema = object.get("schema").toString();
+                        List<String> subschemas = object.get(keyName).asJsonArray()
+                                .stream()
+                                .map(v -> ((JsonString) v).getString())
+                                .collect(Collectors.toList());
+                        return Arguments.of(schema, subschemas);
+                    });
         }
     }
 
@@ -261,7 +277,7 @@ public class JsonSchemaTest {
 
     @ParameterizedTest
     @MethodSource("subschemasFixtures")
-    public void getSubschemas_shouldReturnSubschemas(String json, List<String> jsonPointers) {
+    public void getSubschemasShouldReturnSubschemas(String json, List<String> jsonPointers) {
         JsonSchema schema = fromString(json);
         List<JsonSchema> expected = jsonPointers.stream()
                 .map(schema::getSubschemaAt)
@@ -278,7 +294,7 @@ public class JsonSchemaTest {
 
     @ParameterizedTest
     @MethodSource("inPlaceSubschemasFixtures")
-    public void getInPlaceSubschemas_shouldReturnSubschemas(String json, List<String> jsonPointers) {
+    public void getInPlaceSubschemasShouldReturnSubschemas(String json, List<String> jsonPointers) {
         JsonSchema schema = fromString(json);
         List<JsonSchema> expected = jsonPointers.stream()
                 .map(schema::getSubschemaAt)
@@ -294,6 +310,6 @@ public class JsonSchemaTest {
     }
 
     private static JsonSchema fromString(String string) {
-        return service.readSchema(new StringReader(string));
+        return SERVICE.readSchema(new StringReader(string));
     }
 }

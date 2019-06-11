@@ -66,7 +66,7 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
             Result result = current.evaluate(event, depth, dispatcher);
             if (result == Result.TRUE) {
                 ++evaluationsAsTrue;
-            } else if (result == Result.FALSE){
+            } else if (result == Result.FALSE) {
                 problemLists.add(current.problems());
             } else {
                 assert false;

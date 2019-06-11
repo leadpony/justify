@@ -23,7 +23,7 @@ import javax.json.stream.JsonLocation;
  *
  * @author leadpony
  */
-public class SimpleJsonLocation implements JsonLocation {
+public final class SimpleJsonLocation implements JsonLocation {
 
     /**
      * An unknown location.
@@ -37,8 +37,9 @@ public class SimpleJsonLocation implements JsonLocation {
     /**
      * Constructs this location.
      *
-     * @param lineNumber the line number which starts with 1 for the first line.
-     * @param columnNumber the column number which starts with 1 for the first column.
+     * @param lineNumber   the line number which starts with 1 for the first line.
+     * @param columnNumber the column number which starts with 1 for the first
+     *                     column.
      * @param streamOffset the stream offset in the input source.
      */
     public SimpleJsonLocation(long lineNumber, long columnNumber, long streamOffset) {
@@ -79,9 +80,9 @@ public class SimpleJsonLocation implements JsonLocation {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("(line no=").append(lineNumber)
-               .append(", column no=").append(columnNumber)
-               .append(", offset=").append(streamOffset)
-               .append(")");
+                .append(", column no=").append(columnNumber)
+                .append(", offset=").append(streamOffset)
+                .append(")");
         return builder.toString();
     }
 
@@ -103,9 +104,9 @@ public class SimpleJsonLocation implements JsonLocation {
         if (obj == null || !(obj instanceof JsonLocation)) {
             return false;
         }
-        JsonLocation other = (JsonLocation)obj;
-        return lineNumber == other.getLineNumber() &&
-               columnNumber == other.getColumnNumber() &&
-               streamOffset == other.getStreamOffset();
+        JsonLocation other = (JsonLocation) obj;
+        return lineNumber == other.getLineNumber()
+                && columnNumber == other.getColumnNumber()
+                && streamOffset == other.getStreamOffset();
     }
 }

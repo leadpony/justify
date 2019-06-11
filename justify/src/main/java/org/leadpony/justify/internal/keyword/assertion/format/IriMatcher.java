@@ -18,23 +18,23 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 /**
  * Matcher for IRI conformant to RFC 3987.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3987">
- * "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
+ *      "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
 class IriMatcher extends UriMatcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     IriMatcher(CharSequence input) {
         super(input);
     }
-    
+
     @Override
     boolean pchar() {
         if (hasNext()) {
@@ -47,7 +47,7 @@ class IriMatcher extends UriMatcher {
         }
         return false;
     }
-    
+
     @Override
     boolean query() {
         while (hasNext() && peek() != '#') {

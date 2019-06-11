@@ -35,10 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidatingException;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * A test class for testing validations using {@link JsonReader} .
@@ -47,37 +43,35 @@ import org.leadpony.justify.api.ProblemHandler;
  */
 public class JsonReaderTest {
 
-    private static final Logger log = Logger.getLogger(JsonReaderTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(JsonReaderTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
-    private static final String PERSON_SCHEMA =
-            "{" +
-            "\"type\":\"object\"," +
-            "\"properties\":{" +
-            "\"name\": {\"type\":\"string\"}," +
-            "\"age\": {\"type\":\"integer\", \"minimum\":0}" +
-            "}," +
-            "\"required\":[\"name\"]" +
-            "}";
+    private static final String PERSON_SCHEMA = "{"
+            + "\"type\":\"object\","
+            + "\"properties\":{"
+            + "\"name\": {\"type\":\"string\"},"
+            + "\"age\": {\"type\":\"integer\", \"minimum\":0}"
+            + "},"
+            + "\"required\":[\"name\"]"
+            + "}";
 
-    private static final String INTEGER_ARRAY_SCHEMA =
-            "{" +
-            "\"type\":\"array\"," +
-            "\"items\":{\"type\":\"integer\"}" +
-            "}";
+    private static final String INTEGER_ARRAY_SCHEMA = "{"
+            + "\"type\":\"array\","
+            + "\"items\":{\"type\":\"integer\"}"
+            + "}";
 
     private static JsonReader newReader(String instance) {
         return Json.createReader(new StringReader(instance));
     }
 
     private static JsonReader newReader(String instance, String schema, ProblemHandler handler) {
-        JsonSchema s = service.readSchema(new StringReader(schema));
-        return service.createReader(new StringReader(instance), s, handler);
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        return SERVICE.createReader(new StringReader(instance), s, handler);
     }
 
     @Test
-    public void read_readsArray() {
+    public void readShouldReadArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
 
@@ -95,7 +89,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void read_readsObject() {
+    public void readShouldReadObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
@@ -113,7 +107,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void readArray_readsArray() {
+    public void readArrayShouldReadArray() {
         String schema = "{\"type\":\"array\"}";
         String instance = "[1,2,3]";
 
@@ -131,7 +125,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void readObject_readsObject() {
+    public void readObjectShouldReadObject() {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
@@ -150,28 +144,28 @@ public class JsonReaderTest {
 
     public static Stream<Arguments> argumentsForReadValue() {
         return Stream.of(
-            Arguments.of("{\"type\":\"boolean\"}", "true", true),
-            Arguments.of("{\"type\":\"string\"}", "true", false),
-            Arguments.of("{\"type\":\"boolean\"}", "false", true),
-            Arguments.of("{\"type\":\"string\"}", "false", false),
-            Arguments.of("{\"type\":\"null\"}", "null", true),
-            Arguments.of("{\"type\":\"string\"}", "null", false),
-            Arguments.of("{\"type\":\"string\"}", "\"foo\"", true),
-            Arguments.of("{\"type\":\"integer\"}", "\"foo\"", false),
-            Arguments.of("{\"type\":\"integer\"}", "42", true),
-            Arguments.of("{\"type\":\"integer\"}", "9223372036854775807", true),
-            Arguments.of("{\"type\":\"string\"}", "42", false),
-            Arguments.of("{\"type\":\"number\"}", "3.14", true),
-            Arguments.of("{\"type\":\"string\"}", "3.14", false),
-            Arguments.of(INTEGER_ARRAY_SCHEMA, "[1,2,3]", true),
-            Arguments.of(INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false),
-            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true),
-            Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false)
-        );
+                Arguments.of("{\"type\":\"boolean\"}", "true", true),
+                Arguments.of("{\"type\":\"string\"}", "true", false),
+                Arguments.of("{\"type\":\"boolean\"}", "false", true),
+                Arguments.of("{\"type\":\"string\"}", "false", false),
+                Arguments.of("{\"type\":\"null\"}", "null", true),
+                Arguments.of("{\"type\":\"string\"}", "null", false),
+                Arguments.of("{\"type\":\"string\"}", "\"foo\"", true),
+                Arguments.of("{\"type\":\"integer\"}", "\"foo\"", false),
+                Arguments.of("{\"type\":\"integer\"}", "42", true),
+                Arguments.of("{\"type\":\"integer\"}", "9223372036854775807", true),
+                Arguments.of("{\"type\":\"string\"}", "42", false),
+                Arguments.of("{\"type\":\"number\"}", "3.14", true),
+                Arguments.of("{\"type\":\"string\"}", "3.14", false),
+                Arguments.of(INTEGER_ARRAY_SCHEMA, "[1,2,3]", true),
+                Arguments.of(INTEGER_ARRAY_SCHEMA, "[\"foo\",\"bar\"]", false),
+                Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": 46}", true),
+                Arguments.of(PERSON_SCHEMA, "{\"name\":\"John Smith\", \"age\": \"46\"}", false));
     }
+
     @ParameterizedTest
     @MethodSource("argumentsForReadValue")
-    public void readValue_readsValue(String schema, String data, boolean valid) {
+    public void readValueShouldReadValue(String schema, String data, boolean valid) {
         JsonReader reader = newReader(data);
         JsonValue expected = reader.readValue();
         reader.close();
@@ -188,7 +182,7 @@ public class JsonReaderTest {
 
     @ParameterizedTest
     @MethodSource("argumentsForReadValue")
-    public void readValue_throwsExceptionIfInvalid(String schema, String data, boolean valid) {
+    public void readValueShouldThrowExceptionIfInvalid(String schema, String data, boolean valid) {
         JsonReader reader = newReader(data);
         JsonValue expected = reader.readValue();
         reader.close();
@@ -214,7 +208,7 @@ public class JsonReaderTest {
 
     private static void printProblems(List<Problem> problems) {
         if (!problems.isEmpty()) {
-            printer.handleProblems(problems);
+            PRINTER.handleProblems(problems);
         }
     }
 }

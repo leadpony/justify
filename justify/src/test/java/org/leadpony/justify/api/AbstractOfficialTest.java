@@ -83,14 +83,29 @@ public abstract class AbstractOfficialTest {
             this.result = result;
         }
 
+        /**
+         * Returns the JSON schema as a JSON value.
+         *
+         * @return the JSON schema.
+         */
         JsonValue getSchema() {
             return schema;
         }
 
+        /**
+         * Returns the JSON instance as a JSON value.
+         *
+         * @return the JSON instane.
+         */
         JsonValue getData() {
             return data;
         }
 
+        /**
+         * Returns whether the instance is valid or not.
+         *
+         * @return {@code true} if the instance is valid, {@code false} otherwise.
+         */
         boolean getResult() {
             return result;
         }
@@ -101,27 +116,29 @@ public abstract class AbstractOfficialTest {
             int beginIndex = name.lastIndexOf('/') + 1;
             int endIndex = name.lastIndexOf('.');
             builder.append(name.substring(beginIndex, endIndex))
-                   .append("[").append(index).append("]")
-                   .append(" ").append(description);
+                    .append("[").append(index).append("]")
+                    .append(" ").append(description);
             return builder.toString();
         }
     }
 
-    static final Logger log = Logger.getLogger(AbstractOfficialTest.class.getName());
+    static final Logger LOG = Logger.getLogger(AbstractOfficialTest.class.getName());
 
-    static final JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(null);
-    static final JsonValidationService service = JsonValidationServices.get();
-    static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    static final JsonBuilderFactory JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
+    static final JsonValidationService SERVICE = JsonValidationServices.get();
+    static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     static final Path TEST_SUITE_HOME = Paths.get("..", "JSON-Schema-Test-Suite");
     static final Path TESTS_PATH = TEST_SUITE_HOME.resolve("tests");
 
     @SuppressWarnings("serial")
-    private static final Map<SpecVersion, String> DRAFT_PATHS = new EnumMap<SpecVersion, String>(SpecVersion.class) {{
-        put(SpecVersion.DRAFT_04, "draft4");
-        put(SpecVersion.DRAFT_06, "draft6");
-        put(SpecVersion.DRAFT_07, "draft7");
-    }};
+    private static final Map<SpecVersion, String> DRAFT_PATHS = new EnumMap<SpecVersion, String>(SpecVersion.class) {
+        {
+            put(SpecVersion.DRAFT_04, "draft4");
+            put(SpecVersion.DRAFT_06, "draft6");
+            put(SpecVersion.DRAFT_07, "draft7");
+        }
+    };
 
     private static SpecVersion specVersion;
     private static Path basePath;
@@ -136,7 +153,7 @@ public abstract class AbstractOfficialTest {
         Spec spec = testClass.getAnnotation(Spec.class);
         specVersion = spec.value()[0];
         basePath = TESTS_PATH.resolve(DRAFT_PATHS.get(specVersion));
-        schemaReaderFactory = service.createSchemaReaderFactoryBuilder()
+        schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
                 .withSchemaValidation(false)
@@ -147,6 +164,11 @@ public abstract class AbstractOfficialTest {
         return Stream.of(files).flatMap(AbstractOfficialTest::readFixtures);
     }
 
+    /**
+     * Tests with a fixture.
+     *
+     * @param fixture
+     */
     public void test(Fixture fixture) {
         JsonSchema schema = getSchema(fixture.getSchema());
         JsonValue data = fixture.getData();
@@ -164,6 +186,11 @@ public abstract class AbstractOfficialTest {
         printProblems(fixture, problems);
     }
 
+    /**
+     * Tests with a negated fixture.
+     *
+     * @param fixture
+     */
     public void testNegated(Fixture fixture) {
         JsonSchema schema = getNegatedSchema(fixture.getSchema());
         JsonValue data = fixture.getData();
@@ -189,11 +216,11 @@ public abstract class AbstractOfficialTest {
         lastValue = value;
         lastSchema = schema;
         return schema;
-     }
+    }
 
     private JsonSchema getNegatedSchema(JsonValue value) {
         JsonSchema schema = getSchema(value);
-        return service.createSchemaBuilderFactory()
+        return SERVICE.createSchemaBuilderFactory()
                 .createBuilder()
                 .withNot(schema)
                 .build();
@@ -212,24 +239,24 @@ public abstract class AbstractOfficialTest {
 
     private JsonParser createValidator(JsonValue data, JsonSchema schema, ProblemHandler handler) {
         StringReader reader = new StringReader(data.toString());
-        return service.createParser(reader, schema, handler);
+        return SERVICE.createParser(reader, schema, handler);
     }
 
     private static Stream<Fixture> readFixtures(String name) {
         Function<JsonObject, Stream<Fixture>> mapper = new Function<JsonObject, Stream<Fixture>>() {
-            int index;
+            private int index;
+
             @Override
             public Stream<Fixture> apply(JsonObject schema) {
                 return schema.getJsonArray("tests").stream()
                         .map(JsonValue::asJsonObject)
-                        .map(test->new Fixture(
+                        .map(test -> new Fixture(
                                 name,
                                 index++,
                                 schema.getValue("/schema"),
                                 test.get("data"),
                                 test.getString("description"),
-                                test.getBoolean("valid")
-                                ));
+                                test.getBoolean("valid")));
             }
         };
         return readJsonArray(name).stream()
@@ -268,14 +295,14 @@ public abstract class AbstractOfficialTest {
     }
 
     private void printProblems(Fixture fixture, List<Problem> problems) {
-        if (problems.isEmpty() || !log.isLoggable(Level.INFO)) {
+        if (problems.isEmpty() || !LOG.isLoggable(Level.INFO)) {
             return;
         }
         StringBuilder builder = new StringBuilder("- ");
         builder.append(fixture.toString());
-        log.info(builder.toString());
-        printer.handleProblems(problems);
-        log.info("");
+        LOG.info(builder.toString());
+        PRINTER.handleProblems(problems);
+        LOG.info("");
     }
 
     private static InputStream openResource(String name) {
@@ -290,6 +317,11 @@ public abstract class AbstractOfficialTest {
         }
     }
 
+    /**
+     * A schema resolver which resolves schemas for the local filesystem.
+     *
+     * @author leadpony
+     */
     private static class LocalSchemaResolver implements JsonSchemaResolver {
 
         private static final Path REMOTE_PATH = TEST_SUITE_HOME.resolve("remotes");
@@ -299,7 +331,7 @@ public abstract class AbstractOfficialTest {
             String rootless = id.getPath().substring(1);
             Path path = REMOTE_PATH.resolve(rootless);
             try {
-                try (JsonSchemaReader reader = service.createSchemaReader(
+                try (JsonSchemaReader reader = SERVICE.createSchemaReader(
                         Files.newInputStream(path))) {
                     return reader.read();
                 }

@@ -23,14 +23,14 @@ import javax.json.JsonException;
 
 /**
  * Tokenizer for a JSON pointer.
- * 
+ *
  * @author leadpony
  */
 public class JsonPointerTokenizer implements Iterator<String> {
 
     private final String jsonPointer;
     private int offset;
-    
+
     public JsonPointerTokenizer(String jsonPointer) {
         if (!jsonPointer.isEmpty() && !jsonPointer.startsWith("/")) {
             throw new JsonException("Invalid JSON pointer: " + jsonPointer);
@@ -60,10 +60,10 @@ public class JsonPointerTokenizer implements Iterator<String> {
         }
         return decode(token);
     }
-    
+
     /**
      * Returns the remaining part of the JSON pointer.
-     * 
+     *
      * @return the remaining part of the JSON pointer. It may be empty.
      */
     public String remaining() {
@@ -72,7 +72,7 @@ public class JsonPointerTokenizer implements Iterator<String> {
 
     /**
      * Decodes a reference token.
-     * 
+     *
      * @param token the reference token to decode.
      * @return decoded reference token.
      */

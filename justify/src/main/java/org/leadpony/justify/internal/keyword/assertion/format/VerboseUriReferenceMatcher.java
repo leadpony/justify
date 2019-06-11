@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  * @author leadpony
  */
 class VerboseUriReferenceMatcher extends UriReferenceMatcher {
- 
-    private static final Logger log = Logger.getLogger(VerboseUriReferenceMatcher.class.getName());
-    
+
+    private static final Logger LOG = Logger.getLogger(VerboseUriReferenceMatcher.class.getName());
+
     private final List<String> components = new ArrayList<>();
 
     VerboseUriReferenceMatcher(CharSequence input) {
@@ -43,7 +43,7 @@ class VerboseUriReferenceMatcher extends UriReferenceMatcher {
         }
         return result;
     }
-    
+
     @Override
     boolean scheme() {
         final int start = pos();
@@ -100,7 +100,7 @@ class VerboseUriReferenceMatcher extends UriReferenceMatcher {
         }
         return false;
     }
-    
+
     @Override
     boolean pathAbsolute() {
         final int start = pos();
@@ -156,20 +156,19 @@ class VerboseUriReferenceMatcher extends UriReferenceMatcher {
         components.clear();
         return super.relativeRef();
     }
-    
+
     private void addComponent(int offset) {
         components.add(extract(offset, pos()));
     }
 
     private void printComponents() {
-        if (!log.isLoggable(Level.FINE)) {
+        if (!LOG.isLoggable(Level.FINE)) {
             return;
         }
         StringBuilder b = new StringBuilder();
         b.append(input())
-         .append(" -> ")
-         .append(components.stream().collect(Collectors.joining(", ", "[", "]")))
-         ;
-        log.fine(b.toString());
+                .append(" -> ")
+                .append(components.stream().collect(Collectors.joining(", ", "[", "]")));
+        LOG.fine(b.toString());
     }
 }

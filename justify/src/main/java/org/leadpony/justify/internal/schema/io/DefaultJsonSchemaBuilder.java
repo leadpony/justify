@@ -112,7 +112,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      * @param jsonService the JSON service.
      * @param spec        the schema specification.
      */
-    public DefaultJsonSchemaBuilder(JsonService jsonService, SchemaSpec spec) {
+    DefaultJsonSchemaBuilder(JsonService jsonService, SchemaSpec spec) {
         this.jsonService = jsonService;
         this.spec = spec;
     }
@@ -638,12 +638,25 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
-    private static interface KeywordBuilder {
+    /**
+     * A builder of a keyword.
+     *
+     * @author leadpony
+     */
+    private interface KeywordBuilder {
 
         SchemaKeyword build();
     }
 
-    private static abstract class AbstractKeywordBuilder<K, V> implements KeywordBuilder {
+    /**
+     * A skeletal implementation of {@link KeywordBuilder}.
+     *
+     * @author leadpony
+     *
+     * @param <K> the type of the key.
+     * @param <V> the type of the value.
+     */
+    private abstract static class AbstractKeywordBuilder<K, V> implements KeywordBuilder {
 
         protected final Map<K, V> map = new LinkedHashMap<>();
 
@@ -656,6 +669,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
+    /**
+     * A builder of "properties" keyword.
+     *
+     * @author leadpony
+     */
     private static class PropertiesBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
         public SchemaKeyword build() {
@@ -663,6 +681,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
+    /**
+     * A builder of "patternProperties" keyword.
+     *
+     * @author leadpony
+     */
     private static class PatternPropertiesBuilder extends AbstractKeywordBuilder<Pattern, JsonSchema> {
 
         public SchemaKeyword build() {
@@ -670,6 +693,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
+    /**
+     * A builder of "definitions" keyword.
+     *
+     * @author leadpony
+     */
     private static class DefinitionsBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
         public SchemaKeyword build() {
@@ -677,6 +705,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
+    /**
+     * A builder of "dependencies" keyword.
+     *
+     * @author leadpony
+     */
     private static class DependenciesBuilder extends AbstractKeywordBuilder<String, Object> {
 
         @Override

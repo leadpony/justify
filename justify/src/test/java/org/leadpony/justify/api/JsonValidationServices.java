@@ -20,9 +20,9 @@ package org.leadpony.justify.api;
  *
  * @author leadpony
  */
-class JsonValidationServices {
+final class JsonValidationServices {
 
-    private static final JsonValidationService theService = JsonValidationService.newInstance();
+    private static final JsonValidationService THE_SERVICE = JsonValidationService.newInstance();
 
     /**
      * Returns the single instance of {@link JsonValidationService}.
@@ -30,6 +30,9 @@ class JsonValidationServices {
      * @return the single instance of {@link JsonValidationService}.
      */
     static JsonValidationService get() {
-        return theService;
+        return THE_SERVICE;
+    }
+
+    private JsonValidationServices() {
     }
 }

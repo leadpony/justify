@@ -36,7 +36,7 @@ public class PathOrUrlFormatAttribute implements FormatAttribute {
 
     @Override
     public Localizable localizedName() {
-        return locale->Message.PATH_OR_URL.toString();
+        return locale -> Message.PATH_OR_URL.toString();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class PathOrUrlFormatAttribute implements FormatAttribute {
 
     @Override
     public boolean test(JsonValue value) {
-        String string = ((JsonString)value).getString();
+        String string = ((JsonString) value).getString();
         try {
             Location.at(string);
             return true;

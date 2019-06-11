@@ -43,12 +43,23 @@ public final class JsonAssertions {
     private JsonAssertions() {
     }
 
+    /**
+     * An assertion on JSON values.
+     *
+     * @author leadpony
+     */
     public static class JsonValueAssert extends AbstractAssert<JsonValueAssert, JsonValue> {
 
         public JsonValueAssert(JsonValue actual) {
             super(actual, JsonValueAssert.class);
         }
 
+        /**
+         * Verifies that the actual JSON value is equal to the expected JSON value.
+         *
+         * @param expected the expected JSON value.
+         * @return this assertion.
+         */
         public JsonValueAssert isEqualTo(JsonValue expected) {
             isNotNull();
             if (!actual.equals(expected)) {
@@ -57,6 +68,12 @@ public final class JsonAssertions {
             return this;
         }
 
+        /**
+         * Verifies that the actual JSON value is equal to the expected string value.
+         *
+         * @param expected the expected string value.
+         * @return this assertion.
+         */
         public JsonValueAssert isEqualTo(String expected) {
             return isEqualTo(jsonValueFromString(expected));
         }
@@ -68,7 +85,12 @@ public final class JsonAssertions {
         }
     }
 
-    public static class JsonLocationAssert extends AbstractAssert<JsonLocationAssert, JsonLocation> {
+    /**
+     * An assertion on JSON locations.
+     *
+     * @author leadpony
+     */
+    public static final class JsonLocationAssert extends AbstractAssert<JsonLocationAssert, JsonLocation> {
 
         private JsonLocationAssert(JsonLocation actual) {
             super(actual, JsonLocationAssert.class);
@@ -76,9 +98,9 @@ public final class JsonAssertions {
 
         public JsonLocationAssert isEqualTo(JsonLocation expected) {
             isNotNull();
-            if (actual.getLineNumber() != expected.getLineNumber() ||
-                actual.getColumnNumber() != expected.getColumnNumber() ||
-                actual.getStreamOffset() != expected.getStreamOffset()) {
+            if (actual.getLineNumber() != expected.getLineNumber()
+                    || actual.getColumnNumber() != expected.getColumnNumber()
+                    || actual.getStreamOffset() != expected.getStreamOffset()) {
                 failWithMessage("Expected location to be <%s> but was <%s>", expected, actual);
             }
             return this;

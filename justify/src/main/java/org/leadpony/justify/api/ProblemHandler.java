@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A handler interface for handling the problems found
- * while validating a JSON document.
+ * A handler interface for handling the problems found while validating a JSON
+ * document.
  *
  * @author leadpony
  */
@@ -37,11 +37,13 @@ public interface ProblemHandler {
     void handleProblems(List<Problem> problems);
 
     /**
-     * Creates a problem handler which will store problems into the specified collection.
+     * Creates a problem handler which will store problems into the specified
+     * collection.
      *
      * @param collection the collection into which problems will be stored.
      * @return newly created instance of problem handler.
-     * @throws NullPointerException if the specified {@code collection} is {@code null}.
+     * @throws NullPointerException if the specified {@code collection} is
+     *                              {@code null}.
      */
     static ProblemHandler collectingTo(Collection<Problem> collection) {
         Objects.requireNonNull(collection, "collection must not be null.");
@@ -49,12 +51,14 @@ public interface ProblemHandler {
     }
 
     /**
-     * Creates a problem handler which will throw a {@link JsonValidatingException} exception.
+     * Creates a problem handler which will throw a {@link JsonValidatingException}
+     * exception.
+     *
      * @return newly created instance of problem handler.
      * @see JsonValidatingException
      */
     static ProblemHandler throwing() {
-        return problems->{
+        return problems -> {
             if (!problems.isEmpty()) {
                 throw new JsonValidatingException(problems);
             }

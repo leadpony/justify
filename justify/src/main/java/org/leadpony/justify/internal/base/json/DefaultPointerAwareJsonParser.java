@@ -68,7 +68,12 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
         return pointerBuilder.isScoped();
     }
 
-    private static interface PointerBuilder {
+    /**
+     * A builder of a JSON pointer.
+     *
+     * @author leadpony
+     */
+    private interface PointerBuilder {
 
         default boolean isScoped() {
             return false;
@@ -86,6 +91,11 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
         }
     }
 
+    /**
+     * A pointer builder at starting point.
+     *
+     * @author leadpony
+     */
     private static class InitialPointerBuilder implements PointerBuilder {
 
         @Override
@@ -109,6 +119,11 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
         }
     }
 
+    /**
+     * A pointer builder for root values.
+     *
+     * @author leadpony
+     */
     private static class RootPointerBuilder implements PointerBuilder {
 
         @Override
@@ -117,6 +132,11 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
         }
     }
 
+    /**
+     * A pointer builder for JSON arrays.
+     *
+     * @author leadpony
+     */
     private static class ArrayPointerBuilder implements PointerBuilder {
 
         private final PointerBuilder parent;
@@ -159,6 +179,11 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
         }
     }
 
+    /**
+     * A pointer builder for JSON objects.
+     *
+     * @author leadpony
+     */
     private static class ObjectPointerBuilder implements PointerBuilder {
 
         private final PointerBuilder parent;

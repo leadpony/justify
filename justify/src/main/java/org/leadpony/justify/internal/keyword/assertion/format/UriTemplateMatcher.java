@@ -20,14 +20,14 @@ import org.leadpony.justify.internal.base.AsciiCode;
 
 /**
  * Matcher for URI template conformant to RFC 6570.
- * 
+ *
  * @author leadpony
  */
 class UriTemplateMatcher extends FormatMatcher {
 
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     UriTemplateMatcher(CharSequence input) {
@@ -48,12 +48,12 @@ class UriTemplateMatcher extends FormatMatcher {
 
     boolean literals() {
         int c = peek();
-        if (c == 0x21 || (0x23 <= c && c <= 0x24) || c == 0x26 ||
-           (0x28 <= c && c <= 0x3b) || c == 0x3d ||
-           (0x3f <= c && c <= 0x5b) ||
-            c == 0x5d || c == 0x5f ||
-           (0x61 <= c && c <= 0x7a) ||c == 0x7e ||
-            UriCode.isUcschar(c) || UriCode.isIprivate(c)) {
+        if (c == 0x21 || (0x23 <= c && c <= 0x24) || c == 0x26
+                || (0x28 <= c && c <= 0x3b) || c == 0x3d
+                || (0x3f <= c && c <= 0x5b)
+                || c == 0x5d || c == 0x5f
+                || (0x61 <= c && c <= 0x7a) || c == 0x7e
+                || UriCode.isUcschar(c) || UriCode.isIprivate(c)) {
             next();
             return true;
         } else if (pctEncoded()) {
@@ -61,7 +61,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean expression() {
         if (!hasNext('{')) {
             return false;
@@ -78,7 +78,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return fail();
     }
-    
+
     boolean operator() {
         switch (peek()) {
         case '+':
@@ -88,7 +88,7 @@ class UriTemplateMatcher extends FormatMatcher {
         case ';':
         case '?':
         case '&':
-        // reserved
+            // reserved
         case '=':
         case ',':
         case '!':
@@ -100,7 +100,7 @@ class UriTemplateMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean variableList() {
         if (!hasNext() || !varspec()) {
             return false;
@@ -113,7 +113,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean varspec() {
         if (varname()) {
             modifierLevel4(); // optional
@@ -121,7 +121,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean varname() {
         if (!varchar()) {
             return false;
@@ -138,7 +138,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean varchar() {
         if (hasNext()) {
             int c = peek();
@@ -151,11 +151,11 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean modifierLevel4() {
         return prefix() || explode();
     }
-    
+
     boolean prefix() {
         if (hasNext(':')) {
             next();
@@ -167,7 +167,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean maxLength() {
         if (!hasNext()) {
             return false;
@@ -186,7 +186,7 @@ class UriTemplateMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean explode() {
         if (hasNext('*')) {
             next();
@@ -195,14 +195,14 @@ class UriTemplateMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean pctEncoded() {
         if (!hasNext('%')) {
             return false;
-        }    
+        }
         next();
-        if (hasNext() && AsciiCode.isHexDigit(next()) &&
-            hasNext() && AsciiCode.isHexDigit(next())) {
+        if (hasNext() && AsciiCode.isHexDigit(next())
+                && hasNext() && AsciiCode.isHexDigit(next())) {
             return true;
         }
         return fail();

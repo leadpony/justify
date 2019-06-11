@@ -16,7 +16,7 @@
 
 /**
  * Provides the implementation of the API.
- *  
+ *
  * @author leadpony
  */
 package org.leadpony.justify.internal;

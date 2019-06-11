@@ -16,8 +16,7 @@
 
 package org.leadpony.justify.internal.base;
 
-import static org.assertj.core.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,9 +30,11 @@ import org.leadpony.justify.api.InstanceType;
  */
 public class MessageTest {
 
+    /**
+     * @author leadpony
+     */
     private enum Message implements BaseMessage {
-        ERROR
-        ;
+        ERROR;
 
         @Override
         public ResourceBundle getBundle(Locale locale) {
@@ -42,7 +43,7 @@ public class MessageTest {
     }
 
     @Test
-    public void getLocalized_shouldReturnPattern() {
+    public void getLocalizedShouldReturnPattern() {
         Message sut = Message.ERROR;
 
         String message = sut.getLocalized(Locale.ROOT);
@@ -51,7 +52,7 @@ public class MessageTest {
     }
 
     @Test
-    public void format_shouldReturnFormattedMessage() {
+    public void formatShouldReturnFormattedMessage() {
         Map<String, Object> args = new HashMap<>();
         args.put("actual", InstanceType.STRING);
         args.put("expected", InstanceType.INTEGER);

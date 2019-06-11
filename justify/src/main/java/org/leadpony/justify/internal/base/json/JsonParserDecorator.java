@@ -45,6 +45,11 @@ public abstract class JsonParserDecorator extends AbstractStreamJsonParser {
         return parser;
     }
 
+    /**
+     * Assigns the underlying JSON parser.
+     *
+     * @param parser the underlying JSON parser, cannot be {@code null}.
+     */
     protected void setCurrentParser(JsonParser parser) {
         this.parser = parser;
     }

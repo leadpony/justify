@@ -210,15 +210,15 @@ public abstract class Type extends AbstractAssertion {
         public JsonValue getValueAsJson(JsonProvider jsonProvider) {
             JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
             expectedTypes.stream()
-                .map(InstanceType::name)
-                .map(String::toLowerCase)
-                .forEach(builder::add);
+                    .map(InstanceType::name)
+                    .map(String::toLowerCase)
+                    .forEach(builder::add);
             return builder.build();
         }
 
         private boolean testType(InstanceType type) {
-            return expectedTypes.contains(type) ||
-                    (type == InstanceType.INTEGER && expectedTypes.contains(InstanceType.NUMBER));
+            return expectedTypes.contains(type)
+                    || (type == InstanceType.INTEGER && expectedTypes.contains(InstanceType.NUMBER));
         }
     }
 }

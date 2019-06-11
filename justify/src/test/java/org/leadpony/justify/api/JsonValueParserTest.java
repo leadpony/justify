@@ -39,9 +39,9 @@ import org.leadpony.jsonp.testsuite.tests.AbstractJsonValueParserTest;
  */
 public class JsonValueParserTest extends AbstractJsonValueParserTest {
 
-    private static final Logger log = Logger.getLogger(JsonValueParserTest.class.getName());
-    private static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(JsonValueParserTest.class.getName());
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     @ParameterizedTest
     @EnumSource(ParserEventTestCase.class)
@@ -63,10 +63,10 @@ public class JsonValueParserTest extends AbstractJsonValueParserTest {
     }
 
     private static JsonParser createParser(JsonStructure value, JsonSchema schema) {
-        ValidationConfig config = service.createValidationConfig();
+        ValidationConfig config = SERVICE.createValidationConfig();
         config.withSchema(schema);
-        config.withProblemHandler(printer);
-        JsonParserFactory factory = service.createParserFactory(config.getAsMap());
+        config.withProblemHandler(PRINTER);
+        JsonParserFactory factory = SERVICE.createParserFactory(config.getAsMap());
         switch (value.getValueType()) {
         case ARRAY:
             return factory.createParser((JsonArray) value);

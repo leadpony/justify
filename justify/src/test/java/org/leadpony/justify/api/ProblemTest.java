@@ -34,23 +34,23 @@ import org.junit.jupiter.api.Test;
  */
 public class ProblemTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private static final String SCHEMA = "{ \"properties\": { \"foo\": { \"type\": \"string\" } } }";
     private static final String INSTANCE = "{\n\"foo\": 42\n}";
 
     private static Problem createProblem(String schemaDoc, String instanceDoc) {
-        JsonSchema schema = service.readSchema(new StringReader(schemaDoc));
+        JsonSchema schema = SERVICE.readSchema(new StringReader(schemaDoc));
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonReader reader = service.createReader(new StringReader(instanceDoc), schema, handler)) {
+        try (JsonReader reader = SERVICE.createReader(new StringReader(instanceDoc), schema, handler)) {
             reader.readValue();
         }
         return problems.get(0);
     }
 
     @Test
-    public void getMessage_shouldReturnMessage() {
+    public void getMessageShouldReturnMessage() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String message = problem.getMessage(Locale.ROOT);
 
@@ -58,7 +58,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getMessage_shouldReturnDifferentMessageByLocale() {
+    public void getMessageShouldReturnDifferentMessageByLocale() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String message1 = problem.getMessage(Locale.ENGLISH);
         String message2 = problem.getMessage(Locale.JAPANESE);
@@ -69,7 +69,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getContextualMessage_shouldReturnMessageIncludingLocation() {
+    public void getContextualMessageShouldReturnMessageIncludingLocation() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String message = problem.getContextualMessage(Locale.ROOT);
 
@@ -77,7 +77,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getLocation_shouldReturnLocation() {
+    public void getLocationShouldReturnLocation() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         JsonLocation location = problem.getLocation();
 
@@ -86,7 +86,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getPointer_shouldReturnPointer() {
+    public void getPointerShouldReturnPointer() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String pointer = problem.getPointer();
 
@@ -94,7 +94,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getSchema_shouldReturnSchema() {
+    public void getSchemaShouldReturnSchema() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         JsonSchema schema = problem.getSchema();
 
@@ -102,7 +102,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getSchema_shouldReturnBooleanSchema() {
+    public void getSchemaShouldReturnBooleanSchema() {
         Problem problem = createProblem("false", INSTANCE);
         JsonSchema schema = problem.getSchema();
 
@@ -110,7 +110,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getKeyword_shouldReturnKeyword() {
+    public void getKeywordShouldReturnKeyword() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         String keyword = problem.getKeyword();
 
@@ -118,7 +118,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void getKeyword_shouldReturnNull() {
+    public void getKeywordShouldReturnNull() {
         Problem problem = createProblem("false", INSTANCE);
         String keyword = problem.getKeyword();
 
@@ -126,7 +126,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void isResolvable_shouldReturnTrue() {
+    public void isResolvableShouldReturnTrue() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
         boolean actual = problem.isResolvable();
 
@@ -134,7 +134,7 @@ public class ProblemTest {
     }
 
     @Test
-    public void isResolvable_shouldReturnFalse() {
+    public void isResolvableShouldReturnFalse() {
         Problem problem = createProblem("false", INSTANCE);
         boolean actual = problem.isResolvable();
 

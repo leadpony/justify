@@ -39,6 +39,11 @@ public class MinContains extends AbstractKeyword {
         this.limit = limit;
     }
 
+    /**
+     * Returns the value of this keyword.
+     *
+     * @return the value of this keyword.
+     */
     public int value() {
         return limit;
     }

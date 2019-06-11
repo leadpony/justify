@@ -27,11 +27,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test for Base64 content encoding.
- * 
+ *
  * @author leadpony
  */
 public class Base64Test {
-    
+
     public static Stream<Arguments> fixtures() {
         return Stream.of(
                 Arguments.of("", true, bytes("")),
@@ -41,33 +41,32 @@ public class Base64Test {
                 Arguments.of("Zm9vYg==", true, bytes("foob")),
                 Arguments.of("Zm9vYmE=", true, bytes("fooba")),
                 Arguments.of("Zm9vYmFy", true, bytes("foobar")),
-                
+
                 Arguments.of("====", false, null),
                 Arguments.of("Zg", false, null),
                 Arguments.of("Zm8", false, null),
                 Arguments.of("Zm9vYg", false, null),
-                Arguments.of("4rdHFh%2BHYoS8oLdVvbUzEVqB8Lvm7kSPnuwF0AAABYQ%3D", false, null)
-                );
+                Arguments.of("4rdHFh%2BHYoS8oLdVvbUzEVqB8Lvm7kSPnuwF0AAABYQ%3D", false, null));
     }
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void canDecode_shouldReturnExpectedResult(String src, boolean valid, byte[] decoded) {
+    public void canDecodeShouldReturnExpectedResult(String src, boolean valid, byte[] decoded) {
         Base64 base64 = new Base64();
         boolean actual = base64.canDecode(src);
 
         assertThat(actual).isEqualTo(valid);
     }
-    
+
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void decode_shouldDecodeString(String src, boolean valid, byte[] decoded) {
+    public void decodeShouldDecodeString(String src, boolean valid, byte[] decoded) {
         Base64 base64 = new Base64();
         if (valid) {
             byte[] actual = base64.decode(src);
             assertThat(actual).isEqualTo(decoded);
         } else {
-            Throwable thrown = catchThrowable(()->base64.decode(src));
+            Throwable thrown = catchThrowable(() -> base64.decode(src));
             assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
         }
     }

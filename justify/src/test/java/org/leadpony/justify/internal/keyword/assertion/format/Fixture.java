@@ -26,15 +26,15 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * Test fixture.
- * 
+ * A test fixture.
+ *
  * @author leadpony
  */
 class Fixture {
-    
+
     private final String value;
     private final boolean valid;
-    
+
     static Stream<Fixture> load(String name) {
         InputStream in = Fixture.class.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
@@ -44,20 +44,20 @@ class Fixture {
                     .map(Fixture::new);
         }
     }
-    
+
     protected Fixture(JsonObject object) {
         this.value = object.getString("value");
         this.valid = object.getBoolean("valid");
     }
-    
+
     String value() {
         return value;
     }
-    
+
     boolean isValid() {
         return valid;
     }
-    
+
     @Override
     public String toString() {
         return value();

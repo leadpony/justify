@@ -34,13 +34,18 @@ import javax.json.JsonValue;
  *
  * @author leadpony
  */
-class SchemaFixture extends Fixture {
+final class SchemaFixture extends Fixture {
 
     private final String description;
     private final JsonValue schema;
     private final boolean validity;
     private final List<Error> errors;
 
+    /**
+     * A error found by the validation.
+     *
+     * @author leadpony
+     */
     static class Error {
         private final String pointer;
 

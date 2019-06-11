@@ -19,13 +19,9 @@ package org.leadpony.justify.api;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonSchemaBuilder;
-import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.ThrowableAssert.catchThrowable;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -53,14 +49,14 @@ import javax.json.JsonValue;
  */
 public class JsonSchemaBuilderTest {
 
-    private static final JsonValidationService service = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationServices.get();
 
     private JsonSchemaBuilderFactory schemaBuilderfactory;
     private JsonBuilderFactory jsonBuilderFactory;
 
     @BeforeEach
     public void setUp() {
-        this.schemaBuilderfactory = service.createSchemaBuilderFactory();
+        this.schemaBuilderfactory = SERVICE.createSchemaBuilderFactory();
         this.jsonBuilderFactory = Json.createBuilderFactory(null);
     }
 
@@ -71,23 +67,23 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void build_returnsNewSchema() {
+    public void buildShouldReturnNewSchema() {
         // Given
         JsonSchemaBuilder sut = createSchemaBuilder();
         sut.withTitle("Person")
-           .withType(InstanceType.OBJECT)
-           .withProperty("firstName",
-                   createSchemaBuilder().withType(InstanceType.STRING).build())
-           .withProperty("lastName",
-                   createSchemaBuilder().withType(InstanceType.STRING).build())
-           .withProperty("age",
-                   createSchemaBuilder()
-                       .withDescription("Age in years")
-                       .withType(InstanceType.INTEGER)
-                       .withMinimum(0)
-                       .build())
-           .withRequired("firstName", "lastName")
-           ;
+                .withType(InstanceType.OBJECT)
+                .withProperty("firstName",
+                        createSchemaBuilder().withType(InstanceType.STRING).build())
+                .withProperty("lastName",
+                        createSchemaBuilder().withType(InstanceType.STRING).build())
+                .withProperty("age",
+                        createSchemaBuilder()
+                                .withDescription("Age in years")
+                                .withType(InstanceType.INTEGER)
+                                .withMinimum(0)
+                                .build())
+                .withRequired("firstName", "lastName");
+
         // When
         JsonSchema schema = sut.build();
 
@@ -118,7 +114,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withId_addsId() {
+    public void withIdShouldAddId() {
         JsonSchema schema = createSchemaBuilder()
                 .withId(URI.create("https://example.com/example.schema.json"))
                 .build();
@@ -131,7 +127,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withSchema_addsSchema() {
+    public void withSchemaShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withSchema(URI.create("http://json-schema.org/draft-07/schema#"))
                 .build();
@@ -144,7 +140,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withSchema_addsComment() {
+    public void withSchemaShouldAddComment() {
         JsonSchema schema = createSchemaBuilder()
                 .withComment("Not finished.")
                 .build();
@@ -157,7 +153,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withType_addsType() {
+    public void withTypeShouldAddType() {
         JsonSchema schema = createSchemaBuilder()
                 .withType(InstanceType.STRING)
                 .build();
@@ -170,10 +166,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withType_throwsIfEmpty() {
+    public void withTypeShouldThrowIfEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withType();
         });
 
@@ -181,10 +177,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withType_throwsIfNotUnique() {
+    public void withTypeShouldThrowIfNotUnique() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withType(InstanceType.STRING, InstanceType.NUMBER, InstanceType.STRING);
         });
 
@@ -192,7 +188,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withType_addsSetOfTypes() {
+    public void withTypeShouldAddSetOfTypes() {
         Set<InstanceType> typeSet = new LinkedHashSet<>();
         typeSet.add(InstanceType.ARRAY);
         typeSet.add(InstanceType.OBJECT);
@@ -209,10 +205,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withType_throwsIfEmptySet() {
+    public void withTypeShouldThrowIfEmptySet() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withType(new LinkedHashSet<>());
         });
 
@@ -220,7 +216,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withEnum_addsEnumerators() {
+    public void withEnumShouldAddEnumerators() {
         JsonSchema schema = createSchemaBuilder()
                 .withEnum(JsonValue.TRUE, JsonValue.FALSE)
                 .build();
@@ -235,10 +231,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withEnum_throwsIfEmpty() {
+    public void withEnumShouldThrowIfEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withEnum();
         });
 
@@ -246,10 +242,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withEnum_throwsIfNotUnique() {
+    public void withEnumShouldThrowIfNotUnique() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withEnum(JsonValue.TRUE, JsonValue.TRUE);
         });
 
@@ -257,7 +253,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withEnum_addsSetOfEnumerators() {
+    public void withEnumShouldAddSetOfEnumerators() {
         Set<JsonValue> valueSet = new LinkedHashSet<>();
         valueSet.add(JsonValue.TRUE);
         valueSet.add(JsonValue.FALSE);
@@ -276,10 +272,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withEnum_throwsIfEmptySet() {
+    public void withEnumShouldThrowIfEmptySet() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withEnum(new LinkedHashSet<>());
         });
 
@@ -287,7 +283,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withConst_addsConstant() {
+    public void withConstShouldAddConstant() {
         JsonSchema schema = createSchemaBuilder()
                 .withConst(JsonValue.EMPTY_JSON_OBJECT)
                 .build();
@@ -300,7 +296,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMultipleOf_addsInteger() {
+    public void withMultipleOfShouldAddInteger() {
         JsonSchema schema = createSchemaBuilder()
                 .withMultipleOf(5)
                 .build();
@@ -313,7 +309,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMultipleOf_addsNumber() {
+    public void withMultipleOfShouldAddNumber() {
         JsonSchema schema = createSchemaBuilder()
                 .withMultipleOf(new BigDecimal("3.14"))
                 .build();
@@ -326,10 +322,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMultipleOf_throwsIfZero() {
+    public void withMultipleOfShouldThrowIfZero() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMultipleOf(0);
         });
 
@@ -337,10 +333,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMultipleOf_throwsIfNegative() {
+    public void withMultipleOfShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMultipleOf(-1);
         });
 
@@ -348,7 +344,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaximum_addsInteger() {
+    public void withMaximumShouldAddInteger() {
         JsonSchema schema = createSchemaBuilder()
                 .withMaximum(5)
                 .build();
@@ -361,7 +357,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaximum_addsNumber() {
+    public void withMaximumShouldAddNumber() {
         JsonSchema schema = createSchemaBuilder()
                 .withMaximum(new BigDecimal("3.14"))
                 .build();
@@ -374,7 +370,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withExclusiveMaximum_addsInteger() {
+    public void withExclusiveMaximumShouldAddInteger() {
         JsonSchema schema = createSchemaBuilder()
                 .withExclusiveMaximum(5)
                 .build();
@@ -387,7 +383,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withExclusiveMaximum_addsNumber() {
+    public void withExclusiveMaximumShouldAddNumber() {
         JsonSchema schema = createSchemaBuilder()
                 .withExclusiveMaximum(new BigDecimal("3.14"))
                 .build();
@@ -400,7 +396,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinimum_addsInteger() {
+    public void withMinimumShouldAddInteger() {
         JsonSchema schema = createSchemaBuilder()
                 .withMinimum(5)
                 .build();
@@ -413,7 +409,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinimum_addsNumber() {
+    public void withMinimumShouldAddNumber() {
         JsonSchema schema = createSchemaBuilder()
                 .withMinimum(new BigDecimal("3.14"))
                 .build();
@@ -426,7 +422,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withExclusiveMinimum_addsInteger() {
+    public void withExclusiveMinimumShouldAddInteger() {
         JsonSchema schema = createSchemaBuilder()
                 .withExclusiveMinimum(5)
                 .build();
@@ -439,7 +435,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withExclusiveMinimum_addsNumber() {
+    public void withExclusiveMinimumShouldAddNumber() {
         JsonSchema schema = createSchemaBuilder()
                 .withExclusiveMinimum(new BigDecimal("3.14"))
                 .build();
@@ -452,7 +448,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxLength_addsLength() {
+    public void withMaxLengthShouldAddLength() {
         JsonSchema schema = createSchemaBuilder()
                 .withMaxLength(5)
                 .build();
@@ -465,10 +461,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxLength_throwsIfNegative() {
+    public void withMaxLengthShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMaxLength(-1);
         });
 
@@ -476,7 +472,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinLength_addsLength() {
+    public void withMinLengthShouldAddLength() {
         JsonSchema schema = createSchemaBuilder()
                 .withMinLength(5)
                 .build();
@@ -489,10 +485,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinLength_throwsIfNegative() {
+    public void withMinLengthShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMinLength(-1);
         });
 
@@ -500,7 +496,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withPattern_addsPattern() {
+    public void withPatternShouldAddPattern() {
         JsonSchema schema = createSchemaBuilder()
                 .withPattern("a*b")
                 .build();
@@ -513,10 +509,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withPattern_throwsIfInvalidPattern() {
+    public void withPatternShouldThrowIfInvalidPattern() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withPattern("^(abc]");
         });
 
@@ -524,7 +520,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withItems_addsSchemaForAllItems() {
+    public void withItemsShouldAddSchemaForAllItems() {
         JsonSchema schema = createSchemaBuilder()
                 .withType(InstanceType.ARRAY)
                 .withItems(JsonSchema.TRUE)
@@ -539,7 +535,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withItemsArray_addsArrayOfSchemas() {
+    public void withItemsArrayShouldAddArrayOfSchemas() {
         JsonSchema schema = createSchemaBuilder()
                 .withType(InstanceType.ARRAY)
                 .withItemsArray(JsonSchema.TRUE, JsonSchema.FALSE, JsonSchema.EMPTY)
@@ -558,10 +554,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withItemsArray_throwsIfArrayIsEmpty() {
+    public void withItemsArrayShouldThrowIfArrayIsEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withType(InstanceType.ARRAY).withItemsArray();
         });
 
@@ -569,9 +565,9 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withItemsArray_throwsIfListIsEmpty() {
+    public void withItemsArrayShouldThrowIfListIsEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withType(InstanceType.ARRAY).withItemsArray(Collections.emptyList());
         });
 
@@ -579,12 +575,12 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withItemsArray_addsListOfSchemas() {
+    public void withItemsArrayShouldAddListOfSchemas() {
         List<JsonSchema> schemas = Arrays.asList(JsonSchema.TRUE, JsonSchema.FALSE, JsonSchema.EMPTY);
         JsonSchemaBuilder sut = createSchemaBuilder();
         JsonSchema schema = sut.withType(InstanceType.ARRAY)
-           .withItemsArray(schemas)
-           .build();
+                .withItemsArray(schemas)
+                .build();
 
         JsonObject expected = createObjectBuilder()
                 .add("type", "array")
@@ -599,7 +595,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAdditionalItems_addsSchema() {
+    public void withAdditionalItemsShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withAdditionalItems(JsonSchema.TRUE)
                 .build();
@@ -612,7 +608,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxItems_addsCount() {
+    public void withMaxItemsShouldAddCount() {
         JsonSchema schema = createSchemaBuilder()
                 .withMaxItems(5)
                 .build();
@@ -625,10 +621,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxItems_throwsIfNegative() {
+    public void withMaxItemsShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMaxItems(-1);
         });
 
@@ -636,7 +632,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinItems_addsCount() {
+    public void withMinItemsShouldAddCount() {
         JsonSchema schema = createSchemaBuilder()
                 .withMinItems(5)
                 .build();
@@ -649,10 +645,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinItems_throwsIfNegative() {
+    public void withMinItemsShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMinItems(-1);
         });
 
@@ -660,7 +656,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withUniqueItems_addsBoolean() {
+    public void withUniqueItemsShouldAddBoolean() {
         JsonSchema schema = createSchemaBuilder()
                 .withUniqueItems(true)
                 .build();
@@ -673,7 +669,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withContains_addsSchema() {
+    public void withContainsShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withContains(JsonSchema.EMPTY)
                 .build();
@@ -686,7 +682,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxProperties_addsCount() {
+    public void withMaxPropertiesShouldAddCount() {
         JsonSchema schema = createSchemaBuilder()
                 .withMaxProperties(5)
                 .build();
@@ -699,10 +695,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMaxProperties_throwsIfNegative() {
+    public void withMaxPropertiesShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMaxProperties(-1);
         });
 
@@ -710,7 +706,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinProperties_addsCount() {
+    public void withMinPropertiesShouldAddCount() {
         JsonSchema schema = createSchemaBuilder()
                 .withMinProperties(5)
                 .build();
@@ -723,10 +719,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withMinProperties_throwsIfNegative() {
+    public void withMinPropertiesShouldThrowIfNegative() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withMinProperties(-1);
         });
 
@@ -734,7 +730,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withRequired_addsSingleProperty() {
+    public void withRequiredShouldAddSingleProperty() {
         JsonSchema schema = createSchemaBuilder()
                 .withRequired("foo")
                 .build();
@@ -747,7 +743,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withRequired_addsNoProperties() {
+    public void withRequiredShouldAddNoProperties() {
         JsonSchema schema = createSchemaBuilder()
                 .withRequired()
                 .build();
@@ -760,10 +756,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withRequired_throwsIfNotUnique() {
+    public void withRequiredShouldThrowIfNotUnique() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withRequired("foo", "bar", "foo");
         });
 
@@ -771,7 +767,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withRequired_addsSetOfProperties() {
+    public void withRequiredShouldAddSetOfProperties() {
         Set<String> propertySet = new LinkedHashSet<>();
         propertySet.add("foo");
         propertySet.add("bar");
@@ -790,7 +786,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withRequired_addsEmptySetOfProperties() {
+    public void withRequiredShouldAddEmptySetOfProperties() {
         JsonSchema schema = createSchemaBuilder()
                 .withRequired(new LinkedHashSet<>())
                 .build();
@@ -803,7 +799,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withProperty_addsSingleProperty() {
+    public void withPropertyShouldAddSingleProperty() {
         JsonSchema schema = createSchemaBuilder()
                 .withProperty("foo", JsonSchema.EMPTY)
                 .build();
@@ -817,7 +813,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withProperties_addsSetOfProperties() {
+    public void withPropertiesShouldAddSetOfProperties() {
         Map<String, JsonSchema> properties = new HashMap<>();
         properties.put("foo", JsonSchema.TRUE);
         properties.put("bar", JsonSchema.FALSE);
@@ -828,15 +824,15 @@ public class JsonSchemaBuilderTest {
 
         JsonObject expected = createObjectBuilder()
                 .add("properties", createObjectBuilder()
-                    .add("foo", JsonValue.TRUE)
-                    .add("bar", JsonValue.FALSE))
+                        .add("foo", JsonValue.TRUE)
+                        .add("bar", JsonValue.FALSE))
                 .build();
 
         assertThat(schema.toJson()).isEqualTo(expected);
     }
 
     @Test
-    public void withPatternProperty_addsSingleProperty() {
+    public void withPatternPropertyShouldAddSingleProperty() {
         JsonSchema schema = createSchemaBuilder()
                 .withPatternProperty("a*b", JsonSchema.EMPTY)
                 .build();
@@ -850,10 +846,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withPatternProperty_throwsIfInvalidPattern() {
+    public void withPatternPropertyShouldThrowIfInvalidPattern() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withPatternProperty("^(abc]", JsonSchema.EMPTY);
         });
 
@@ -861,7 +857,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withPatternProperties_addsSetOfProperties() {
+    public void withPatternPropertiesShouldAddSetOfProperties() {
         Map<String, JsonSchema> properties = new HashMap<>();
         properties.put("^[a-z]", JsonSchema.TRUE);
         properties.put("^[A-Z]", JsonSchema.FALSE);
@@ -872,15 +868,15 @@ public class JsonSchemaBuilderTest {
 
         JsonObject expected = createObjectBuilder()
                 .add("patternProperties", createObjectBuilder()
-                    .add("^[a-z]", JsonValue.TRUE)
-                    .add("^[A-Z]", JsonValue.FALSE))
+                        .add("^[a-z]", JsonValue.TRUE)
+                        .add("^[A-Z]", JsonValue.FALSE))
                 .build();
 
         assertThat(schema.toJson()).isEqualTo(expected);
     }
 
     @Test
-    public void withAdditionalProperties_addsSchema() {
+    public void withAdditionalPropertiesShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withAdditionalProperties(JsonSchema.FALSE)
                 .build();
@@ -893,7 +889,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDependency_addsSchema() {
+    public void withDependencyShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withDependency("foo", JsonSchema.FALSE)
                 .build();
@@ -907,7 +903,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDependency_addsProperties() {
+    public void withDependencyShouldAddProperties() {
         JsonSchema schema = createSchemaBuilder()
                 .withDependency("foo", "bar", "baz")
                 .build();
@@ -921,10 +917,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDependency_throwsIfNotUnique() {
+    public void withDependencyShouldThrowIfNotUnique() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withDependency("foo", "bar", "baz", "bar");
         });
 
@@ -932,7 +928,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDependency_addsSetOfProperties() {
+    public void withDependencyShouldAddSetOfProperties() {
         Set<String> propertySet = new LinkedHashSet<>();
         propertySet.add("bar");
         propertySet.add("baz");
@@ -950,7 +946,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDependencies_addsDependencies() {
+    public void withDependenciesShouldAddDependencies() {
         Set<String> propertySet = new LinkedHashSet<>();
         propertySet.add("baz");
 
@@ -972,7 +968,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withPropertyNames_addsSchema() {
+    public void withPropertyNamesShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withPropertyNames(JsonSchema.FALSE)
                 .build();
@@ -985,7 +981,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withIf_addsSchema() {
+    public void withIfShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withIf(JsonSchema.TRUE)
                 .build();
@@ -998,7 +994,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withThen_addsSchema() {
+    public void withThenShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withThen(JsonSchema.TRUE)
                 .build();
@@ -1011,7 +1007,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withElse_addsSchema() {
+    public void withElseShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withElse(JsonSchema.TRUE)
                 .build();
@@ -1024,7 +1020,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAllOf_addsSingleSchema() {
+    public void withAllOfShouldAddSingleSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withAllOf(JsonSchema.TRUE)
                 .build();
@@ -1037,10 +1033,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAllOf_throwsIfEmpty() {
+    public void withAllOfShouldThrowIfEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withAllOf();
         });
 
@@ -1048,7 +1044,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAllOf_addsSchemaList() {
+    public void withAllOfShouldAddSchemaList() {
         List<JsonSchema> schemas = Arrays.asList(JsonSchema.TRUE, JsonSchema.FALSE);
 
         JsonSchema schema = createSchemaBuilder()
@@ -1065,10 +1061,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAllOf_throwsIfEmptyList() {
+    public void withAllOfShouldThrowIfEmptyList() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withAllOf(Collections.emptyList());
         });
 
@@ -1076,7 +1072,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAnyOf_addsSingleSchema() {
+    public void withAnyOfShouldAddSingleSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withAnyOf(JsonSchema.TRUE)
                 .build();
@@ -1089,10 +1085,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAnyOf_throwsIfEmpty() {
+    public void withAnyOfShouldThrowIfEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withAnyOf();
         });
 
@@ -1100,7 +1096,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAnyOf_addsSchemaList() {
+    public void withAnyOfShouldAddSchemaList() {
         List<JsonSchema> schemas = Arrays.asList(JsonSchema.TRUE, JsonSchema.FALSE);
 
         JsonSchema schema = createSchemaBuilder()
@@ -1117,10 +1113,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withAnyOf_throwsIfEmptyList() {
+    public void withAnyOfShouldThrowIfEmptyList() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withAnyOf(Collections.emptyList());
         });
 
@@ -1128,7 +1124,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withOneOf_addsSingleSchema() {
+    public void withOneOfShouldAddSingleSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withOneOf(JsonSchema.TRUE)
                 .build();
@@ -1141,10 +1137,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withOneOf_throwsIfEmpty() {
+    public void withOneOfShouldThrowIfEmpty() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withOneOf();
         });
 
@@ -1152,7 +1148,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withOneOf_addsSchemaList() {
+    public void withOneOfShouldAddSchemaList() {
         List<JsonSchema> schemas = Arrays.asList(JsonSchema.TRUE, JsonSchema.FALSE);
 
         JsonSchema schema = createSchemaBuilder()
@@ -1169,10 +1165,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withOneOf_throwsIfEmptyList() {
+    public void withOneOfShouldThrowIfEmptyList() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withOneOf(Collections.emptyList());
         });
 
@@ -1180,7 +1176,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withNot_addsSchema() {
+    public void withNotShouldAddSchema() {
         JsonSchema schema = createSchemaBuilder()
                 .withNot(JsonSchema.TRUE)
                 .build();
@@ -1193,7 +1189,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withFormat_addsAttriute() {
+    public void withFormatShouldAddAttriute() {
         JsonSchema schema = createSchemaBuilder()
                 .withFormat("email")
                 .build();
@@ -1206,10 +1202,10 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withFormat_throwsIfUnknownAttribute() {
+    public void withFormatShouldThrowIfUnknownAttribute() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withFormat("unknown");
         });
 
@@ -1217,7 +1213,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withLaxFormat_addsKnownAttriute() {
+    public void withLaxFormatShouldAddKnownAttriute() {
         JsonSchema schema = createSchemaBuilder()
                 .withLaxFormat("email")
                 .build();
@@ -1230,7 +1226,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withLaxFormat_addsUnknownAttriute() {
+    public void withLaxFormatShouldAddUnknownAttriute() {
         JsonSchema schema = createSchemaBuilder()
                 .withLaxFormat("unknown")
                 .build();
@@ -1243,7 +1239,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withContentEncoding_addsValue() {
+    public void withContentEncodingShouldAddValue() {
         JsonSchema schema = createSchemaBuilder()
                 .withContentEncoding("base64")
                 .build();
@@ -1256,7 +1252,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withContentMediaType_addsValue() {
+    public void withContentMediaTypeShouldAddValue() {
         JsonSchema schema = createSchemaBuilder()
                 .withContentMediaType("application/json")
                 .build();
@@ -1269,19 +1265,18 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withContentMediaType_throwsIfInvalidMediaType() {
+    public void withContentMediaTypeShouldThrowIfInvalidMediaType() {
         JsonSchemaBuilder sut = createSchemaBuilder();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             sut.withContentMediaType(";");
         });
 
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
 
-
     @Test
-    public void withDefinition_addsDefinition() {
+    public void withDefinitionShouldAddDefinition() {
         JsonSchema schema = createSchemaBuilder()
                 .withDefinition("foo", JsonSchema.EMPTY)
                 .build();
@@ -1295,7 +1290,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDefinitions_addsDefinitions() {
+    public void withDefinitionsShouldAddDefinitions() {
         Map<String, JsonSchema> definitions = new LinkedHashMap<>();
         definitions.put("foo", JsonSchema.TRUE);
         definitions.put("bar", JsonSchema.FALSE);
@@ -1314,7 +1309,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withTitle_addsTitle() {
+    public void withTitleShouldAddTitle() {
         JsonSchema schema = createSchemaBuilder()
                 .withTitle("untitled")
                 .build();
@@ -1327,7 +1322,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDescription_addsDescription() {
+    public void withDescriptionShouldAddDescription() {
         JsonSchema schema = createSchemaBuilder()
                 .withDescription("detailed description")
                 .build();
@@ -1340,7 +1335,7 @@ public class JsonSchemaBuilderTest {
     }
 
     @Test
-    public void withDefault_addsDefaultValue() {
+    public void withDefaultShouldAddDefaultValue() {
         JsonSchema schema = createSchemaBuilder()
                 .withDefault(JsonValue.EMPTY_JSON_OBJECT)
                 .build();

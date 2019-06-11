@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.base;
 
 /**
  * Utility class operating on ASCII characters.
- * 
+ *
  * @author leadpony
  */
 public final class AsciiCode {
@@ -27,44 +27,44 @@ public final class AsciiCode {
     }
 
     /**
-     * Determines if the specified character is an alphabet
-     * and an ASCII code.
-     * 
+     * Determines if the specified character is an alphabet and an ASCII code.
+     *
      * @param c the character to test.
      * @return {@code true} if the specified character is an alphabet.
      */
     public static boolean isAlphabetic(int c) {
-        return (c >= 'A' &&  c <= 'Z') ||  (c >= 'a' &&  c <= 'z');
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
     }
-    
+
     /**
-     * Determines if the specified character is a digit
-     * and an ASCII code.
-     * 
+     * Determines if the specified character is a digit and an ASCII code.
+     *
      * @param c the character to test.
      * @return {@code true} if the specified character is a digit.
      */
     public static boolean isDigit(int c) {
         return c >= '0' && c <= '9';
     }
-    
+
     public static boolean isAlphanumeric(int c) {
         return isAlphabetic(c) || isDigit(c);
     }
-    
+
     public static boolean isHexDigit(int c) {
-        return isDigit(c) ||
-               (c >= 'A' && c <= 'F') ||
-               (c >= 'a' && c <= 'f');
+        return isDigit(c)
+                || (c >= 'A' && c <= 'F')
+                || (c >= 'a' && c <= 'f');
     }
-    
+
+    private static final int RADIX = 10;
+
     public static int hexDigitToValue(int c) {
         if (isDigit(c)) {
             return c - '0';
         } else if (c >= 'a' && c <= 'f') {
-            return 10 + (c - 'a');
+            return RADIX + (c - 'a');
         } else if (c >= 'A' && c <= 'F') {
-            return 10 + (c - 'A');
+            return RADIX + (c - 'A');
         }
         throw new IllegalArgumentException();
     }

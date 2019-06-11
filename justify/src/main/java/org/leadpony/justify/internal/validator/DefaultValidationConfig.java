@@ -33,8 +33,8 @@ import org.leadpony.justify.api.ValidationConfig;
  * @author leadpony
  */
 @SuppressWarnings("serial")
-public class DefaultValidationConfig extends HashMap<String, Object >
-    implements ValidationConfig {
+public class DefaultValidationConfig extends HashMap<String, Object>
+        implements ValidationConfig {
 
     public DefaultValidationConfig() {
     }
@@ -73,7 +73,7 @@ public class DefaultValidationConfig extends HashMap<String, Object >
     @Override
     public ValidationConfig withProblemHandler(ProblemHandler handler) {
         requireNonNull(handler, "handler");
-        return withProblemHandlerFactory(p->handler);
+        return withProblemHandlerFactory(p -> handler);
     }
 
     @Override

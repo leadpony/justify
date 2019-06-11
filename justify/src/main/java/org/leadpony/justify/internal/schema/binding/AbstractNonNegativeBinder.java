@@ -32,7 +32,6 @@ abstract class AbstractNonNegativeBinder extends AbstractBinder {
             int value = parser.getInt();
             if (value >= 0) {
                 context.addKeyword(createKeyword(value));
-            } else {
             }
         } else {
             skipValue(event, parser);

@@ -16,7 +16,7 @@
 
 /**
  * Service Provider Interface (SPI) to plug in implementations for JSON validation services.
- * 
+ *
  * <p>Please note that this package is not intended to be used directly by end users.</p>
  */
 package org.leadpony.justify.spi;

@@ -23,17 +23,17 @@ import javax.json.JsonNumber;
 
 /**
  * Implementation of {@link JsonNumber}.
- * 
+ *
  * @author leadpony
  */
 class BigDecimalJsonNumber implements JsonNumber {
 
     private final BigDecimal value;
-    
+
     BigDecimalJsonNumber(BigDecimal value) {
         this.value = value;
     }
-    
+
     @Override
     public ValueType getValueType() {
         return ValueType.NUMBER;
@@ -83,12 +83,12 @@ class BigDecimalJsonNumber implements JsonNumber {
     public BigDecimal bigDecimalValue() {
         return value;
     }
-    
+
     @Override
     public int hashCode() {
         return value.stripTrailingZeros().hashCode();
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -97,7 +97,7 @@ class BigDecimalJsonNumber implements JsonNumber {
         if (!(other instanceof JsonNumber)) {
             return false;
         }
-        JsonNumber otherNumber  = (JsonNumber)other;
+        JsonNumber otherNumber = (JsonNumber) other;
         return value.compareTo(otherNumber.bigDecimalValue()) == 0;
     }
 

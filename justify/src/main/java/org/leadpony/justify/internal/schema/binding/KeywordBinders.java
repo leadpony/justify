@@ -26,9 +26,9 @@ import org.leadpony.justify.api.SpecVersion;
  *
  * @author leadpony
  */
-public class KeywordBinders {
+public final class KeywordBinders {
 
-    private static final KeywordBinder[] binderList = {
+    private static final KeywordBinder[] BINDER_LIST = {
             new AdditionalItemsBinder(),
             new AdditionalPropertiesBinder(),
             new AllOfBinder(),
@@ -82,7 +82,7 @@ public class KeywordBinders {
             new Draft04TypeBinder(),
     };
 
-    private static final Map<SpecVersion, Map<String, KeywordBinder>> bindersBySpec = groupBindersBySpec();
+    private static final Map<SpecVersion, Map<String, KeywordBinder>> BINDER_BY_SPEC = groupBindersBySpec();
 
     /**
      * Returns all keyword binders avaiable for the specified spec version.
@@ -91,7 +91,7 @@ public class KeywordBinders {
      * @return all keyword binders.
      */
     public static Map<String, KeywordBinder> getBinders(SpecVersion version) {
-        return bindersBySpec.get(version);
+        return BINDER_BY_SPEC.get(version);
     }
 
     private static Map<SpecVersion, Map<String, KeywordBinder>> groupBindersBySpec() {
@@ -101,7 +101,7 @@ public class KeywordBinders {
             map.put(v, new HashMap<>());
         }
 
-        for (KeywordBinder b : binderList) {
+        for (KeywordBinder b : BINDER_LIST) {
             for (SpecVersion v : b.getSupportedVersions()) {
                 map.get(v).put(b.name(), b);
             }

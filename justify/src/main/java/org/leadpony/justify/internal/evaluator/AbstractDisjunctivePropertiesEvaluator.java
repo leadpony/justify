@@ -29,7 +29,8 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class AbstractDisjunctivePropertiesEvaluator extends AbstractDisjunctiveChildrenEvaluator {
 
-    public AbstractDisjunctivePropertiesEvaluator(EvaluatorContext context, ProblemBuilderFactory problemBuilderFactory) {
+    public AbstractDisjunctivePropertiesEvaluator(EvaluatorContext context,
+            ProblemBuilderFactory problemBuilderFactory) {
         super(context, Event.END_OBJECT, problemBuilderFactory);
     }
 

@@ -85,7 +85,7 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         private int index;
         private JsonInstanceBuilder builder;
 
-        private AssertionEvaluator(EvaluatorContext context) {
+        protected AssertionEvaluator(EvaluatorContext context) {
             super(context);
             this.builderFactory = context.getJsonBuilderFactory();
         }
@@ -149,7 +149,7 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
      *
      * @author leadpony
      */
-    private class NegatedAssertionEvaluator extends AssertionEvaluator {
+    private final class NegatedAssertionEvaluator extends AssertionEvaluator {
 
         private NegatedAssertionEvaluator(EvaluatorContext context) {
             super(context);

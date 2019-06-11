@@ -93,6 +93,12 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         return schema;
     }
 
+    /**
+     * Returns the format attribute of the specified name.
+     *
+     * @param name the name of the format attribute.
+     * @return the format attribute.
+     */
     protected FormatAttribute getFormatAttribute(String name) {
         FormatAttribute attribute = spec.getFormatAttribute(name);
         if (attribute == null && isStrictWithFormats()) {
@@ -102,10 +108,22 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         return attribute;
     }
 
+    /**
+     * Returns the encoding scheme of the specified name.
+     *
+     * @param name the name of the encoding scheme.
+     * @return the encoding scheme.
+     */
     protected ContentEncodingScheme getEncodingScheme(String name) {
         return spec.getEncodingScheme(name);
     }
 
+    /**
+     * Returns the MIME type of the specified value.
+     *
+     * @param value the value of the MIME type.
+     * @return the MIME type.
+     */
     protected ContentMimeType getMimeType(String value) {
         return spec.getMimeType(value);
     }
@@ -147,6 +165,11 @@ public class GenericSchemaReader extends AbstractBasicSchemaReader {
         }
     }
 
+    /**
+     * A builder of a JSON schema.
+     *
+     * @author leadpony
+     */
     @SuppressWarnings("serial")
     private class SchemaBuilder extends LinkedHashMap<String, SchemaKeyword> implements BindingContext {
 

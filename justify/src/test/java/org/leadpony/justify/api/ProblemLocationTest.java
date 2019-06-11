@@ -30,10 +30,6 @@ import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonSchemaReader;
-import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * A test class for testing problem locations.
@@ -42,11 +38,11 @@ import org.leadpony.justify.api.ProblemHandler;
  */
 public class ProblemLocationTest {
 
-    private static final Logger log = Logger.getLogger(ProblemLocationTest.class.getName());
-    protected static final JsonValidationService service = JsonValidationServices.get();
-    private static final ProblemHandler printer = service.createProblemPrinter(log::info);
+    private static final Logger LOG = Logger.getLogger(ProblemLocationTest.class.getName());
+    protected static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
-    private static final String[] files = {
+    private static final String[] FILES = {
             "problem/additionalItems.txt",
             "problem/additionalItems-false.txt",
             "problem/additionalProperties.txt",
@@ -78,7 +74,7 @@ public class ProblemLocationTest {
     };
 
     public static Stream<ProblemLocationFixture> fixtureProvider() {
-        return Stream.of(files).map(ProblemLocationFixture::readFrom);
+        return Stream.of(FILES).map(ProblemLocationFixture::readFrom);
     }
 
     @ParameterizedTest
@@ -86,7 +82,7 @@ public class ProblemLocationTest {
     public void testProblem(ProblemLocationFixture fixture) {
         JsonSchema schema = readSchema(fixture.schema());
         List<Problem> problems = new ArrayList<>();
-        JsonReader reader = service.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
+        JsonReader reader = SERVICE.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
         reader.readValue();
         assertThat(problems).hasSameSizeAs(fixture.problems());
         Iterator<Problem> it = problems.iterator();
@@ -104,14 +100,14 @@ public class ProblemLocationTest {
     }
 
     private JsonSchema readSchema(String schema) {
-        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
+        JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(schema));
         return reader.read();
     }
 
     private void printProblems(List<Problem> problems, ProblemLocationFixture fixture) {
         if (!problems.isEmpty()) {
-            log.info(fixture.toString());
-            printer.handleProblems(problems);
+            LOG.info(fixture.toString());
+            PRINTER.handleProblems(problems);
         }
     }
 }

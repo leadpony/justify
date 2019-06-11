@@ -26,22 +26,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Ipv6} class.
- * 
+ * A test class for {@link Ipv6}.
+ *
  * @author leadpony
  */
 public class Ipv6Test {
 
     // System under test
     private static Ipv6 sut;
-  
+
     private static int index;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Ipv6();
     }
-    
+
     public static Stream<Fixture> provideFixtures() {
         return Fixture.load("ipv6.json");
     }

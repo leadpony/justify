@@ -60,7 +60,8 @@ public class ValidateTest {
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "true.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "false.schema.json"),
                 Fixture.of(Status.VALID, "-s", "empty.schema.json", "-r", "invalid-id.schema.json"),
-                Fixture.of(Status.VALID, "-s", "company.schema.json", "-r", "person.schema.json", "geographical-location.schema.json"),
+                Fixture.of(Status.VALID, "-s", "company.schema.json", "-r", "person.schema.json",
+                        "geographical-location.schema.json"),
                 Fixture.of(Status.VALID, "-s", "company.schema.json", "-catalog", "catalog.json"),
                 Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "nonexistent.json"),
                 Fixture.of(Status.FAILED, "-s", "company.schema.json", "-catalog", "malformed.json"),
@@ -71,7 +72,8 @@ public class ValidateTest {
                 Fixture.of(Status.VALID, "-s", "arrays.schema.json", "-i", "arrays.json"),
                 Fixture.of(Status.INVALID, "-s", "arrays.schema.json", "-i", "arrays-invalid.json"),
                 Fixture.of(Status.VALID, "-s", "geographical-location.schema.json", "-i", "geographical-location.json"),
-                Fixture.of(Status.INVALID, "-s", "geographical-location.schema.json", "-i", "geographical-location-invalid.json"),
+                Fixture.of(Status.INVALID, "-s", "geographical-location.schema.json", "-i",
+                        "geographical-location-invalid.json"),
                 Fixture.of(Status.VALID, "-s", "person.schema.json", "-i", "person.json"),
                 Fixture.of(Status.INVALID, "-s", "person.schema.json", "-i", "person-invalid.json"),
                 Fixture.of(Status.INVALID, "-s", "person.schema.json", "-i", "person-malformed.json"),
@@ -80,13 +82,17 @@ public class ValidateTest {
                 Fixture.of(Status.INVALID, "-s", "person.schema.json", "-i", "person-invalid.json", "person.json"),
 
                 // Validates an instance against a schema with referenced schemas.
-                Fixture.of(Status.VALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product.json"),
-                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product-invalid.json"),
-                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i", "product-invalid.json", "product.json"),
+                Fixture.of(Status.VALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i",
+                        "product.json"),
+                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i",
+                        "product-invalid.json"),
+                Fixture.of(Status.INVALID, "-s", "product.schema.json", "-r", "geographical-location.schema.json", "-i",
+                        "product-invalid.json", "product.json"),
                 Fixture.of(Status.VALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i", "company.json"),
-                Fixture.of(Status.INVALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i", "company-invalid.json"),
-                Fixture.of(Status.INVALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i", "company-invalid.json", "company.json")
-                );
+                Fixture.of(Status.INVALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i",
+                        "company-invalid.json"),
+                Fixture.of(Status.INVALID, "-s", "company.schema.json", "-catalog", "catalog.json", "-i",
+                        "company-invalid.json", "company.json"));
     }
 
     private static int index = 1;

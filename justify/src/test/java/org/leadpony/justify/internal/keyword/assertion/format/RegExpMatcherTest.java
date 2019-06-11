@@ -27,15 +27,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
+ * A test class for {@link RegExpMatcher}.
+ *
  * @author leadpony
  */
 public class RegExpMatcherTest {
-    
+
     public static Stream<Arguments> provideGroupFixtures() {
         return Stream.of(
-            Arguments.of("(?<fst>.)(?<snd>.)", Arrays.asList("fst", "snd")),
-            Arguments.of("(?<fst>.)|(?<snd>.)", Arrays.asList("fst", "snd"))
-        );
+                Arguments.of("(?<fst>.)(?<snd>.)", Arrays.asList("fst", "snd")),
+                Arguments.of("(?<fst>.)|(?<snd>.)", Arrays.asList("fst", "snd")));
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -43,7 +44,7 @@ public class RegExpMatcherTest {
     public void testGroups(String pattern, List<String> names) {
         RegExpMatcher matcher = new UnicodeRegExpMatcher(pattern);
         boolean result = matcher.matches();
-        
+
         assertThat(result).isTrue();
         assertThat(matcher.groupNames()).containsExactlyInAnyOrderElementsOf(names);
     }

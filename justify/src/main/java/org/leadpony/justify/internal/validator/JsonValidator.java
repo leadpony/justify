@@ -163,15 +163,26 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
         return !currentProblems.isEmpty();
     }
 
+    /**
+     * Dispatches the found problems to the handlers.
+     */
     protected void dispatchProblems() {
         this.problemHandler.handleProblems(currentProblems);
         currentProblems.clear();
     }
 
+    /**
+     * Assigns a handler of parser events.
+     *
+     * @param eventHandler the handler of parser events.
+     */
     protected void setEventHandler(ParserEventHandler eventHandler) {
         this.eventHandler = eventHandler;
     }
 
+    /**
+     * Defaultizes the handler of parser events.
+     */
     protected void resetEventHandler() {
         if (this.evaluator != null) {
             this.eventHandler = this;

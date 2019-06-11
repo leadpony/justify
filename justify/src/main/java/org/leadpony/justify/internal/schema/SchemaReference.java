@@ -84,6 +84,12 @@ public class SchemaReference extends AbstractJsonSchema {
         return targetId;
     }
 
+    /**
+     * Checks if this schema reference has a referenced schema or not.
+     *
+     * @return {@code true} if this reference has a referenced schema, {@code false}
+     *         otherwise.
+     */
     public boolean hasReferencedSchema() {
         return referencedSchema != null;
     }

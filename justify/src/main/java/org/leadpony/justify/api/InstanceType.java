@@ -40,11 +40,11 @@ public enum InstanceType {
     /** JSON object. */
     STRING,
     /** JSON number without fractional part. */
-    INTEGER
-    ;
+    INTEGER;
 
     /**
      * Checks if this type is numeric or not.
+     *
      * @return {@code true} if this type is numeric, {@code false} otherwise.
      */
     public boolean isNumeric() {
@@ -52,8 +52,9 @@ public enum InstanceType {
     }
 
     /**
-     * Checks if this type can contain other types or not.
-     * A container is either JSON array or JSON object.
+     * Checks if this type can contain other types or not. A container is either
+     * JSON array or JSON object.
+     *
      * @return {@code true} if this type is container, {@code false} otherwise.
      */
     public boolean isContainer() {
@@ -62,6 +63,7 @@ public enum InstanceType {
 
     /**
      * Returns the type of the specified JSON value.
+     *
      * @param value the JSON value whose type will be returned.
      * @return the type of the JSON value.
      * @throws NullPointerException if the specified {@code value} is {@code null}.
@@ -76,7 +78,7 @@ public enum InstanceType {
         case STRING:
             return STRING;
         case NUMBER:
-            return ((JsonNumber)value).isIntegral() ? INTEGER : NUMBER;
+            return ((JsonNumber) value).isIntegral() ? INTEGER : NUMBER;
         case TRUE:
         case FALSE:
             return BOOLEAN;

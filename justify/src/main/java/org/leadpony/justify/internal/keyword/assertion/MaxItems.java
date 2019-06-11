@@ -64,6 +64,11 @@ public class MaxItems extends AbstractAssertion implements ArrayKeyword {
         return jsonProvider.createValue(limit);
     }
 
+    /**
+     * An evaluator of this keyword.
+     *
+     * @author leadpony
+     */
     static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int maxItems;

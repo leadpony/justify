@@ -22,17 +22,18 @@ import org.leadpony.justify.internal.base.AsciiCode;
 
 /**
  * Matcher for URI conformant to RFC 3986.
- * 
+ *
  * @author leadpony
- * 
+ *
  * @see <a href="https://tools.ietf.org/html/rfc3986">
- * "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC 3986</a>
+ *      "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC
+ *      3986</a>
  */
 class UriMatcher extends FormatMatcher {
-    
+
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input character sequence.
      */
     UriMatcher(CharSequence input) {
@@ -43,7 +44,7 @@ class UriMatcher extends FormatMatcher {
     boolean all() {
         return uri();
     }
-    
+
     boolean uri() {
         if (scheme() && hasNext(':')) {
             next();
@@ -65,16 +66,16 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean scheme() {
         final int mark = pos();
         if (hasNext()) {
             int c = next();
             if (AsciiCode.isAlphabetic(c)) {
-                while(hasNext() && peek() != ':') {
+                while (hasNext() && peek() != ':') {
                     c = next();
-                    if (AsciiCode.isAlphanumeric(c) || 
-                        c == '+' || c == '-' || c == '.') {
+                    if (AsciiCode.isAlphanumeric(c)
+                            || c == '+' || c == '-' || c == '.') {
                         continue;
                     } else {
                         return backtrack(mark);
@@ -117,7 +118,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean userinfo() {
         final int start = pos();
         while (hasNext()) {
@@ -138,13 +139,9 @@ class UriMatcher extends FormatMatcher {
     }
 
     boolean host() {
-        if (ipLiteral() || ipv4Address() || regName()) {
-            return true;
-        } else {
-            return false;
-        }
+        return (ipLiteral() || ipv4Address() || regName());
     }
-    
+
     boolean ipLiteral() {
         if (hasNext('[')) {
             next();
@@ -157,7 +154,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean ipvFuture() {
         if (hasNext('v') || hasNext('V')) {
             next();
@@ -183,7 +180,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean ipv6Address() {
         final int start = pos();
         while (hasNext()) {
@@ -196,7 +193,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean ipv4Address() {
         final int start = pos();
         while (hasNext()) {
@@ -245,7 +242,7 @@ class UriMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean pathNoscheme() {
         if (segmentNzNc()) {
             while (hasNext('/')) {
@@ -257,7 +254,7 @@ class UriMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean pathAbsolute() {
         if (hasNext('/')) {
             next();
@@ -272,7 +269,7 @@ class UriMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean pathRootless() {
         if (segmentNz()) {
             while (hasNext('/')) {
@@ -284,7 +281,7 @@ class UriMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean pathEmpty() {
         if (hasNext()) {
             int c = peek();
@@ -294,13 +291,13 @@ class UriMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean segment() {
         while (pchar()) {
         }
         return true;
     }
-    
+
     boolean segmentNz() {
         if (pchar()) {
             while (pchar()) {
@@ -309,7 +306,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean segmentNzNc() {
         int length = 0;
         while (hasNext()) {
@@ -327,7 +324,7 @@ class UriMatcher extends FormatMatcher {
         }
         return length > 0;
     }
-    
+
     boolean pchar() {
         if (hasNext()) {
             if (unreserved() || pctEncoded()) {
@@ -341,14 +338,14 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
- 
+
     /**
      * Rule for query.
      * <p>
-     * The query component is terminated by a number sign ("#") character
-     * or by the end of the URI.
+     * The query component is terminated by a number sign ("#") character or by the
+     * end of the URI.
      * </p>
-     * 
+     *
      * @return {@code true} if the query component is valid.
      */
     boolean query() {
@@ -371,7 +368,7 @@ class UriMatcher extends FormatMatcher {
      * <p>
      * The fragment component is terminated by the end of the URI.
      * </p>
-     * 
+     *
      * @return {@code true} if the fragment component is valid.
      */
     boolean fragment() {
@@ -388,7 +385,7 @@ class UriMatcher extends FormatMatcher {
         }
         return true;
     }
-    
+
     boolean unreserved() {
         if (hasNext() && UriCode.isUnreserved(peek())) {
             next();
@@ -396,13 +393,13 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean pctEncoded() {
         if (hasNext('%')) {
             // Skips '%'
             next();
-            if (AsciiCode.isHexDigit(next()) &&
-                AsciiCode.isHexDigit(next())) {
+            if (AsciiCode.isHexDigit(next())
+                    && AsciiCode.isHexDigit(next())) {
                 return true;
             }
             return fail();
@@ -411,7 +408,7 @@ class UriMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     boolean relativeRef() {
         if (relativePart()) {
             if (hasNext('?')) {
@@ -430,7 +427,7 @@ class UriMatcher extends FormatMatcher {
         }
         return false;
     }
-    
+
     boolean relativePart() {
         if (hasNext('/')) {
             final int mark = pos();
@@ -444,7 +441,7 @@ class UriMatcher extends FormatMatcher {
         }
         return pathNoscheme() || pathEmpty();
     }
-    
+
     private static CharSequence decodeAllUnreserved(CharSequence input) {
         StringBuilder b = new StringBuilder();
         final int length = input.length();
@@ -471,31 +468,31 @@ class UriMatcher extends FormatMatcher {
         }
         return b.toString();
     }
-    
+
     private static int decodePercentEncoded(int high, int low) {
         int codePoint = -1;
         if (AsciiCode.isHexDigit(high) && AsciiCode.isHexDigit(low)) {
-            codePoint = AsciiCode.hexDigitToValue(high) * 16 +
-                        AsciiCode.hexDigitToValue(low);
+            codePoint = AsciiCode.hexDigitToValue(high) * 16
+                    + AsciiCode.hexDigitToValue(low);
         }
         return codePoint;
     }
-    
-    private static final int[] GEN_DELIMS = { ':', '/', '?', '#', '[', ']', '@' };
-    private static final int[] SUB_DELIMS = { '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=' };
 
-    private static final BitSet genDelims = new BitSet();
-    private static final BitSet subDelims = new BitSet();
-    private static final BitSet reserved = new BitSet();
-    
+    private static final int[] GEN_DELIMS = {':', '/', '?', '#', '[', ']', '@'};
+    private static final int[] SUB_DELIMS = {'!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '='};
+
+    private static final BitSet GEN_DELIMS_SET = new BitSet();
+    private static final BitSet SUB_DELIMS_SET = new BitSet();
+    private static final BitSet RESERVED = new BitSet();
+
     static {
         for (int c : GEN_DELIMS) {
-            genDelims.set(c);
+            GEN_DELIMS_SET.set(c);
         }
         for (int c : SUB_DELIMS) {
-            subDelims.set(c);
+            SUB_DELIMS_SET.set(c);
         }
-        reserved.or(genDelims);
-        reserved.or(subDelims);
+        RESERVED.or(GEN_DELIMS_SET);
+        RESERVED.or(SUB_DELIMS_SET);
     }
 }

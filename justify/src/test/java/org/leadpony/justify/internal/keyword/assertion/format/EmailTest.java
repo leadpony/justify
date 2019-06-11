@@ -27,36 +27,34 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Test cases for {@link Email} class.
- * 
+ * A test class for {@link Email}.
+ *
  * @author leadpony
  */
 public class EmailTest {
 
     // System under test
     private static Email sut;
-    
+
     @BeforeAll
     public static void setUpOnce() {
         sut = new Email();
     }
-    
-    private static final List<String> emails = Arrays.asList(
+
+    private static final List<String> EMAILS = Arrays.asList(
             "email.json",
             "email-rfc3696.json",
-            "/be/abigail/rfc_rfc822_address/address.json"
-            );
-    
-    private static final List<String> idnEmails = Arrays.asList(
-            "idn-email.json"
-            );
+            "/be/abigail/rfc_rfc822_address/address.json");
+
+    private static final List<String> IDN_EMAILS = Arrays.asList(
+            "idn-email.json");
 
     public static Stream<Fixture> provideEmails() {
-        return emails.stream().flatMap(Fixture::load);
+        return EMAILS.stream().flatMap(Fixture::load);
     }
 
     public static Stream<Fixture> provideIdnEmails() {
-        return idnEmails.stream().flatMap(Fixture::load);
+        return IDN_EMAILS.stream().flatMap(Fixture::load);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")

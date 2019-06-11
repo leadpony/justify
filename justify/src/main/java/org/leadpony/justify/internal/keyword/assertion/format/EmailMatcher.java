@@ -22,25 +22,27 @@ import java.util.BitSet;
 
 /**
  * Matcher for email addresses.
- * 
+ *
  * @author leadpony
  */
 class EmailMatcher extends FormatMatcher {
-    
+
     static final int MAX_LOCAL_PART_CHARS = 64;
     static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
-  
+
     @SuppressWarnings("serial")
-    static final BitSet atomTextCharset = new BitSet(128) {{
-        for (int i = 0; i < ATOM_TEXT_CHARS.length(); i++) {
-            set(ATOM_TEXT_CHARS.charAt(i));
+    static final BitSet ATOM_TEXT_CHARSET = new BitSet(128) {
+        {
+            for (int i = 0; i < ATOM_TEXT_CHARS.length(); i++) {
+                set(ATOM_TEXT_CHARS.charAt(i));
+            }
         }
-    }};
-    
+    };
+
     EmailMatcher(CharSequence input) {
         super(input);
     }
-    
+
     @Override
     public boolean all() {
         localPart();
@@ -51,7 +53,7 @@ class EmailMatcher extends FormatMatcher {
             return false;
         }
     }
-    
+
     private void localPart() {
         final int start = pos();
         zeroOrMoreComments();
@@ -66,7 +68,7 @@ class EmailMatcher extends FormatMatcher {
             fail();
         }
     }
-    
+
     private void dotAtom() {
         atomText();
         while (peek() == '.') {
@@ -74,7 +76,7 @@ class EmailMatcher extends FormatMatcher {
             atomText();
         }
     }
-    
+
     private void atomText() {
         int length = 0;
         for (;;) {
@@ -87,13 +89,13 @@ class EmailMatcher extends FormatMatcher {
                 length++;
             } else {
                 fail();
-            }                
+            }
         }
         if (length == 0) {
             fail();
         }
     }
-    
+
     private void quotedString() {
         // Skips opening quote.
         int c = next();
@@ -104,14 +106,12 @@ class EmailMatcher extends FormatMatcher {
                 }
             } else if (isWhiteSpace(c) || c == '\r') {
                 foldingWhiteSpace();
-            } else if (checkQuotedLetter(c)) {
-                // good
-            } else {
+            } else if (!checkQuotedLetter(c)) {
                 fail();
             }
         }
     }
-    
+
     private void domainPart() {
         final int start = pos();
         zeroOrMoreComments();
@@ -129,21 +129,19 @@ class EmailMatcher extends FormatMatcher {
             fail();
         }
     }
-    
+
     private void domainLiteral() {
         // Skips opening bracket.
         int c = next();
         while ((c = next()) != ']') {
             if (isWhiteSpace(c) || c == '\r') {
                 foldingWhiteSpace();
-            } else if (checkDomainLiteralLetter(c)) {
-                // good;
-            } else {
+            } else if (!checkDomainLiteralLetter(c)) {
                 fail();
             }
         }
     }
-    
+
     private void hostname() {
         final int start = pos();
         while (hasNext()) {
@@ -156,7 +154,7 @@ class EmailMatcher extends FormatMatcher {
         }
         createHostnameMatcher(start, pos()).all();
     }
-    
+
     /**
      * Zero or more comments.
      */
@@ -171,7 +169,7 @@ class EmailMatcher extends FormatMatcher {
             }
         }
     }
-    
+
     private void comment() {
         // Skips opening parenthesis.
         next();
@@ -196,7 +194,7 @@ class EmailMatcher extends FormatMatcher {
             }
         }
     }
-    
+
     /**
      * Folding white space (optional).
      */
@@ -213,46 +211,46 @@ class EmailMatcher extends FormatMatcher {
             }
         }
     }
-    
+
     private void zeroOrMoreWhiteSpaces() {
         while (hasNext() && isWhiteSpace(peek())) {
             next();
         }
     }
-    
+
     protected boolean checkQuotedLetter(int c) {
         return c >= 32 && c < 127;
     }
-    
+
     protected boolean checkAtomLetter(int c) {
-        return isAlphanumeric(c) || atomTextCharset.get(c);
+        return isAlphanumeric(c) || ATOM_TEXT_CHARSET.get(c);
     }
-    
+
     protected boolean checkDomainLiteralLetter(int c) {
-        return (c >= 33 && c <= 90) ||
-               (c >= 94 && c <= 126);
+        return (c >= 33 && c <= 90)
+                || (c >= 94 && c <= 126);
     }
-    
+
     protected boolean checkCommentLetter(int c) {
-        return isNonWhiteSpaceControl(c) ||
-                (c >= 33 && c <= 39) ||
-                (c >= 42 && c <= 91) ||
-                (c >= 93 && c <= 126);
+        return isNonWhiteSpaceControl(c)
+                || (c >= 33 && c <= 39)
+                || (c >= 42 && c <= 91)
+                || (c >= 93 && c <= 126);
     }
-    
+
     protected FormatMatcher createHostnameMatcher(int start, int end) {
         return new HostnameMatcher(input(), start, end);
     }
-    
+
     private static boolean isWhiteSpace(int c) {
         return c == ' ' || c == '\t';
     }
-    
+
     private static boolean isNonWhiteSpaceControl(int c) {
-        return (c >= 1 && c <= 9) ||
-               (c == 11) ||
-               (c == 12) ||
-               (c >= 14 && c <= 31) ||
-               (c == 127);
+        return (c >= 1 && c <= 9)
+                || (c == 11)
+                || (c == 12)
+                || (c >= 14 && c <= 31)
+                || (c == 127);
     }
 }

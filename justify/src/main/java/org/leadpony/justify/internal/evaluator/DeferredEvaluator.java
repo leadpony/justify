@@ -28,28 +28,28 @@ import org.leadpony.justify.internal.problem.ProblemList;
 
 /**
  * Evaluator which retains the found problems and dispatches them later.
- * 
+ *
  * @author leadpony
  */
 class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     private final Evaluator evaluator;
     private ProblemList problems;
-    
+
     /**
      * Constructs this evaluator.
-     * 
+     *
      * @param evaluator the actual evaluator, cannot be {@code null}.
      */
     DeferredEvaluator(Evaluator evaluator) {
         this.evaluator = evaluator;
     }
-    
+
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         return evaluator.evaluate(event, depth, this);
     }
-    
+
     @Override
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
@@ -61,15 +61,17 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     /**
      * Returns the internal evaluator.
+     *
      * @return the internal evaluator.
      */
     Evaluator internalEvaluator() {
         return evaluator;
     }
-    
+
     /**
      * Returns the problems found by this evaluator.
-     * @return the problems found by this evaluator. 
+     *
+     * @return the problems found by this evaluator.
      */
     ProblemList problems() {
         return this.problems;

@@ -27,13 +27,13 @@ import org.leadpony.justify.internal.base.AsciiCode;
  * @author leadpony
  */
 public class UnicodeRegExpMatcher extends RegExpMatcher {
-    
+
     private String lastPropertyName;
     private String lastPropertyValue;
- 
+
     /**
      * Constructs this matcher.
-     * 
+     *
      * @param input the input string.
      */
     UnicodeRegExpMatcher(CharSequence input) {
@@ -55,12 +55,12 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             }
         } else if (hex4Digits()) {
             int high = this.lastNumericValue;
-            if (Character.isHighSurrogate((char)high)) {
+            if (Character.isHighSurrogate((char) high)) {
                 mark = pos();
                 if (isFollowedBy('\\', 'u')) {
                     if (hex4Digits()) {
                         int low = this.lastNumericValue;
-                        int codePoint = Character.toCodePoint((char)high, (char)low);
+                        int codePoint = Character.toCodePoint((char) high, (char) low);
                         return withClassAtomOf(codePoint);
                     }
                 }
@@ -85,7 +85,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     @Override
     protected boolean testCharacterClassEscape() {
         if (super.testCharacterClassEscape()) {
@@ -110,7 +110,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     private boolean unicodePropertyValueExpression() {
         final int nameStart = pos();
         if (unicodePropertyName()) {
@@ -129,11 +129,11 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return loneUnicodePropertyNameOrValue();
     }
-    
+
     private boolean unicodePropertyName() {
         return unicodePropertyNameCharacters();
     }
-    
+
     private boolean unicodePropertyNameCharacters() {
         if (unicodePropertyNameCharacter()) {
             while (unicodePropertyNameCharacter()) {
@@ -143,11 +143,11 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             return false;
         }
     }
-    
+
     private boolean unicodePropertyValue() {
         return unicodePropertyValueCharacters();
     }
-    
+
     private boolean loneUnicodePropertyNameOrValue() {
         final int nameStart = pos();
         if (unicodePropertyValueCharacters()) {
@@ -157,7 +157,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     private boolean unicodePropertyValueCharacters() {
         if (unicodePropertyValueCharacter()) {
             while (unicodePropertyValueCharacter()) {
@@ -167,7 +167,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             return false;
         }
     }
-    
+
     private boolean unicodePropertyValueCharacter() {
         if (unicodePropertyNameCharacter()) {
             return true;
@@ -177,7 +177,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     private boolean unicodePropertyNameCharacter() {
         if (hasNext()) {
             int c = peek();
@@ -188,7 +188,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return false;
     }
-    
+
     private boolean codePoint() {
         if (!hasNext()) {
             return false;
@@ -205,7 +205,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return backtrack(mark);
     }
-    
+
     private boolean isFollowedBy(int... chars) {
         final int mark = pos();
         for (int c : chars) {
@@ -217,7 +217,7 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
         }
         return true;
     }
-    
+
     private static boolean checkProperty(String name, String value) {
         if (value != null) {
             return checkPropertyNameAndValue(name, value);
@@ -225,109 +225,109 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             return checkLoneProperty(name);
         }
     }
-    
+
     private static boolean checkPropertyNameAndValue(String name, String value) {
-        if (nonBinaryPpropertySet.containsKey(name)) {
-            Set<String> values = nonBinaryPpropertySet.get(name);
+        if (NON_BINARY_PROPERTY_SET.containsKey(name)) {
+            Set<String> values = NON_BINARY_PROPERTY_SET.get(name);
             if (values.contains(value)) {
                 return true;
             }
         }
         return earlyError();
     }
-    
+
     private static boolean checkLoneProperty(String property) {
-        if (binaryPropertySet.contains(property) ||
-            generalCategoryValueSet.contains(property)) {
+        if (BINARY_PROPERTY_SET.contains(property)
+                || GENERAL_CATEGORY_VALUE_SET.contains(property)) {
             return true;
         }
         return earlyError();
     }
 
-    private static final String[] propertyValuesForGeneralCategory = {
-        "Cased_Letter",
-        "LC",
-        "Close_Punctuation",
-        "Pe",
-        "Connector_Punctuation",
-        "Pc",
-        "Control",
-        "Cc",
-        "cntrl",
-        "Currency_Symbol",
-        "Sc",
-        "Dash_Punctuation",
-        "Pd",
-        "Decimal_Number",
-        "Nd",
-        "digit",
-        "Enclosing_Mark",
-        "Me",
-        "Final_Punctuation",
-        "Pf",
-        "Format",
-        "Cf",
-        "Initial_Punctuation",
-        "Pi",
-        "Letter",
-        "L",
-        "Letter_Number",
-        "Nl",
-        "Line_Separator",
-        "Zl",
-        "Lowercase_Letter",
-        "Ll",
-        "Mark",
-        "M",
-        "Combining_Mark",
-        "Math_Symbol",
-        "Sm",
-        "Modifier_Letter",
-        "Lm",
-        "Modifier_Symbol",
-        "Sk",
-        "Nonspacing_Mark",
-        "Mn",
-        "Number",
-        "N",
-        "Open_Punctuation",
-        "Ps",
-        "Other",
-        "C",
-        "Other_Letter",
-        "Lo",
-        "Other_Number",
-        "No",
-        "Other_Punctuation",
-        "Po",
-        "Other_Symbol",
-        "So",
-        "Paragraph_Separator",
-        "Zp",
-        "Private_Use",
-        "Co",
-        "Punctuation",
-        "P",
-        "punct",
-        "Separator",
-        "Z",
-        "Space_Separator",
-        "Zs",
-        "Spacing_Mark",
-        "Mc",
-        "Surrogate",
-        "Cs",
-        "Symbol",
-        "S",
-        "Titlecase_Letter",
-        "Lt",
-        "Unassigned",
-        "Cn",
-        "Uppercase_Letter",
-        "Lu",
+    private static final String[] PROPERTY_VALUES_FOR_GENERAL_CATEGORY = {
+            "Cased_Letter",
+            "LC",
+            "Close_Punctuation",
+            "Pe",
+            "Connector_Punctuation",
+            "Pc",
+            "Control",
+            "Cc",
+            "cntrl",
+            "Currency_Symbol",
+            "Sc",
+            "Dash_Punctuation",
+            "Pd",
+            "Decimal_Number",
+            "Nd",
+            "digit",
+            "Enclosing_Mark",
+            "Me",
+            "Final_Punctuation",
+            "Pf",
+            "Format",
+            "Cf",
+            "Initial_Punctuation",
+            "Pi",
+            "Letter",
+            "L",
+            "Letter_Number",
+            "Nl",
+            "Line_Separator",
+            "Zl",
+            "Lowercase_Letter",
+            "Ll",
+            "Mark",
+            "M",
+            "Combining_Mark",
+            "Math_Symbol",
+            "Sm",
+            "Modifier_Letter",
+            "Lm",
+            "Modifier_Symbol",
+            "Sk",
+            "Nonspacing_Mark",
+            "Mn",
+            "Number",
+            "N",
+            "Open_Punctuation",
+            "Ps",
+            "Other",
+            "C",
+            "Other_Letter",
+            "Lo",
+            "Other_Number",
+            "No",
+            "Other_Punctuation",
+            "Po",
+            "Other_Symbol",
+            "So",
+            "Paragraph_Separator",
+            "Zp",
+            "Private_Use",
+            "Co",
+            "Punctuation",
+            "P",
+            "punct",
+            "Separator",
+            "Z",
+            "Space_Separator",
+            "Zs",
+            "Spacing_Mark",
+            "Mc",
+            "Surrogate",
+            "Cs",
+            "Symbol",
+            "S",
+            "Titlecase_Letter",
+            "Lt",
+            "Unassigned",
+            "Cn",
+            "Uppercase_Letter",
+            "Lu",
     };
-    
-    private static final String[] propertyValuesForScript = {
+
+    private static final String[] PROPERTY_VALUES_FOR_SCRIPT = {
             "Adlam",
             "Adlm",
             "Ahom",
@@ -607,30 +607,31 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             "Zanabazar_Square",
             "Zanb",
     };
-    
+
     @SuppressWarnings("serial")
-    private static final Map<String, Set<String>> nonBinaryPpropertySet 
-        = new HashMap<String, Set<String>>() {{
-            
-        Set<String> categoryValues = new HashSet<>();
-        for (String value : propertyValuesForGeneralCategory) {
-            categoryValues.add(value);
-        }
+    private static final Map<String, Set<String>> NON_BINARY_PROPERTY_SET = new HashMap<String, Set<String>>() {
+        {
 
-        Set<String> scriptValues = new HashSet<>();
-        for (String value : propertyValuesForScript) {
-            scriptValues.add(value);
-        }
+            Set<String> categoryValues = new HashSet<>();
+            for (String value : PROPERTY_VALUES_FOR_GENERAL_CATEGORY) {
+                categoryValues.add(value);
+            }
 
-        put("General_Category", categoryValues);
-        put("gc", categoryValues);
-        put("Script", scriptValues);
-        put("sc", scriptValues);
-        put("Script_Extensions", scriptValues);
-        put("scx", scriptValues);
-    }};
-    
-    private static final String[] binaryProperties = {
+            Set<String> scriptValues = new HashSet<>();
+            for (String value : PROPERTY_VALUES_FOR_SCRIPT) {
+                scriptValues.add(value);
+            }
+
+            put("General_Category", categoryValues);
+            put("gc", categoryValues);
+            put("Script", scriptValues);
+            put("sc", scriptValues);
+            put("Script_Extensions", scriptValues);
+            put("scx", scriptValues);
+        }
+    };
+
+    private static final String[] BINARY_PROPERTIES = {
             "ASCII",
             "ASCII_Hex_Digit",
             "AHex",
@@ -724,19 +725,23 @@ public class UnicodeRegExpMatcher extends RegExpMatcher {
             "XID_Start",
             "XIDS",
     };
-    
+
     @SuppressWarnings("serial")
-    private static final Set<String> binaryPropertySet = new HashSet<String>() {{
-        for (String property : binaryProperties) {
-            add(property);
+    private static final Set<String> BINARY_PROPERTY_SET = new HashSet<String>() {
+        {
+            for (String property : BINARY_PROPERTIES) {
+                add(property);
+            }
         }
-    }};
-    
+    };
+
     @SuppressWarnings("serial")
-    private static final Set<String> generalCategoryValueSet = new HashSet<String>() {{
-        for (String value : propertyValuesForGeneralCategory) {
-            add(value);
+    private static final Set<String> GENERAL_CATEGORY_VALUE_SET = new HashSet<String>() {
+        {
+            for (String value : PROPERTY_VALUES_FOR_GENERAL_CATEGORY) {
+                add(value);
+            }
         }
-    }};
-    
+    };
+
 }

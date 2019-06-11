@@ -32,7 +32,7 @@ import org.leadpony.justify.internal.base.Message;
 @Spec({SpecVersion.DRAFT_07})
 class Date extends AbstractFormatAttribute {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     @Override
     public String name() {
@@ -47,7 +47,7 @@ class Date extends AbstractFormatAttribute {
     @Override
     public boolean test(String value) {
         try {
-            formatter.parse(value);
+            FORMATTER.parse(value);
             return true;
         } catch (DateTimeParseException e) {
             return false;
