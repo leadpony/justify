@@ -52,7 +52,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
     private Evaluator evaluator;
     private int depth;
 
-    private List<Problem> currentProblems = new ArrayList<>();
+    private final List<Problem> currentProblems = new ArrayList<>();
 
     /**
      * Constructs this parser.

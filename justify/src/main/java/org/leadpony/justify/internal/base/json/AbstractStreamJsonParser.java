@@ -74,11 +74,11 @@ abstract class AbstractStreamJsonParser extends AbstractJsonParser {
 
     @Override
     public JsonValue getValue() {
-        Event event = getCurrentEvent();
+        final Event event = getCurrentEvent();
         if (event == null) {
             throw newIllegalStateException("getValue");
         }
-        switch (getCurrentEvent()) {
+        switch (event) {
         case START_ARRAY:
             return buildArray();
         case START_OBJECT:
