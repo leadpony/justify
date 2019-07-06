@@ -35,7 +35,9 @@ import org.leadpony.justify.internal.base.Message;
  *      "http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">
  *      ECMA 262 specification</a>
  */
-@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 class Regex extends AbstractFormatAttribute {
 
     @Override

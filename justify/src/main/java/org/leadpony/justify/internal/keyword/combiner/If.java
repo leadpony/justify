@@ -23,8 +23,12 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
@@ -32,10 +36,22 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
+@KeywordType("if")
+@Spec(SpecVersion.DRAFT_07)
 public class If extends Conditional {
 
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromSchema mapper = If::new;
+        return mapper;
+    }
 
     public If(JsonSchema schema) {
         super(schema);
@@ -69,10 +85,16 @@ public class If extends Conditional {
     @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         if (keywords.containsKey("then")) {
-            thenSchema = ((UnaryCombiner) keywords.get("then")).getSubschema();
+            SchemaKeyword thenKeyword = keywords.get("then");
+            if (thenKeyword instanceof UnaryCombiner) {
+                thenSchema = ((UnaryCombiner) thenKeyword).getSubschema();
+            }
         }
         if (keywords.containsKey("else")) {
-            elseSchema = ((UnaryCombiner) keywords.get("else")).getSubschema();
+            SchemaKeyword elseKeyword = keywords.get("else");
+            if (elseKeyword instanceof UnaryCombiner) {
+                elseSchema = ((UnaryCombiner) elseKeyword).getSubschema();
+            }
         }
         if (thenSchema != null || elseSchema != null) {
             evaluatables.add(this);

@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.binding;
+package org.leadpony.justify.internal.annotation;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author leadpony
  */
-abstract class AbstractStringBinder extends AbstractBinder {
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface KeywordType {
 
-    @Override
-    public void fromJson(JsonParser parser, BindingContext context) {
-        Event event = parser.next();
-        if (event == Event.VALUE_STRING) {
-            context.addKeyword(createKeyword(parser.getString()));
-        } else {
-            skipValue(event, parser);
-        }
-    }
-
-    public abstract SchemaKeyword createKeyword(String value);
+    String value();
 }

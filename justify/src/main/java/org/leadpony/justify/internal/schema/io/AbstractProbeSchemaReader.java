@@ -16,6 +16,7 @@
 package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
+import java.util.Collections;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -38,9 +39,12 @@ abstract class AbstractProbeSchemaReader extends AbstractSchemaReader {
     private final SpecVersion defaultSpecVersion;
 
     protected AbstractProbeSchemaReader(JsonParser parser, SpecVersion defaultSpecVersion) {
+        super(Collections.emptyMap());
         this.parser = parser;
         this.defaultSpecVersion = defaultSpecVersion;
     }
+
+    /* As a AbstractSchemaReader */
 
     @Override
     protected JsonSchema readSchema() {

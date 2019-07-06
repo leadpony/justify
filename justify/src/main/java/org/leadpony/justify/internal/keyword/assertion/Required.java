@@ -20,7 +20,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
@@ -29,8 +31,12 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
@@ -38,9 +44,35 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  *
  * @author leadpony
  */
+@KeywordType("required")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Required extends AbstractAssertion implements ObjectKeyword {
 
     private final Set<String> names;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.ARRAY) {
+                Set<String> names = new LinkedHashSet<>();
+                for (JsonValue item : value.asJsonArray()) {
+                    if (item.getValueType() == ValueType.STRING) {
+                        names.add(((JsonString) item).getString());
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                }
+                return new Required(names);
+            }
+            throw new IllegalArgumentException();
+        };
+    }
 
     public Required(Set<String> names) {
         this.names = new LinkedHashSet<>(names);

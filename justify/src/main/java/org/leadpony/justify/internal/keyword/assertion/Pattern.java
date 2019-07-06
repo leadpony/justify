@@ -16,11 +16,19 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.regex.PatternSyntaxException;
+
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -28,9 +36,32 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
+@KeywordType("pattern")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Pattern extends AbstractStringAssertion {
 
     private final java.util.regex.Pattern pattern;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.STRING) {
+                String string = ((JsonString) value).getString();
+                try {
+                    return new Pattern(java.util.regex.Pattern.compile(string));
+                } catch (PatternSyntaxException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+            throw new IllegalArgumentException();
+        };
+    }
 
     public Pattern(java.util.regex.Pattern pattern) {
         this.pattern = pattern;

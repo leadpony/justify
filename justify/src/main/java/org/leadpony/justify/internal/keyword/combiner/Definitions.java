@@ -26,15 +26,33 @@ import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
  */
+@KeywordType("definitions")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Definitions extends Combiner {
 
     private final Map<String, JsonSchema> definitionMap;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromSchemaMap mapper = Definitions::new;
+        return mapper;
+    }
 
     public Definitions(Map<String, JsonSchema> definitionMap) {
         this.definitionMap = definitionMap;

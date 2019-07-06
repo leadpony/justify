@@ -21,15 +21,33 @@ import java.util.Collection;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * Boolean logic specified with "anyOf" validation keyword.
  *
  * @author leadpony
  */
+@KeywordType("anyOf")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class AnyOf extends NaryBooleanLogic {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromSchemaList mapper = AnyOf::new;
+        return mapper;
+    }
 
     public AnyOf(Collection<JsonSchema> subschemas) {
         super(subschemas);

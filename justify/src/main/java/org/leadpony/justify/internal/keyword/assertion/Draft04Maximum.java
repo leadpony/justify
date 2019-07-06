@@ -22,9 +22,13 @@ import java.util.Map;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
@@ -32,9 +36,21 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
+@KeywordType("maximum")
+@Spec(SpecVersion.DRAFT_04)
 public class Draft04Maximum extends Maximum {
 
     private boolean exclusive = false;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromNumber mapper = Draft04Maximum::new;
+        return mapper;
+    }
 
     public Draft04Maximum(BigDecimal limit) {
         super(limit);
@@ -77,9 +93,16 @@ public class Draft04Maximum extends Maximum {
      *
      * @author leadpony
      */
+    @KeywordType("exclusiveMaximum")
+    @Spec(SpecVersion.DRAFT_04)
     public static class ExclusiveMaximum extends AbstractKeyword {
 
         private final boolean value;
+
+        public static KeywordMapper mapper() {
+            KeywordMapper.FromBoolean mapper = ExclusiveMaximum::new;
+            return mapper;
+        }
 
         public ExclusiveMaximum(boolean value) {
             this.value = value;

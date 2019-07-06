@@ -15,15 +15,52 @@
  */
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
+
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * @author leadpony
  */
+@KeywordType("type")
+@Spec(SpecVersion.DRAFT_04)
 public final class Draft04Type {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            switch (value.getValueType()) {
+            case STRING:
+                return new Single(Type.toInstanceType((JsonString) value));
+            case ARRAY:
+                Set<InstanceType> types = new LinkedHashSet<>();
+                for (JsonValue item : value.asJsonArray()) {
+                    if (item.getValueType() == ValueType.STRING) {
+                        types.add(Type.toInstanceType((JsonString) item));
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                }
+                return new Multiple(types);
+            default:
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     public static Type of(InstanceType type) {
         return new Single(type);

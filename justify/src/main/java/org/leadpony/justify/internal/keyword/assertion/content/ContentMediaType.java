@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
@@ -29,8 +31,13 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -41,11 +48,39 @@ import org.leadpony.justify.spi.ContentMimeType;
  *
  * @author leadpony
  */
+@KeywordType("contentMediaType")
+@Spec(SpecVersion.DRAFT_07)
 public class ContentMediaType extends AbstractAssertion {
 
     private final ContentMimeType mimeType;
     private final Map<String, String> parameters;
     private ContentEncodingScheme encodingScheme;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.STRING) {
+                final String name = ((JsonString) value).getString();
+                try {
+                    MediaType mediaType = MediaType.valueOf(name);
+                    ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
+                    if (mimeType != null) {
+                        return new ContentMediaType(mimeType, mediaType.parameters());
+                    } else {
+                        return new UnknownContentMediaType(name);
+                    }
+                } catch (IllegalArgumentException e) {
+                    return new UnknownContentMediaType(name);
+                }
+            } else {
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     /**
      * Constructs this media type.

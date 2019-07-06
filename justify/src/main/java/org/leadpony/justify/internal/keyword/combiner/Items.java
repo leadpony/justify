@@ -33,12 +33,16 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
@@ -46,7 +50,35 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
+@KeywordType("items")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public abstract class Items extends Combiner implements ArrayKeyword {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            switch (value.getValueType()) {
+            case ARRAY:
+                List<JsonSchema> schemas = new ArrayList<>();
+                for (JsonValue item : value.asJsonArray()) {
+                    schemas.add(context.asJsonSchema(item));
+                }
+                return of(schemas);
+            case OBJECT:
+            case TRUE:
+            case FALSE:
+                return of(context.asJsonSchema(value));
+            default:
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     public static Items of(JsonSchema subschema) {
         return new BroadcastItems(subschema);

@@ -13,28 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.binding;
+package org.leadpony.justify.internal.base;
 
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
-import org.leadpony.justify.internal.keyword.assertion.MaxLength;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 
 /**
- * A binder type for "maxLength" keyword.
+ * A utility class operating on {@link Set} instances.
  *
  * @author leadpony
  */
-@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
-class MaxLengthBinder extends AbstractNonNegativeBinder {
+public final class Sets {
 
-    @Override
-    public String name() {
-        return "maxLength";
+    public static <E> Set<E> newIdentitySet() {
+        return Collections.newSetFromMap(
+                new IdentityHashMap<E, Boolean>());
     }
 
-    @Override
-    public SchemaKeyword createKeyword(int value) {
-        return new MaxLength(value);
+    private Sets() {
     }
 }

@@ -19,10 +19,16 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -32,9 +38,34 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
+@KeywordType("format")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Format extends AbstractAssertion {
 
     private final String attribute;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.STRING) {
+                String name = ((JsonString) value).getString();
+                FormatAttribute attribute = context.getFormateAttribute(name);
+                if (attribute != null) {
+                    return Format.of(attribute);
+                } else {
+                    return Format.of(name);
+                }
+            } else {
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     public static Format of(String attribute) {
         return new Format(attribute);

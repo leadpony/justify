@@ -17,14 +17,27 @@ package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * A keyword type representing "$ref" keyword.
  *
  * @author leadpony
  */
+@KeywordType("$ref")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Ref extends AbstractMetadataKeyword<URI> {
+
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromUri mapper = Ref::new;
+        return mapper;
+    }
 
     public Ref(URI value) {
         super(value);

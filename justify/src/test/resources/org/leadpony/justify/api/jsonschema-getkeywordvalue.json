@@ -92,5 +92,21 @@
                 "keyword": "nonexistent"
             }
         ]
+    },
+    {
+        "schema": {
+            "type": "string",
+            "errorMessage": {
+                "type": "some message here"
+            }
+        },
+        "tests": [
+            {
+                "keyword": "errorMessage",
+                "value": {
+                    "type": "some message here"
+                }
+            }
+        ]
     }
 ]

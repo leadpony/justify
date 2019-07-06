@@ -18,14 +18,31 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * Assertion specified with "exclusiveMaximum" validation keyword.
  *
  * @author leadpony
  */
+@KeywordType("exclusiveMaximum")
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromNumber mapper = ExclusiveMaximum::new;
+        return mapper;
+    }
 
     public ExclusiveMaximum(BigDecimal limit) {
         super(limit, "exclusiveMaximum");

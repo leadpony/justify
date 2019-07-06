@@ -16,12 +16,31 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
+
 /**
  * An annotation keyword representing "title".
  *
  * @author leadpony
  */
+@KeywordType("title")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Title extends Annotation<String> {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromString mapper = Title::new;
+        return mapper;
+    }
 
     public Title(String value) {
         super(value);

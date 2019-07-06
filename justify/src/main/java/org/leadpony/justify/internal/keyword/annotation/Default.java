@@ -19,12 +19,30 @@ package org.leadpony.justify.internal.keyword.annotation;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
+
 /**
  * An annotation keyword representing "default".
  *
  * @author leadpony
  */
+@KeywordType("default")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Default extends Annotation<JsonValue> {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> new Default(value);
+    }
 
     public Default(JsonValue value) {
         super(value);

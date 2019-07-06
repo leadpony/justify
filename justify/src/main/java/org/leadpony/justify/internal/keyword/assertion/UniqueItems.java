@@ -29,19 +29,37 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * An assertion specified with "uniqueItems" validation keyword.
  *
  * @author leadpony
  */
+@KeywordType("uniqueItems")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
 
     private final boolean unique;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromBoolean mapper = UniqueItems::new;
+        return mapper;
+    }
 
     public UniqueItems(boolean unique) {
         this.unique = unique;

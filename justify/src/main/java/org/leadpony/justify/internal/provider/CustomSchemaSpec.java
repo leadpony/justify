@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.schema.binding.KeywordBinder;
+import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -57,8 +57,8 @@ class CustomSchemaSpec implements SchemaSpec {
     }
 
     @Override
-    public Map<String, KeywordBinder> getKeywordBinders() {
-        return baseSpec.getKeywordBinders();
+    public KeywordFactory getKeywordFactory() {
+        return baseSpec.getKeywordFactory();
     }
 
     @Override

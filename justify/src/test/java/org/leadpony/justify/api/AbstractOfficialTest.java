@@ -151,7 +151,7 @@ public abstract class AbstractOfficialTest {
     public static void setUpOnce(TestInfo testInfo) {
         Class<?> testClass = testInfo.getTestClass().get();
         Spec spec = testClass.getAnnotation(Spec.class);
-        specVersion = spec.value()[0];
+        specVersion = spec.value();
         basePath = TESTS_PATH.resolve(DRAFT_PATHS.get(specVersion));
         schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)

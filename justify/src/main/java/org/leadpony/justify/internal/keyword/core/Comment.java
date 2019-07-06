@@ -15,14 +15,25 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * A keyword type representing "$comment" keyword.
  *
  * @author leadpony
  */
+@KeywordType("$comment")
+@Spec(SpecVersion.DRAFT_07)
 public class Comment extends AbstractMetadataKeyword<String> {
+
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromString mapper = Comment::new;
+        return mapper;
+    }
 
     public Comment(String value) {
         super(value);

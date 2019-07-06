@@ -18,22 +18,34 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * Assertion specified with "exclusiveMinimum" validation keyword.
  *
  * @author leadpony
  */
+@KeywordType("exclusiveMinimum")
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromNumber mapper = ExclusiveMinimum::new;
+        return mapper;
+    }
 
     public ExclusiveMinimum(BigDecimal limit) {
         super(limit, "exclusiveMinimum");
-    }
-
-    @Override
-    public String name() {
-        return "exclusiveMinimum";
     }
 
     @Override

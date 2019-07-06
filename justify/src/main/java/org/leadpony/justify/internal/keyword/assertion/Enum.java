@@ -16,14 +16,20 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -31,9 +37,31 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
+@KeywordType("enum")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Enum extends AbstractEqualityAssertion {
 
     private final Set<JsonValue> expected;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.ARRAY) {
+                Set<JsonValue> values = new LinkedHashSet<>();
+                for (JsonValue item : value.asJsonArray()) {
+                    values.add(item);
+                }
+                return new Enum(values);
+            }
+            throw new IllegalArgumentException();
+        };
+    }
 
     public Enum(Set<JsonValue> expected) {
         this.expected = expected;

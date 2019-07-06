@@ -18,14 +18,31 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * Assertion specified with "minimum" validation keyword.
  *
  * @author leadpony
  */
+@KeywordType("minimum")
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Minimum extends AbstractNumericBoundAssertion {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        KeywordMapper.FromNumber mapper = Minimum::new;
+        return mapper;
+    }
 
     public Minimum(BigDecimal limit) {
         super(limit, "minimum");

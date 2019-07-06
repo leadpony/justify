@@ -15,11 +15,9 @@
  */
 package org.leadpony.justify.internal.schema.io;
 
-import java.util.Map;
-
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.schema.binding.KeywordBinder;
+import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -45,7 +43,12 @@ public interface SchemaSpec {
      */
     JsonSchema getMetaschema();
 
-    Map<String, KeywordBinder> getKeywordBinders();
+    /**
+     * Returns the factory of keywords available for this specification.
+     *
+     * @return the factory of keywords.
+     */
+    KeywordFactory getKeywordFactory();
 
     /**
      * Returns the format attribute of the specified name.

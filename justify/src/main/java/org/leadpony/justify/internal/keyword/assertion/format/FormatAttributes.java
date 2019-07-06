@@ -61,11 +61,9 @@ public final class FormatAttributes {
         }
 
         for (FormatAttribute attribute : ATTRIBUTE_LIST) {
-            Spec spec = attribute.getClass().getAnnotation(Spec.class);
-            if (spec != null) {
-                for (SpecVersion version : spec.value()) {
-                    map.get(version).put(attribute.name(), attribute);
-                }
+            Spec[] specs = attribute.getClass().getAnnotationsByType(Spec.class);
+            for (Spec spec : specs) {
+                map.get(spec.value()).put(attribute.name(), attribute);
             }
         }
         return map;

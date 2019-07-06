@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc3987">
  *      "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
-@Spec({ SpecVersion.DRAFT_07 })
+@Spec(SpecVersion.DRAFT_07)
 class Iri extends AbstractFormatAttribute {
 
     @Override

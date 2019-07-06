@@ -21,7 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -31,14 +33,47 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * An assertion representing "type" keyword.
  *
  * @author leadpony
  */
+@KeywordType("type")
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public abstract class Type extends AbstractAssertion {
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            switch (value.getValueType()) {
+            case STRING:
+                return new Single(toInstanceType((JsonString) value));
+            case ARRAY:
+                Set<InstanceType> types = new LinkedHashSet<>();
+                for (JsonValue item : value.asJsonArray()) {
+                    if (item.getValueType() == ValueType.STRING) {
+                        types.add(toInstanceType((JsonString) item));
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                }
+                return new Multiple(types);
+            default:
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     public static Type of(InstanceType type) {
         return new Single(type);
@@ -83,6 +118,11 @@ public abstract class Type extends AbstractAssertion {
             }
             return type;
         }
+    }
+
+    static InstanceType toInstanceType(JsonString value) {
+        String name = value.getString().toUpperCase();
+        return InstanceType.valueOf(name);
     }
 
     /**

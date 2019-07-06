@@ -21,7 +21,11 @@ import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -29,9 +33,21 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
+@KeywordType("const")
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Const extends AbstractEqualityAssertion {
 
     private final JsonValue expected;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> new Const(value);
+    }
 
     public Const(JsonValue expected) {
         this.expected = expected;

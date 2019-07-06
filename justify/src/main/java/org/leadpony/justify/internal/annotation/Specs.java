@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.binding;
+package org.leadpony.justify.internal.annotation;
 
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
-import org.leadpony.justify.internal.keyword.assertion.MinItems;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * A binder type for "minItems" keyword.
- *
  * @author leadpony
  */
-@Spec({ SpecVersion.DRAFT_04, SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
-class MinItemsBinder extends AbstractNonNegativeBinder {
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Specs {
 
-    @Override
-    public String name() {
-        return "minItems";
-    }
-
-    @Override
-    public SchemaKeyword createKeyword(int value) {
-        return new MinItems(value);
-    }
+    Spec[] value();
 }

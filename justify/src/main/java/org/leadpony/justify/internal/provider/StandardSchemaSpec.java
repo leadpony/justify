@@ -28,11 +28,10 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
-import org.leadpony.justify.internal.schema.binding.KeywordBinder;
-import org.leadpony.justify.internal.schema.binding.KeywordBinders;
-import org.leadpony.justify.internal.schema.io.GenericSchemaReader;
+import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReader;
 import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -46,8 +45,9 @@ import org.leadpony.justify.spi.FormatAttribute;
 abstract class StandardSchemaSpec implements SchemaSpec {
 
     private final SpecVersion version;
-    private final Map<String, KeywordBinder> keywordBinders;
     private final Map<String, FormatAttribute> formatAttributes;
+
+    private final KeywordFactory keywordFactory;
 
     private final JsonSchema metaschema;
 
@@ -70,8 +70,8 @@ abstract class StandardSchemaSpec implements SchemaSpec {
 
     protected StandardSchemaSpec(SpecVersion version, JsonService jsonService) {
         this.version = version;
-        this.keywordBinders = KeywordBinders.getBinders(version);
         this.formatAttributes = FormatAttributes.getAttributes(version);
+        this.keywordFactory = new StandardKeywordFactory(version);
         this.metaschema = loadMetaschema(version, jsonService);
         this.encodingSchemes.putAll(ContentAttributes.encodingSchemes());
         this.mimeTypes.putAll(ContentAttributes.mimeTypes(jsonService.getJsonProvider()));
@@ -88,8 +88,8 @@ abstract class StandardSchemaSpec implements SchemaSpec {
     }
 
     @Override
-    public Map<String, KeywordBinder> getKeywordBinders() {
-        return keywordBinders;
+    public KeywordFactory getKeywordFactory() {
+        return keywordFactory;
     }
 
     @Override
@@ -113,7 +113,7 @@ abstract class StandardSchemaSpec implements SchemaSpec {
         JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-        try (JsonSchemaReader reader = new GenericSchemaReader(parser, jsonService, this, Collections.emptyMap())) {
+        try (JsonSchemaReader reader = new DefaultJsonSchemaReader(parser, jsonService, this, Collections.emptyMap())) {
             return reader.read();
         }
     }

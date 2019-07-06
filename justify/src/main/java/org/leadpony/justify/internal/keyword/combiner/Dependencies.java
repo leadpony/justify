@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,9 @@ import java.util.stream.Stream;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
@@ -38,10 +41,14 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -51,9 +58,45 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
+@KeywordType("dependencies")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 public class Dependencies extends Combiner implements ObjectKeyword {
 
     private final Map<String, Dependency> dependencyMap;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.OBJECT) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                for (Map.Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
+                    String k = entry.getKey();
+                    JsonValue v = entry.getValue();
+                    if (v.getValueType() == ValueType.ARRAY) {
+                        Set<String> properties = new LinkedHashSet<>();
+                        for (JsonValue item : v.asJsonArray()) {
+                            if (item.getValueType() == ValueType.STRING) {
+                                properties.add(((JsonString) item).getString());
+                            } else {
+                                throw new IllegalArgumentException();
+                            }
+                        }
+                        map.put(k, properties);
+                    } else {
+                        map.put(k, context.asJsonSchema(v));
+                    }
+                }
+                return new Dependencies(map);
+            }
+            throw new IllegalArgumentException();
+        };
+    }
 
     public Dependencies(Map<String, Object> map) {
         dependencyMap = new HashMap<>();

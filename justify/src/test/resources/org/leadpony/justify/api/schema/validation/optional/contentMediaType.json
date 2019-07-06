@@ -23,15 +23,5 @@
         "description": "value is unknown",
         "schema": { "contentMediaType": "nonexistent" },
         "valid": true
-    },
-    {
-        "description": "value is not a media type",
-        "schema": { "contentMediaType": "application/json; charset" },
-        "valid": false,
-        "errors": [
-            {
-                "pointer": "/contentMediaType"
-            }
-        ]
     }
 ]

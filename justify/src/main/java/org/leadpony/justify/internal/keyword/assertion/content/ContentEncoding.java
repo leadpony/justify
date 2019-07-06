@@ -18,7 +18,9 @@ package org.leadpony.justify.internal.keyword.assertion.content;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
@@ -27,7 +29,11 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
@@ -36,9 +42,32 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
  *
  * @author leadpony
  */
+@KeywordType("contentEncoding")
+@Spec(SpecVersion.DRAFT_07)
 public class ContentEncoding extends AbstractAssertion {
 
     private final ContentEncodingScheme scheme;
+
+    /**
+     * Returns the mapper which maps a JSON value to this keyword.
+     *
+     * @return the mapper for this keyword.
+     */
+    public static KeywordMapper mapper() {
+        return (value, context) -> {
+            if (value.getValueType() == ValueType.STRING) {
+                final String name = ((JsonString) value).getString();
+                ContentEncodingScheme scheme = context.getEncodingScheme(name);
+                if (scheme != null) {
+                    return new ContentEncoding(scheme);
+                } else {
+                    return new UnknownContentEncoding(name);
+                }
+            } else {
+                throw new IllegalArgumentException();
+            }
+        };
+    }
 
     /**
      * Constructs this encoding.

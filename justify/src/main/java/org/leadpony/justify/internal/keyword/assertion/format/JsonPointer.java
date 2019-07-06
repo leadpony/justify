@@ -29,7 +29,8 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc6901">
  *      "JavaScript Object Notation (JSON) Pointer", RFC 6901</a>
  */
-@Spec({ SpecVersion.DRAFT_06, SpecVersion.DRAFT_07 })
+@Spec(SpecVersion.DRAFT_06)
+@Spec(SpecVersion.DRAFT_07)
 class JsonPointer extends AbstractFormatAttribute {
 
     @Override
