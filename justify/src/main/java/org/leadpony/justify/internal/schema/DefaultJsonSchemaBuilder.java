@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.internal.schema;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonEmpty;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNegative;
@@ -86,8 +86,7 @@ import org.leadpony.justify.internal.keyword.combiner.Then;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
-import org.leadpony.justify.internal.schema.BasicSchema;
-import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;

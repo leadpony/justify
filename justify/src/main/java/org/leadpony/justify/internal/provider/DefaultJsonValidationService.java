@@ -56,8 +56,8 @@ import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
+import org.leadpony.justify.internal.schema.DefaultJsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReaderFactory;
-import org.leadpony.justify.internal.schema.io.DefaultSchemaBuilderFactory;
 import org.leadpony.justify.internal.validator.DefaultValidationConfig;
 import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.internal.validator.JsonValidatorFactory;
@@ -341,8 +341,8 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
         return new DefaultProblemPrinterBuilder(lineConsumer);
     }
 
-    private DefaultSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
-        return new DefaultSchemaBuilderFactory(
+    private DefaultJsonSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
+        return new DefaultJsonSchemaBuilderFactory(
                 this,
                 specRegistry.getSpec(SpecVersion.DRAFT_07, true));
     }

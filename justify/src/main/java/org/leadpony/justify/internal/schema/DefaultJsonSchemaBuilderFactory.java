@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.internal.schema;
 
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.base.json.JsonService;
+import org.leadpony.justify.internal.schema.io.SchemaSpec;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
  *
  * @author leadpony
  */
-public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
+public class DefaultJsonSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     private final JsonService jsonService;
     private final SchemaSpec spec;
@@ -35,7 +36,7 @@ public class DefaultSchemaBuilderFactory implements JsonSchemaBuilderFactory {
      * @param jsonService the JSON service.
      * @param spec        the schema specification.
      */
-    public DefaultSchemaBuilderFactory(JsonService jsonService, SchemaSpec spec) {
+    public DefaultJsonSchemaBuilderFactory(JsonService jsonService, SchemaSpec spec) {
         this.jsonService = jsonService;
         this.spec = spec;
     }
