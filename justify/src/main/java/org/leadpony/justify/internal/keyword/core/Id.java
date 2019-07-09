@@ -34,8 +34,6 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_07)
 public class Id extends AbstractMetadataKeyword<URI> {
 
-    private final String name;
-
     public static KeywordMapper mapper(String name) {
         KeywordMapper.FromUri mapper = value -> new Id(name, value);
         return mapper;
@@ -46,12 +44,6 @@ public class Id extends AbstractMetadataKeyword<URI> {
     }
 
     public Id(String name, URI value) {
-        super(value);
-        this.name = name;
-    }
-
-    @Override
-    public String name() {
-        return name;
+        super(name, value);
     }
 }

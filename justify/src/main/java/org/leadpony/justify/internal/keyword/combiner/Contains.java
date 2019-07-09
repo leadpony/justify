@@ -60,11 +60,6 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
     }
 
     @Override
-    public String name() {
-        return "contains";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         if (this.min == 1) {
             return createItemsEvaluator(context);

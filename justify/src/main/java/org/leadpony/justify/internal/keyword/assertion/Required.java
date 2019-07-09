@@ -79,11 +79,6 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    public String name() {
-        return "required";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         if (names.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;

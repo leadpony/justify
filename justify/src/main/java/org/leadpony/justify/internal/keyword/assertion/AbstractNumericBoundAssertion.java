@@ -31,22 +31,14 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
     private final BigDecimal limit;
-    private final String name;
 
     /**
      * Constructs this assertion.
      *
      * @param limit the lower or upper limit.
-     * @param name the name of this assertion.
      */
-    protected AbstractNumericBoundAssertion(BigDecimal limit, String name) {
+    protected AbstractNumericBoundAssertion(BigDecimal limit) {
         this.limit = limit;
-        this.name = name;
-    }
-
-    @Override
-    public String name() {
-        return name;
     }
 
     @Override

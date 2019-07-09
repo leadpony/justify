@@ -45,7 +45,7 @@ public class Maximum extends AbstractNumericBoundAssertion {
     }
 
     public Maximum(BigDecimal limit) {
-        super(limit, "maximum");
+        super(limit);
     }
 
     @Override

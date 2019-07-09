@@ -54,11 +54,6 @@ public class AnyOf extends NaryBooleanLogic {
     }
 
     @Override
-    public String name() {
-        return "anyOf";
-    }
-
-    @Override
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
         getSubschemas().distinct()

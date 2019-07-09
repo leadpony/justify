@@ -49,11 +49,6 @@ public class MaxContains extends AbstractKeyword {
     }
 
     @Override
-    public String name() {
-        return "maxContains";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return jsonProvider.createValue(limit);
     }

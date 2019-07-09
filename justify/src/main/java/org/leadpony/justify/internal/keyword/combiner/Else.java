@@ -50,11 +50,6 @@ public class Else extends Conditional {
         super(schema);
     }
 
-    @Override
-    public String name() {
-        return "else";
-    }
-
     /**
      * {@inheritDoc}
      *

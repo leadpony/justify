@@ -53,11 +53,6 @@ public class AdditionalItems extends UnaryCombiner {
     }
 
     @Override
-    public String name() {
-        return "additionalItems";
-    }
-
-    @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }

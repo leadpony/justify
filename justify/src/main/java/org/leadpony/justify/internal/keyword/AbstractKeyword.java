@@ -25,6 +25,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -38,8 +39,27 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFactory {
 
+    private final String name;
     // the schema enclosing this keyword.
     private JsonSchema schema;
+
+    protected AbstractKeyword() {
+        this.name = guessName();
+    }
+
+    /**
+     * Constructs this keyword.
+     *
+     * @param name the name of this keyword.
+     */
+    protected AbstractKeyword(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public final String name() {
+        return name;
+    }
 
     @Override
     public JsonSchema getEnclosingSchema() {
@@ -110,6 +130,11 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
         return ProblemBuilderFactory.super.createProblemBuilder(context)
                 .withSchema(schema)
                 .withKeyword(name());
+    }
+
+    private String guessName() {
+        KeywordType keywordType = getClass().getAnnotation(KeywordType.class);
+        return keywordType.value();
     }
 
     /**

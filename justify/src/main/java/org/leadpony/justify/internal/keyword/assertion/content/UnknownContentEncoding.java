@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -30,17 +31,13 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
+@KeywordType("contentEncoding")
 public class UnknownContentEncoding extends AbstractKeyword {
 
     private final String scheme;
 
     public UnknownContentEncoding(String scheme) {
         this.scheme = scheme;
-    }
-
-    @Override
-    public String name() {
-        return "contentEncoding";
     }
 
     @Override

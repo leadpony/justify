@@ -112,11 +112,6 @@ public class Dependencies extends Combiner implements ObjectKeyword {
     }
 
     @Override
-    public String name() {
-        return "dependencies";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependencyMap.values().stream()

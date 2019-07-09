@@ -45,9 +45,4 @@ public class Title extends Annotation<String> {
     public Title(String value) {
         super(value);
     }
-
-    @Override
-    public String name() {
-        return "title";
-    }
 }

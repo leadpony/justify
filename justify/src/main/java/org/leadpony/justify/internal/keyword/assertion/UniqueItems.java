@@ -66,11 +66,6 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    public String name() {
-        return "uniqueItems";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         return new AssertionEvaluator(context);
     }

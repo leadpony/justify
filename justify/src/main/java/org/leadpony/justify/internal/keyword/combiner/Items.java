@@ -88,11 +88,6 @@ public abstract class Items extends Combiner implements ArrayKeyword {
         return new DiscreteItems(subschemas);
     }
 
-    @Override
-    public String name() {
-        return "items";
-    }
-
     /**
      * "items" keyword with single schema.
      *

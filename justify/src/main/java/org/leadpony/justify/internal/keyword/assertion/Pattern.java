@@ -68,11 +68,6 @@ public class Pattern extends AbstractStringAssertion {
     }
 
     @Override
-    public String name() {
-        return "pattern";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return jsonProvider.createValue(pattern.toString());
     }

@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
+import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -30,6 +31,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
+@KeywordType("contentMediaType")
 public class UnknownContentMediaType extends AbstractKeyword {
 
     private final String value;
@@ -41,11 +43,6 @@ public class UnknownContentMediaType extends AbstractKeyword {
      */
     public UnknownContentMediaType(String value) {
         this.value = value;
-    }
-
-    @Override
-    public String name() {
-        return "contentMediaType";
     }
 
     @Override

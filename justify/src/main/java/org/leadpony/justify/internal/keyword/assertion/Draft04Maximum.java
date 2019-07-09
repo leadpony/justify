@@ -109,11 +109,6 @@ public class Draft04Maximum extends Maximum {
         }
 
         @Override
-        public String name() {
-            return "exclusiveMaximum";
-        }
-
-        @Override
         public JsonValue getValueAsJson(JsonProvider jsonProvider) {
             return value ? JsonValue.TRUE : JsonValue.FALSE;
         }

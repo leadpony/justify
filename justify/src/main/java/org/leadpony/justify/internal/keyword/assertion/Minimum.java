@@ -45,7 +45,7 @@ public class Minimum extends AbstractNumericBoundAssertion {
     }
 
     public Minimum(BigDecimal limit) {
-        super(limit, "minimum");
+        super(limit);
     }
 
     @Override

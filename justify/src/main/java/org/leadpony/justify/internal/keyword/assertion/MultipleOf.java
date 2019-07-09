@@ -57,11 +57,6 @@ public class MultipleOf extends AbstractNumericAssertion {
     }
 
     @Override
-    public String name() {
-        return "multipleOf";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return jsonProvider.createValue(factor);
     }

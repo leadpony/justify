@@ -109,11 +109,6 @@ public class Draft04Minimum extends Maximum {
         }
 
         @Override
-        public String name() {
-            return "exclusiveMinimum";
-        }
-
-        @Override
         public JsonValue getValueAsJson(JsonProvider jsonProvider) {
             return value ? JsonValue.TRUE : JsonValue.FALSE;
         }

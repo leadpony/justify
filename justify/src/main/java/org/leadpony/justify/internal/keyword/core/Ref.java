@@ -42,9 +42,4 @@ public class Ref extends AbstractMetadataKeyword<URI> {
     public Ref(URI value) {
         super(value);
     }
-
-    @Override
-    public String name() {
-        return "$ref";
-    }
 }

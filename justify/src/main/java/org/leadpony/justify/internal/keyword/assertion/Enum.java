@@ -68,11 +68,6 @@ public class Enum extends AbstractEqualityAssertion {
     }
 
     @Override
-    public String name() {
-        return "enum";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
         expected.forEach(builder::add);

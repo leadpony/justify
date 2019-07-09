@@ -80,11 +80,6 @@ public class Format extends AbstractAssertion {
     }
 
     @Override
-    public String name() {
-        return "format";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return jsonProvider.createValue(attribute);
     }

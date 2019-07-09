@@ -62,11 +62,6 @@ public class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    public String name() {
-        return "propertyNames";
-    }
-
-    @Override
     public boolean supportsType(InstanceType type) {
         return type == InstanceType.OBJECT;
     }

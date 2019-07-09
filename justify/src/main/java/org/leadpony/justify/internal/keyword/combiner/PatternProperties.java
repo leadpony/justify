@@ -72,11 +72,6 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public String name() {
-        return "patternProperties";
-    }
-
-    @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         super.addToEvaluatables(evaluatables, keywords);
         if (!keywords.containsKey("properties")) {

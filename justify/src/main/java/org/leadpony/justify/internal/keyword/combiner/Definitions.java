@@ -59,11 +59,6 @@ public class Definitions extends Combiner {
     }
 
     @Override
-    public String name() {
-        return "definitions";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
         this.definitionMap.forEach((k, v) -> builder.add(k, v.toJson()));

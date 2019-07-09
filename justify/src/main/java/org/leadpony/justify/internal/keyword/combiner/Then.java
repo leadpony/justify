@@ -50,11 +50,6 @@ public class Then extends Conditional {
         super(schema);
     }
 
-    @Override
-    public String name() {
-        return "then";
-    }
-
     /**
      * {@inheritDoc}
      *

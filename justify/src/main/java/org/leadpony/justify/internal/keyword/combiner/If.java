@@ -58,11 +58,6 @@ public class If extends Conditional {
     }
 
     @Override
-    public String name() {
-        return "if";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
         Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)

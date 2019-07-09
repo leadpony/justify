@@ -44,7 +44,7 @@ public class MinLength extends AbstractStringLengthAssertion {
     }
 
     public MinLength(int limit) {
-        super(limit, "minLength", Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
+        super(limit, Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
     }
 
     @Override

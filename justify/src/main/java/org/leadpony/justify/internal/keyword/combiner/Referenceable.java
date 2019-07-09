@@ -35,7 +35,6 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 public class Referenceable extends Combiner {
 
-    private final String name;
     private final JsonSchema subschema;
 
     /**
@@ -45,13 +44,8 @@ public class Referenceable extends Combiner {
      * @param subschema the subschema contained by this keyword.
      */
     public Referenceable(String name, JsonSchema subschema) {
-        this.name = name;
+        super(name);
         this.subschema = subschema;
-    }
-
-    @Override
-    public String name() {
-        return name;
     }
 
     @Override

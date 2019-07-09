@@ -63,11 +63,6 @@ public class MaxItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    public String name() {
-        return "maxItems";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         return new AssertionEvaluator(context, limit, this);
     }

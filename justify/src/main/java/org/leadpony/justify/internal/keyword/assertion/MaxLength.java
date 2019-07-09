@@ -44,7 +44,7 @@ public class MaxLength extends AbstractStringLengthAssertion {
     }
 
     public MaxLength(int limit) {
-        super(limit, "maxLength", Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
+        super(limit, Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
     }
 
     @Override

@@ -87,11 +87,6 @@ public abstract class Type extends AbstractAssertion {
         }
     }
 
-    @Override
-    public String name() {
-        return "type";
-    }
-
     /**
      * Converts the broader type into the narrower type.
      *

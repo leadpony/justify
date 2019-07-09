@@ -42,9 +42,4 @@ public class Schema extends AbstractMetadataKeyword<URI> {
     public Schema(URI value) {
         super(value);
     }
-
-    @Override
-    public String name() {
-        return "$schema";
-    }
 }

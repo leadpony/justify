@@ -54,11 +54,6 @@ public class AllOf extends NaryBooleanLogic {
     }
 
     @Override
-    public String name() {
-        return "allOf";
-    }
-
-    @Override
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         getSubschemas().distinct()

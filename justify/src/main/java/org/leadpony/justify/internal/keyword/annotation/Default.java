@@ -49,11 +49,6 @@ public class Default extends Annotation<JsonValue> {
     }
 
     @Override
-    public String name() {
-        return "default";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return value();
     }

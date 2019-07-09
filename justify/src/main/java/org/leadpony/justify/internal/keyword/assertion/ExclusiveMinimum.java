@@ -45,7 +45,7 @@ public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
     }
 
     public ExclusiveMinimum(BigDecimal limit) {
-        super(limit, "exclusiveMinimum");
+        super(limit);
     }
 
     @Override

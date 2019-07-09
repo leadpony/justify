@@ -49,11 +49,6 @@ public class MinContains extends AbstractKeyword {
     }
 
     @Override
-    public String name() {
-        return "minContains";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return jsonProvider.createValue(limit);
     }

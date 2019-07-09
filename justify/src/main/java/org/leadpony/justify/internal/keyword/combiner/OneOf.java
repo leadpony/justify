@@ -54,11 +54,6 @@ public class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    public String name() {
-        return "oneOf";
-    }
-
-    @Override
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
         return Evaluators.exclusive(context, type,
                 getSubschemas().map(s -> s.createEvaluator(context, type)),

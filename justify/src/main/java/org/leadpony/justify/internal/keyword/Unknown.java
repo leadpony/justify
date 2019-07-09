@@ -25,7 +25,6 @@ import javax.json.spi.JsonProvider;
  */
 public class Unknown extends AbstractKeyword {
 
-    private final String name;
     private final JsonValue value;
 
     /**
@@ -35,13 +34,8 @@ public class Unknown extends AbstractKeyword {
      * @param value the value of this keyword.
      */
     public Unknown(String name, JsonValue value) {
-        this.name = name;
+        super(name);
         this.value = value;
-    }
-
-    @Override
-    public String name() {
-        return name;
     }
 
     @Override

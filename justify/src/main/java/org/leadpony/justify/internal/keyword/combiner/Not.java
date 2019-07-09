@@ -51,11 +51,6 @@ public class Not extends UnaryCombiner {
     }
 
     @Override
-    public String name() {
-        return "not";
-    }
-
-    @Override
     public boolean isInPlace() {
         return true;
     }

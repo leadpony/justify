@@ -54,11 +54,6 @@ public class Const extends AbstractEqualityAssertion {
     }
 
     @Override
-    public String name() {
-        return "const";
-    }
-
-    @Override
     public JsonValue getValueAsJson(JsonProvider jsonProvider) {
         return expected;
     }

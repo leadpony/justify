@@ -29,21 +29,14 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
 
     private final int limit;
-    private final String name;
     private final Message message;
     private final Message negatedMessage;
 
     protected AbstractStringLengthAssertion(
-            int limit, String name, Message message, Message negatedMessage) {
+            int limit, Message message, Message negatedMessage) {
         this.limit = limit;
-        this.name = name;
         this.message = message;
         this.negatedMessage = negatedMessage;
-    }
-
-    @Override
-    public String name() {
-        return name;
     }
 
     @Override

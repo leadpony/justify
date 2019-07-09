@@ -38,9 +38,4 @@ public class Comment extends AbstractMetadataKeyword<String> {
     public Comment(String value) {
         super(value);
     }
-
-    @Override
-    public String name() {
-        return "$comment";
-    }
 }

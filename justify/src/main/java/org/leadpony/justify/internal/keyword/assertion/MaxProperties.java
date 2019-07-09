@@ -62,11 +62,6 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    public String name() {
-        return "maxProperties";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         return new AssertionEvaluator(context, limit, this);
     }

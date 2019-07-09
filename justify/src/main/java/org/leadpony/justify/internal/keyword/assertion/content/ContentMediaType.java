@@ -94,11 +94,6 @@ public class ContentMediaType extends AbstractAssertion {
     }
 
     @Override
-    public String name() {
-        return "contentMediaType";
-    }
-
-    @Override
     public boolean supportsType(InstanceType type) {
         return type == InstanceType.STRING;
     }

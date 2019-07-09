@@ -32,6 +32,13 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 public abstract class Combiner extends AbstractKeyword {
 
+    protected Combiner() {
+    }
+
+    protected Combiner(String name) {
+        super(name);
+    }
+
     @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
         evaluatables.add(this);

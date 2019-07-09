@@ -62,11 +62,6 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    public String name() {
-        return "minProperties";
-    }
-
-    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         return new AssertionEvaluator(context, limit, this);
     }
