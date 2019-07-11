@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -61,7 +60,8 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         return mapper;
     }
 
-    public UniqueItems(boolean unique) {
+    public UniqueItems(JsonValue json, boolean unique) {
+        super(json);
         this.unique = unique;
     }
 
@@ -77,11 +77,6 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         } else {
             return createAlwaysFalseEvaluator(context);
         }
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return unique ? JsonValue.TRUE : JsonValue.FALSE;
     }
 
     /**

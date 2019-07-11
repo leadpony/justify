@@ -92,13 +92,14 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                         map.put(k, context.asJsonSchema(v));
                     }
                 }
-                return new Dependencies(map);
+                return new Dependencies(value, map);
             }
             throw new IllegalArgumentException();
         };
     }
 
-    public Dependencies(Map<String, Object> map) {
+    public Dependencies(JsonValue json, Map<String, Object> map) {
+        super(json);
         dependencyMap = new HashMap<>();
         map.forEach((property, value) -> {
             if (value instanceof JsonSchema) {
@@ -127,15 +128,6 @@ public class Dependencies extends Combiner implements ObjectKeyword {
                 .map(d -> d.createNegatedEvaluator(context))
                 .forEach(evaluator::append);
         return evaluator;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
-        for (Dependency dependency : this.dependencyMap.values()) {
-            builder.add(dependency.getProperty(), dependency.getValue(jsonProvider));
-        }
-        return builder.build();
     }
 
     @Override

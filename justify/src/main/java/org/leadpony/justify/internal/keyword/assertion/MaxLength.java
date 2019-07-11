@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -43,8 +45,8 @@ public class MaxLength extends AbstractStringLengthAssertion {
         return mapper;
     }
 
-    public MaxLength(int limit) {
-        super(limit, Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
+    public MaxLength(JsonValue json, int limit) {
+        super(json, limit, Message.INSTANCE_PROBLEM_MAXLENGTH, Message.INSTANCE_PROBLEM_NOT_MAXLENGTH);
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -32,11 +33,12 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 public abstract class Combiner extends AbstractKeyword {
 
-    protected Combiner() {
+    protected Combiner(JsonValue json) {
+        super(json);
     }
 
-    protected Combiner(String name) {
-        super(name);
+    protected Combiner(String name, JsonValue json) {
+        super(name, json);
     }
 
     @Override

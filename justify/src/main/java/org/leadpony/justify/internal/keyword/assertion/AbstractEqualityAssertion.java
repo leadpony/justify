@@ -34,6 +34,10 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  */
 abstract class AbstractEqualityAssertion extends AbstractAssertion {
 
+    protected AbstractEqualityAssertion(JsonValue json) {
+        super(json);
+    }
+
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();

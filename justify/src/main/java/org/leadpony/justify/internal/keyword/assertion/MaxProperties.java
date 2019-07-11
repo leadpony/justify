@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -57,7 +56,8 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
         return mapper;
     }
 
-    public MaxProperties(int limit) {
+    public MaxProperties(JsonValue json, int limit) {
+        super(json);
         this.limit = limit;
     }
 
@@ -69,11 +69,6 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         return new MinProperties.AssertionEvaluator(context, limit + 1, this);
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(limit);
     }
 
     /**

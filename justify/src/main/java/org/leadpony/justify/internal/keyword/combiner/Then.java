@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -46,7 +48,7 @@ public class Then extends Conditional {
         return mapper;
     }
 
-    public Then(JsonSchema schema) {
+    public Then(JsonValue json, JsonSchema schema) {
         super(schema);
     }
 

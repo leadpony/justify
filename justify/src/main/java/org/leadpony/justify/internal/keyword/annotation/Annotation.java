@@ -16,18 +16,16 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * A keyword for annotation purpose.
  *
- * @param <T> the type of this annotation value.
+ * @param <T> the type of the value.
  *
  * @author leadpony
  */
-public abstract class Annotation<T> extends AbstractMetadataKeyword<T> {
+public interface Annotation<T> extends SchemaKeyword {
 
-    protected Annotation(T value) {
-        super(value);
-    }
+    T value();
 }

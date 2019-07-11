@@ -51,6 +51,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.BasicSchema;
 import org.leadpony.justify.internal.schema.Resolvable;
 import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;

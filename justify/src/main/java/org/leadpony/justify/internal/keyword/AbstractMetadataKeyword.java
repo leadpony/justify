@@ -16,7 +16,6 @@
 package org.leadpony.justify.internal.keyword;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 
 /**
  * A keyword type providing a single value as metadata.
@@ -29,21 +28,17 @@ public abstract class AbstractMetadataKeyword<T> extends AbstractKeyword {
 
     private final T value;
 
-    protected AbstractMetadataKeyword(T value) {
+    protected AbstractMetadataKeyword(JsonValue json, T value) {
+        super(json);
         this.value = value;
     }
 
-    protected AbstractMetadataKeyword(String name, T value) {
-        super(name);
+    protected AbstractMetadataKeyword(String name, JsonValue json, T value) {
+        super(name, json);
         this.value = value;
     }
 
     public final T value() {
         return value;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(value().toString());
     }
 }

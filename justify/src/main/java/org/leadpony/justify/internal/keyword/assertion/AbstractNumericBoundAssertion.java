@@ -19,8 +19,6 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.math.BigDecimal;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -37,13 +35,9 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
      *
      * @param limit the lower or upper limit.
      */
-    protected AbstractNumericBoundAssertion(BigDecimal limit) {
+    protected AbstractNumericBoundAssertion(JsonValue json, BigDecimal limit) {
+        super(json);
         this.limit = limit;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(limit);
     }
 
     @Override

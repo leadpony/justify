@@ -45,6 +45,8 @@ import org.leadpony.justify.internal.base.ResettableReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.internal.schema.SchemaSpec;
+import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**

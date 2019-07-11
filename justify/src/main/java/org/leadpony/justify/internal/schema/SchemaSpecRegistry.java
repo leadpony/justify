@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.internal.schema;
 
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.schema.SchemaCatalog;
 
 /**
  * A registry of schema specifications.

@@ -21,8 +21,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -54,7 +52,7 @@ public class Pattern extends AbstractStringAssertion {
             if (value.getValueType() == ValueType.STRING) {
                 String string = ((JsonString) value).getString();
                 try {
-                    return new Pattern(java.util.regex.Pattern.compile(string));
+                    return new Pattern(value, java.util.regex.Pattern.compile(string));
                 } catch (PatternSyntaxException e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -63,13 +61,9 @@ public class Pattern extends AbstractStringAssertion {
         };
     }
 
-    public Pattern(java.util.regex.Pattern pattern) {
+    public Pattern(JsonValue json, java.util.regex.Pattern pattern) {
+        super(json);
         this.pattern = pattern;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(pattern.toString());
     }
 
     @Override

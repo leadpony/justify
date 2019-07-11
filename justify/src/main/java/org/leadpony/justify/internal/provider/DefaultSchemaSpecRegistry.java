@@ -23,8 +23,8 @@ import java.util.ServiceLoader;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
-import org.leadpony.justify.internal.schema.io.SchemaSpec;
-import org.leadpony.justify.internal.schema.io.SchemaSpecRegistry;
+import org.leadpony.justify.internal.schema.SchemaSpec;
+import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**

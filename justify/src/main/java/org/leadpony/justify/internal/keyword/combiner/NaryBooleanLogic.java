@@ -22,10 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
@@ -42,7 +39,8 @@ abstract class NaryBooleanLogic extends Combiner {
 
     private final List<JsonSchema> subschemas;
 
-    protected NaryBooleanLogic(Collection<JsonSchema> subschemas) {
+    protected NaryBooleanLogic(JsonValue json, Collection<JsonSchema> subschemas) {
+        super(json);
         this.subschemas = new ArrayList<>(subschemas);
     }
 
@@ -54,15 +52,6 @@ abstract class NaryBooleanLogic extends Combiner {
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         return createNegatedLogicalEvaluator(context, type).withProblemBuilderFactory(this);
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
-        this.subschemas.stream()
-                .map(JsonSchema::toJson)
-                .forEach(builder::add);
-        return builder.build();
     }
 
     @Override

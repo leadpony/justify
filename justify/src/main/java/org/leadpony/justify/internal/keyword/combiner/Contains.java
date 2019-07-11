@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -54,7 +55,7 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
         return mapper;
     }
 
-    public Contains(JsonSchema subschema) {
+    public Contains(JsonValue json, JsonSchema subschema) {
         super(subschema);
         this.min = 1;
     }

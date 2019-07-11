@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -34,6 +35,10 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  * @author leadpony
  */
 abstract class AbstractNumericAssertion extends AbstractAssertion implements NumericKeyword {
+
+    protected AbstractNumericAssertion(JsonValue json) {
+        super(json);
+    }
 
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {

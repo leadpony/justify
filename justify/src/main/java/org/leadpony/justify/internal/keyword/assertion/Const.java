@@ -17,8 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
@@ -38,8 +36,6 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_07)
 public class Const extends AbstractEqualityAssertion {
 
-    private final JsonValue expected;
-
     /**
      * Returns the mapper which maps a JSON value to this keyword.
      *
@@ -50,21 +46,17 @@ public class Const extends AbstractEqualityAssertion {
     }
 
     public Const(JsonValue expected) {
-        this.expected = expected;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return expected;
+        super(expected);
     }
 
     @Override
     protected boolean testValue(JsonValue value) {
-        return value.equals(expected);
+        return value.equals(getValueAsJson());
     }
 
     @Override
     protected Problem createProblem(ProblemBuilder builder) {
+        final JsonValue expected = getValueAsJson();
         return builder.withMessage(Message.INSTANCE_PROBLEM_CONST)
             .withParameter("expected", expected)
             .withParameter("expectedType", InstanceType.of(expected))
@@ -73,9 +65,10 @@ public class Const extends AbstractEqualityAssertion {
 
     @Override
     protected Problem createNegatedProblem(ProblemBuilder builder) {
+        final JsonValue expected = getValueAsJson();
         return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_CONST)
-        .withParameter("expected", expected)
-        .withParameter("expectedType", InstanceType.of(expected))
-        .build();
+            .withParameter("expected", expected)
+            .withParameter("expectedType", InstanceType.of(expected))
+            .build();
     }
 }

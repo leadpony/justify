@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.json.JsonValue;
 import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -36,10 +37,11 @@ import org.leadpony.justify.internal.keyword.core.Id;
 public class SchemaCatalogTest {
 
     private static JsonService jsonService;
+    private static JsonProvider jsonProvider;
 
     @BeforeAll
     public static void setUp() {
-        JsonProvider jsonProvider = JsonProvider.provider();
+        jsonProvider = JsonProvider.provider();
         jsonService = new JsonService(jsonProvider);
     }
 
@@ -55,7 +57,8 @@ public class SchemaCatalogTest {
 
     private static JsonSchema createSchema(URI id) {
         Map<String, SchemaKeyword> keywords = new HashMap<>();
-        keywords.put("$id", new Id(id));
+        JsonValue json = jsonProvider.createValue(id.toString());
+        keywords.put("$id", new Id(json, id));
         return BasicSchema.newSchema(id, keywords, jsonService);
     }
 }

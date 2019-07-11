@@ -19,8 +19,6 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.math.BigDecimal;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -52,13 +50,9 @@ public class MultipleOf extends AbstractNumericAssertion {
         return mapper;
     }
 
-    public MultipleOf(BigDecimal factor) {
+    public MultipleOf(JsonValue json, BigDecimal factor) {
+        super(json);
         this.factor = factor;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(factor);
     }
 
     @Override

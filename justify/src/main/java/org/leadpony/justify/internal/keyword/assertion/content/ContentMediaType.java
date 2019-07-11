@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -69,12 +68,12 @@ public class ContentMediaType extends AbstractAssertion {
                     MediaType mediaType = MediaType.valueOf(name);
                     ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
                     if (mimeType != null) {
-                        return new ContentMediaType(mimeType, mediaType.parameters());
+                        return new ContentMediaType(value, mimeType, mediaType.parameters());
                     } else {
-                        return new UnknownContentMediaType(name);
+                        return new UnknownContentMediaType(value, name);
                     }
                 } catch (IllegalArgumentException e) {
-                    return new UnknownContentMediaType(name);
+                    return new UnknownContentMediaType(value, name);
                 }
             } else {
                 throw new IllegalArgumentException();
@@ -85,10 +84,12 @@ public class ContentMediaType extends AbstractAssertion {
     /**
      * Constructs this media type.
      *
+     * @param json the original JSON value.
      * @param mimeType the type/subtype part of this media type.
      * @param parameters additional parameters of this media type.
      */
-    public ContentMediaType(ContentMimeType mimeType, Map<String, String> parameters) {
+    public ContentMediaType(JsonValue json, ContentMimeType mimeType, Map<String, String> parameters) {
+        super(json);
         this.mimeType = mimeType;
         this.parameters = parameters;
     }
@@ -133,11 +134,6 @@ public class ContentMediaType extends AbstractAssertion {
                 return Result.FALSE;
             }
         };
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(value());
     }
 
     @Override

@@ -28,8 +28,6 @@ import java.util.stream.Stream;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -127,7 +125,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         if (found == null) {
             return defaultValue;
         }
-        return found.getValueAsJson(jsonService.getJsonProvider());
+        return found.getValueAsJson();
     }
 
     @Override
@@ -156,10 +154,9 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
 
     @Override
     public JsonValue toJson() {
-        JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonObjectBuilder builder = jsonService.createObjectBuilder();
         for (Keyword keyword : this.keywordMap.values()) {
-            builder.add(keyword.name(), keyword.getValueAsJson(jsonProvider));
+            builder.add(keyword.name(), keyword.getValueAsJson());
         }
         return builder.build();
     }

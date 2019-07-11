@@ -45,7 +45,7 @@ public final class Draft04Type {
         return (value, context) -> {
             switch (value.getValueType()) {
             case STRING:
-                return new Single(Type.toInstanceType((JsonString) value));
+                return new Single(value, Type.toInstanceType((JsonString) value));
             case ARRAY:
                 Set<InstanceType> types = new LinkedHashSet<>();
                 for (JsonValue item : value.asJsonArray()) {
@@ -55,22 +55,22 @@ public final class Draft04Type {
                         throw new IllegalArgumentException();
                     }
                 }
-                return new Multiple(types);
+                return new Multiple(value, types);
             default:
                 throw new IllegalArgumentException();
             }
         };
     }
 
-    public static Type of(InstanceType type) {
-        return new Single(type);
+    public static Type of(JsonValue json, InstanceType type) {
+        return new Single(json, type);
     }
 
-    public static Type of(Set<InstanceType> types) {
+    public static Type of(JsonValue json, Set<InstanceType> types) {
         if (types.size() == 1) {
-            return new Single(types.iterator().next());
+            return new Single(json, types.iterator().next());
         } else {
-            return new Multiple(types);
+            return new Multiple(json, types);
         }
     }
 
@@ -93,8 +93,8 @@ public final class Draft04Type {
      */
     static class Single extends Type.Single {
 
-        Single(InstanceType expectedType) {
-            super(expectedType);
+        Single(JsonValue json, InstanceType expectedType) {
+            super(json, expectedType);
         }
 
         @Override
@@ -110,8 +110,8 @@ public final class Draft04Type {
      */
     static class Multiple extends Type.Multiple {
 
-        Multiple(Set<InstanceType> types) {
-            super(types);
+        Multiple(JsonValue json, Set<InstanceType> types) {
+            super(json, types);
         }
 
         @Override

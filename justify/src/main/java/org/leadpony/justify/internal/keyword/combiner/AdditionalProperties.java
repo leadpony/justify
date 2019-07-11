@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -59,7 +60,7 @@ public class AdditionalProperties extends UnaryCombiner {
         return mapper;
     }
 
-    public AdditionalProperties(JsonSchema subschema) {
+    public AdditionalProperties(JsonValue json, JsonSchema subschema) {
         super(subschema);
     }
 

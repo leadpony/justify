@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -44,8 +46,8 @@ public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
         return mapper;
     }
 
-    public ExclusiveMaximum(BigDecimal limit) {
-        super(limit);
+    public ExclusiveMaximum(JsonValue json, BigDecimal limit) {
+        super(json, limit);
     }
 
     @Override

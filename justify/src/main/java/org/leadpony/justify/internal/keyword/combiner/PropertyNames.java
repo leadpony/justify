@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.EnumSet;
 import java.util.Set;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -47,10 +48,6 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_07)
 public class PropertyNames extends UnaryCombiner {
 
-    public PropertyNames(JsonSchema subschema) {
-        super(subschema);
-    }
-
     /**
      * Returns the mapper which maps a JSON value to this keyword.
      *
@@ -59,6 +56,10 @@ public class PropertyNames extends UnaryCombiner {
     public static KeywordMapper mapper() {
         KeywordMapper.FromSchema mapper = PropertyNames::new;
         return mapper;
+    }
+
+    public PropertyNames(JsonValue json, JsonSchema subschema) {
+        super(subschema);
     }
 
     @Override

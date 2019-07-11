@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -34,15 +32,8 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @KeywordType("contentEncoding")
 public class UnknownContentEncoding extends AbstractKeyword {
 
-    private final String scheme;
-
-    public UnknownContentEncoding(String scheme) {
-        this.scheme = scheme;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(scheme);
+    public UnknownContentEncoding(JsonValue json, String scheme) {
+        super(json);
     }
 
     @Override

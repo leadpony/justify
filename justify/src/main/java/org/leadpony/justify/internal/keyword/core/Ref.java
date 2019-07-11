@@ -17,6 +17,8 @@ package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -39,7 +41,7 @@ public class Ref extends AbstractMetadataKeyword<URI> {
         return mapper;
     }
 
-    public Ref(URI value) {
-        super(value);
+    public Ref(JsonValue json, URI value) {
+        super(json, value);
     }
 }

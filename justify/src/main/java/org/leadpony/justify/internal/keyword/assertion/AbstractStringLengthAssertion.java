@@ -17,8 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -33,15 +31,11 @@ abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
     private final Message negatedMessage;
 
     protected AbstractStringLengthAssertion(
-            int limit, Message message, Message negatedMessage) {
+            JsonValue json, int limit, Message message, Message negatedMessage) {
+        super(json);
         this.limit = limit;
         this.message = message;
         this.negatedMessage = negatedMessage;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(limit);
     }
 
     @Override

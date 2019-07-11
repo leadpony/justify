@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 
 import java.util.Collection;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -49,8 +51,8 @@ public class AnyOf extends NaryBooleanLogic {
         return mapper;
     }
 
-    public AnyOf(Collection<JsonSchema> subschemas) {
-        super(subschemas);
+    public AnyOf(JsonValue json, Collection<JsonSchema> subschemas) {
+        super(json, subschemas);
     }
 
     @Override

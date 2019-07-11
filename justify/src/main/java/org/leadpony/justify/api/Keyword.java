@@ -16,7 +16,6 @@
 package org.leadpony.justify.api;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 
 /**
  * A schema keyword which composes a JSON schema.
@@ -35,15 +34,7 @@ public interface Keyword {
     /**
      * Returns the value of this keyword as an instance of {@code JsonValue}.
      *
-     * <p>
-     * Alternative and more convenient method to retrieve keyword values is
-     * {@link JsonSchema#getKeywordValue(String)}.
-     * </p>
-     *
-     * @param jsonProvider the instance of {@code JsonProvider}, which cannot be
-     *                     {@code null}. The instance can be obtained via
-     *                     {@link JsonValidationService#getJsonProvider()}.
      * @return the value of this keyword, cannot be {@code null}.
      */
-    JsonValue getValueAsJson(JsonProvider jsonProvider);
+    JsonValue getValueAsJson();
 }

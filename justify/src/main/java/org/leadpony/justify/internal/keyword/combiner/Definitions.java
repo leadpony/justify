@@ -21,10 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -54,15 +51,9 @@ public class Definitions extends Combiner {
         return mapper;
     }
 
-    public Definitions(Map<String, JsonSchema> definitionMap) {
+    public Definitions(JsonValue json, Map<String, JsonSchema> definitionMap) {
+        super(json);
         this.definitionMap = definitionMap;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
-        this.definitionMap.forEach((k, v) -> builder.add(k, v.toJson()));
-        return builder.build();
     }
 
     @Override

@@ -21,7 +21,6 @@ import java.util.Set;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -59,9 +58,9 @@ public class ContentEncoding extends AbstractAssertion {
                 final String name = ((JsonString) value).getString();
                 ContentEncodingScheme scheme = context.getEncodingScheme(name);
                 if (scheme != null) {
-                    return new ContentEncoding(scheme);
+                    return new ContentEncoding(value, scheme);
                 } else {
-                    return new UnknownContentEncoding(name);
+                    return new UnknownContentEncoding(value, name);
                 }
             } else {
                 throw new IllegalArgumentException();
@@ -72,9 +71,11 @@ public class ContentEncoding extends AbstractAssertion {
     /**
      * Constructs this encoding.
      *
+     * @param json the original JSON value.
      * @param scheme the scheme of this encoding.
      */
-    public ContentEncoding(ContentEncodingScheme scheme) {
+    public ContentEncoding(JsonValue json, ContentEncodingScheme scheme) {
+        super(json);
         assert scheme != null;
         this.scheme = scheme;
     }
@@ -117,11 +118,6 @@ public class ContentEncoding extends AbstractAssertion {
                 return Result.FALSE;
             }
         };
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(scheme.name());
     }
 
     private boolean test(String src) {

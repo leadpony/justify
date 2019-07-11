@@ -16,15 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -51,11 +48,8 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     protected final Map<K, JsonSchema> propertyMap;
     private JsonSchema defaultSchema;
 
-    protected AbstractProperties() {
-        this(new LinkedHashMap<>());
-    }
-
-    protected AbstractProperties(Map<K, JsonSchema> properties) {
+    protected AbstractProperties(JsonValue json, Map<K, JsonSchema> properties) {
+        super(json);
         this.propertyMap = properties;
         this.defaultSchema = JsonSchema.TRUE;
     }
@@ -68,13 +62,6 @@ public abstract class AbstractProperties<K> extends Combiner implements ObjectKe
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
         return new NegatedPropertiesEvaluator(context, defaultSchema);
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
-        this.propertyMap.forEach((key, value) -> builder.add(key.toString(), value.toJson()));
-        return builder.build();
     }
 
     @Override

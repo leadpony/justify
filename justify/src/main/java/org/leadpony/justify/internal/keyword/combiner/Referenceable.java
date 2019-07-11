@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -44,13 +41,8 @@ public class Referenceable extends Combiner {
      * @param subschema the subschema contained by this keyword.
      */
     public Referenceable(String name, JsonSchema subschema) {
-        super(name);
+        super(name, subschema.toJson());
         this.subschema = subschema;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return subschema.toJson();
     }
 
     @Override

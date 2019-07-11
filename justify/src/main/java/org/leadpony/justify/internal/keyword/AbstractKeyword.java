@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword;
 
 import java.util.Set;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -39,26 +40,50 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFactory {
 
+    /*
+     * the name of this keyword.
+     */
     private final String name;
-    // the schema enclosing this keyword.
+
+    /*
+     * JSON representation of this keyword.
+     */
+    private final JsonValue json;
+
+    /*
+     * the schema enclosing this keyword.
+     */
     private JsonSchema schema;
 
-    protected AbstractKeyword() {
-        this.name = guessName();
+    /**
+     * Constructs this keyword.
+     *
+     * @param json the JSON representation of this keyword.
+     */
+    protected AbstractKeyword(JsonValue json) {
+        this.name = guessOwnName();
+        this.json = json;
     }
 
     /**
      * Constructs this keyword.
      *
      * @param name the name of this keyword.
+     * @param json the JSON representation of this keyword.
      */
-    protected AbstractKeyword(String name) {
+    protected AbstractKeyword(String name, JsonValue json) {
         this.name = name;
+        this.json = json;
     }
 
     @Override
     public final String name() {
         return name;
+    }
+
+    @Override
+    public final JsonValue getValueAsJson() {
+        return json;
     }
 
     @Override
@@ -132,7 +157,7 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
                 .withKeyword(name());
     }
 
-    private String guessName() {
+    private String guessOwnName() {
         KeywordType keywordType = getClass().getAnnotation(KeywordType.class);
         return keywordType.value();
     }

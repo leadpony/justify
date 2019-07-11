@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -57,7 +56,8 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
         return mapper;
     }
 
-    public MinProperties(int limit) {
+    public MinProperties(JsonValue json, int limit) {
+        super(json);
         this.limit = limit;
     }
 
@@ -73,11 +73,6 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
         } else {
             return createAlwaysFalseEvaluator(context);
         }
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(limit);
     }
 
     /**

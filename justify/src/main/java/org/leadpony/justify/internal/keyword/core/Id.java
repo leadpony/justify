@@ -17,6 +17,8 @@ package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -35,15 +37,15 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 public class Id extends AbstractMetadataKeyword<URI> {
 
     public static KeywordMapper mapper(String name) {
-        KeywordMapper.FromUri mapper = value -> new Id(name, value);
+        KeywordMapper.FromUri mapper = (json, value) -> new Id(name, json, value);
         return mapper;
     }
 
-    public Id(URI value) {
-        this("$id", value);
+    public Id(JsonValue json, URI value) {
+        this("$id", json, value);
     }
 
-    public Id(String name, URI value) {
-        super(name, value);
+    public Id(String name, JsonValue json, URI value) {
+        super(name, json, value);
     }
 }

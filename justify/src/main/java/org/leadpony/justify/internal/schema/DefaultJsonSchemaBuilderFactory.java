@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.schema;
 
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.schema.io.SchemaSpec;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.

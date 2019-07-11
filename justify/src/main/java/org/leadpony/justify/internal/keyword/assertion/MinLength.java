@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -43,8 +45,8 @@ public class MinLength extends AbstractStringLengthAssertion {
         return mapper;
     }
 
-    public MinLength(int limit) {
-        super(limit, Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
+    public MinLength(JsonValue json, int limit) {
+        super(json, limit, Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
     }
 
     @Override

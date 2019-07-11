@@ -22,8 +22,6 @@ import java.util.Map;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -44,8 +42,6 @@ import org.leadpony.justify.spi.FormatAttribute;
 @Spec(SpecVersion.DRAFT_07)
 public class Format extends AbstractAssertion {
 
-    private final String attribute;
-
     /**
      * Returns the mapper which maps a JSON value to this keyword.
      *
@@ -57,9 +53,9 @@ public class Format extends AbstractAssertion {
                 String name = ((JsonString) value).getString();
                 FormatAttribute attribute = context.getFormateAttribute(name);
                 if (attribute != null) {
-                    return Format.of(attribute);
+                    return new EvaluatableFormat(value, attribute);
                 } else {
-                    return Format.of(name);
+                    return new Format(value, name);
                 }
             } else {
                 throw new IllegalArgumentException();
@@ -67,21 +63,8 @@ public class Format extends AbstractAssertion {
         };
     }
 
-    public static Format of(String attribute) {
-        return new Format(attribute);
-    }
-
-    public static Format of(FormatAttribute attribute) {
-        return new EvaluatableFormat(attribute);
-    }
-
-    protected Format(String attribute) {
-        this.attribute = attribute;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(attribute);
+    public Format(JsonValue json, String attribute) {
+        super(json);
     }
 
     @Override

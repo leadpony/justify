@@ -15,6 +15,8 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -35,7 +37,7 @@ public class Comment extends AbstractMetadataKeyword<String> {
         return mapper;
     }
 
-    public Comment(String value) {
-        super(value);
+    public Comment(JsonValue json, String value) {
+        super(json, value);
     }
 }

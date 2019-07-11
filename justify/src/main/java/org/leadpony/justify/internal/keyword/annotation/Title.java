@@ -16,9 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -30,7 +33,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Title extends Annotation<String> {
+public class Title extends AbstractMetadataKeyword<String> implements Annotation<String> {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -42,7 +45,7 @@ public class Title extends Annotation<String> {
         return mapper;
     }
 
-    public Title(String value) {
-        super(value);
+    public Title(JsonValue json, String value) {
+        super(json, value);
     }
 }

@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -33,6 +34,10 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  * @author leadpony
  */
 abstract class AbstractStringAssertion extends AbstractAssertion implements StringKeyword  {
+
+    protected AbstractStringAssertion(JsonValue json) {
+        super(json);
+    }
 
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {

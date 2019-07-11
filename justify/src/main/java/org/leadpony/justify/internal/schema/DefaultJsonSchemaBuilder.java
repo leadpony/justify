@@ -25,15 +25,21 @@ import static org.leadpony.justify.internal.base.Arguments.requireUnique;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -66,6 +72,7 @@ import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
+import org.leadpony.justify.internal.keyword.assertion.format.EvaluatableFormat;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
 import org.leadpony.justify.internal.keyword.combiner.AdditionalItems;
 import org.leadpony.justify.internal.keyword.combiner.AdditionalProperties;
@@ -86,7 +93,6 @@ import org.leadpony.justify.internal.keyword.combiner.Then;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
-import org.leadpony.justify.internal.schema.io.SchemaSpec;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -99,6 +105,10 @@ import org.leadpony.justify.spi.FormatAttribute;
 class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private final JsonService jsonService;
+
+    private final JsonProvider jsonProvider;
+    private final JsonBuilderFactory jsonFactory;
+
     private final SchemaSpec spec;
     private final Map<String, SchemaKeyword> keywords = new LinkedHashMap<>();
     private URI id;
@@ -113,6 +123,8 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      */
     DefaultJsonSchemaBuilder(JsonService jsonService, SchemaSpec spec) {
         this.jsonService = jsonService;
+        this.jsonProvider = jsonService.getJsonProvider();
+        this.jsonFactory = jsonService.getJsonBuilderFactory();
         this.spec = spec;
     }
 
@@ -133,7 +145,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withId(URI id) {
         requireNonNull(id, "id");
-        addKeyword(new Id(id));
+        addKeyword(new Id(toJson(id), id));
         this.id = id;
         return this;
     }
@@ -141,14 +153,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withSchema(URI schema) {
         requireNonNull(schema, "schema");
-        addKeyword(new Schema(schema));
+        addKeyword(new Schema(toJson(schema), schema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withComment(String comment) {
         requireNonNull(comment, "comment");
-        addKeyword(new Comment(comment));
+        addKeyword(new Comment(toJson(comment), comment));
         return this;
     }
 
@@ -164,7 +176,10 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withType(Set<InstanceType> types) {
         requireNonNull(types, "types");
         requireNonEmpty(types, "types");
-        addKeyword(Type.of(types));
+        JsonValue json = types.size() == 1
+                ? toJson(types.iterator().next())
+                : toJsonFromTypes(types);
+        addKeyword(Type.of(json, types));
         return this;
     }
 
@@ -180,7 +195,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withEnum(Set<JsonValue> values) {
         requireNonNull(values, "values");
         requireNonEmpty(values, "values");
-        addKeyword(new Enum(values));
+        addKeyword(new Enum(toJson(values), values));
         return this;
     }
 
@@ -207,49 +222,49 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withMultipleOf(BigDecimal value) {
         requireNonNull(value, "value");
         requirePositive(value, "value");
-        addKeyword(new MultipleOf(value));
+        addKeyword(new MultipleOf(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaximum(BigDecimal value) {
         requireNonNull(value, "value");
-        addKeyword(new Maximum(value));
+        addKeyword(new Maximum(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMaximum(BigDecimal value) {
         requireNonNull(value, "value");
-        addKeyword(new ExclusiveMaximum(value));
+        addKeyword(new ExclusiveMaximum(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinimum(BigDecimal value) {
         requireNonNull(value, "value");
-        addKeyword(new Minimum(value));
+        addKeyword(new Minimum(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withExclusiveMinimum(BigDecimal value) {
         requireNonNull(value, "value");
-        addKeyword(new ExclusiveMinimum(value));
+        addKeyword(new ExclusiveMinimum(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxLength(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MaxLength(value));
+        addKeyword(new MaxLength(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinLength(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MinLength(value));
+        addKeyword(new MinLength(toJson(value), value));
         return this;
     }
 
@@ -257,7 +272,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withPattern(String pattern) {
         requireNonNull(pattern, "pattern");
         Pattern compiled = Pattern.compile(pattern);
-        addKeyword(new org.leadpony.justify.internal.keyword.assertion.Pattern(compiled));
+        addKeyword(
+                new org.leadpony.justify.internal.keyword.assertion.Pattern(
+                        toJson(pattern), compiled));
         return this;
     }
 
@@ -266,7 +283,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(Items.of(subschema));
+        addKeyword(Items.of(toJson(subschema), subschema));
         return this;
     }
 
@@ -280,55 +297,55 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withItemsArray(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
-        addKeyword(Items.of(subschemas));
+        addKeyword(Items.of(toJsonFromSchemas(subschemas), subschemas));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new AdditionalItems(subschema));
+        addKeyword(new AdditionalItems(toJson(subschema), subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxItems(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MaxItems(value));
+        addKeyword(new MaxItems(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinItems(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MinItems(value));
+        addKeyword(new MinItems(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withUniqueItems(boolean unique) {
-        addKeyword(new UniqueItems(unique));
+        addKeyword(new UniqueItems(toJson(unique), unique));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Contains(subschema));
+        addKeyword(new Contains(toJson(subschema), subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMaxContains(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MaxContains(value));
+        addKeyword(new MaxContains(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinContains(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MinContains(value));
+        addKeyword(new MinContains(toJson(value), value));
         return this;
     }
 
@@ -337,14 +354,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withMaxProperties(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MaxProperties(value));
+        addKeyword(new MaxProperties(toJson(value), value));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withMinProperties(int value) {
         requireNonNegative(value, "value");
-        addKeyword(new MinProperties(value));
+        addKeyword(new MinProperties(toJson(value), value));
         return this;
     }
 
@@ -358,7 +375,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withRequired(Set<String> names) {
         requireNonNull(names, "names");
-        addKeyword(new Required(names));
+        addKeyword(new Required(toJsonFromStrings(names), names));
         return this;
     }
 
@@ -404,7 +421,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new AdditionalProperties(subschema));
+        addKeyword(new AdditionalProperties(toJson(subschema), subschema));
         return this;
     }
 
@@ -444,7 +461,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new PropertyNames(subschema));
+        addKeyword(new PropertyNames(toJson(subschema), subschema));
         return this;
     }
 
@@ -453,21 +470,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new If(subschema));
+        addKeyword(new If(toJson(subschema), subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Then(subschema));
+        addKeyword(new Then(toJson(subschema), subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Else(subschema));
+        addKeyword(new Else(toJson(subschema), subschema));
         return this;
     }
 
@@ -482,7 +499,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withAllOf(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
-        addKeyword(new AllOf(subschemas));
+        addKeyword(new AllOf(toJsonFromSchemas(subschemas), subschemas));
         return this;
     }
 
@@ -497,7 +514,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withAnyOf(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
-        addKeyword(new AnyOf(subschemas));
+        addKeyword(new AnyOf(toJsonFromSchemas(subschemas), subschemas));
         return this;
     }
 
@@ -512,14 +529,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withOneOf(List<JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
         requireNonEmpty(subschemas, "subschemas");
-        addKeyword(new OneOf(subschemas));
+        addKeyword(new OneOf(toJsonFromSchemas(subschemas), subschemas));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Not(subschema));
+        addKeyword(new Not(toJson(subschema), subschema));
         return this;
     }
 
@@ -528,7 +545,8 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(attribute, "attribute");
         FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
         if (foundAttribute != null) {
-            Format format = Format.of(foundAttribute);
+            Format format = new EvaluatableFormat(
+                    toJson(attribute), foundAttribute);
             addKeyword(format);
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
@@ -542,9 +560,10 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         Format format = null;
         FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
         if (foundAttribute != null) {
-            format = Format.of(foundAttribute);
+            format = new EvaluatableFormat(
+                    toJson(attribute), foundAttribute);
         } else {
-            format = Format.of(attribute);
+            format = new Format(toJson(attribute), attribute);
         }
         addKeyword(format);
         return this;
@@ -553,11 +572,12 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
+        JsonValue json = toJson(value);
         ContentEncodingScheme scheme = spec.getEncodingScheme(value);
         if (scheme != null) {
-            addKeyword(new ContentEncoding(scheme));
+            addKeyword(new ContentEncoding(json, scheme));
         } else {
-            addKeyword(new UnknownContentEncoding(value));
+            addKeyword(new UnknownContentEncoding(json, value));
         }
         return this;
     }
@@ -565,13 +585,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContentMediaType(String value) {
         requireNonNull(value, "value");
+        JsonValue json = toJson(value);
         MediaType mediaType = MediaType.valueOf(value);
         String mimeType = mediaType.mimeType();
         ContentMimeType foundMimeType = spec.getMimeType(mimeType);
         if (foundMimeType != null) {
-            addKeyword(new ContentMediaType(foundMimeType, mediaType.parameters()));
+            addKeyword(new ContentMediaType(json, foundMimeType, mediaType.parameters()));
         } else {
-            addKeyword(new UnknownContentMediaType(value));
+            addKeyword(new UnknownContentMediaType(json, value));
         }
         return this;
     }
@@ -596,14 +617,14 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withTitle(String title) {
         requireNonNull(title, "title");
-        addKeyword(new Title(title));
+        addKeyword(new Title(toJson(title), title));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withDescription(String description) {
         requireNonNull(description, "description");
-        addKeyword(new Description(description));
+        addKeyword(new Description(toJson(description), description));
         return this;
     }
 
@@ -619,12 +640,12 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends KeywordBuilder> T getBuilder(String name, Supplier<T> supplier) {
+    private <T extends KeywordBuilder> T getBuilder(String name, Function<JsonBuilderFactory, T> function) {
         T builder = null;
         if (builders.containsKey(name)) {
             builder = (T) builders.get(name);
         } else {
-            builder = supplier.get();
+            builder = function.apply(jsonService.getJsonBuilderFactory());
             builders.put(name, builder);
         }
         return builder;
@@ -637,12 +658,72 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
     }
 
+    private JsonValue toJson(String value) {
+        return jsonProvider.createValue(value);
+    }
+
+    private JsonValue toJson(int value) {
+        return jsonProvider.createValue(value);
+    }
+
+    private JsonValue toJson(BigDecimal value) {
+        return jsonProvider.createValue(value);
+    }
+
+    private static JsonValue toJson(boolean value) {
+        return value ? JsonValue.TRUE : JsonValue.FALSE;
+    }
+
+    private JsonValue toJson(URI value) {
+        return jsonProvider.createValue(value.toString());
+    }
+
+    private JsonValue toJson(JsonSchema value) {
+        return value.toJson();
+    }
+
+    private JsonValue toJson(InstanceType value) {
+        return jsonProvider.createValue(value.toString().toLowerCase());
+    }
+
+    private JsonValue toJson(Collection<JsonValue> values) {
+        JsonArrayBuilder builder = jsonFactory.createArrayBuilder();
+        for (JsonValue value : values) {
+            builder.add(value);
+        }
+        return builder.build();
+    }
+
+    private JsonValue toJsonFromStrings(Collection<String> values) {
+        JsonArrayBuilder builder = jsonFactory.createArrayBuilder();
+        for (String value : values) {
+            builder.add(value);
+        }
+        return builder.build();
+    }
+
+    private JsonValue toJsonFromSchemas(Collection<JsonSchema> values) {
+        JsonArrayBuilder builder = jsonFactory.createArrayBuilder();
+        for (JsonSchema value : values) {
+            builder.add(value.toJson());
+        }
+        return builder.build();
+    }
+
+    private JsonValue toJsonFromTypes(Collection<InstanceType> values) {
+        JsonArrayBuilder builder = jsonFactory.createArrayBuilder();
+        for (InstanceType value : values) {
+            builder.add(value.toString().toLowerCase());
+        }
+        return builder.build();
+    }
+
     /**
      * A builder of a keyword.
      *
      * @author leadpony
      */
-    private interface KeywordBuilder {
+    interface KeywordBuilder {
 
         SchemaKeyword build();
     }
@@ -655,16 +736,27 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      * @param <K> the type of the key.
      * @param <V> the type of the value.
      */
-    private abstract static class AbstractKeywordBuilder<K, V> implements KeywordBuilder {
+    abstract static class AbstractKeywordBuilder<K, V> implements KeywordBuilder {
 
         protected final Map<K, V> map = new LinkedHashMap<>();
+        protected final JsonObjectBuilder objectBuilder;
+
+        AbstractKeywordBuilder(JsonBuilderFactory factory) {
+            this.objectBuilder = factory.createObjectBuilder();
+        }
 
         void append(K key, V value) {
             this.map.put(key, value);
         }
 
         void append(Map<K, V> map) {
-            this.map.putAll(map);
+            for (Map.Entry<K, V> entry : map.entrySet()) {
+                append(entry.getKey(), entry.getValue());
+            }
+        }
+
+        JsonObject toJson() {
+            return objectBuilder.build();
         }
     }
 
@@ -673,10 +765,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      *
      * @author leadpony
      */
-    private static class PropertiesBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
+    static class PropertiesBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
+        PropertiesBuilder(JsonBuilderFactory factory) {
+            super(factory);
+        }
+
+        @Override
+        void append(String key, JsonSchema value) {
+            super.append(key, value);
+            this.objectBuilder.add(key, value.toJson());
+        }
+
+        @Override
         public SchemaKeyword build() {
-            return new Properties(map);
+            return new Properties(toJson(), this.map);
         }
     }
 
@@ -685,10 +788,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      *
      * @author leadpony
      */
-    private static class PatternPropertiesBuilder extends AbstractKeywordBuilder<Pattern, JsonSchema> {
+    static class PatternPropertiesBuilder extends AbstractKeywordBuilder<Pattern, JsonSchema> {
 
+        PatternPropertiesBuilder(JsonBuilderFactory factory) {
+            super(factory);
+        }
+
+        @Override
+        void append(Pattern key, JsonSchema value) {
+            super.append(key, value);
+            this.objectBuilder.add(key.toString(), value.toJson());
+        }
+
+        @Override
         public SchemaKeyword build() {
-            return new PatternProperties(map);
+            return new PatternProperties(toJson(), this.map);
         }
     }
 
@@ -697,10 +811,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      *
      * @author leadpony
      */
-    private static class DefinitionsBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
+    static class DefinitionsBuilder extends AbstractKeywordBuilder<String, JsonSchema> {
 
+        DefinitionsBuilder(JsonBuilderFactory factory) {
+            super(factory);
+        }
+
+        @Override
+        void append(String key, JsonSchema value) {
+            super.append(key, value);
+            this.objectBuilder.add(key, value.toJson());
+        }
+
+        @Override
         public SchemaKeyword build() {
-            return new Definitions(map);
+            return new Definitions(toJson(), this.map);
         }
     }
 
@@ -709,11 +834,35 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      *
      * @author leadpony
      */
-    private static class DependenciesBuilder extends AbstractKeywordBuilder<String, Object> {
+    static class DependenciesBuilder extends AbstractKeywordBuilder<String, Object> {
+
+        private final JsonBuilderFactory factory;
+
+        DependenciesBuilder(JsonBuilderFactory factory) {
+            super(factory);
+            this.factory = factory;
+        }
+
+        @Override
+        void append(String key, Object value) {
+            super.append(key, value);
+            if (value instanceof JsonSchema) {
+                this.objectBuilder.add(key, ((JsonSchema) value).toJson());
+            } else if (value instanceof Collection) {
+                JsonArrayBuilder arrayBuilder = factory.createArrayBuilder();
+                Collection<?> collection = (Collection<?>) value;
+                for (Object entry : collection) {
+                    if (entry instanceof String) {
+                        arrayBuilder.add((String) entry);
+                    }
+                }
+                this.objectBuilder.add(key, arrayBuilder);
+            }
+        }
 
         @Override
         public SchemaKeyword build() {
-            return new Dependencies(map);
+            return new Dependencies(toJson(), this.map);
         }
     }
 }

@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
@@ -35,7 +33,8 @@ public class MinContains extends AbstractKeyword {
 
     private final int limit;
 
-    public MinContains(int limit) {
+    public MinContains(JsonValue json, int limit) {
+        super(json);
         this.limit = limit;
     }
 
@@ -46,11 +45,6 @@ public class MinContains extends AbstractKeyword {
      */
     public int value() {
         return limit;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(limit);
     }
 
     @Override

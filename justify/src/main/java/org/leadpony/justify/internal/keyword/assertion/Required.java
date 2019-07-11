@@ -19,11 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -68,13 +66,14 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
                         throw new IllegalArgumentException();
                     }
                 }
-                return new Required(names);
+                return new Required(value, names);
             }
             throw new IllegalArgumentException();
         };
     }
 
-    public Required(Set<String> names) {
+    public Required(JsonValue json, Set<String> names) {
+        super(json);
         this.names = new LinkedHashSet<>(names);
     }
 
@@ -94,13 +93,6 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
         } else {
             return new NegatedAssertionEvaluator(context, names);
         }
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
-        names.forEach(builder::add);
-        return builder.build();
     }
 
     /**

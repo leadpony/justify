@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -52,8 +50,8 @@ public class Draft04Maximum extends Maximum {
         return mapper;
     }
 
-    public Draft04Maximum(BigDecimal limit) {
-        super(limit);
+    public Draft04Maximum(JsonValue json, BigDecimal limit) {
+        super(json, limit);
     }
 
     @Override
@@ -104,13 +102,9 @@ public class Draft04Maximum extends Maximum {
             return mapper;
         }
 
-        public ExclusiveMaximum(boolean value) {
+        public ExclusiveMaximum(JsonValue json, boolean value) {
+            super(json);
             this.value = value;
-        }
-
-        @Override
-        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-            return value ? JsonValue.TRUE : JsonValue.FALSE;
         }
     }
 }

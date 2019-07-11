@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.combiner;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
@@ -46,7 +48,7 @@ public class Not extends UnaryCombiner {
         return mapper;
     }
 
-    public Not(JsonSchema subschema) {
+    public Not(JsonValue json, JsonSchema subschema) {
         super(subschema);
     }
 

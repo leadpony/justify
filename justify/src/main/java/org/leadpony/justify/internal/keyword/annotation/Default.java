@@ -17,11 +17,10 @@
 package org.leadpony.justify.internal.keyword.annotation;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -33,7 +32,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Default extends Annotation<JsonValue> {
+public class Default extends AbstractKeyword implements Annotation<JsonValue> {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -49,7 +48,7 @@ public class Default extends Annotation<JsonValue> {
     }
 
     @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return value();
+    public JsonValue value() {
+        return getValueAsJson();
     }
 }

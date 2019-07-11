@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
@@ -53,7 +55,7 @@ public class If extends Conditional {
         return mapper;
     }
 
-    public If(JsonSchema schema) {
+    public If(JsonValue json, JsonSchema schema) {
         super(schema);
     }
 

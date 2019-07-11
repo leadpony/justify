@@ -19,9 +19,6 @@ package org.leadpony.justify.internal.keyword.combiner;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.JsonSchema;
 
 /**
@@ -34,16 +31,12 @@ abstract class UnaryCombiner extends Combiner {
     private final JsonSchema subschema;
 
     protected UnaryCombiner(JsonSchema subschema) {
+        super(subschema.toJson());
         this.subschema = subschema;
     }
 
     JsonSchema getSubschema() {
         return subschema;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return subschema.toJson();
     }
 
     @Override

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -34,20 +32,14 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @KeywordType("contentMediaType")
 public class UnknownContentMediaType extends AbstractKeyword {
 
-    private final String value;
-
     /**
      * Constructs this object.
      *
+     * @param json the original JSON value.
      * @param value the media type value which may include additional parameters.
      */
-    public UnknownContentMediaType(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return jsonProvider.createValue(value);
+    public UnknownContentMediaType(JsonValue json, String value) {
+        super(json);
     }
 
     @Override

@@ -16,7 +16,6 @@
 package org.leadpony.justify.internal.keyword;
 
 import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
 
 /**
  * An unrecognized keyword.
@@ -25,8 +24,6 @@ import javax.json.spi.JsonProvider;
  */
 public class Unknown extends AbstractKeyword {
 
-    private final JsonValue value;
-
     /**
      * Constructs this keyword.
      *
@@ -34,12 +31,6 @@ public class Unknown extends AbstractKeyword {
      * @param value the value of this keyword.
      */
     public Unknown(String name, JsonValue value) {
-        super(name);
-        this.value = value;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        return value;
+        super(name, value);
     }
 }

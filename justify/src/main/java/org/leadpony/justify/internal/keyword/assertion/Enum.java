@@ -19,11 +19,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -57,21 +54,15 @@ public class Enum extends AbstractEqualityAssertion {
                 for (JsonValue item : value.asJsonArray()) {
                     values.add(item);
                 }
-                return new Enum(values);
+                return new Enum(value, values);
             }
             throw new IllegalArgumentException();
         };
     }
 
-    public Enum(Set<JsonValue> expected) {
+    public Enum(JsonValue json, Set<JsonValue> expected) {
+        super(json);
         this.expected = expected;
-    }
-
-    @Override
-    public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-        JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
-        expected.forEach(builder::add);
-        return builder.build();
     }
 
     @Override

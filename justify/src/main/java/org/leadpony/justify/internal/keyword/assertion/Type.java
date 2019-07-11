@@ -20,11 +20,9 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -58,7 +56,7 @@ public abstract class Type extends AbstractAssertion {
         return (value, context) -> {
             switch (value.getValueType()) {
             case STRING:
-                return new Single(toInstanceType((JsonString) value));
+                return new Single(value, toInstanceType((JsonString) value));
             case ARRAY:
                 Set<InstanceType> types = new LinkedHashSet<>();
                 for (JsonValue item : value.asJsonArray()) {
@@ -68,22 +66,22 @@ public abstract class Type extends AbstractAssertion {
                         throw new IllegalArgumentException();
                     }
                 }
-                return new Multiple(types);
+                return new Multiple(value, types);
             default:
                 throw new IllegalArgumentException();
             }
         };
     }
 
-    public static Type of(InstanceType type) {
-        return new Single(type);
+    public static Type of(JsonValue json, InstanceType type) {
+        return new Single(json, type);
     }
 
-    public static Type of(Set<InstanceType> types) {
+    public static Type of(JsonValue json, Set<InstanceType> types) {
         if (types.size() == 1) {
-            return new Single(types.iterator().next());
+            return new Single(json, types.iterator().next());
         } else {
-            return new Multiple(types);
+            return new Multiple(json, types);
         }
     }
 
@@ -120,6 +118,10 @@ public abstract class Type extends AbstractAssertion {
         return InstanceType.valueOf(name);
     }
 
+    protected Type(JsonValue json) {
+        super(json);
+    }
+
     /**
      * Type assertion specialized for single type.
      *
@@ -129,7 +131,8 @@ public abstract class Type extends AbstractAssertion {
 
         private final InstanceType expectedType;
 
-        Single(InstanceType expectedType) {
+        Single(JsonValue json, InstanceType expectedType) {
+            super(json);
             this.expectedType = expectedType;
         }
 
@@ -172,11 +175,6 @@ public abstract class Type extends AbstractAssertion {
             };
         }
 
-        @Override
-        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-            return jsonProvider.createValue(expectedType.name().toLowerCase());
-        }
-
         private boolean testType(InstanceType type) {
             if (type == this.expectedType) {
                 return true;
@@ -197,7 +195,8 @@ public abstract class Type extends AbstractAssertion {
 
         private final Set<InstanceType> expectedTypes;
 
-        Multiple(Set<InstanceType> types) {
+        Multiple(JsonValue json, Set<InstanceType> types) {
+            super(json);
             this.expectedTypes = new LinkedHashSet<>(types);
         }
 
@@ -239,16 +238,6 @@ public abstract class Type extends AbstractAssertion {
                     return Result.FALSE;
                 }
             };
-        }
-
-        @Override
-        public JsonValue getValueAsJson(JsonProvider jsonProvider) {
-            JsonArrayBuilder builder = jsonProvider.createArrayBuilder();
-            expectedTypes.stream()
-                    .map(InstanceType::name)
-                    .map(String::toLowerCase)
-                    .forEach(builder::add);
-            return builder.build();
         }
 
         private boolean testType(InstanceType type) {

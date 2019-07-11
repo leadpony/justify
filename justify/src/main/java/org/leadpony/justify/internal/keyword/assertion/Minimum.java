@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
+import javax.json.JsonValue;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -44,8 +46,8 @@ public class Minimum extends AbstractNumericBoundAssertion {
         return mapper;
     }
 
-    public Minimum(BigDecimal limit) {
-        super(limit);
+    public Minimum(JsonValue json, BigDecimal limit) {
+        super(json, limit);
     }
 
     @Override

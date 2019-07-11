@@ -62,8 +62,8 @@ public class Properties extends AbstractProperties<String> {
         return mapper;
     }
 
-    public Properties(Map<String, JsonSchema> subschemas) {
-        super(subschemas);
+    public Properties(JsonValue json, Map<String, JsonSchema> subschemas) {
+        super(json, subschemas);
         for (Map.Entry<String, JsonSchema> entry : subschemas.entrySet()) {
             JsonSchema subschema = entry.getValue();
             if (subschema.containsKeyword("default")) {

@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonNumber;
@@ -49,7 +49,8 @@ public interface KeywordMapper {
         @Override
         default SchemaKeyword map(JsonValue value, CreationContext context) {
             if (value.getValueType() == ValueType.STRING) {
-                return map(((JsonString) value).getString());
+                JsonString string = (JsonString) value;
+                return map(string, string.getString());
             }
             throw new IllegalArgumentException();
         }
@@ -57,10 +58,11 @@ public interface KeywordMapper {
         /**
          * Maps a string to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(String value);
+        SchemaKeyword map(JsonValue json, String value);
     }
 
     /**
@@ -73,7 +75,8 @@ public interface KeywordMapper {
         @Override
         default SchemaKeyword map(JsonValue value, CreationContext context) {
             if (value.getValueType() == ValueType.NUMBER) {
-                return map(((JsonNumber) value).bigDecimalValue());
+                JsonNumber number = (JsonNumber) value;
+                return map(number, number.bigDecimalValue());
             }
             throw new IllegalArgumentException();
         }
@@ -81,10 +84,11 @@ public interface KeywordMapper {
         /**
          * Maps a {@code BigDecimal} to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(BigDecimal value);
+        SchemaKeyword map(JsonValue json, BigDecimal value);
     }
 
     /**
@@ -100,7 +104,7 @@ public interface KeywordMapper {
                 try {
                     int intValue = ((JsonNumber) value).intValueExact();
                     if (intValue >= 0) {
-                        return map(intValue);
+                        return map(value, intValue);
                     }
                 } catch (ArithmeticException e) {
                 }
@@ -111,10 +115,11 @@ public interface KeywordMapper {
         /**
          * Maps a non-negative integer to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(int value);
+        SchemaKeyword map(JsonValue json, int value);
     }
 
     /**
@@ -128,9 +133,9 @@ public interface KeywordMapper {
         default SchemaKeyword map(JsonValue value, CreationContext context) {
             switch (value.getValueType()) {
             case TRUE:
-                return map(true);
+                return map(value, true);
             case FALSE:
-                return map(false);
+                return map(value, false);
             default:
                 throw new IllegalArgumentException();
             }
@@ -139,10 +144,11 @@ public interface KeywordMapper {
         /**
          * Maps a boolean to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(boolean value);
+        SchemaKeyword map(JsonValue json, boolean value);
     }
 
 
@@ -156,8 +162,9 @@ public interface KeywordMapper {
         @Override
         default SchemaKeyword map(JsonValue value, CreationContext context) {
             if (value.getValueType() == ValueType.STRING) {
-                URI uri = URI.create(((JsonString) value).getString());
-                return map(uri);
+                JsonString string = (JsonString) value;
+                URI uri = URI.create(string.getString());
+                return map(string, uri);
             }
             throw new IllegalArgumentException();
         }
@@ -165,10 +172,11 @@ public interface KeywordMapper {
         /**
          * Maps a URI to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(URI value);
+        SchemaKeyword map(JsonValue json, URI value);
     }
 
     /**
@@ -180,16 +188,17 @@ public interface KeywordMapper {
 
         @Override
         default SchemaKeyword map(JsonValue value, CreationContext context) {
-            return map(context.asJsonSchema(value));
+            return map(value, context.asJsonSchema(value));
         }
 
         /**
          * Maps a JSON schema to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(JsonSchema value);
+        SchemaKeyword map(JsonValue json, JsonSchema value);
     }
 
     /**
@@ -202,11 +211,11 @@ public interface KeywordMapper {
         @Override
         default SchemaKeyword map(JsonValue value, CreationContext context) {
             if (value.getValueType() == ValueType.ARRAY) {
-                List<JsonSchema> schemas = new ArrayList<>();
+                Collection<JsonSchema> schemas = new ArrayList<>();
                 for (JsonValue item : value.asJsonArray()) {
                     schemas.add(context.asJsonSchema(item));
                 }
-                return map(schemas);
+                return map(value, schemas);
             }
             throw new IllegalArgumentException();
         }
@@ -214,10 +223,11 @@ public interface KeywordMapper {
         /**
          * Maps a list of JSON schemas to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(List<JsonSchema> value);
+        SchemaKeyword map(JsonValue json, Collection<JsonSchema> value);
     }
 
     /**
@@ -236,7 +246,7 @@ public interface KeywordMapper {
                             entry.getKey(),
                             context.asJsonSchema(entry.getValue()));
                 }
-                return map(schemas);
+                return map(value, schemas);
             } else {
                 throw new IllegalArgumentException();
             }
@@ -245,9 +255,10 @@ public interface KeywordMapper {
         /**
          * Maps a map of JSON schemas to a keyword.
          *
+         * @param json the original JSON value.
          * @param value the value to be converted to a keyword.
          * @return newly created keyword.
          */
-        SchemaKeyword map(Map<String, JsonSchema> value);
+        SchemaKeyword map(JsonValue json, Map<String, JsonSchema> value);
     }
 }

@@ -59,7 +59,7 @@ public class PatternProperties extends AbstractProperties<Pattern> {
                         Pattern pattern = Pattern.compile(entry.getKey());
                         schemas.put(pattern, context.asJsonSchema(entry.getValue()));
                     }
-                    return new PatternProperties(schemas);
+                    return new PatternProperties(value, schemas);
                 } catch (PatternSyntaxException e) {
                 }
             }
@@ -67,8 +67,8 @@ public class PatternProperties extends AbstractProperties<Pattern> {
         };
     }
 
-    public PatternProperties(Map<Pattern, JsonSchema> properties) {
-        super(properties);
+    public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> properties) {
+        super(json, properties);
     }
 
     @Override

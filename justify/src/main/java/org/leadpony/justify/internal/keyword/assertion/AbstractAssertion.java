@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
+import javax.json.JsonValue;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
@@ -24,4 +25,8 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  * @author leadpony
  */
 public abstract class AbstractAssertion extends AbstractKeyword implements Assertion {
+
+    protected AbstractAssertion(JsonValue json) {
+        super(json);
+    }
 }
