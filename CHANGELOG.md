@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- The parameter of `Keyword.getValueAsJson()` was removed.
+- Now every JSON schema and schema keyword retains its original JSON representation internally.
+
 ## 0.17.0 - 2019-06-09
 ### Added
 - `Keyword` interface which represents a keyword contained in a JSON schema.
