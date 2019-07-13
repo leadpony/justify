@@ -48,7 +48,7 @@ import org.leadpony.justify.internal.keyword.combiner.Referenceable;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.schema.BasicSchema;
+import org.leadpony.justify.internal.schema.BasicJsonSchema;
 import org.leadpony.justify.internal.schema.Resolvable;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.SchemaSpec;
@@ -424,17 +424,15 @@ public class DefaultJsonSchemaReader extends AbstractSchemaReader
             super.put(name, keyword);
         }
 
-        JsonSchema build(JsonObject object) {
+        JsonSchema build(JsonObject json) {
             if (isEmpty()) {
                 return JsonSchema.EMPTY;
             } else if (refLocation != null) {
-                SchemaReference reference = new SchemaReference(
-                        this.id, this, jsonService);
+                SchemaReference reference = new SchemaReference(this.id, json, this);
                 addReference(reference, refLocation, refPointer);
                 return reference;
             } else {
-                return BasicSchema.newSchema(
-                        this.id, this, jsonService);
+                return BasicJsonSchema.of(this.id, json, this);
             }
         }
     }

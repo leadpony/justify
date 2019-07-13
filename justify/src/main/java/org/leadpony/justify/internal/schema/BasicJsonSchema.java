@@ -23,11 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.JsonObject;
+
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
@@ -42,28 +43,28 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-public abstract class BasicSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
+public abstract class BasicJsonSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    public static JsonSchema newSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
+    public static JsonSchema of(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
         List<Evaluatable> evaluatables = collectEvaluatables(keywords);
         if (evaluatables.isEmpty()) {
-            return new None(id, keywords, jsonService);
+            return new None(id, json, keywords);
         } else if (evaluatables.size() == 1) {
-            return new One(id, keywords, jsonService, evaluatables.get(0));
+            return new One(id, json, keywords, evaluatables.get(0));
         } else {
-            return new Many(id, keywords, jsonService, evaluatables);
+            return new Many(id, json, keywords, evaluatables);
         }
     }
 
     /**
      * Constructs this schema.
      *
-     * @param id          the identifier of this schema, may be {@code null}.
-     * @param keywords    all keywords.
-     * @param jsonService ths JSON service.
+     * @param id       the identifier of this schema, may be {@code null}.
+     * @param json     the JSON representation of this schema.
+     * @param keywords all keywords.
      */
-    protected BasicSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
-        super(id, keywords, jsonService);
+    protected BasicJsonSchema(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+        super(id, json, keywords);
     }
 
     @Override
@@ -101,10 +102,10 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
     /**
      * JSON Schema without any evalutable keywords.
      */
-    private static final class None extends BasicSchema {
+    private static final class None extends BasicJsonSchema {
 
-        private None(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
-            super(id, keywords, jsonService);
+        private None(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+            super(id, json, keywords);
         }
 
         @Override
@@ -123,12 +124,13 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
     /**
      * JSON Schema with single evalutable keyword.
      */
-    private static final class One extends BasicSchema {
+    private static final class One extends BasicJsonSchema {
 
         private final Evaluatable evaluatable;
 
-        private One(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService, Evaluatable evaluatable) {
-            super(id, keywords, jsonService);
+        private One(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
+                Evaluatable evaluatable) {
+            super(id, json, keywords);
             this.evaluatable = evaluatable;
         }
 
@@ -148,13 +150,13 @@ public abstract class BasicSchema extends AbstractJsonSchema implements ProblemB
     /**
      * JSON Schema with multiple evalutable keywords.
      */
-    private static final class Many extends BasicSchema {
+    private static final class Many extends BasicJsonSchema {
 
         private final List<Evaluatable> evaluatables;
 
-        private Many(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService,
+        private Many(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
                 List<Evaluatable> evaluatables) {
-            super(id, keywords, jsonService);
+            super(id, json, keywords);
             this.evaluatables = evaluatables;
         }
 

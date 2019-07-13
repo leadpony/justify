@@ -20,6 +20,8 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
 import java.util.Map;
+
+import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser.Event;
 
@@ -33,7 +35,6 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.AbstractEmptyMap;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
@@ -52,11 +53,11 @@ public class SchemaReference extends AbstractJsonSchema {
      * Constructs this schema reference.
      *
      * @param id          the identifier of this schema, may be {@code null}.
+     * @param json        the JSON representation of this schema.
      * @param keywords    all keywords.
-     * @param jsonService the JSON service.
      */
-    public SchemaReference(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
-        super(id, keywords, jsonService);
+    public SchemaReference(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+        super(id, json, keywords);
         this.referencedSchema = new NonexistentSchema();
         if (hasAbsoluteId()) {
             this.targetId = id().resolve(ref());

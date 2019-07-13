@@ -108,6 +108,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private final JsonProvider jsonProvider;
     private final JsonBuilderFactory jsonFactory;
+    private final JsonObjectBuilder objectBuilder;
 
     private final SchemaSpec spec;
     private final Map<String, SchemaKeyword> keywords = new LinkedHashMap<>();
@@ -125,6 +126,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         this.jsonService = jsonService;
         this.jsonProvider = jsonService.getJsonProvider();
         this.jsonFactory = jsonService.getJsonBuilderFactory();
+        this.objectBuilder = this.jsonFactory.createObjectBuilder();
         this.spec = spec;
     }
 
@@ -133,12 +135,13 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchema build() {
         finishBuilders();
+        JsonObject json = objectBuilder.build();
         if (keywords.isEmpty()) {
             return JsonSchema.EMPTY;
         } else if (keywords.containsKey("$ref")) {
-            return new SchemaReference(id, keywords, jsonService);
+            return new SchemaReference(id, json, keywords);
         } else {
-            return BasicSchema.newSchema(id, keywords, jsonService);
+            return BasicJsonSchema.of(id, json, keywords);
         }
     }
 
@@ -637,6 +640,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private void addKeyword(SchemaKeyword keyword) {
         this.keywords.put(keyword.name(), keyword);
+        this.objectBuilder.add(keyword.name(), keyword.getValueAsJson());
     }
 
     @SuppressWarnings("unchecked")
@@ -653,8 +657,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private void finishBuilders() {
         for (KeywordBuilder builder : builders.values()) {
-            SchemaKeyword keyword = builder.build();
-            keywords.put(keyword.name(), keyword);
+            addKeyword(builder.build());
         }
     }
 

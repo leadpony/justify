@@ -25,14 +25,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
-import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
@@ -46,15 +43,15 @@ import org.leadpony.justify.internal.keyword.core.Schema;
 abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implements ObjectJsonSchema, Resolvable {
 
     private URI id;
+    private final JsonValue json;
 
     private final Map<String, SchemaKeyword> keywordMap;
-    private final JsonService jsonService;
 
-    protected AbstractJsonSchema(URI id, Map<String, SchemaKeyword> keywords, JsonService jsonService) {
-        this.keywordMap = Collections.unmodifiableMap(keywords);
-        this.jsonService = jsonService;
-        this.keywordMap.forEach((k, v) -> v.setEnclosingSchema(this));
+    protected AbstractJsonSchema(URI id, JsonValue json, Map<String, SchemaKeyword> keywords) {
         this.id = id;
+        this.json = json;
+        this.keywordMap = Collections.unmodifiableMap(keywords);
+        this.keywordMap.forEach((k, v) -> v.setEnclosingSchema(this));
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
         }
@@ -153,12 +150,8 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     }
 
     @Override
-    public JsonValue toJson() {
-        JsonObjectBuilder builder = jsonService.createObjectBuilder();
-        for (Keyword keyword : this.keywordMap.values()) {
-            builder.add(keyword.name(), keyword.getValueAsJson());
-        }
-        return builder.build();
+    public final JsonValue toJson() {
+        return json;
     }
 
     @Override
@@ -225,15 +218,6 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     @SuppressWarnings("unchecked")
     protected <T extends Keyword> T getKeyword(String name) {
         return (T) keywordMap.get(name);
-    }
-
-    /**
-     * Returns the factory for producing builders of JSON instances.
-     *
-     * @return the JSON builder factory.
-     */
-    protected JsonBuilderFactory getBuilderFactory() {
-        return jsonService.getJsonBuilderFactory();
     }
 
     private JsonSchema searchKeywordsForSubschema(String jsonPointer) {
