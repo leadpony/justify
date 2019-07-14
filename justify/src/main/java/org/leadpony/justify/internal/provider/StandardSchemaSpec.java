@@ -114,9 +114,7 @@ abstract class StandardSchemaSpec implements SchemaSpec {
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
         try (JsonSchemaReader reader = new DefaultJsonSchemaReader(
-                parser, jsonService, this,
-                getVersion().id(),
-                Collections.emptyMap())) {
+                parser, jsonService, this, Collections.emptyMap())) {
             return reader.read();
         }
     }

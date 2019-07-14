@@ -66,7 +66,6 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
     private final PointerAwareJsonParser parser;
     private final JsonService jsonService;
     private final SchemaSpec spec;
-    private final URI metaschemaId;;
     private final KeywordFactory keywordFactory;
 
     private JsonSchema lastSchema;
@@ -81,14 +80,12 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
             PointerAwareJsonParser parser,
             JsonService jsonService,
             SchemaSpec spec,
-            URI metaschemaId,
             Map<String, Object> config) {
         super(config);
 
         this.parser = parser;
         this.jsonService = jsonService;
         this.spec = spec;
-        this.metaschemaId = metaschemaId;
         this.keywordFactory = spec.getKeywordFactory();
 
         if (parser instanceof JsonValidator) {
@@ -311,7 +308,7 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
                 schema, this.initialBaseUri);
         resolveAllReferences(schemaMap);
         checkInfiniteRecursiveLoop();
-        checkMetaschemaId(schema);
+        //checkMetaschemaId(schema);
     }
 
     private Map<URI, JsonSchema> generateSchemaMap(JsonSchema root, URI baseUri) {
@@ -384,21 +381,6 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
                 addProblem(createProblemBuilder(context.location, context.pointer)
                         .withMessage(Message.SCHEMA_PROBLEM_REFERENCE_LOOP));
             }
-        }
-    }
-
-    private void checkMetaschemaId(JsonSchema schema) {
-        final URI actual = schema.schema();
-        if (actual == null || !actual.isAbsolute()) {
-            return;
-        }
-        URI expected = this.metaschemaId;
-        if (expected == null || !URIs.compare(expected, actual)) {
-            ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_VERSION_UNEXPECTED);
-            builder.withParameter("expected", expected)
-                   .withParameter("actual", actual);
-            addProblem(builder);
-            dispatchProblems();
         }
     }
 

@@ -30,41 +30,27 @@
         "valid": false
     },
     {
-        "description": "schema id is matched",
+        "description": "metaschema is boolean true",
         "schema": {
-            "$schema": "https://example.org/metaschema#"
+            "type": "string"
         },
-        "metaschema": {
-            "$id": "https://example.org/metaschema#"
-        },
+        "metaschema": true,
         "valid": true
     },
     {
-        "description": "schema id is not matched",
+        "description": "metaschema is boolean false",
         "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#"
+            "type": "string"
         },
-        "metaschema": {
-            "$id": "https://example.org/metaschema#"
-        },
+        "metaschema": false,
         "valid": false
     },
     {
-        "description": "metaschema id is missing",
+        "description": "metaschema is empty",
         "schema": {
-            "$schema": "http://json-schema.org/draft-07/schema#"
+            "type": "string"
         },
-        "metaschema": {
-        },
-        "valid": false
-    },
-    {
-        "description": "schema id is missing",
-        "schema": {
-        },
-        "metaschema": {
-            "$id": "https://example.org/metaschema#"
-        },
+        "metaschema": {},
         "valid": true
     }
 ]

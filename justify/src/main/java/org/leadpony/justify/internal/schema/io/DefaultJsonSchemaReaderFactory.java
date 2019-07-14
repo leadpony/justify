@@ -156,9 +156,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
         return new DefaultJsonSchemaReader(
-                parser, jsonService, spec,
-                getMetaschema(spec).id(),
-                config);
+                parser, jsonService, spec, config);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
