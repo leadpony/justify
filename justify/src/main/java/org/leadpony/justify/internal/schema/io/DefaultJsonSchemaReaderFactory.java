@@ -34,6 +34,7 @@ import javax.json.JsonException;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
@@ -61,6 +62,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private final SchemaSpecRegistry specRegistry;
     protected final SpecVersion defaultVersion;
+    private final JsonSchema metaschema;
     private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
@@ -73,8 +75,9 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         this.jsonService = builder.jsonService;
         this.jsonParserFactory = this.jsonService.getJsonParserFactory();
         this.specRegistry = builder.specRegistry;
-        this.config = builder.getAsMap();
+        this.config = builder.getConfigAsMap();
         this.defaultVersion = (SpecVersion) this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
+        this.metaschema = (JsonSchema) this.config.get(JsonSchemaReader.METASCHEMA);
     }
 
     @Override
@@ -129,17 +132,25 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
         if (testOption(JsonSchemaReader.SCHEMA_VALIDATION)) {
-            return new JsonValidator(realParser, spec.getMetaschema(), jsonService.getJsonProvider());
+            JsonSchema metascheam = selectMetaschema(spec);
+            return new JsonValidator(realParser, metascheam, jsonService.getJsonProvider());
         } else {
             return new DefaultPointerAwareJsonParser(realParser, jsonService.getJsonProvider());
         }
+    }
+
+    private JsonSchema selectMetaschema(SchemaSpec spec) {
+        if (this.metaschema != null) {
+            return metaschema;
+        }
+        return spec.getMetaschema();
     }
 
     /**
      * Creates a schema reader for the specified version of specification.
      *
      * @param realParser the real JSON parser.
-     * @param spec the specification.
+     * @param spec       the specification.
      * @return newly created schema reader.
      */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
@@ -224,108 +235,114 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      *
      * @author leadpony
      */
-    @SuppressWarnings("serial")
-    private static final class Builder extends HashMap<String, Object> implements JsonSchemaReaderFactoryBuilder {
+    private static final class Builder implements JsonSchemaReaderFactoryBuilder {
 
         private final JsonService jsonService;
         private final SchemaSpecRegistry specRegistry;
-        private boolean alreadyBuilt = false;
 
-        private List<JsonSchemaResolver> resolvers = new ArrayList<>();
+        private Map<String, Object> properties;
 
         private Builder(JsonService jsonService, SchemaSpecRegistry specRegistry) {
             this.jsonService = jsonService;
             this.specRegistry = specRegistry;
-            defaultize();
         }
 
-        Map<String, Object> getAsMap() {
-            return Collections.unmodifiableMap(this);
+        Map<String, Object> getConfigAsMap() {
+            return Collections.unmodifiableMap(getProperties());
         }
 
         /* As a JsonSchemaReaderFactoryBuilder */
 
         @Override
         public JsonSchemaReaderFactory build() {
-            checkState();
-            try {
-                if (get(JsonSchemaReader.SPEC_VERSION_DETECTION) == Boolean.TRUE) {
-                    return new DetectableJsonSchemaReaderFactory(this);
-                } else {
-                    return new DefaultJsonSchemaReaderFactory(this);
-                }
-            } finally {
-                alreadyBuilt = true;
+            JsonSchemaReaderFactory factory;
+            Map<String, Object> props = getProperties();
+            if (props.get(JsonSchemaReader.SPEC_VERSION_DETECTION) == Boolean.TRUE) {
+                factory = new DetectableJsonSchemaReaderFactory(this);
+            } else {
+                factory = new DefaultJsonSchemaReaderFactory(this);
             }
+            this.properties = null;
+            return factory;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict) {
-            checkState();
-            put(JsonSchemaReader.STRICT_KEYWORDS, strict);
+            getProperties().put(JsonSchemaReader.STRICT_KEYWORDS, strict);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
-            checkState();
-            put(JsonSchemaReader.STRICT_FORMATS, strict);
+            getProperties().put(JsonSchemaReader.STRICT_FORMATS, strict);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withSchemaResolver(JsonSchemaResolver resolver) {
-            checkState();
             requireNonNull(resolver, "resolver");
+            @SuppressWarnings("unchecked")
+            List<JsonSchemaResolver> resolvers = (List<JsonSchemaResolver>) getProperties()
+                    .get(JsonSchemaReader.RESOLVERS);
             resolvers.add(resolver);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withCustomFormatAttributes(boolean enabled) {
-            checkState();
-            put(JsonSchemaReader.CUSTOM_FORMATS, enabled);
+            getProperties().put(JsonSchemaReader.CUSTOM_FORMATS, enabled);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withDefaultSpecVersion(SpecVersion version) {
-            checkState();
             requireNonNull(version, "version");
-            put(JsonSchemaReader.DEFAULT_SPEC_VERSION, version);
+            getProperties().put(JsonSchemaReader.DEFAULT_SPEC_VERSION, version);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withSchemaValidation(boolean enabled) {
-            checkState();
-            put(JsonSchemaReader.SCHEMA_VALIDATION, enabled);
+            getProperties().put(JsonSchemaReader.SCHEMA_VALIDATION, enabled);
             return this;
         }
 
         @Override
         public JsonSchemaReaderFactoryBuilder withSpecVersionDetection(boolean enabled) {
-            checkState();
-            put(JsonSchemaReader.SPEC_VERSION_DETECTION, enabled);
+            getProperties().put(JsonSchemaReader.SPEC_VERSION_DETECTION, enabled);
             return this;
         }
 
-        private void checkState() {
-            if (alreadyBuilt) {
-                throw new IllegalStateException("already built.");
+        @Override
+        public JsonSchemaReaderFactoryBuilder withMetaschema(JsonSchema metaschema) {
+            requireNonNull(metaschema, "metaschema");
+            getProperties().put(JsonSchemaReader.METASCHEMA, metaschema);
+            return this;
+        }
+
+        private Map<String, Object> getProperties() {
+            if (this.properties == null) {
+                this.properties = createDefaultProperties();
             }
+            return this.properties;
         }
 
         /**
          * Defaultizes this builder.
          */
-        private void defaultize() {
-            put(JsonSchemaReader.CUSTOM_FORMATS, true);
-            put(JsonSchemaReader.RESOLVERS, resolvers);
-            put(JsonSchemaReader.DEFAULT_SPEC_VERSION, SpecVersion.current());
-            put(JsonSchemaReader.SCHEMA_VALIDATION, true);
-            put(JsonSchemaReader.SPEC_VERSION_DETECTION, true);
-            withSchemaResolver(specRegistry.getMetaschemaCatalog());
+        private Map<String, Object> createDefaultProperties() {
+            Map<String, Object> props = new HashMap<>();
+
+            props.put(JsonSchemaReader.CUSTOM_FORMATS, true);
+            props.put(JsonSchemaReader.DEFAULT_SPEC_VERSION, SpecVersion.current());
+            props.put(JsonSchemaReader.SCHEMA_VALIDATION, true);
+            props.put(JsonSchemaReader.SPEC_VERSION_DETECTION, true);
+
+            List<JsonSchemaResolver> resolvers = new ArrayList<>();
+            resolvers.add(specRegistry.getMetaschemaCatalog());
+            props.put(JsonSchemaReader.RESOLVERS, resolvers);
+
+            return props;
         }
     }
 }

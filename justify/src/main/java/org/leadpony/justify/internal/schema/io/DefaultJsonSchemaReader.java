@@ -60,7 +60,7 @@ import org.leadpony.justify.spi.FormatAttribute;
 /**
  * @author leadpony
  */
-public class DefaultJsonSchemaReader extends AbstractSchemaReader
+public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
     implements ProblemHandler, KeywordFactory.CreationContext {
 
     private final PointerAwareJsonParser parser;

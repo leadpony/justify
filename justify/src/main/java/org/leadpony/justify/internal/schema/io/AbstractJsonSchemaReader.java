@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  *
  * @author leadpony
  */
-abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderFactory  {
+abstract class AbstractJsonSchemaReader implements JsonSchemaReader, ProblemBuilderFactory  {
 
     static final URI DEFAULT_INITIAL_BASE_URI = URI.create("");
 
@@ -51,7 +51,7 @@ abstract class AbstractSchemaReader implements JsonSchemaReader, ProblemBuilderF
     private final List<Problem> problems = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    protected AbstractSchemaReader(Map<String, Object> config) {
+    protected AbstractJsonSchemaReader(Map<String, Object> config) {
         this.config = config;
         this.strictWithKeywords = config.get(STRICT_KEYWORDS) == Boolean.TRUE;
         this.strictWithFormats = config.get(STRICT_FORMATS) == Boolean.TRUE;

@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-abstract class AbstractProbeSchemaReader extends AbstractSchemaReader {
+abstract class AbstractProbeSchemaReader extends AbstractJsonSchemaReader {
 
     private final JsonParser parser;
     private final SpecVersion defaultSpecVersion;

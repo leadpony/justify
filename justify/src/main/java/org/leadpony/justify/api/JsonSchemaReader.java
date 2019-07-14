@@ -89,6 +89,11 @@ public interface JsonSchemaReader extends Closeable {
     String SPEC_VERSION_DETECTION = "org.leadpony.justify.api.JsonSchemaReader.SPEC_VERSION_DETECTION";
 
     /**
+     * The property used to specify the metaschema to be used when validating the schema.
+     */
+    String METASCHEMA = "org.leadpony.justify.api.JsonSchemaReader.METASCHEMA";
+
+    /**
      * Returns a JSON schema that is represented in the input source. This method
      * needs to be called only once for a reader instance.
      *

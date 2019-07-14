@@ -127,4 +127,20 @@ public interface JsonSchemaReaderFactoryBuilder {
      * @return this builder.
      */
     JsonSchemaReaderFactoryBuilder withSpecVersionDetection(boolean enabled);
+
+    /**
+     * Specifies the metaschema to be used when validating the schema.
+     *
+     * <p>
+     * By default, the official metaschema provided by JSON Schema specification
+     * will be automatically used in accordance with the identifier specified by
+     * {@code $schema} keyword in the JSON schema.
+     * </p>
+     *
+     * @param metaschema the metaschema to be used for validation of the schema.
+     * @return this buidler.
+     * @throws NullPointerException if the specified {@code metaschema} is
+     *                              {@code null}.
+     */
+    JsonSchemaReaderFactoryBuilder withMetaschema(JsonSchema metaschema);
 }
