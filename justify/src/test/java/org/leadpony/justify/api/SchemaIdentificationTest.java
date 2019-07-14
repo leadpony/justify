@@ -32,9 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author leadpony
  */
-public class SchemaIdentificationTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class SchemaIdentificationTest extends BaseTest {
 
     private static final String RESOURCE_NAME = "identification.json";
 

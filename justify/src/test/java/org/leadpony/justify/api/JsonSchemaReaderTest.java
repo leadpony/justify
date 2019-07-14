@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
 import java.net.URI;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.stream.JsonParsingException;
@@ -37,14 +36,7 @@ import org.leadpony.justify.test.helper.JsonAssertions;
  *
  * @author leadpony
  */
-public class JsonSchemaReaderTest {
-
-    private static final Logger LOG = Logger.getLogger(JsonSchemaReaderTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
-
-    private static void print(Throwable thrown) {
-        LOG.info(thrown.toString());
-    }
+public class JsonSchemaReaderTest extends BaseTest {
 
     public static Stream<Arguments> schemas() {
         return Stream.of(

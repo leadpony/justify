@@ -19,8 +19,6 @@ package org.leadpony.justify.api;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.spi.JsonProvider;
@@ -34,10 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author leadpony
  */
-public class JsonbTest {
-
-    private static final Logger LOG = Logger.getLogger(JsonbTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class JsonbTest extends BaseTest {
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -78,7 +73,8 @@ public class JsonbTest {
         assertThat(person.name).isEqualTo("John Smith");
         assertThat(person.age).isEqualTo(46);
         assertThat(problems).isNotEmpty();
-        problems.stream().map(Object::toString).forEach(LOG::info);
+
+        print(problems);
     }
 
     /**

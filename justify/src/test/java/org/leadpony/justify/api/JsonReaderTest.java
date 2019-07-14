@@ -19,7 +19,6 @@ package org.leadpony.justify.api;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.Json;
@@ -41,11 +40,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author leadpony
  */
-public class JsonReaderTest {
-
-    private static final Logger LOG = Logger.getLogger(JsonReaderTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class JsonReaderTest extends BaseTest {
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -177,7 +172,8 @@ public class JsonReaderTest {
 
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
-        printProblems(problems);
+
+        print(problems);
     }
 
     @ParameterizedTest
@@ -203,12 +199,7 @@ public class JsonReaderTest {
         } else {
             assertThat(problems).isNotEmpty();
         }
-        printProblems(problems);
-    }
 
-    private static void printProblems(List<Problem> problems) {
-        if (!problems.isEmpty()) {
-            PRINTER.handleProblems(problems);
-        }
+        print(problems);
     }
 }

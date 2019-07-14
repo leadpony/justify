@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,10 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author leadpony
  */
-public class SchemaValidationTest {
-
-    private static final Logger LOG = Logger.getLogger(SchemaValidationTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class SchemaValidationTest extends BaseTest {
 
     private static final String[] TESTS = {
             "schema/schema.json",
@@ -84,8 +80,6 @@ public class SchemaValidationTest {
             "schema/validation/optional/contentEncoding.json",
             "schema/validation/optional/contentMediaType.json",
         };
-
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     public static Stream<SchemaFixture> provideAllFixtures() {
         return Stream.of(TESTS).flatMap(SchemaFixture::newStream);
@@ -137,8 +131,8 @@ public class SchemaValidationTest {
 
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
-            LOG.info(fixture.displayName());
-            PRINTER.handleProblems(problems);
+            print(fixture.displayName());
+            print(problems);
         }
     }
 }

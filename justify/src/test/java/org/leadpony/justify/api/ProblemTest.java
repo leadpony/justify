@@ -32,9 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author leadpony
  */
-public class ProblemTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class ProblemTest extends BaseTest {
 
     private static final String SCHEMA = "{ \"properties\": { \"foo\": { \"type\": \"string\" } } }";
     private static final String INSTANCE = "{\n\"foo\": 42\n}";

@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,11 +40,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author leadpony
  */
-public class DefaultValueTest {
-
-    private static final Logger LOG = Logger.getLogger(DefaultValueTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class DefaultValueTest extends BaseTest {
 
     /**
      * A fixture for this test.
@@ -150,7 +145,7 @@ public class DefaultValueTest {
             actual = reader.readValue();
         }
 
-        printProblems(problems);
+        print(problems);
 
         assertThat(actual).isEqualTo(fixture.result);
 
@@ -185,7 +180,7 @@ public class DefaultValueTest {
             }
         }
 
-        printProblems(problems);
+        print(problems);
 
         assertThat(actual).containsExactlyElementsOf(expected);
 
@@ -234,9 +229,5 @@ public class DefaultValueTest {
             }
         }
         return events;
-    }
-
-    private static void printProblems(List<Problem> problems) {
-        PRINTER.handleProblems(problems);
     }
 }

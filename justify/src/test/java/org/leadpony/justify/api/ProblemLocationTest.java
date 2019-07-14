@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.JsonReader;
@@ -36,11 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author leadpony
  */
-public class ProblemLocationTest {
-
-    private static final Logger LOG = Logger.getLogger(ProblemLocationTest.class.getName());
-    protected static final JsonValidationService SERVICE = JsonValidationServices.get();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class ProblemLocationTest extends BaseTest {
 
     private static final String[] FILES = {
             "problem/additionalItems.txt",
@@ -106,8 +101,8 @@ public class ProblemLocationTest {
 
     private void printProblems(List<Problem> problems, ProblemLocationFixture fixture) {
         if (!problems.isEmpty()) {
-            LOG.info(fixture.toString());
-            PRINTER.handleProblems(problems);
+            print(fixture.toString());
+            print(problems);
         }
     }
 }

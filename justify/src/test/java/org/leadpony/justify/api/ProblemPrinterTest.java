@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
-
 import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.api.Test;
@@ -34,10 +32,7 @@ import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
  *
  * @author leadpony
  */
-public class ProblemPrinterTest {
-
-    private static final Logger LOG = Logger.getLogger(ProblemPrinterTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class ProblemPrinterTest extends BaseTest {
 
     @Test
     public void defaultPrinterShouldPrintBothLocationAndPointer() {
@@ -129,7 +124,7 @@ public class ProblemPrinterTest {
     }
 
     private void printLines(List<String> lines) {
-        lines.forEach(LOG::info);
+        lines.forEach(BaseTest::print);
     }
 
     /**

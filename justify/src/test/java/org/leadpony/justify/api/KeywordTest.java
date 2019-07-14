@@ -28,9 +28,7 @@ import org.leadpony.justify.test.helper.JsonResource;
 /**
  * @author leadpony
  */
-public class KeywordTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class KeywordTest extends BaseTest {
 
     /**
      * @author leadpony

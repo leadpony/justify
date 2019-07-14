@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -39,11 +37,7 @@ import org.junit.jupiter.params.provider.EnumSource;
  *
  * @author leadpony
  */
-public class KnownExampleTest {
-
-    private static final Logger LOG = Logger.getLogger(KnownExampleTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class KnownExampleTest extends BaseTest {
 
     private static final String BASE_PATH = "/org/json_schema/examples/draft7/";
 
@@ -83,9 +77,9 @@ public class KnownExampleTest {
                 parser.next();
             }
         }
-        if (!problems.isEmpty()) {
-            PRINTER.handleProblems(problems);
-        }
+
+        print(problems);
+
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
     }
@@ -100,9 +94,9 @@ public class KnownExampleTest {
         try (JsonReader reader = SERVICE.createReader(getResourceAsStream(example.instance), schema, handler)) {
             value = reader.readValue();
         }
-        if (!problems.isEmpty()) {
-            PRINTER.handleProblems(problems);
-        }
+
+        print(problems);
+
         assertThat(value).isNotNull();
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
@@ -133,9 +127,8 @@ public class KnownExampleTest {
         }
         parser.close();
 
-        if (!problems.isEmpty()) {
-            PRINTER.handleProblems(problems);
-        }
+        print(problems);
+
         assertThat(problems.isEmpty()).isEqualTo(example.valid);
         assertThat(schema.toJson()).isEqualTo(readJsonFromResource(example.schema));
     }

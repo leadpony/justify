@@ -34,9 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author leadpony
  */
-public class ValidationConfigTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class ValidationConfigTest extends BaseTest {
 
     private ValidationConfig sut;
 

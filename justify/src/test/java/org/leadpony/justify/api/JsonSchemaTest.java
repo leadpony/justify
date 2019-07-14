@@ -43,9 +43,7 @@ import org.leadpony.justify.test.helper.JsonResource;
  *
  * @author leadpony
  */
-public class JsonSchemaTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class JsonSchemaTest extends BaseTest {
 
     @Test
     public void defaultValueShouldReturnValueIfExists() {

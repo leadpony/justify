@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,11 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author leadpony
  */
-public class SpecDetectionTest {
-
-    static final Logger LOG = Logger.getLogger(SpecDetectionTest.class.getName());
-    static final JsonValidationService SERVICE = JsonValidationServices.get();
-    static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class SpecDetectionTest extends BaseTest {
 
     public static Stream<Arguments> supportedVersions() {
         return Stream.of(
@@ -112,7 +107,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        PRINTER.handleProblems(e.getProblems());
+        print(e.getProblems());
     }
 
     @ParameterizedTest
@@ -131,7 +126,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        PRINTER.handleProblems(e.getProblems());
+        print(e.getProblems());
     }
 
     public static Stream<Arguments> matchedVersions() {
@@ -187,7 +182,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        PRINTER.handleProblems(e.getProblems());
+        print(e.getProblems());
     }
 
     @ParameterizedTest
@@ -206,7 +201,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        PRINTER.handleProblems(e.getProblems());
+        print(e.getProblems());
     }
 
     /* helpers */

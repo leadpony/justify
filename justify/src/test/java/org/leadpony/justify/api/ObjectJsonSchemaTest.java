@@ -34,9 +34,7 @@ import org.leadpony.justify.test.helper.JsonResource;
  *
  * @author leadpony
  */
-public class ObjectJsonSchemaTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class ObjectJsonSchemaTest extends BaseTest {
 
     /**
      * A test case for {@link ObjectJsonSchema#get(Object)}.

@@ -32,8 +32,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.Json;
@@ -53,7 +51,7 @@ import org.leadpony.justify.internal.annotation.Spec;
  *
  * @author leadpony
  */
-public abstract class AbstractOfficialTest {
+public abstract class AbstractOfficialTest extends BaseTest {
 
     /**
      * A test fixture for official test suite.
@@ -122,11 +120,7 @@ public abstract class AbstractOfficialTest {
         }
     }
 
-    static final Logger LOG = Logger.getLogger(AbstractOfficialTest.class.getName());
-
     static final JsonBuilderFactory JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
-    static final JsonValidationService SERVICE = JsonValidationServices.get();
-    static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     static final Path TEST_SUITE_HOME = Paths.get("..", "JSON-Schema-Test-Suite");
     static final Path TESTS_PATH = TEST_SUITE_HOME.resolve("tests");
@@ -295,14 +289,15 @@ public abstract class AbstractOfficialTest {
     }
 
     private void printProblems(Fixture fixture, List<Problem> problems) {
-        if (problems.isEmpty() || !LOG.isLoggable(Level.INFO)) {
+        if (problems.isEmpty() || !isLoggable()) {
             return;
         }
         StringBuilder builder = new StringBuilder("- ");
         builder.append(fixture.toString());
-        LOG.info(builder.toString());
-        PRINTER.handleProblems(problems);
-        LOG.info("");
+
+        print(builder.toString());
+        print(problems);
+        print("");
     }
 
     private static InputStream openResource(String name) {

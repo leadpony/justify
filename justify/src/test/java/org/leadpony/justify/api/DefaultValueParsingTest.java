@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,10 +39,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author leadpony
  */
-public class DefaultValueParsingTest {
-
-    private static final Logger LOG = Logger.getLogger(DefaultValueParsingTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class DefaultValueParsingTest extends BaseTest {
 
     @Test
     public void getStringShouldReturnString() {
@@ -90,7 +86,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -140,7 +136,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -175,7 +171,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -210,7 +206,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -246,7 +242,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -283,7 +279,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -320,7 +316,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -472,7 +468,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -508,7 +504,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -549,7 +545,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 
@@ -567,7 +563,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            LOG.info(thrown.getMessage());
+            print(thrown.getMessage());
         }
     }
 

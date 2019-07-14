@@ -47,9 +47,7 @@ import javax.json.JsonValue;
  *
  * @author leadpony
  */
-public class JsonSchemaBuilderTest {
-
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+public class JsonSchemaBuilderTest extends BaseTest {
 
     private JsonSchemaBuilderFactory schemaBuilderfactory;
     private JsonBuilderFactory jsonBuilderFactory;

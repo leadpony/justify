@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,11 +47,7 @@ import org.leadpony.justify.test.helper.JsonAssertions;
  *
  * @author leadpony
  */
-public class JsonParserTest {
-
-    private static final Logger LOG = Logger.getLogger(JsonParserTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
+public class JsonParserTest extends BaseTest {
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -308,7 +303,7 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        LOG.info(thrown.getMessage());
+        print(thrown.getMessage());
     }
 
     @Test
@@ -365,7 +360,7 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        LOG.info(thrown.getMessage());
+        print(thrown.getMessage());
     }
 
     @Test
@@ -522,7 +517,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        LOG.info(thrown.getMessage());
+        print(thrown.getMessage());
     }
 
     @Test
@@ -603,7 +598,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        LOG.info(thrown.getMessage());
+        print(thrown.getMessage());
     }
 
     @Test
@@ -635,7 +630,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        LOG.info(thrown.getMessage());
+        print(thrown.getMessage());
     }
 
     public static Stream<Arguments> argumentsForGetValue() {
@@ -675,7 +670,7 @@ public class JsonParserTest {
 
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
-        printProblems(problems);
+        print(problems);
     }
 
     @Test
@@ -693,12 +688,6 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        LOG.info(thrown.getMessage());
-    }
-
-    private static void printProblems(List<Problem> problems) {
-        if (!problems.isEmpty()) {
-            PRINTER.handleProblems(problems);
-        }
+        print(thrown.getMessage());
     }
 }

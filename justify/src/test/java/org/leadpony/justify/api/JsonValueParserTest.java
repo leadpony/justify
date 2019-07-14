@@ -40,7 +40,7 @@ import org.leadpony.jsonp.testsuite.tests.AbstractJsonValueParserTest;
 public class JsonValueParserTest extends AbstractJsonValueParserTest {
 
     private static final Logger LOG = Logger.getLogger(JsonValueParserTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationServices.get();
+    private static final JsonValidationService SERVICE = JsonValidationService.newInstance();
     private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     @ParameterizedTest
