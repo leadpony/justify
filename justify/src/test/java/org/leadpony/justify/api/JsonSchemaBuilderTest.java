@@ -16,9 +16,11 @@
 
 package org.leadpony.justify.api;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -28,11 +30,13 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.PatternSyntaxException;
 
 import javax.json.Json;
@@ -49,19 +53,19 @@ import javax.json.JsonValue;
  */
 public class JsonSchemaBuilderTest extends BaseTest {
 
-    private JsonSchemaBuilderFactory schemaBuilderfactory;
-    private JsonBuilderFactory jsonBuilderFactory;
+    private static JsonSchemaBuilderFactory schemaBuilderfactory;
+    private static JsonBuilderFactory jsonBuilderFactory;
 
-    @BeforeEach
-    public void setUp() {
-        this.schemaBuilderfactory = SERVICE.createSchemaBuilderFactory();
-        this.jsonBuilderFactory = Json.createBuilderFactory(null);
+    @BeforeAll
+    public static void setUpOnce() {
+        schemaBuilderfactory = SERVICE.createSchemaBuilderFactory();
+        jsonBuilderFactory = Json.createBuilderFactory(null);
     }
 
-    @AfterEach
-    public void tearDown() {
-        this.jsonBuilderFactory = null;
-        this.schemaBuilderfactory = null;
+    @AfterAll
+    public static void tearDownOncce() {
+        jsonBuilderFactory = null;
+        schemaBuilderfactory = null;
     }
 
     @Test
@@ -944,13 +948,55 @@ public class JsonSchemaBuilderTest extends BaseTest {
     }
 
     @Test
+    public void withDependenciesShouldAddSchemaDependency() {
+        Map<String, JsonSchema> map = new HashMap<>();
+        map.put("a", JsonSchema.TRUE);
+        map.put("b", JsonSchema.FALSE);
+
+        JsonSchema schema = createSchemaBuilder()
+                .withDependencies(map)
+                .build();
+
+        JsonObject expected = createObjectBuilder()
+                .add("dependencies", createObjectBuilder()
+                        .add("a", JsonValue.TRUE)
+                        .add("b", JsonValue.FALSE))
+                .build();
+
+        assertThat(schema.toJson()).isEqualTo(expected);
+    }
+
+    @Test
+    public void withDependenciesShouldAddPropertySetDependency() {
+        Set<String> set = new LinkedHashSet<>();
+        set.add("foo");
+        set.add("bar");
+        set.add("baz");
+
+        Map<String, Set<String>> map = new HashMap<>();
+        map.put("a", set);
+
+        JsonSchema schema = createSchemaBuilder()
+                .withDependencies(map)
+                .build();
+
+        JsonObject expected = createObjectBuilder()
+                .add("dependencies", createObjectBuilder()
+                        .add("a", createArrayBuilder().add("foo").add("bar").add("baz")))
+                .build();
+
+        assertThat(schema.toJson()).isEqualTo(expected);
+    }
+
+    @Test
     public void withDependenciesShouldAddDependencies() {
-        Set<String> propertySet = new LinkedHashSet<>();
-        propertySet.add("baz");
+        Set<String> set = new LinkedHashSet<>();
+        set.add("foo");
+        set.add("bar");
 
         Map<String, Object> dependencies = new LinkedHashMap<>();
-        dependencies.put("foo", propertySet);
-        dependencies.put("bar", JsonSchema.EMPTY);
+        dependencies.put("a", set);
+        dependencies.put("b", JsonSchema.EMPTY);
 
         JsonSchema schema = createSchemaBuilder()
                 .withDependencies(dependencies)
@@ -958,11 +1004,142 @@ public class JsonSchemaBuilderTest extends BaseTest {
 
         JsonObject expected = createObjectBuilder()
                 .add("dependencies", createObjectBuilder()
-                        .add("foo", createArrayBuilder().add("baz"))
-                        .add("bar", JsonValue.EMPTY_JSON_OBJECT))
+                        .add("a", createArrayBuilder().add("foo").add("bar"))
+                        .add("b", JsonValue.EMPTY_JSON_OBJECT))
                 .build();
 
         assertThat(schema.toJson()).isEqualTo(expected);
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum DependenciesTestCase {
+        EMPTY(
+                map -> { },
+                JsonValue.EMPTY_JSON_OBJECT
+                ),
+        EMPTY_SCHEMA(
+                map -> {
+                    map.put("a", JsonSchema.EMPTY);
+                },
+                createObjectBuilder()
+                    .add("a", JsonValue.EMPTY_JSON_OBJECT)
+                    .build()
+                ),
+        STRING_SET(
+                map -> {
+                    map.put("a", setOf("b", "c"));
+                },
+                createObjectBuilder()
+                    .add("a", createArrayBuilder().add("b").add("c"))
+                    .build()
+                ),
+        EMPTY_SET(
+                map -> {
+                    map.put("a", Collections.emptySet());
+                },
+                createObjectBuilder()
+                    .add("a", JsonValue.EMPTY_JSON_ARRAY)
+                    .build()
+                ),
+        SCHEMA_AND_STRING_SET(
+                map -> {
+                    map.put("a", JsonSchema.EMPTY);
+                    map.put("b", setOf("c", "d"));
+                },
+                createObjectBuilder()
+                    .add("a", JsonValue.EMPTY_JSON_OBJECT)
+                    .add("b", createArrayBuilder().add("c").add("d"))
+                    .build()
+                );
+
+        final Map<String, Object> values;
+        final JsonValue json;
+
+        DependenciesTestCase(Consumer<Map<String, Object>> consumer, JsonValue json) {
+            this.values = new HashMap<>();
+            consumer.accept(this.values);
+            JsonObjectBuilder builder = createObjectBuilder();
+            builder.add("dependencies", json);
+            this.json = builder.build();
+        }
+
+        private static Set<?> setOf(Object... objects) {
+            Set<Object> set = new HashSet<>();
+            for (Object object : objects) {
+                set.add(object);
+            }
+            return set;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(DependenciesTestCase.class)
+    public void withDependenciesShouldAddDependencies(DependenciesTestCase test) {
+        JsonSchemaBuilder builder = createSchemaBuilder();
+
+        builder.withDependencies(test.values);
+
+        JsonSchema schema = builder.build();
+        assertThat(schema.toJson()).isEqualTo(test.json);
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum InvalidDependenciesTestCase {
+        STRING(
+                map -> {
+                    map.put("a", "foo");
+                }
+                ),
+        NULL(
+                map -> {
+                    map.put("a", null);
+                }
+                ),
+        INTEGER_SET(
+                map -> {
+                    map.put("a", setOf(1, 2, 3));
+                }
+                ),
+        NULL_SET(
+                map -> {
+                    map.put("a", setOf((Object) null));
+                }
+                );
+
+        final Map<String, Object> values;
+
+        InvalidDependenciesTestCase(Consumer<Map<String, Object>> consumer) {
+            this.values = new HashMap<>();
+            consumer.accept(this.values);
+        }
+
+        private static Set<?> setOf(Object... objects) {
+            Set<Object> set = new HashSet<>();
+            for (Object object : objects) {
+                set.add(object);
+            }
+            return set;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(InvalidDependenciesTestCase.class)
+    public void withDependenciesShouldShouldException(InvalidDependenciesTestCase test) {
+        JsonSchemaBuilder builder = createSchemaBuilder();
+
+        Throwable thrown = catchThrowable(() -> {
+            builder.withDependencies(test.values);
+        });
+
+        print(thrown);
+
+        assertThat(thrown)
+            .isNotNull()
+            .isInstanceOf(ClassCastException.class);
     }
 
     @Test
@@ -1345,15 +1522,15 @@ public class JsonSchemaBuilderTest extends BaseTest {
         assertThat(schema.toJson()).isEqualTo(expected);
     }
 
-    private JsonSchemaBuilder createSchemaBuilder() {
+    private static JsonSchemaBuilder createSchemaBuilder() {
         return schemaBuilderfactory.createBuilder();
     }
 
-    private JsonObjectBuilder createObjectBuilder() {
+    private static JsonObjectBuilder createObjectBuilder() {
         return jsonBuilderFactory.createObjectBuilder();
     }
 
-    private JsonArrayBuilder createArrayBuilder() {
+    private static JsonArrayBuilder createArrayBuilder() {
         return jsonBuilderFactory.createArrayBuilder();
     }
 }

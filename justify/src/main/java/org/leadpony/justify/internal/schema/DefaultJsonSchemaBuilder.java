@@ -454,10 +454,15 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     }
 
     @Override
-    public JsonSchemaBuilder withDependencies(Map<String, Object> values) {
+    public JsonSchemaBuilder withDependencies(Map<String, ?> values) {
         requireNonNull(values, "values");
+        if (!verifyDependenciesValueType(values)) {
+            throw new ClassCastException();
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) values;
         getBuilder("dependencies", DependenciesBuilder::new)
-                .append(values);
+                .append(map);
         return this;
     }
 
@@ -659,6 +664,23 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         for (KeywordBuilder builder : builders.values()) {
             addKeyword(builder.build());
         }
+    }
+
+    private static boolean verifyDependenciesValueType(Map<String, ?> values) {
+        for (Object value : values.values()) {
+            if (value instanceof JsonSchema) {
+                continue;
+            } else if (value instanceof Set) {
+                for (Object entry : (Set<?>) value) {
+                    if (!(entry instanceof String)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     private JsonValue toJson(String value) {

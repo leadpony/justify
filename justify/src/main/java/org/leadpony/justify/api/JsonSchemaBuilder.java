@@ -664,12 +664,13 @@ public interface JsonSchemaBuilder {
     /**
      * Adds a "dependencies" keyword to the schema.
      *
-     * @param values the object mapping a property name to a value. Any value must
-     *               be of {@link JsonSchema} or {@link Set}.
+     * @param values the object mapping a property name to a value. Each value of
+     *               the map must be a {@link JsonSchema} or a {@code Set<String>}.
      * @return this builder.
      * @throws NullPointerException if the specified {@code values} is {@code null}.
+     * @throws ClassCastException if any value of the map is of unexpected type.
      */
-    JsonSchemaBuilder withDependencies(Map<String, Object> values);
+    JsonSchemaBuilder withDependencies(Map<String, ?> values);
 
     /**
      * Adds a "propertyNames" keyword to the schema.
