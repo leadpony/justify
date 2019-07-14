@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.base;
 
 import java.net.URI;
-import java.util.Comparator;
 
 /**
  * Utility methods operating on instances of {@link URI}.
@@ -38,9 +37,12 @@ public final class URIs {
         return uri.resolve("#");
     }
 
-    public static final Comparator<URI> COMPARATOR = (URI x, URI y) -> {
-        return withFragment(x).compareTo(withFragment(y));
-    };
+    public static boolean compare(URI x, URI y) {
+        if (!x.isAbsolute() || !y.isAbsolute()) {
+            return false;
+        }
+        return withFragment(x).compareTo(withFragment(y)) == 0;
+    }
 
     private URIs() {
     }

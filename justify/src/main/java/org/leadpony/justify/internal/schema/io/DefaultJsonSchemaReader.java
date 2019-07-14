@@ -66,6 +66,7 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
     private final PointerAwareJsonParser parser;
     private final JsonService jsonService;
     private final SchemaSpec spec;
+    private final URI metaschemaId;;
     private final KeywordFactory keywordFactory;
 
     private JsonSchema lastSchema;
@@ -80,12 +81,14 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
             PointerAwareJsonParser parser,
             JsonService jsonService,
             SchemaSpec spec,
+            URI metaschemaId,
             Map<String, Object> config) {
         super(config);
 
         this.parser = parser;
         this.jsonService = jsonService;
         this.spec = spec;
+        this.metaschemaId = metaschemaId;
         this.keywordFactory = spec.getKeywordFactory();
 
         if (parser instanceof JsonValidator) {
@@ -389,8 +392,8 @@ public class DefaultJsonSchemaReader extends AbstractJsonSchemaReader
         if (actual == null || !actual.isAbsolute()) {
             return;
         }
-        URI expected = spec.getVersion().id();
-        if (URIs.COMPARATOR.compare(expected, actual) != 0) {
+        URI expected = this.metaschemaId;
+        if (expected == null || !URIs.compare(expected, actual)) {
             ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_VERSION_UNEXPECTED);
             builder.withParameter("expected", expected)
                    .withParameter("actual", actual);

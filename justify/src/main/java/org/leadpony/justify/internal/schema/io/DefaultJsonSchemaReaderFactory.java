@@ -132,14 +132,14 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
 
     private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
         if (testOption(JsonSchemaReader.SCHEMA_VALIDATION)) {
-            JsonSchema metascheam = selectMetaschema(spec);
+            JsonSchema metascheam = getMetaschema(spec);
             return new JsonValidator(realParser, metascheam, jsonService.getJsonProvider());
         } else {
             return new DefaultPointerAwareJsonParser(realParser, jsonService.getJsonProvider());
         }
     }
 
-    private JsonSchema selectMetaschema(SchemaSpec spec) {
+    private JsonSchema getMetaschema(SchemaSpec spec) {
         if (this.metaschema != null) {
             return metaschema;
         }
@@ -155,7 +155,10 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
-        return new DefaultJsonSchemaReader(parser, jsonService, spec, config);
+        return new DefaultJsonSchemaReader(
+                parser, jsonService, spec,
+                getMetaschema(spec).id(),
+                config);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {

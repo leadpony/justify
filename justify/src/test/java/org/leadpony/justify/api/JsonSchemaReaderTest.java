@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.util.stream.Stream;
 
+import javax.json.JsonValue;
 import javax.json.stream.JsonParsingException;
 
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.test.helper.JsonAssertions;
+import org.leadpony.justify.test.helper.JsonResource;
 
 /**
  * A test class for testing the {@link JsonSchemaReader} implementation.
@@ -131,5 +133,81 @@ public class JsonSchemaReaderTest extends BaseTest {
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
         assertThat(thrown).isNull();
+    }
+
+    /**
+     * @author leadpony
+     */
+    static class MetaschemaTestCase {
+
+        final String description;
+        final JsonValue schema;
+        final JsonValue metaschema;
+        final boolean valid;
+
+        MetaschemaTestCase(String description, JsonValue schema, JsonValue metaschema, boolean valid) {
+            this.description = description;
+            this.schema = schema;
+            this.metaschema = metaschema;
+            this.valid = valid;
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
+
+    public static Stream<MetaschemaTestCase> readShouldValidateAgainstMetaschema() {
+        return JsonResource.of("/org/leadpony/justify/api/jsonschemareader-metaschema.json")
+            .asObjectStream()
+            .map(object -> new MetaschemaTestCase(
+                    object.getString("description"),
+                    object.get("schema"),
+                    object.get("metaschema"),
+                    object.getBoolean("valid")
+                    ));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void readShouldValidateAgainstMetaschema(MetaschemaTestCase test) {
+        JsonSchema metaschema = readSchema(test.metaschema);
+
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
+                .withMetaschema(metaschema)
+                .withSpecVersionDetection(false)
+                .build();
+
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(test.schema.toString()));
+        Throwable thrown = catchThrowable(() -> {
+            reader.read();
+        });
+        reader.close();
+
+        if (thrown != null) {
+            print(thrown);
+        }
+
+        if (test.valid) {
+            assertThat(thrown).isNull();
+        } else {
+            assertThat(thrown)
+                .isNotNull()
+                .isInstanceOf(JsonValidatingException.class);
+        }
+    }
+
+    private static JsonSchema readSchema(JsonValue value) {
+        return readSchema(value.toString());
+    }
+
+    private static JsonSchema readSchema(String string) {
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
+                .withSpecVersionDetection(false)
+                .build();
+        try (JsonSchemaReader reader = factory.createSchemaReader(new StringReader(string))) {
+            return reader.read();
+        }
     }
 }
