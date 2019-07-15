@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `JsonSchemaReaderFactoryBuilder.withMetaschema()` which can be used to explicitly specify metaschema against which JSON schemas will be validated while being read. (Issue #19 proposed by @dszier)
 
 ### Changed
-- Now every JSON schema and schema keyword retains its original JSON representation internally.
 - The single parameter of `Keyword.getValueAsJson()` was removed.
 - `JsonSchemaBuilder.withDependencies()` now accepts a `Map<String, ?>` typed parameter instead of `Map<String, Object>`.
 - `JsonSchemaReaderFactoryBuilder.withStrictWithFormats()​` was renamed to `withStrictFormats​()`.
 - `JsonSchemaReaderFactoryBuilder.withStrictWithKeywords​()​` was renamed to `withStrictKeywords​()`.
+- [CLI] Revised console messages.
+
+### Fixed
+- Now every JSON schema and schema keyword retains its original JSON representation correctly, including custom keywords.
 
 ## 0.17.0 - 2019-06-09
 ### Added
