@@ -28,7 +28,7 @@ This software is available in the [Maven Central Repository] and the following `
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>0.17.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -150,20 +150,7 @@ Displays all available options including those shown above.
 
 ## Conformance to Specification
 
-This library supports all validation keywords, including `default`, described in [JSON Schema Specification] Draft-07, -06, and -04.
-
-The following table shows _the number of failures_ occurred while testing popular JSON validators written in JVM languages against [JSON Schema Test Suite] as of 2019-06-09.
-
-| Software | Version | Draft-07 | Draft-06 | Draft-04 |
-| --- | --- | ---: | ---: | ---: |
-| [everit-org/json-schema] | 1.11.1 | 21 | 8 | 9 |
-| [java-json-tools/json-schema-validator] | 2.2.10 | n/a | n/a | 11 |
-| Justify | 0.17.0 | 0 | 0 | 0 |
-| [networknt/json-schema-validator] | 1.0.12 | n/a | n/a | 39 |
-
-The code of these tests is available at [JSON Schema Conformance Test].
-
-This software is one of the most correct implementation of the JSON Schema Specification.
+This software is one of the most correct implementation of the JSON Schema Specification. Please refer to the result of [JSON Schema Conformance Test].
 
 ## Completion by `default` Keyword
 
