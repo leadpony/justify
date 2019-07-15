@@ -89,7 +89,7 @@ public class JsonSchemaReaderTest extends BaseTest {
     @Test
     public void readShouldThrowIfStrictWithKeywords() {
         String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithKeywords(true)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictKeywords(true)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -102,7 +102,7 @@ public class JsonSchemaReaderTest extends BaseTest {
     @Test
     public void readShouldNotThrowIfNotStrictWithKeywords() {
         String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithKeywords(false)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictKeywords(false)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -115,7 +115,7 @@ public class JsonSchemaReaderTest extends BaseTest {
     @Test
     public void readShouldThrowIfStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithFormats(true)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictFormats(true)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -128,7 +128,7 @@ public class JsonSchemaReaderTest extends BaseTest {
     @Test
     public void readShouldNotThrowIfNotStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictWithFormats(false)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictFormats(false)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());

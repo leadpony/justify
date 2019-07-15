@@ -216,7 +216,7 @@ public class SpecDetectionTest extends BaseTest {
     private static JsonSchemaReaderFactory createFactory(SpecVersion defaultVersion, boolean detection) {
         return SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(defaultVersion)
-                .withStrictWithKeywords(true)
+                .withStrictKeywords(true)
                 .withSchemaValidation(true)
                 .withSpecVersionDetection(detection)
                 .build();

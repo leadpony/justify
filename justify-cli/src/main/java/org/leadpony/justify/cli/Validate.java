@@ -128,8 +128,8 @@ class Validate extends AbstractCommand {
         final boolean strict = containsOption(ValidateOption.STRICT);
         return service.createSchemaReaderFactoryBuilder()
                 .withCustomFormatAttributes(false)
-                .withStrictWithKeywords(strict)
-                .withStrictWithFormats(strict)
+                .withStrictKeywords(strict)
+                .withStrictFormats(strict)
                 .withSchemaResolver(this.catalog).build();
     }
 

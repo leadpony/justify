@@ -268,13 +268,13 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         }
 
         @Override
-        public JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict) {
+        public JsonSchemaReaderFactoryBuilder withStrictKeywords(boolean strict) {
             getProperties().put(JsonSchemaReader.STRICT_KEYWORDS, strict);
             return this;
         }
 
         @Override
-        public JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict) {
+        public JsonSchemaReaderFactoryBuilder withStrictFormats(boolean strict) {
             getProperties().put(JsonSchemaReader.STRICT_FORMATS, strict);
             return this;
         }

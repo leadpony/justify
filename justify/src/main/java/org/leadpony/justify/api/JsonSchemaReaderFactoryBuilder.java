@@ -27,7 +27,7 @@ package org.leadpony.justify.api;
  * <code>
  * JsonValidationService service = JsonValidationService.newInstance();
  * JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
- *     .withStrictWithKeywords(true)
+ *     .withStrictKeywords(true)
  *     .build();
  * </code>
  * </pre>
@@ -60,7 +60,7 @@ public interface JsonSchemaReaderFactoryBuilder {
      *               {@code false} otherwise.
      * @return this builder.
      */
-    JsonSchemaReaderFactoryBuilder withStrictWithKeywords(boolean strict);
+    JsonSchemaReaderFactoryBuilder withStrictKeywords(boolean strict);
 
     /**
      * Specifies whether the schema reader is strict with formats or not.
@@ -74,7 +74,7 @@ public interface JsonSchemaReaderFactoryBuilder {
      *               {@code false} otherwise.
      * @return this builder.
      */
-    JsonSchemaReaderFactoryBuilder withStrictWithFormats(boolean strict);
+    JsonSchemaReaderFactoryBuilder withStrictFormats(boolean strict);
 
     /**
      * Adds a resolver of external JSON schemas to this builder. Multiple resolvers
