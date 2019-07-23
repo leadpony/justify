@@ -36,6 +36,7 @@ Besides the library itself, one of [Java API for JSON Processing (JSR 374)] impl
 This library supports the following implementations and you can select whichever you prefer.
 1. [Reference Implementation]
 2. [Apache Johnzon]
+3. [Joy]
 
 Please add exactly one dependency to the `pom.xml` as shown below.
 
@@ -55,6 +56,15 @@ Please add exactly one dependency to the `pom.xml` as shown below.
     <groupId>org.apache.johnzon</groupId>
     <artifactId>johnzon-core</artifactId>
     <version>1.1.12</version>
+</dependency>
+```
+
+#### Joy
+```xml
+<dependency>
+    <groupId>org.leadpony.joy</groupId>
+    <artifactId>joy</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -210,6 +220,7 @@ Copyright &copy; 2018-2019 the Justify authors. This software is licensed under 
 [Maven Central Repository]: https://mvnrepository.com/repos/central
 [Reference Implementation]: https://github.com/eclipse-ee4j/jsonp
 [Apache Johnzon]: https://johnzon.apache.org/
+[Joy]: https://github.com/leadpony/joy
 [The list of implementations]: https://json-schema.org/implementations.html  
 [Releases]: https://github.com/leadpony/justify/releases/latest
 [Changelog]: CHANGELOG.md
