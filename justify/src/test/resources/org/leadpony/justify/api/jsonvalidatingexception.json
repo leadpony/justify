@@ -1,0 +1,25 @@
+[
+    {
+        "schema": {
+            "type": "string"
+        },
+        "data": 42,
+        "problems": 1,
+        "lines": 1
+    },
+    {
+        "schema": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "number"
+                }
+            ]
+        },
+        "data": true,
+        "problems": 1,
+        "lines": 3
+    }
+]
