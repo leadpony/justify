@@ -30,6 +30,20 @@ import java.util.Objects;
 public interface ProblemHandler {
 
     /**
+     * A constant which indicates that the validator should throw a
+     * {@link JsonValidatingException} instead of calling a problem handler.
+     *
+     * <p>
+     * Note that calling {@link #handleProblems(List)} method of this instance does
+     * nothing actually.
+     * </p>
+     *
+     * @since 1.1
+     */
+    ProblemHandler THROWING = problems -> {
+    };
+
+    /**
      * Handles the problems found while validating a JSON document.
      *
      * @param problems the problems found, cannot be {@code null}.
@@ -51,17 +65,19 @@ public interface ProblemHandler {
     }
 
     /**
-     * Creates a problem handler which will throw a {@link JsonValidatingException}
-     * exception.
+     * Returns a problem handler which indicates that the validator should throw a
+     * {@link JsonValidatingException} instead of calling a handler.
      *
-     * @return newly created instance of problem handler.
+     * <p>
+     * Note that this method does not return an actual problem handler which is able
+     * to throw an exception.
+     * </p>
+     *
+     * @return {@link #THROWING}
+     * @see #THROWING
      * @see JsonValidatingException
      */
     static ProblemHandler throwing() {
-        return problems -> {
-            if (!problems.isEmpty()) {
-                throw new JsonValidatingException(problems);
-            }
-        };
+        return THROWING;
     }
 }

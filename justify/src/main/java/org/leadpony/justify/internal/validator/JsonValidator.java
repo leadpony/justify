@@ -28,12 +28,12 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
+import org.leadpony.justify.internal.problem.BasicProblemHandler;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.Evaluator.Result;
@@ -64,7 +64,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
     public JsonValidator(JsonParser realParser, JsonSchema rootSchema, JsonProvider jsonProvider) {
         super(realParser, jsonProvider);
         this.rootSchema = rootSchema;
-        this.problemHandler = this::throwProblems;
+        this.problemHandler = BasicProblemHandler.THROWING;
         this.eventHandler = this::handleFirstEvent;
     }
 
@@ -75,7 +75,11 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
      * @return this parser.
      */
     public JsonValidator withHandler(ProblemHandler problemHandler) {
-        this.problemHandler = problemHandler;
+        if (problemHandler == ProblemHandler.THROWING) {
+            this.problemHandler = BasicProblemHandler.THROWING;
+        } else {
+            this.problemHandler = problemHandler;
+        }
         return this;
     }
 
@@ -189,10 +193,5 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
         } else {
             this.eventHandler = ParserEventHandler.IDLE;
         }
-    }
-
-    private void throwProblems(List<Problem> problems) {
-        assert !problems.isEmpty();
-        throw new JsonValidatingException(new ArrayList<>(problems));
     }
 }

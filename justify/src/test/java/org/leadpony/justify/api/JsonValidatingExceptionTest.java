@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.test.helper.JsonResource;
@@ -35,7 +34,6 @@ public class JsonValidatingExceptionTest {
 
     private static final Logger LOG = Logger.getLogger(JsonValidatingExceptionTest.class.getName());
     private static final JsonValidationService SERVICE = JsonValidationService.newInstance();
-    private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     /**
      * @author leadpony
@@ -75,15 +73,25 @@ public class JsonValidatingExceptionTest {
 
     @ParameterizedTest
     @MethodSource("provideTestCases")
-    @Disabled
     public void getMessageShouldReturnMessageFromAllProblems(ExceptionTestCase test) {
         JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
 
         assertThat(thrown).isNotNull();
 
-        PRINTER.handleProblems(thrown.getProblems());
-
         String message = thrown.getMessage();
+        LOG.info(message);
+
+        assertThat(message.split("\n")).hasSize(test.lines);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCases")
+    public void getLocalizedMessageShouldReturnMessageFromAllProblems(ExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
+
+        assertThat(thrown).isNotNull();
+
+        String message = thrown.getLocalizedMessage();
         LOG.info(message);
 
         assertThat(message.split("\n")).hasSize(test.lines);

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- `JsonValidatingException.getLocalizedMessage()` is now implemented. English and Japanese are all languages supported by current version.
+
+### Deprecated
+- The constructor `JsonValidatingException(List)` is replaced with `JsonValidatingException(List, Renderer)`.
+
+### Fixed
+- `JsonValidatingException.getMessage()` now correctly returns a message describing all problems including problems on any branch. (Issue #23 reported by @gustabart)
+
 ## 1.0.0 - 2019-07-15
 ### Added
 - Added `JsonSchemaReaderFactoryBuilder.withMetaschema()` which can be used to explicitly specify metaschema against which JSON schemas will be validated while being read. (Issue #19 proposed by @dszier)

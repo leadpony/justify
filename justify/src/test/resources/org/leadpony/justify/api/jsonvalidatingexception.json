@@ -9,6 +9,15 @@
     },
     {
         "schema": {
+            "minimum": 10,
+            "maximum": 5
+        },
+        "data": 7,
+        "problems": 2,
+        "lines": 2
+    },
+    {
+        "schema": {
             "anyOf": [
                 {
                     "type": "string"
@@ -21,5 +30,27 @@
         "data": true,
         "problems": 1,
         "lines": 3
+    },
+    {
+        "schema": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                }
+            ]
+        },
+        "data": null,
+        "problems": 1,
+        "lines": 5
     }
 ]
