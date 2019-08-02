@@ -18,14 +18,11 @@ package org.leadpony.justify.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.io.StringReader;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.justify.test.helper.JsonResource;
+import org.leadpony.justify.test.helper.JsonSource;
 
 /**
  * @author leadpony
@@ -38,42 +35,57 @@ public class JsonValidatingExceptionTest {
     /**
      * @author leadpony
      */
-    private static class ExceptionTestCase {
+    public static class ExceptionTestCase {
 
-        final JsonValue schema;
-        final JsonValue data;
-        final int problems;
-        final int lines;
+        public String title;
+        public JsonValue schema;
+        public int problems;
+        public int lines;
 
-        ExceptionTestCase(JsonValue schema, JsonValue data, int problems, int lines) {
-            this.schema = schema;
-            this.data = data;
-            this.problems = problems;
-            this.lines = lines;
+        @Override
+        public String toString() {
+            return title;
         }
     }
 
-    public static Stream<ExceptionTestCase> provideTestCases() {
-        return JsonResource.of("/org/leadpony/justify/api/jsonvalidatingexception.json")
-            .asObjectStream()
-            .map(object -> new ExceptionTestCase(
-                    object.get("schema"),
-                    object.get("data"),
-                    object.getInt("problems"),
-                    object.getInt("lines")));
+    /**
+     * @author leadpony
+     */
+    public static class InstanceExceptionTestCase extends ExceptionTestCase {
+
+        public JsonValue data;
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCases")
-    public void getProblemsShouldReturnTopLevelProblems(ExceptionTestCase test) {
-        JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
-
+    @JsonSource("jsonvalidatingexception-schema.json")
+    public void getProblemsShouldReturnNumberOfTopLevelProblems(ExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema);
         assertThat(thrown.getProblems()).hasSize(test.problems);
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCases")
+    @JsonSource("jsonvalidatingexception-instance.json")
+    public void getProblemsShouldReturnNumberOfTopLevelProblems(InstanceExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
+        assertThat(thrown.getProblems()).hasSize(test.problems);
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonvalidatingexception-schema.json")
     public void getMessageShouldReturnMessageFromAllProblems(ExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema);
+
+        assertThat(thrown).isNotNull();
+
+        String message = thrown.getMessage();
+        LOG.info(message);
+
+        assertThat(message.split("\n")).hasSize(test.lines);
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonvalidatingexception-instance.json")
+    public void getMessageShouldReturnMessageFromAllProblems(InstanceExceptionTestCase test) {
         JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
 
         assertThat(thrown).isNotNull();
@@ -85,8 +97,21 @@ public class JsonValidatingExceptionTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideTestCases")
+    @JsonSource("jsonvalidatingexception-schema.json")
     public void getLocalizedMessageShouldReturnMessageFromAllProblems(ExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema);
+
+        assertThat(thrown).isNotNull();
+
+        String message = thrown.getLocalizedMessage();
+        LOG.info(message);
+
+        assertThat(message.split("\n")).hasSize(test.lines);
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonvalidatingexception-instance.json")
+    public void getLocalizedMessageShouldReturnMessageFromAllProblems(InstanceExceptionTestCase test) {
         JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
 
         assertThat(thrown).isNotNull();
@@ -97,14 +122,23 @@ public class JsonValidatingExceptionTest {
         assertThat(message.split("\n")).hasSize(test.lines);
     }
 
-    private JsonValidatingException catchJsonValidatingException(JsonValue schema, JsonValue data) {
+    private static JsonValidatingException catchJsonValidatingException(JsonValue schema) {
+        try {
+            SERVICE.readSchema(new StringReader(schema.toString()));
+            return null;
+        } catch (JsonValidatingException e) {
+            return e;
+        }
+    }
+
+    private static JsonValidatingException catchJsonValidatingException(JsonValue schema, JsonValue data) {
         JsonSchema s = SERVICE.readSchema(new StringReader(schema.toString()));
         try (JsonReader reader = SERVICE.createReader(
                 new StringReader(data.toString()), s, ProblemHandler.throwing())) {
             reader.read();
+            return null;
         } catch (JsonValidatingException e) {
             return e;
         }
-        return null;
     }
 }

@@ -26,7 +26,7 @@
         <jsonb.provider.groupId>org.eclipse</jsonb.provider.groupId>
         <jsonb.provider.artifactId>yasson</jsonb.provider.artifactId>
         <jsonb.provider.version>1.0.4</jsonb.provider.version>
-        <junit.jupiter.version>5.4.2</junit.jupiter.version>
+        <junit.jupiter.version>5.5.1</junit.jupiter.version>
         <test.log.level>OFF</test.log.level>
     </properties>
 
@@ -201,6 +201,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
+                    --add-opens org.leadpony.justify/org.leadpony.justify.test.helper=ALL-UNNAMED
                     -Duser.language=en
                     -Duser.country=US
                     -Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties

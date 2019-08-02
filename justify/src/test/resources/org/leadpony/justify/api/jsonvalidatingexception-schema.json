@@ -1,0 +1,16 @@
+[
+    {
+        "title": "wrong schema type",
+        "schema": 42,
+        "problems": 1,
+        "lines": 1
+    },
+    {
+        "title": "problem with branches",
+        "schema": {
+            "type": 42
+        },
+        "problems": 1,
+        "lines": 3
+    }
+]

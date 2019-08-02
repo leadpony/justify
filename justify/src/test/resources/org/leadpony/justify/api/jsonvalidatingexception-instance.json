@@ -1,5 +1,6 @@
 [
     {
+        "title": "single problem",
         "schema": {
             "type": "string"
         },
@@ -8,6 +9,7 @@
         "lines": 1
     },
     {
+        "title": "multiple problems",
         "schema": {
             "minimum": 10,
             "maximum": 5
@@ -17,6 +19,7 @@
         "lines": 2
     },
     {
+        "title": "problem with children",
         "schema": {
             "anyOf": [
                 {
@@ -32,6 +35,7 @@
         "lines": 3
     },
     {
+        "title": "problem with descendants",
         "schema": {
             "anyOf": [
                 {
@@ -40,7 +44,7 @@
                 {
                     "anyOf": [
                         {
-                            "type": "number"
+                            "type": "integer"
                         },
                         {
                             "type": "boolean"
@@ -49,7 +53,7 @@
                 }
             ]
         },
-        "data": null,
+        "data": 3.14,
         "problems": 1,
         "lines": 5
     }
