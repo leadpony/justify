@@ -46,10 +46,33 @@
         "errors": 0
     },
     {
-        "description": "unknown object",
+        "description": "unknown keyword in unknown object",
         "schema": {
             "foo": {
                 "bar": 42
+            }
+        },
+        "errors": 1
+    },
+    {
+        "description": "unknown keyword in unknown array",
+        "schema": {
+            "foo": [
+                {
+                    "bar": 123
+                },
+                {
+                    "baz": 456
+                }
+            ]
+        },
+        "errors": 1
+    },
+    {
+        "description": "custom type in unknown object",
+        "schema": {
+            "foo": {
+                "type": "error message"
             }
         },
         "errors": 1

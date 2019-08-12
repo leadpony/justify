@@ -20,14 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.json.JsonString;
 import javax.json.JsonValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.test.helper.JsonResource;
+import org.leadpony.justify.test.helper.JsonSource;
 
 /**
  * A test type for testing {@link ObjectJsonSchema}.
@@ -94,34 +93,22 @@ public class ObjectJsonSchemaTest extends BaseTest {
      *
      * @author leadpony
      */
-    static class KeySetTestCase {
+    public static class KeySetTestCase {
 
-        final JsonValue schema;
-        final List<String> keys;
-        final int size;
-        final boolean empty;
+        public JsonValue schema;
+        public List<String> keys;
 
-        KeySetTestCase(JsonValue schema, List<String> keys) {
-            this.schema = schema;
-            this.keys = keys;
-            this.size = keys.size();
-            this.empty = keys.isEmpty();
+        int size() {
+            return keys.size();
+        }
+
+        boolean isEmpty() {
+            return keys.isEmpty();
         }
     }
 
-    public static Stream<KeySetTestCase> keySetShouldReturnAllKeys() {
-        return JsonResource.of("/org/leadpony/justify/api/objectjsonschema-keyset.json")
-                .asObjectStream()
-                .map(object -> new KeySetTestCase(
-                        object.get("schema"),
-                        object.getJsonArray("keys").stream()
-                                .map(v -> (JsonString) v)
-                                .map(JsonString::getString)
-                                .collect(Collectors.toList())));
-    }
-
     @ParameterizedTest
-    @MethodSource
+    @JsonSource("objectjsonschematest-keyset.json")
     public void keySetShouldReturnAllKeys(KeySetTestCase test) {
         ObjectJsonSchema schema = fromValue(test.schema);
         Set<String> actual = schema.keySet();
@@ -129,19 +116,19 @@ public class ObjectJsonSchemaTest extends BaseTest {
     }
 
     @ParameterizedTest
-    @MethodSource("keySetShouldReturnAllKeys")
+    @JsonSource("objectjsonschematest-keyset.json")
     public void sizeShouldReturnSizeAsExpected(KeySetTestCase test) {
         ObjectJsonSchema schema = fromValue(test.schema);
         int actual = schema.size();
-        assertThat(actual).isEqualTo(test.size);
+        assertThat(actual).isEqualTo(test.size());
     }
 
     @ParameterizedTest
-    @MethodSource("keySetShouldReturnAllKeys")
+    @JsonSource("objectjsonschematest-keyset.json")
     public void isEmptyShouldReturnBooleanAsExpected(KeySetTestCase test) {
         ObjectJsonSchema schema = fromValue(test.schema);
         boolean actual = schema.isEmpty();
-        assertThat(actual).isEqualTo(test.empty);
+        assertThat(actual).isEqualTo(test.isEmpty());
     }
 
     private static ObjectJsonSchema fromValue(JsonValue value) {

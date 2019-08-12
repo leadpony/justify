@@ -31,7 +31,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.test.helper.JsonAssertions;
-import org.leadpony.justify.test.helper.JsonResource;
 import org.leadpony.justify.test.helper.JsonSource;
 
 /**
@@ -160,19 +159,12 @@ public class JsonSchemaReaderTest extends BaseTest {
     /**
      * @author leadpony
      */
-    static class MetaschemaTestCase {
+    public static class MetaschemaTestCase {
 
-        final String description;
-        final JsonValue schema;
-        final JsonValue metaschema;
-        final boolean valid;
-
-        MetaschemaTestCase(String description, JsonValue schema, JsonValue metaschema, boolean valid) {
-            this.description = description;
-            this.schema = schema;
-            this.metaschema = metaschema;
-            this.valid = valid;
-        }
+        public String description;
+        public JsonValue schema;
+        public JsonValue metaschema;
+        public boolean valid;
 
         @Override
         public String toString() {
@@ -180,19 +172,8 @@ public class JsonSchemaReaderTest extends BaseTest {
         }
     }
 
-    public static Stream<MetaschemaTestCase> readShouldValidateAgainstMetaschema() {
-        return JsonResource.of("/org/leadpony/justify/api/jsonschemareadertest-metaschema.json")
-            .asObjectStream()
-            .map(object -> new MetaschemaTestCase(
-                    object.getString("description"),
-                    object.get("schema"),
-                    object.get("metaschema"),
-                    object.getBoolean("valid")
-                    ));
-    }
-
     @ParameterizedTest
-    @MethodSource
+    @JsonSource("jsonschemareadertest-metaschema.json")
     public void readShouldValidateAgainstMetaschema(MetaschemaTestCase test) {
         JsonSchema metaschema = readSchema(test.metaschema);
 
