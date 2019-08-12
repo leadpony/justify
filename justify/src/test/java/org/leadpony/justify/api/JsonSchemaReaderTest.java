@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.test.helper.JsonAssertions;
 import org.leadpony.justify.test.helper.JsonResource;
+import org.leadpony.justify.test.helper.JsonSource;
 
 /**
  * A test class for testing the {@link JsonSchemaReader} implementation.
@@ -84,27 +85,48 @@ public class JsonSchemaReaderTest extends BaseTest {
         JsonAssertions.assertThat(schema.toJson()).isEqualTo(source);
     }
 
-    private static final String SCHEMA_INCLUDING_UNKNOWN_KEYWORD = "{ \"type\": \"string\", \"foo\": 42 }";
+    /**
+     * @author leadpony
+     */
+    public static class StrictKeywordTestCase {
 
-    @Test
-    public void readShouldThrowIfStrictWithKeywords() {
-        String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictKeywords(true)
-                .build();
-        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
-        Throwable thrown = catchThrowable(() -> reader.read());
-        assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
-        JsonValidatingException e = (JsonValidatingException) thrown;
-        assertThat(e.getProblems()).hasSize(1);
-        print(thrown);
+        public String description;
+        public JsonValue schema;
+        public int errors;
+
+        @Override
+        public String toString() {
+            return description;
+        }
     }
 
-    @Test
-    public void readShouldNotThrowIfNotStrictWithKeywords() {
-        String source = SCHEMA_INCLUDING_UNKNOWN_KEYWORD;
-        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictKeywords(false)
+    @ParameterizedTest
+    @JsonSource("jsonschemareadertest-unknownkeywords.json")
+    public void readShouldThrowIfStrictWithKeywords(StrictKeywordTestCase test) {
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
+                .withStrictKeywords(true)
                 .build();
-        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
+        String json = test.schema.toString();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(json));
+        Throwable thrown = catchThrowable(() -> reader.read());
+        if (test.errors > 0) {
+            assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
+            JsonValidatingException e = (JsonValidatingException) thrown;
+            assertThat(e.getProblems()).hasSize(test.errors);
+            print(thrown);
+        } else {
+            assertThat(thrown).isNull();
+        }
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonschemareadertest-unknownkeywords.json")
+    public void readShouldNotThrowIfNotStrictWithKeywords(StrictKeywordTestCase test) {
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
+                .withStrictKeywords(false)
+                .build();
+        String json = test.schema.toString();
+        JsonSchemaReader reader = factory.createSchemaReader(new StringReader(json));
         Throwable thrown = catchThrowable(() -> reader.read());
         assertThat(thrown).isNull();
     }
@@ -159,7 +181,7 @@ public class JsonSchemaReaderTest extends BaseTest {
     }
 
     public static Stream<MetaschemaTestCase> readShouldValidateAgainstMetaschema() {
-        return JsonResource.of("/org/leadpony/justify/api/jsonschemareader-metaschema.json")
+        return JsonResource.of("/org/leadpony/justify/api/jsonschemareadertest-metaschema.json")
             .asObjectStream()
             .map(object -> new MetaschemaTestCase(
                     object.getString("description"),

@@ -21,11 +21,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.json.stream.JsonLocation;
+import javax.json.stream.JsonParsingException;
+
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 import org.leadpony.justify.internal.problem.ProblemRenderer;
@@ -118,7 +122,14 @@ abstract class AbstractJsonSchemaReader implements JsonSchemaReader, ProblemBuil
         }
     }
 
+    protected JsonParsingException newUnexpectedEndException() {
+        String message = Message.SCHEMA_PROBLEM_EOI.getLocalized();
+        return new JsonParsingException(message, getLocation());
+    }
+
     protected abstract JsonSchema readSchema();
+
+    protected abstract JsonLocation getLocation();
 
     protected abstract void closeParser();
 }

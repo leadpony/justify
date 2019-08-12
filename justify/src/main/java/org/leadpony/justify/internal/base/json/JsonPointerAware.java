@@ -15,13 +15,18 @@
  */
 package org.leadpony.justify.internal.base.json;
 
-import javax.json.stream.JsonParser;
-
 /**
- * A JSON parser type which can track the current parsing position as a JSON
- * pointer.
+ * A type which is aware of JSON pointer.
  *
  * @author leadpony
  */
-public interface PointerAwareJsonParser extends JsonParser, JsonPointerAware {
+public interface JsonPointerAware {
+
+    /**
+     * Returns the current position as a JSON pointer.
+     *
+     * @return the JSON pointer which points to the current value. {@code null} will
+     *         be returned before any event.
+     */
+    String getPointer();
 }

@@ -32,7 +32,7 @@ import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
 import org.leadpony.justify.internal.schema.SchemaSpec;
-import org.leadpony.justify.internal.schema.io.DefaultJsonSchemaReader;
+import org.leadpony.justify.internal.schema.io.JsonSchemaReaderImpl;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -113,7 +113,7 @@ abstract class StandardSchemaSpec implements SchemaSpec {
         JsonProvider jsonProvider = jsonService.getJsonProvider();
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-        try (JsonSchemaReader reader = new DefaultJsonSchemaReader(
+        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(
                 parser, jsonService, this, Collections.emptyMap())) {
             return reader.read();
         }

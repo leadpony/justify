@@ -28,12 +28,17 @@ import javax.json.stream.JsonParser.Event;
  *
  * @author leadpony
  */
-public class JsonInstanceBuilder {
+public final class JsonInstanceBuilder {
 
-    private final RootVisitor rootVisitor = new RootVisitor();
+    private final RootScope rootScope = new RootScope();
     private final JsonBuilderFactory builderFactory;
-    private Visitor currentVisitor = rootVisitor;
+    private Scope currentScope = rootScope;
 
+    /**
+     * Constructs this builder.
+     *
+     * @param builderFactory the JSON builder factory.
+     */
     public JsonInstanceBuilder(JsonBuilderFactory builderFactory) {
         this.builderFactory = builderFactory;
     }
@@ -47,8 +52,8 @@ public class JsonInstanceBuilder {
      *         this builder is completed.
      */
     public boolean append(Event event, JsonParser parser) {
-        this.currentVisitor = this.currentVisitor.visit(event, parser);
-        return (this.currentVisitor != this.rootVisitor);
+        this.currentScope = this.currentScope.process(event, parser);
+        return (this.currentScope != this.rootScope);
     }
 
     /**
@@ -57,7 +62,7 @@ public class JsonInstanceBuilder {
      * @return the built JSON value.
      */
     public JsonValue build() {
-        return rootVisitor.rootValue();
+        return rootScope.getRootValue();
     }
 
     private static JsonValue getLiteral(Event event, JsonParser parser) {
@@ -79,34 +84,33 @@ public class JsonInstanceBuilder {
     }
 
     /**
-     * A visitor of JSON values.
+     * A builder scope.
      *
      * @author leadpony
-     *
      */
-    private interface Visitor {
+    private interface Scope {
 
-        Visitor visit(Event event, JsonParser parser);
+        Scope process(Event event, JsonParser parser);
 
         void append(JsonValue value);
     }
 
     /**
-     * A visitor of root values.
+     * A root scope.
      *
      * @author leadpony
      */
-    private class RootVisitor implements Visitor {
+    private final class RootScope implements Scope {
 
         private JsonValue value;
 
         @Override
-        public Visitor visit(Event event, JsonParser parser) {
+        public Scope process(Event event, JsonParser parser) {
             switch (event) {
             case START_ARRAY:
-                return new ArrayVisitor(this);
+                return new ArrayScope(this);
             case START_OBJECT:
-                return new ObjectVisitor(this);
+                return new ObjectScope(this);
             case VALUE_TRUE:
             case VALUE_FALSE:
             case VALUE_NULL:
@@ -126,33 +130,33 @@ public class JsonInstanceBuilder {
             this.value = value;
         }
 
-        public JsonValue rootValue() {
+        public JsonValue getRootValue() {
             return value;
         }
     }
 
     /**
-     * A visitor of JSON arrays.
+     * A JSON array scope.
      *
      * @author leadpony
      */
-    private class ArrayVisitor implements Visitor {
+    private final class ArrayScope implements Scope {
 
-        private final Visitor parent;
+        private final Scope parent;
         private final JsonArrayBuilder builder;
 
-        ArrayVisitor(Visitor parent) {
+        ArrayScope(Scope parent) {
             this.parent = parent;
             this.builder = builderFactory.createArrayBuilder();
         }
 
         @Override
-        public Visitor visit(Event event, JsonParser parser) {
+        public Scope process(Event event, JsonParser parser) {
             switch (event) {
             case START_ARRAY:
-                return new ArrayVisitor(this);
+                return new ArrayScope(this);
             case START_OBJECT:
-                return new ObjectVisitor(this);
+                return new ObjectScope(this);
             case VALUE_TRUE:
             case VALUE_FALSE:
             case VALUE_NULL:
@@ -176,28 +180,28 @@ public class JsonInstanceBuilder {
     }
 
     /**
-     * A visitor of JSON objects.
+     * A JSON object scope.
      *
      * @author leadpony
      */
-    private class ObjectVisitor implements Visitor {
+    private final class ObjectScope implements Scope {
 
-        private final Visitor parent;
+        private final Scope parent;
         private final JsonObjectBuilder builder;
         private String propertyName;
 
-        ObjectVisitor(Visitor parent) {
+        ObjectScope(Scope parent) {
             this.parent = parent;
             this.builder = builderFactory.createObjectBuilder();
         }
 
         @Override
-        public Visitor visit(Event event, JsonParser parser) {
+        public Scope process(Event event, JsonParser parser) {
             switch (event) {
             case START_ARRAY:
-                return new ArrayVisitor(this);
+                return new ArrayScope(this);
             case START_OBJECT:
-                return new ObjectVisitor(this);
+                return new ObjectScope(this);
             case KEY_NAME:
                 this.propertyName = parser.getString();
                 break;

@@ -1,0 +1,57 @@
+[
+    {
+        "description": "no unknwon keywords",
+        "schema": {
+            "type": "string",
+            "minLength": 8
+        },
+        "errors": 0
+    },
+    {
+        "description": "single unknwon keyword",
+        "schema": {
+            "type": "string",
+            "foo": 42
+        },
+        "errors": 1
+    },
+    {
+        "description": "multiple unknwon keywords",
+        "schema": {
+            "type": "string",
+            "foo": 42,
+            "bar": true
+        },
+        "errors": 2
+    },
+    {
+        "description": "property names",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "foo": true,
+                "bar": false
+            }
+        },
+        "errors": 0
+    },
+    {
+        "description": "definitions",
+        "schema": {
+            "definitions": {
+                "foo": true,
+                "bar": false
+            }
+        },
+        "errors": 0
+    },
+    {
+        "description": "unknown object",
+        "schema": {
+            "foo": {
+                "bar": 42
+            }
+        },
+        "errors": 1
+    }
+]

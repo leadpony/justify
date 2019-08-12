@@ -34,11 +34,11 @@ public class DefaultPointerAwareJsonParser extends JsonParserDecorator implement
     /**
      * Constructs this parser.
      *
-     * @param realParser   the underlying JSON parser.
+     * @param parser       the underlying JSON parser.
      * @param jsonProvider the JSON provider.
      */
     public DefaultPointerAwareJsonParser(JsonParser parser, JsonProvider jsonProvider) {
-        super(jsonProvider);
+        super(parser, jsonProvider);
         this.pointerBuilder = INITIAL_BUILDER;
         setCurrentParser(parser);
     }

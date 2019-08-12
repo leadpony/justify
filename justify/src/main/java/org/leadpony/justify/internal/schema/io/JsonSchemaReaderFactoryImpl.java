@@ -55,7 +55,7 @@ import org.leadpony.justify.internal.validator.JsonValidator;
  *
  * @author leadpony
  */
-public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
+public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
 
     private final JsonService jsonService;
     protected final JsonParserFactory jsonParserFactory;
@@ -71,7 +71,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
         return new Builder(jsonService, specRegistry);
     }
 
-    protected DefaultJsonSchemaReaderFactory(Builder builder) {
+    protected JsonSchemaReaderFactoryImpl(Builder builder) {
         this.jsonService = builder.jsonService;
         this.jsonParserFactory = this.jsonService.getJsonParserFactory();
         this.specRegistry = builder.specRegistry;
@@ -155,7 +155,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
-        return new DefaultJsonSchemaReader(
+        return new JsonSchemaReaderImpl(
                 parser, jsonService, spec, config);
     }
 
@@ -175,7 +175,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
      *
      * @author leadpony
      */
-    private static final class DetectableJsonSchemaReaderFactory extends DefaultJsonSchemaReaderFactory {
+    private static final class DetectableJsonSchemaReaderFactory extends JsonSchemaReaderFactoryImpl {
 
         private DetectableJsonSchemaReaderFactory(Builder builder) {
             super(builder);
@@ -261,7 +261,7 @@ public class DefaultJsonSchemaReaderFactory implements JsonSchemaReaderFactory {
             if (props.get(JsonSchemaReader.SPEC_VERSION_DETECTION) == Boolean.TRUE) {
                 factory = new DetectableJsonSchemaReaderFactory(this);
             } else {
-                factory = new DefaultJsonSchemaReaderFactory(this);
+                factory = new JsonSchemaReaderFactoryImpl(this);
             }
             this.properties = null;
             return factory;

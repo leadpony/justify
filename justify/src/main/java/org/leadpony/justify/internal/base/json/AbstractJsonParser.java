@@ -113,7 +113,7 @@ abstract class AbstractJsonParser implements JsonParser {
      *
      * @return the current event.
      */
-    protected final Event getCurrentEvent() {
+    public final Event getCurrentEvent() {
         return currentEvent;
     }
 
