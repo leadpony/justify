@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `JsonValidatingException.getMessage()` now correctly returns a message describing all problems including problems on any branch. (Issue #23 reported by @gustabart)
+- A bug which was causing schema readers to report too many problems when  they are created with `withStrictKeywords()` enabled. (Issue #25)
 
 ## 1.0.0 - 2019-07-15
 ### Added
