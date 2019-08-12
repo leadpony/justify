@@ -29,10 +29,9 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.json</artifactId>
-                <classifier>module</classifier>
-                <version>1.1.5</version>
+                <groupId>org.leadpony.joy</groupId>
+                <artifactId>joy</artifactId>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.fusesource.jansi</groupId>
@@ -68,9 +67,8 @@
             <artifactId>justify</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
-            <classifier>module</classifier>
+            <groupId>org.leadpony.joy</groupId>
+            <artifactId>joy</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
