@@ -6,17 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
-- `JsonValidatingException.getLocalizedMessage()` is now implemented. English and Japanese are all languages supported by current version.
+- `printProblems(PrintStream)` and `printProblems(PrintWriter)` methods to `JsonValidatingException` class.
+- `print()` method to `Problem` interface.
 
 ### Changed
 - [CLI] Now uses Joy as a JSON-P implementation.
 
-### Deprecated
-- The constructor `JsonValidatingException(List)` is replaced with `JsonValidatingException(List, Renderer)`.
-
 ### Fixed
 - `JsonValidatingException.getMessage()` now correctly returns a message describing all problems including problems on any branch. (Issue #23 reported by @gustabart)
-- A bug which was causing schema readers to report too many problems when  they are created with `withStrictKeywords()` enabled. (Issue #25)
+- A bug which was causing schema readers to report too many problems when they are created with `withStrictKeywords()` enabled. (Issue #25)
 
 ## 1.0.0 - 2019-07-15
 ### Added
