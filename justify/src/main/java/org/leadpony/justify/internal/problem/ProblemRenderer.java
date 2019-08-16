@@ -15,37 +15,19 @@
  */
 package org.leadpony.justify.internal.problem;
 
-import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
-
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemHandler;
 
 /**
  * @author leadpony
  */
-public enum ProblemRenderer implements JsonValidatingException.Renderer {
-    DEFAULT_RENDERER;
+public interface ProblemRenderer {
 
-    @Override
-    public String render(List<Problem> problems, Locale locale) {
-        requireNonNull(problems, "problems");
-        requireNonNull(locale, "locale");
-        StringBuilder builder = new StringBuilder();
-        Consumer<String> consumer = line -> {
-            if (builder.length() > 0) {
-                builder.append('\n');
-            }
-            builder.append(line);
-        };
-        ProblemHandler printer = new DefaultProblemPrinterBuilder(consumer)
-            .withLocale(locale)
-            .build();
-        printer.handleProblems(problems);
-        return builder.toString();
-    }
+    ProblemRenderer DEFAULT_RENDERER = new DefaultProblemRenderer(LineFormat.FULL);
+
+    void render(Problem problem, Locale locale, Consumer<String> consumer);
+
+    String render(Problem problem, Locale locale);
 }

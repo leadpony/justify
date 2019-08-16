@@ -193,17 +193,7 @@ public class ProblemBuilder {
         @Override
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
-            Map<String, Object> args = new HashMap<>();
-            args.put("message", buildMessage(locale));
-            JsonLocation location = getLocation();
-            if (location == null) {
-                args.put("row", "?");
-                args.put("col", "?");
-            } else {
-                args.put("row", location.getLineNumber());
-                args.put("col", location.getColumnNumber());
-            }
-            return Message.LINE_WITH_LOCATION.format(args, locale);
+            return ProblemRenderer.DEFAULT_RENDERER.render(this, locale);
         }
 
         /**
@@ -315,12 +305,6 @@ public class ProblemBuilder {
         CompositeProblem(ProblemBuilder builder) {
             super(builder);
             this.branches = Collections.unmodifiableList(builder.branches);
-        }
-
-        @Override
-        public String getContextualMessage(Locale locale) {
-            requireNonNull(locale, "locale");
-            return super.getMessage(locale);
         }
 
         @Override

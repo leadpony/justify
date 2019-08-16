@@ -24,28 +24,28 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 
 /**
- * An object to print validation problems.
+ * A problem handler which will print the problems.
  *
  * @author leadpony
  */
-class ProblemPrinter implements ProblemHandler {
+final class ProblemPrinter implements ProblemHandler {
 
+    private final ProblemRenderer renderer;
     private final Consumer<String> lineConsumer;
-    private final ProblemFormatter formatter;
     private final Locale locale;
 
     /**
      * Constructs this object.
      *
+     * @param renderer     the problem renderer.
      * @param lineConsumer the object which will output the line to somewhere.
      * @param locale       the locale for which the problem messages will be
      *                     localized.
-     * @param formatter    the formatter for formatting each message for a problem.
      */
-    ProblemPrinter(Consumer<String> lineConsumer, Locale locale, ProblemFormatter formatter) {
+    ProblemPrinter(ProblemRenderer renderer, Consumer<String> lineConsumer, Locale locale) {
+        this.renderer = renderer;
         this.lineConsumer = lineConsumer;
         this.locale = locale;
-        this.formatter = formatter;
     }
 
     /**
@@ -54,51 +54,7 @@ class ProblemPrinter implements ProblemHandler {
     @Override
     public void handleProblems(List<Problem> problems) {
         for (Problem problem : problems) {
-            printProblem(problem);
+            renderer.render(problem, locale, lineConsumer);
         }
-    }
-
-    private void printProblem(Problem problem) {
-        if (problem.hasBranches()) {
-            lineConsumer.accept(formatter.formatBranchingProblem(problem, locale));
-            printAllProblemGroups(problem, "");
-        } else {
-            lineConsumer.accept(formatter.formatProblem(problem, locale));
-        }
-    }
-
-    private void printAllProblemGroups(Problem problem, String prefix) {
-        for (int i = 0; i < problem.countBranches(); i++) {
-            List<Problem> branch = problem.getBranch(i);
-            printProblemGroup(i, branch, prefix);
-        }
-    }
-
-    private void printProblemGroup(int groupIndex, List<Problem> branch, String prefix) {
-        final String firstPrefix = prefix + (groupIndex + 1) + ") ";
-        final String laterPrefix = repeat(' ', firstPrefix.length());
-        boolean isFirst = true;
-        for (Problem problem : branch) {
-            String currentPrefix = isFirst ? firstPrefix : laterPrefix;
-            if (problem.hasBranches()) {
-                putLine(currentPrefix + formatter.formatBranchingProblem(problem, locale));
-                printAllProblemGroups(problem, laterPrefix);
-            } else {
-                putLine(currentPrefix + formatter.formatProblem(problem, locale));
-            }
-            isFirst = false;
-        }
-    }
-
-    private void putLine(String line) {
-        this.lineConsumer.accept(line);
-    }
-
-    private static String repeat(char c, int count) {
-        StringBuilder b = new StringBuilder();
-        while (count-- > 0) {
-            b.append(c);
-        }
-        return b.toString();
     }
 }

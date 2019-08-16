@@ -32,7 +32,6 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
-import org.leadpony.justify.internal.problem.ProblemRenderer;
 
 /**
  * A minimal implementation of {@link JsonSchemaReader}.
@@ -118,7 +117,7 @@ abstract class AbstractJsonSchemaReader implements JsonSchemaReader, ProblemBuil
 
     protected void dispatchProblems() {
         if (!problems.isEmpty()) {
-            throw new JsonValidatingException(this.problems, ProblemRenderer.DEFAULT_RENDERER);
+            throw new JsonValidatingException(this.problems);
         }
     }
 

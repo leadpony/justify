@@ -28,7 +28,6 @@ import javax.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
-import org.leadpony.justify.internal.problem.BasicProblemHandler;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
@@ -64,7 +63,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
     public JsonValidator(JsonParser realParser, JsonSchema rootSchema, JsonProvider jsonProvider) {
         super(realParser, jsonProvider);
         this.rootSchema = rootSchema;
-        this.problemHandler = BasicProblemHandler.THROWING;
+        this.problemHandler = ProblemHandler.throwing();
         this.eventHandler = this::handleFirstEvent;
     }
 
@@ -75,11 +74,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
      * @return this parser.
      */
     public JsonValidator withHandler(ProblemHandler problemHandler) {
-        if (problemHandler == ProblemHandler.THROWING) {
-            this.problemHandler = BasicProblemHandler.THROWING;
-        } else {
-            this.problemHandler = problemHandler;
-        }
+        this.problemHandler = problemHandler;
         return this;
     }
 
