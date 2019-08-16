@@ -28,7 +28,7 @@ This software is available in the [Maven Central Repository] and the following `
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -64,7 +64,7 @@ Please add exactly one dependency to the `pom.xml` as shown below.
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
