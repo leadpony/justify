@@ -1,0 +1,31 @@
+[
+    {
+        "schema": {
+            "properties": {
+                "foo": {
+                    "type": "string"
+                }
+            }
+        },
+        "data": {
+            "foo": 42
+        },
+        "lines": 1
+    },
+    {
+        "schema": {
+            "anyOf": [
+                {
+                    "required": ["foo"]
+                },
+                {
+                    "required": ["bar"]
+                }
+            ]
+        },
+        "data": {
+            "baz": 42
+        },
+        "lines": 3
+    }
+]

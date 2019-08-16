@@ -19,6 +19,7 @@ package org.leadpony.justify.api;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
@@ -66,6 +67,29 @@ public interface Problem {
      * @throws NullPointerException if the specified {@code locale} is {@code null}.
      */
     String getContextualMessage(Locale locale);
+
+    /**
+     * Prints this problem to the specified consumer.
+     *
+     * @param lineConsumer the consumer of printed lines.
+     * @throws NullPointerException if the specified {@code lineConsumer} is
+     *                              {@code null}.
+     * @since 1.1
+     */
+    default void print(Consumer<String> lineConsumer) {
+        print(lineConsumer, Locale.getDefault());
+    }
+
+    /**
+     * Prints this problem to the specified consumer.
+     *
+     * @param lineConsumer the consumer of printed lines.
+     * @param locale       the locale for which the message will be localized.
+     * @throws NullPointerException if any of the specified parameters is
+     *                              {@code null}.
+     * @since 1.1
+     */
+    void print(Consumer<String> lineConsumer, Locale locale);
 
     /**
      * Returns the location where this problem is found in the input source.

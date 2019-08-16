@@ -21,11 +21,15 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.leadpony.justify.test.helper.JsonSource;
 
 /**
  * A test class for testing the {@link Problem} implementation.
@@ -137,5 +141,46 @@ public class ProblemTest extends BaseTest {
         boolean actual = problem.isResolvable();
 
         assertThat(actual).isFalse();
+    }
+
+    /**
+     * @author leadpony
+     */
+    public static class ProblemTestCase {
+        public JsonValue schema;
+        public JsonValue data;
+        public int lines;
+    }
+
+    @ParameterizedTest
+    @JsonSource("problemtest-message.json")
+    public void getContextualMessageShouldReturnMessageOfExpectedLines(ProblemTestCase test) {
+        Problem problem = createProblem(test);
+        String message = problem.getContextualMessage(Locale.ROOT);
+        print(message);
+        String[] lines = message.split("\n", -1);
+        assertThat(lines.length).isEqualTo(test.lines);
+    }
+
+    @ParameterizedTest
+    @JsonSource("problemtest-message.json")
+    public void printShouldOutputMessageAsExpected(ProblemTestCase test) {
+        Problem problem = createProblem(test);
+        StringBuilder builder = new StringBuilder();
+        Consumer<String> consumer = line -> {
+            if (builder.length() > 0) {
+                builder.append('\n');
+            }
+            builder.append(line);
+        };
+        problem.print(consumer, Locale.ROOT);
+        String message = builder.toString();
+        print(message);
+        String[] lines = message.split("\n", -1);
+        assertThat(lines.length).isEqualTo(test.lines);
+    }
+
+    private static Problem createProblem(ProblemTestCase test) {
+        return createProblem(test.schema.toString(), test.data.toString());
     }
 }

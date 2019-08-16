@@ -16,8 +16,11 @@
 
 package org.leadpony.justify.api;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.json.stream.JsonLocation;
@@ -67,6 +70,30 @@ public class JsonValidatingException extends JsonParsingException {
         return problems.stream()
                 .map(Problem::getContextualMessage)
                 .collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * Prints the problems to the specified print stream.
+     *
+     * @param stream the print stream to output.
+     * @throws NullPointerException if the specified {@code stream} is {@code null}.
+     * @since 1.1
+     */
+    public void printProblems(PrintStream stream) {
+        Objects.requireNonNull(stream, "stream must not be null.");
+        problems.stream().forEach(stream::println);
+    }
+
+    /**
+     * Prints the problems to the specified print writer.
+     *
+     * @param writer the print writer to output.
+     * @throws NullPointerException if the specified {@code writer} is {@code null}.
+     * @since 1.1
+     */
+    public void printProblems(PrintWriter writer) {
+        Objects.requireNonNull(writer, "writer must not be null.");
+        problems.stream().forEach(writer::println);
     }
 
     private static JsonLocation extractFirstLocation(List<Problem> problems) {

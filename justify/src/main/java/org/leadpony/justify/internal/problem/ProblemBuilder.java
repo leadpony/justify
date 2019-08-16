@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.json.stream.JsonLocation;
 
@@ -194,6 +195,16 @@ public class ProblemBuilder {
         public String getContextualMessage(Locale locale) {
             requireNonNull(locale, "locale");
             return ProblemRenderer.DEFAULT_RENDERER.render(this, locale);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void print(Consumer<String> lineConsumer, Locale locale) {
+            requireNonNull(lineConsumer, "lineConsumer");
+            requireNonNull(locale, "locale");
+            ProblemRenderer.DEFAULT_RENDERER.render(this, locale, lineConsumer);
         }
 
         /**

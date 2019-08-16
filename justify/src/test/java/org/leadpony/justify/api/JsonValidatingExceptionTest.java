@@ -16,7 +16,12 @@
 package org.leadpony.justify.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
@@ -97,12 +102,14 @@ public class JsonValidatingExceptionTest {
 
     @ParameterizedTest
     @JsonSource("jsonvalidatingexceptiontest-schema.json")
-    public void getLocalizedMessageShouldReturnMessageFromAllProblems(ExceptionTestCase test) {
+    public void printProblemsShouldOutputToPrintStreamAsExpected(ExceptionTestCase test) {
         JsonValidatingException thrown = catchJsonValidatingException(test.schema);
 
         assertThat(thrown).isNotNull();
 
-        String message = thrown.getLocalizedMessage();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        thrown.printProblems(new PrintStream(stream));
+        String message = stream.toString();
         LOG.info(message);
 
         assertThat(message.split("\n")).hasSize(test.lines);
@@ -110,12 +117,44 @@ public class JsonValidatingExceptionTest {
 
     @ParameterizedTest
     @JsonSource("jsonvalidatingexceptiontest-instance.json")
-    public void getLocalizedMessageShouldReturnMessageFromAllProblems(InstanceExceptionTestCase test) {
+    public void printProblemsShouldOutputToPrintStreamAsExpected(InstanceExceptionTestCase test) {
         JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
 
         assertThat(thrown).isNotNull();
 
-        String message = thrown.getLocalizedMessage();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        thrown.printProblems(new PrintStream(stream));
+        String message = stream.toString();
+        LOG.info(message);
+
+        assertThat(message.split("\n")).hasSize(test.lines);
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonvalidatingexceptiontest-schema.json")
+    public void printProblemsShouldOutputToPrintWriterAsExpected(ExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema);
+
+        assertThat(thrown).isNotNull();
+
+        StringWriter writer = new StringWriter();
+        thrown.printProblems(new PrintWriter(writer));
+        String message = writer.toString();
+        LOG.info(message);
+
+        assertThat(message.split("\n")).hasSize(test.lines);
+    }
+
+    @ParameterizedTest
+    @JsonSource("jsonvalidatingexceptiontest-instance.json")
+    public void printProblemsShouldOutputToPrintWriterAsExpected(InstanceExceptionTestCase test) {
+        JsonValidatingException thrown = catchJsonValidatingException(test.schema, test.data);
+
+        assertThat(thrown).isNotNull();
+
+        StringWriter writer = new StringWriter();
+        thrown.printProblems(new PrintWriter(writer));
+        String message = writer.toString();
         LOG.info(message);
 
         assertThat(message.split("\n")).hasSize(test.lines);

@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
+
 import javax.json.stream.JsonLocation;
 
 import org.junit.jupiter.api.Test;
@@ -151,6 +153,11 @@ public class ProblemPrinterTest extends BaseTest {
 
         @Override
         public String getContextualMessage(Locale locale) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void print(Consumer<String> lineConsumer, Locale locae) {
             throw new UnsupportedOperationException();
         }
 
