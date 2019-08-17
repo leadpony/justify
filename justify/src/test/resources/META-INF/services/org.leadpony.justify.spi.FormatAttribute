@@ -1,2 +1,2 @@
-org.leadpony.justify.spi.PalindromeFormatAttribute
-org.leadpony.justify.spi.Int32FormatAttribute
+org.leadpony.justify.tests.spi.PalindromeFormatAttribute
+org.leadpony.justify.tests.spi.Int32FormatAttribute

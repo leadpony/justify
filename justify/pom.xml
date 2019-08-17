@@ -201,7 +201,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
-                    --add-opens org.leadpony.justify/org.leadpony.justify.test.helper=ALL-UNNAMED
+                    --add-opens org.leadpony.justify/org.leadpony.justify.tests.helper=ALL-UNNAMED
                     -Duser.language=en
                     -Duser.country=US
                     -Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties
