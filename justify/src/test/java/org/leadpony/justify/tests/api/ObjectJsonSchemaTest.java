@@ -25,8 +25,10 @@ import java.util.stream.Stream;
 import javax.json.JsonValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonResource;
 import org.leadpony.justify.tests.helper.JsonSource;
 
@@ -35,7 +37,10 @@ import org.leadpony.justify.tests.helper.JsonSource;
  *
  * @author leadpony
  */
-public class ObjectJsonSchemaTest extends BaseTest {
+@ApiTest
+public class ObjectJsonSchemaTest {
+
+    private static JsonValidationService service;
 
     /**
      * A test case for {@link ObjectJsonSchema#get(Object)}.
@@ -138,6 +143,6 @@ public class ObjectJsonSchemaTest extends BaseTest {
     }
 
     private static ObjectJsonSchema fromString(String string) {
-        return SERVICE.readSchema(new StringReader(string)).asObjectJsonSchema();
+        return service.readSchema(new StringReader(string)).asObjectJsonSchema();
     }
 }

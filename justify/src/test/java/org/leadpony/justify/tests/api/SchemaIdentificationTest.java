@@ -27,13 +27,18 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.tests.helper.ApiTest;
 
 /**
  * A test class for testing schema identifier resolutions.
  *
  * @author leadpony
  */
-public class SchemaIdentificationTest extends BaseTest {
+@ApiTest
+public class SchemaIdentificationTest {
+
+    private static JsonValidationService service;
 
     private static final String RESOURCE_NAME = "identification.json";
 
@@ -60,7 +65,7 @@ public class SchemaIdentificationTest extends BaseTest {
 
     private static JsonSchema loadSchema() throws IOException {
         try (InputStream in = SchemaIdentificationTest.class.getResourceAsStream(RESOURCE_NAME)) {
-            return SERVICE.readSchema(in);
+            return service.readSchema(in);
         }
     }
 

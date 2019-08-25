@@ -25,7 +25,10 @@ import javax.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.ProblemPrinter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author leadpony
  */
-public class JsonbTest extends BaseTest {
+@ApiTest
+public class JsonbTest {
+
+    private static JsonValidationService service;
+    private static ProblemPrinter printer;
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -50,9 +57,9 @@ public class JsonbTest extends BaseTest {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": 46}";
 
-        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        JsonSchema s = service.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = SERVICE.createJsonProvider(s, parser -> problems::addAll);
+        JsonProvider provider = service.createJsonProvider(s, parser -> problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 
@@ -66,9 +73,9 @@ public class JsonbTest extends BaseTest {
         String schema = PERSON_SCHEMA;
         String instance = "{\"name\":\"John Smith\", \"age\": \"46\"}";
 
-        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        JsonSchema s = service.readSchema(new StringReader(schema));
         List<Problem> problems = new ArrayList<>();
-        JsonProvider provider = SERVICE.createJsonProvider(s, parser -> problems::addAll);
+        JsonProvider provider = service.createJsonProvider(s, parser -> problems::addAll);
         Jsonb jsonb = JsonbBuilder.newBuilder().withProvider(provider).build();
         Person person = jsonb.fromJson(instance, Person.class);
 
@@ -76,7 +83,7 @@ public class JsonbTest extends BaseTest {
         assertThat(person.age).isEqualTo(46);
         assertThat(problems).isNotEmpty();
 
-        print(problems);
+        printer.print(problems);
     }
 
     /**

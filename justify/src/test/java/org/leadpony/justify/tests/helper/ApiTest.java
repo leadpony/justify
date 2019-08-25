@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.tests.helper;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Defines the API for JSON validation.
+ * An annotation which indicates a class is a container for testing API.
+ *
+ * @author leadpony
  */
-module org.leadpony.justify {
-    exports org.leadpony.justify.api;
-    exports org.leadpony.justify.spi;
-
-    requires com.ibm.icu;
-    requires transitive java.json;
-    requires java.logging;
-
-    uses org.leadpony.justify.spi.ContentEncodingScheme;
-    uses org.leadpony.justify.spi.ContentMimeType;
-    uses org.leadpony.justify.spi.FormatAttribute;
-    uses org.leadpony.justify.spi.JsonValidationProvider;
-
-    provides org.leadpony.justify.spi.JsonValidationProvider
-        with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;
+@Retention(RUNTIME)
+@Target({TYPE, ANNOTATION_TYPE})
+@Inherited
+@ExtendWith(ApiTestExtension.class)
+public @interface ApiTest {
 }

@@ -25,6 +25,8 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
+import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.tests.helper.ApiTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -41,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 
 import javax.json.Json;
@@ -55,14 +58,18 @@ import javax.json.JsonValue;
  *
  * @author leadpony
  */
-public class JsonSchemaBuilderTest extends BaseTest {
+@ApiTest
+public class JsonSchemaBuilderTest {
+
+    private static Logger log;
+    private static JsonValidationService service;
 
     private static JsonSchemaBuilderFactory schemaBuilderfactory;
     private static JsonBuilderFactory jsonBuilderFactory;
 
     @BeforeAll
     public static void setUpOnce() {
-        schemaBuilderfactory = SERVICE.createSchemaBuilderFactory();
+        schemaBuilderfactory = service.createSchemaBuilderFactory();
         jsonBuilderFactory = Json.createBuilderFactory(null);
     }
 
@@ -1139,7 +1146,7 @@ public class JsonSchemaBuilderTest extends BaseTest {
             builder.withDependencies(test.values);
         });
 
-        print(thrown);
+        log.info(thrown.getMessage());
 
         assertThat(thrown)
             .isNotNull()

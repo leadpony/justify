@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.json.JsonReader;
@@ -31,14 +32,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.ProblemPrinter;
 
 /**
  * A test class for testing problem locations.
  *
  * @author leadpony
  */
-public class ProblemLocationTest extends BaseTest {
+@ApiTest
+public class ProblemLocationTest {
+
+    private static Logger log;
+    private static JsonValidationService service;
+    private static ProblemPrinter printer;
 
     private static final String[] FILES = {
             "problem/additionalItems.txt",
@@ -80,7 +89,7 @@ public class ProblemLocationTest extends BaseTest {
     public void testProblem(ProblemLocationFixture fixture) {
         JsonSchema schema = readSchema(fixture.schema());
         List<Problem> problems = new ArrayList<>();
-        JsonReader reader = SERVICE.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
+        JsonReader reader = service.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
         reader.readValue();
         assertThat(problems).hasSameSizeAs(fixture.problems());
         Iterator<Problem> it = problems.iterator();
@@ -98,14 +107,14 @@ public class ProblemLocationTest extends BaseTest {
     }
 
     private JsonSchema readSchema(String schema) {
-        JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(schema));
+        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
         return reader.read();
     }
 
     private void printProblems(List<Problem> problems, ProblemLocationFixture fixture) {
         if (!problems.isEmpty()) {
-            print(fixture.toString());
-            print(problems);
+            log.info(fixture.toString());
+            printer.print(problems);
         }
     }
 }

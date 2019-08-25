@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.tests.helper;
+
+import java.util.List;
+
+import org.leadpony.justify.api.Problem;
 
 /**
- * Defines the API for JSON validation.
+ * @author leadpony
  */
-module org.leadpony.justify {
-    exports org.leadpony.justify.api;
-    exports org.leadpony.justify.spi;
+public interface ProblemPrinter {
 
-    requires com.ibm.icu;
-    requires transitive java.json;
-    requires java.logging;
-
-    uses org.leadpony.justify.spi.ContentEncodingScheme;
-    uses org.leadpony.justify.spi.ContentMimeType;
-    uses org.leadpony.justify.spi.FormatAttribute;
-    uses org.leadpony.justify.spi.JsonValidationProvider;
-
-    provides org.leadpony.justify.spi.JsonValidationProvider
-        with org.leadpony.justify.internal.provider.DefaultJsonValidationProvider;
+    void print(List<Problem> problems);
 }

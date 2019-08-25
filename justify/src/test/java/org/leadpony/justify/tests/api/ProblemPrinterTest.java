@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import javax.json.stream.JsonLocation;
 
@@ -32,13 +33,18 @@ import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
+import org.leadpony.justify.tests.helper.ApiTest;
 
 /**
  * A test class for testing problem printers created by {@link JsonValidationService}.
  *
  * @author leadpony
  */
-public class ProblemPrinterTest extends BaseTest {
+@ApiTest
+public class ProblemPrinterTest {
+
+    private static Logger log;
+    private static JsonValidationService service;
 
     @Test
     public void defaultPrinterShouldPrintBothLocationAndPointer() {
@@ -46,7 +52,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinter(lines::add);
+        ProblemHandler printer = service.createProblemPrinter(lines::add);
         printer.handleProblems(problems);
 
         assertThat(lines).hasSize(1);
@@ -60,7 +66,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
                 .build();
         printer.handleProblems(problems);
 
@@ -75,7 +81,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
                 .withLocation(true).withPointer(true).build();
         printer.handleProblems(problems);
 
@@ -90,7 +96,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
                 .withPointer(false).build();
         printer.handleProblems(problems);
 
@@ -105,7 +111,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
                 .withLocation(false).build();
         printer.handleProblems(problems);
 
@@ -120,7 +126,7 @@ public class ProblemPrinterTest extends BaseTest {
                 new MockProblem("hello problem.", 12, 34, "/foo")
                 );
         List<String> lines = new ArrayList<>();
-        ProblemHandler printer = SERVICE.createProblemPrinterBuilder(lines::add)
+        ProblemHandler printer = service.createProblemPrinterBuilder(lines::add)
                 .withLocation(false).withPointer(false).build();
         printer.handleProblems(problems);
 
@@ -130,7 +136,7 @@ public class ProblemPrinterTest extends BaseTest {
     }
 
     private void printLines(List<String> lines) {
-        lines.forEach(BaseTest::print);
+        lines.forEach(log::info);
     }
 
     /**

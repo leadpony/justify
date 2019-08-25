@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,14 +29,22 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidatingException;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.ProblemPrinter;
 
 /**
  * A test class for testing schema validations.
  *
  * @author leadpony
  */
-public class SchemaValidationTest extends BaseTest {
+@ApiTest
+public class SchemaValidationTest {
+
+    private static Logger log;
+    private static JsonValidationService service;
+    private static ProblemPrinter printer;
 
     private static final String[] TESTS = {
             "schema/schema.json",
@@ -93,7 +102,7 @@ public class SchemaValidationTest extends BaseTest {
     @MethodSource("provideAllFixtures")
     public void testSchemaValidation(SchemaFixture fixture) {
         String value = fixture.schema().toString();
-        try (JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(value))) {
+        try (JsonSchemaReader reader = service.createSchemaReader(new StringReader(value))) {
             reader.read();
             assertThat(true).isEqualTo(fixture.hasValidSchema());
         } catch (JsonValidatingException e) {
@@ -126,7 +135,7 @@ public class SchemaValidationTest extends BaseTest {
     public void toJsonShouldProduceOriginalJson(SchemaFixture fixture) {
         String value = fixture.schema().toString();
         JsonSchema schema = null;
-        try (JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(value))) {
+        try (JsonSchemaReader reader = service.createSchemaReader(new StringReader(value))) {
             schema = reader.read();
         }
 
@@ -135,8 +144,8 @@ public class SchemaValidationTest extends BaseTest {
 
     private void printProblems(SchemaFixture fixture, List<Problem> problems) {
         if (!problems.isEmpty()) {
-            print(fixture.displayName());
-            print(problems);
+            log.info(fixture.displayName());
+            printer.print(problems);
         }
     }
 }

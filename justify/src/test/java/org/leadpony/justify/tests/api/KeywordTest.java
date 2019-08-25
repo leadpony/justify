@@ -24,14 +24,19 @@ import javax.json.JsonValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonResource;
 
 /**
  * @author leadpony
  */
-public class KeywordTest extends BaseTest {
+@ApiTest
+public class KeywordTest {
+
+    private static JsonValidationService service;
 
     /**
      * @author leadpony
@@ -96,6 +101,6 @@ public class KeywordTest extends BaseTest {
 
     private static JsonSchema fromValue(JsonValue value) {
         String string = value.toString();
-        return SERVICE.readSchema(new StringReader(string));
+        return service.readSchema(new StringReader(string));
     }
 }

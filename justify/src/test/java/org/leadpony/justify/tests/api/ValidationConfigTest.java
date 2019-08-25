@@ -29,23 +29,28 @@ import javax.json.stream.JsonParserFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ValidationConfig;
+import org.leadpony.justify.tests.helper.ApiTest;
 
 /**
  * A test class for {@link ValidationConfig}.
  *
  * @author leadpony
  */
-public class ValidationConfigTest extends BaseTest {
+@ApiTest
+public class ValidationConfigTest {
+
+    private static JsonValidationService service;
 
     private ValidationConfig sut;
 
     @BeforeEach
     public void setUp() {
-        sut = SERVICE.createValidationConfig();
+        sut = service.createValidationConfig();
     }
 
     @Test
@@ -105,7 +110,7 @@ public class ValidationConfigTest extends BaseTest {
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandler(problems::addAll);
 
-        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -121,7 +126,7 @@ public class ValidationConfigTest extends BaseTest {
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandlerFactory(handlerFactory);
 
-        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();

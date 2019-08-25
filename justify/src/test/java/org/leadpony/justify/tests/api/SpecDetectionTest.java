@@ -31,14 +31,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonValidatingException;
+import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.ProblemPrinter;
 
 /**
  * A test type for testing the auto detection of spec versions.
  *
  * @author leadpony
  */
-public class SpecDetectionTest extends BaseTest {
+@ApiTest
+public class SpecDetectionTest {
+
+    private static JsonValidationService service;
+    private static ProblemPrinter printer;
 
     public static Stream<Arguments> supportedVersions() {
         return Stream.of(
@@ -112,7 +119,7 @@ public class SpecDetectionTest extends BaseTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        print(e.getProblems());
+        printer.print(e.getProblems());
     }
 
     @ParameterizedTest
@@ -131,7 +138,7 @@ public class SpecDetectionTest extends BaseTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        print(e.getProblems());
+        printer.print(e.getProblems());
     }
 
     public static Stream<Arguments> matchedVersions() {
@@ -190,7 +197,7 @@ public class SpecDetectionTest extends BaseTest {
             .isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        print(e.getProblems());
+        printer.print(e.getProblems());
     }
 
     @ParameterizedTest
@@ -212,13 +219,13 @@ public class SpecDetectionTest extends BaseTest {
             .isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        print(e.getProblems());
+        printer.print(e.getProblems());
     }
 
     /* helpers */
 
     private static JsonSchemaReaderFactory createFactory(SpecVersion defaultVersion, boolean detection) {
-        return SERVICE.createSchemaReaderFactoryBuilder()
+        return service.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(defaultVersion)
                 .withStrictKeywords(true)
                 .withSchemaValidation(true)
