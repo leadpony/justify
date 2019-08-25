@@ -16,6 +16,7 @@
     </description>
 
     <properties>
+        <maven.compiler.release>9</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jsonp.version>1.1.5</jsonp.version>
         <jsonb.version>1.0.1</jsonb.version>
@@ -216,45 +217,24 @@
 
     <profiles>
         <profile>
-            <id>jdk8</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
+            <id>java8</id>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <source>1.8</source>
-                                <target>1.8</target>
-                                <excludes>
-                                    <exclude>module-info.java</exclude>
-                                </excludes>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-        <profile>
-            <id>jdk9-or-higher</id>
-            <activation>
-                <jdk>[9,]</jdk>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <release>9</release>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                            <excludes>
+                                <exclude>module-info.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>
@@ -268,7 +248,7 @@
             <properties>
                 <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
                 <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.1.12</jsonp.provider.version>
+                <jsonp.provider.version>1.1.13</jsonp.provider.version>
                 <jsonp.provider.classifier></jsonp.provider.classifier>
             </properties>
         </profile>
