@@ -31,6 +31,7 @@ This software is available in the [Maven Central Repository] and the following `
     <version>1.1.0</version>
 </dependency>
 ```
+Note that this dependency will bring `jakarta.json:jakarta.json-api` as a transitive dependency.
 
 Besides the library itself, one of [Java API for JSON Processing (JSR 374)] implementations is needed in runtime.
 This library supports the following implementations and you can select whichever you prefer.
@@ -49,6 +50,7 @@ Please add exactly one dependency to the `pom.xml` as shown below.
     <version>1.1.5</version>
 </dependency>
 ```
+Please note that the classifier `module` is required when using this implementation.
 
 #### Apache Johnzon
 ```xml
