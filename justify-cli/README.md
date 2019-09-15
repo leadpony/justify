@@ -4,7 +4,7 @@
 
 The following tools are required to build this software.
 * [JDK] 11
-* [Apache Maven] 3.6.0
+* [Apache Maven] 3.6.0 or higher
 
 
 1. Obtain the source code from this repository.

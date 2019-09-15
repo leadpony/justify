@@ -6,7 +6,7 @@
 
 The following tools are required to build this software.
 * [JDK] 11
-* [Apache Maven] 3.6.0
+* [Apache Maven] 3.6.0 or higher
 
 The commands below build the software and install it into your local Maven repository.
 
@@ -18,10 +18,9 @@ $ mvn clean install
 
 ### Eclipse
 
-The following Maven profiles should be activated or deactivated manually after importing the project into your workspace.
+The following Maven profiles should be activated manually after importing the project into your workspace.
 
-* `jdk8` (activate)
-* `jdk9-or-higher` (deactivate)
+* `java8` (activate)
 * `verbose` (activate)
 
 [JDK]: https://jdk.java.net/
