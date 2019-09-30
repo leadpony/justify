@@ -26,6 +26,12 @@ import org.leadpony.justify.api.Localizable;
 /**
  * A Service Provider Interface for format attribute.
  *
+ * <p>
+ * Each implementation of this type will be instantiated at startup through SPI,
+ * and the single instance will be shared between multiple schemas and
+ * validations.
+ * </p>
+ *
  * @author leadpony
  *
  * @see <a href=
@@ -54,6 +60,11 @@ public interface FormatAttribute {
     /**
      * Returns the type of the value expected by this attribute.
      *
+     * <p>
+     * The type must be one of the simple types: {@link InstanceType#STRING},
+     * {@link InstanceType#NUMBER}, {@link InstanceType#BOOLEAN}, and
+     * {@link InstanceType#NULL}.
+     * </p>
      * <p>
      * For integers this method must return {@link InstanceType#NUMBER} instead of
      * {@link InstanceType#INTEGER}.

@@ -18,6 +18,12 @@ package org.leadpony.justify.spi;
 /**
  * Encoding scheme of the content of the JSON string.
  *
+ * <p>
+ * Each implementation of this type will be instantiated at startup through SPI,
+ * and the single instance will be shared between multiple schemas and
+ * validations.
+ * </p>
+ *
  * @author leadpony
  */
 public interface ContentEncodingScheme {
