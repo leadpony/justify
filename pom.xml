@@ -24,9 +24,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jsonp.version>1.1.5</jsonp.version>
-        <jsonb.version>1.0.1</jsonb.version>
-        <junit.version>5.5.1</junit.version>
+        <jsonp.version>1.1.6</jsonp.version>
+        <jsonb.version>1.0.2</jsonb.version>
+        <junit.version>5.5.2</junit.version>
         <test.log.level>OFF</test.log.level>
         <jsonp.provider.groupId>org.glassfish</jsonp.provider.groupId>
         <jsonp.provider.artifactId>jakarta.json</jsonp.provider.artifactId>
@@ -39,7 +39,7 @@
             <dependency>
                 <groupId>com.ibm.icu</groupId>
                 <artifactId>icu4j</artifactId>
-                <version>64.2</version>
+                <version>65.1</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -80,7 +80,7 @@
             <dependency>
                 <groupId>org.eclipse</groupId>
                 <artifactId>yasson</artifactId>
-                <version>1.0.4</version>
+                <version>1.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.fusesource.jansi</groupId>
@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>9.4.19.v20190610</version>
+                <version>9.4.21.v20190926</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -157,7 +157,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <docencoding>UTF-8</docencoding>
@@ -187,7 +187,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                     <executions>
                         <execution>
                             <id>attach-sources</id>
