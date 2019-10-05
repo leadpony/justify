@@ -2,11 +2,8 @@ language: java
 jdk:
     - openjdk11
 script:
-    - cd justify
-    - mvn install
-    - cd ../justify-cli
     - mvn package
-    - cd target
+    - cd justify-cli/target
     - tar xzf justify-cli-*.tar.gz
     - cd justify-cli
     - ./justify -s examples/person.schema.json -i examples/person.json

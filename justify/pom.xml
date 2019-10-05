@@ -5,59 +5,42 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.leadpony.justify</groupId>
+    <parent>
+        <groupId>org.leadpony.justify</groupId>
+        <artifactId>justify-parent</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+    </parent>
+
     <artifactId>justify</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>org.leadpony.justify</name>
-    <description>
-    Justify is a JSON validator based on the JSON Schema specification
-    and the JSON Processing API.
-    </description>
 
     <properties>
         <maven.compiler.release>9</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jsonp.version>1.1.5</jsonp.version>
-        <jsonb.version>1.0.1</jsonb.version>
-        <jsonp.provider.groupId>org.glassfish</jsonp.provider.groupId>
-        <jsonp.provider.artifactId>jakarta.json</jsonp.provider.artifactId>
-        <jsonp.provider.version>${jsonp.version}</jsonp.provider.version>
-        <jsonp.provider.classifier>module</jsonp.provider.classifier>
-        <jsonb.provider.groupId>org.eclipse</jsonb.provider.groupId>
-        <jsonb.provider.artifactId>yasson</jsonb.provider.artifactId>
-        <jsonb.provider.version>1.0.4</jsonb.provider.version>
-        <junit.version>5.5.1</junit.version>
-        <test.log.level>OFF</test.log.level>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
-            <version>${jsonp.version}</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
-            <version>64.2</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -67,18 +50,6 @@
             <classifier>${jsonp.provider.classifier}</classifier>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>jakarta.json.bind</groupId>
-            <artifactId>jakarta.json.bind-api</artifactId>
-            <version>${jsonb.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${jsonb.provider.groupId}</groupId>
-            <artifactId>${jsonb.provider.artifactId}</artifactId>
-            <version>${jsonb.provider.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -86,50 +57,9 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.0</version>
-                    <configuration>
-                        <configLocation>checkstyle.xml</configLocation>
-                        <excludes>**/module-info.java</excludes>
-                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        <includeTestResources>true</includeTestResources>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.1.0</version>
                     <configuration>
-                        <encoding>UTF-8</encoding>
-                        <docencoding>UTF-8</docencoding>
-                        <charset>UTF-8</charset>
-                        <additionalJOptions>
-                            <!-- -locale option does not work -->
-                            <additionalJOption>-J-Duser.language=en</additionalJOption>
-                            <additionalJOption>-html5</additionalJOption>
-                        </additionalJOptions>
                         <excludePackageNames>org.leadpony.justify.internal</excludePackageNames>
-                        <detectJavaApiLink>false</detectJavaApiLink>
                         <offlineLinks>
                             <offlineLink>
                                 <url>https://docs.oracle.com/en/java/javase/11/docs/api/</url>
@@ -141,27 +71,6 @@
                                 <location>${basedir}/src/main/javadoc/java.json/</location>
                             </offlineLink>
                         </offlineLinks>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M3</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.8</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     </configuration>
                 </plugin>
             </plugins>
@@ -176,26 +85,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>checkstyle</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Automatic-Module-Name>org.leadpony.justify</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -238,30 +131,6 @@
             </build>
         </profile>
         <profile>
-            <id>verbose</id>
-            <properties>
-                <test.log.level>FINE</test.log.level>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-with-johnzon</id>
-            <properties>
-                <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
-                <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.1.13</jsonp.provider.version>
-                <jsonp.provider.classifier></jsonp.provider.classifier>
-            </properties>
-        </profile>
-        <profile>
-            <id>test-with-joy</id>
-            <properties>
-                <jsonp.provider.groupId>org.leadpony.joy</jsonp.provider.groupId>
-                <jsonp.provider.artifactId>joy</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.1.0</jsonp.provider.version>
-                <jsonp.provider.classifier></jsonp.provider.classifier>
-            </properties>
-        </profile>
-        <profile>
             <id>release</id>
             <build>
                 <plugins>
@@ -295,91 +164,14 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadoc</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-    <!-- project information  -->
-
-    <url>https://github.com/leadpony/justify</url>
-    <inceptionYear>2018</inceptionYear>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <scm>
-        <connection>scm:git:https://github.com/leadpony/justify.git</connection>
-        <developerConnection>scm:git:git@github.com:leadpony/justify.git</developerConnection>
-        <url>https://github.com/leadpony/justify</url>
-    </scm>
-
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/leadpony/justify/issues</url>
-    </issueManagement>
-
-    <distributionManagement>
-        <repository>
-            <id>release</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <developers>
-        <developer>
-            <id>leadpony</id>
-            <name>leadpony</name>
-        </developer>
-    </developers>
 
 </project>
