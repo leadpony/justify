@@ -18,13 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test class for {@link Email}.
@@ -41,31 +36,19 @@ public class EmailTest {
         sut = new Email();
     }
 
-    private static final List<String> EMAILS = Arrays.asList(
-            "email.json",
-            "email-rfc3696.json",
-            "/be/abigail/rfc_rfc822_address/address.json");
-
-    private static final List<String> IDN_EMAILS = Arrays.asList(
-            "idn-email.json");
-
-    public static Stream<Fixture> provideEmails() {
-        return EMAILS.stream().flatMap(Fixture::load);
-    }
-
-    public static Stream<Fixture> provideIdnEmails() {
-        return IDN_EMAILS.stream().flatMap(Fixture::load);
+    @ParameterizedTest(name = "[{index}] {0}")
+    @FormatSource({
+        "email.json",
+        "email-rfc3696.json",
+        "/be/abigail/rfc_rfc822_address/address.json"
+        })
+    public void testEmail(String value, boolean valid) {
+        assertThat(sut.test(value)).isEqualTo(valid);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideEmails")
-    public void testEmail(Fixture fixture) {
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.isValid());
-    }
-
-    @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideIdnEmails")
-    public void testIdnEmail(Fixture fixture) {
-        assertThat(sut.test(fixture.value())).isFalse();
+    @FormatSource("idn-email.json")
+    public void testIdnEmail(String value) {
+        assertThat(sut.test(value)).isFalse();
     }
 }

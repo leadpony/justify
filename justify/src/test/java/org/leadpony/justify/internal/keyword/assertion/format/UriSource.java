@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * A test class for {@link RelativeJsonPointer}.
- *
  * @author leadpony
  */
-public class RelativeJsonPointerTest {
+@Retention(RUNTIME)
+@Target({METHOD, ANNOTATION_TYPE})
+@ArgumentsSource(UriArgumentsProvider.class)
+public @interface UriSource {
 
-    // System under test
-    private static RelativeJsonPointer sut;
+    /**
+     * The names of JSON resources.
+     */
+    String[] value();
 
-    @BeforeAll
-    public static void setUpOnce() {
-        sut = new RelativeJsonPointer();
-    }
-
-    @ParameterizedTest(name = "[{index}] {0}")
-    @FormatSource("relative-json-pointer.json")
-    public void test(String value, boolean valid) {
-        assertThat(sut.test(value)).isEqualTo(valid);
-    }
+    boolean validOnly() default false;
 }

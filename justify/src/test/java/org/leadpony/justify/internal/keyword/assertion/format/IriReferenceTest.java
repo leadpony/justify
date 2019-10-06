@@ -18,12 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test class for {@link IriReference}.
@@ -35,48 +31,29 @@ public class IriReferenceTest {
     // System under test
     private static IriReference sut;
 
-    private static int index;
-
     @BeforeAll
     public static void setUpOnce() {
         sut = new IriReference();
     }
 
-    public static Stream<UriFixture> uris() {
-        return UriFixture.load("uri.json")
-                .filter(UriFixture::isValid);
-    }
-
-    public static Stream<UriFixture> uriRefs() {
-        return UriFixture.load("/com/sporkmonger/addressable/uri.json")
-                .filter(UriFixture::isValid);
-    }
-
-    public static Stream<UriFixture> iriRefs() {
-        return UriFixture.load("/com/sporkmonger/addressable/iri.json");
+    @ParameterizedTest(name = "[{index}] {0}")
+    @UriSource(value = "uri.json", validOnly = true)
+    public void testUri(String value, boolean relative, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("uris")
-    public void testUri(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
+    @UriSource(value = "/com/sporkmonger/addressable/uri.json", validOnly = true)
+    public void testUriRef(String value, boolean relative, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("uriRefs")
-    public void testUriRef(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
-    }
-
-    @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("iriRefs")
-    public void testIriRef(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
+    @UriSource("/com/sporkmonger/addressable/iri.json")
+    public void testIriRef(String value, boolean relative, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 }

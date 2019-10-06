@@ -18,12 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test class for {@link UriTemplate}.
@@ -35,22 +31,15 @@ public class UriTemplateTest {
     // System under test
     private static UriTemplate sut;
 
-    private static int index;
-
     @BeforeAll
     public static void setUpOnce() {
         sut = new UriTemplate();
     }
 
-    public static Stream<UriFixture> provideFixtures() {
-        return UriFixture.load("uri-template.json");
-    }
-
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideFixtures")
-    public void testUriTemplate(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
+    @FormatSource("uri-template.json")
+    public void testUriTemplate(String value, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.io.InputStream;
@@ -25,47 +24,42 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.support.AnnotationConsumer;
+
 /**
- * A test fixture class for URI.
- *
  * @author leadpony
  */
-class UriFixture {
+public class FormatArgumentsProvider implements ArgumentsProvider, AnnotationConsumer<FormatSource> {
 
-    private final String value;
-    private final boolean relative;
-    private final boolean valid;
+    private String[] names;
 
-    static Stream<UriFixture> load(String name) {
-        InputStream in = UriFixture.class.getResourceAsStream(name);
+    @Override
+    public void accept(FormatSource annotation) {
+        this.names = annotation.value();
+    }
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        Class<?> testClass = context.getRequiredTestClass();
+        return Stream.of(names).flatMap(name -> loadJson(name, testClass));
+    }
+
+    private Stream<Arguments> loadJson(String name, Class<?> from) {
+        InputStream in = from.getResourceAsStream(name);
         try (JsonReader reader = Json.createReader(in)) {
             JsonArray array = reader.readArray();
             return array.stream()
                     .map(JsonValue::asJsonObject)
-                    .map(UriFixture::new);
+                    .map(object -> toArguments(object));
         }
     }
 
-    protected UriFixture(JsonObject object) {
-        this.value = object.getString("value");
-        this.relative = object.getBoolean("relative", false);
-        this.valid = object.getBoolean("valid");
-    }
-
-    String value() {
-        return value;
-    }
-
-    boolean isRelative() {
-        return relative;
-    }
-
-    boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public String toString() {
-        return value();
+    private Arguments toArguments(JsonObject object) {
+        return Arguments.of(
+                object.getString("value"),
+                object.getBoolean("valid"));
     }
 }

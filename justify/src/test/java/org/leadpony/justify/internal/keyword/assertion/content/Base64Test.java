@@ -19,11 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * Test for Base64 content encoding.
@@ -32,46 +29,58 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class Base64Test {
 
-    public static Stream<Arguments> fixtures() {
-        return Stream.of(
-                Arguments.of("", true, bytes("")),
-                Arguments.of("Zg==", true, bytes("f")),
-                Arguments.of("Zm8=", true, bytes("fo")),
-                Arguments.of("Zm9v", true, bytes("foo")),
-                Arguments.of("Zm9vYg==", true, bytes("foob")),
-                Arguments.of("Zm9vYmE=", true, bytes("fooba")),
-                Arguments.of("Zm9vYmFy", true, bytes("foobar")),
+    /**
+     * @author leadpony
+     */
+    enum Base64TestCase {
+        EMPTY("", true, bytes("")),
+        F("Zg==", true, bytes("f")),
+        FO("Zm8=", true, bytes("fo")),
+        FOO("Zm9v", true, bytes("foo")),
+        FOOB("Zm9vYg==", true, bytes("foob")),
+        FOOBA("Zm9vYmE=", true, bytes("fooba")),
+        FOOBAR("Zm9vYmFy", true, bytes("foobar")),
 
-                Arguments.of("====", false, null),
-                Arguments.of("Zg", false, null),
-                Arguments.of("Zm8", false, null),
-                Arguments.of("Zm9vYg", false, null),
-                Arguments.of("4rdHFh%2BHYoS8oLdVvbUzEVqB8Lvm7kSPnuwF0AAABYQ%3D", false, null));
-    }
+        EQUAL_ONLY("====", false, null),
+        F_SHORT("Zg", false, null),
+        FO_SHORT("Zm8", false, null),
+        FOOB_SHORT("Zm9vYg", false, null),
+        INVALD_LETTERS("4rdHFh%2BHYoS8oLdVvbUzEVqB8Lvm7kSPnuwF0AAABYQ%3D", false, null);
 
-    @ParameterizedTest
-    @MethodSource("fixtures")
-    public void canDecodeShouldReturnExpectedResult(String src, boolean valid, byte[] decoded) {
-        Base64 base64 = new Base64();
-        boolean actual = base64.canDecode(src);
+        final String src;
+        final boolean valid;
+        final byte[] decoded;
 
-        assertThat(actual).isEqualTo(valid);
-    }
+        Base64TestCase(String src, boolean valid, byte[] decoded) {
+            this.src = src;
+            this.valid = valid;
+            this.decoded = decoded;
+        }
 
-    @ParameterizedTest
-    @MethodSource("fixtures")
-    public void decodeShouldDecodeString(String src, boolean valid, byte[] decoded) {
-        Base64 base64 = new Base64();
-        if (valid) {
-            byte[] actual = base64.decode(src);
-            assertThat(actual).isEqualTo(decoded);
-        } else {
-            Throwable thrown = catchThrowable(() -> base64.decode(src));
-            assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+        private static byte[] bytes(String string) {
+            return string.getBytes(StandardCharsets.US_ASCII);
         }
     }
 
-    private static byte[] bytes(String str) {
-        return str.getBytes(StandardCharsets.US_ASCII);
+    @ParameterizedTest
+    @EnumSource(Base64TestCase.class)
+    public void canDecodeShouldReturnExpectedResult(Base64TestCase test) {
+        Base64 base64 = new Base64();
+        boolean actual = base64.canDecode(test.src);
+
+        assertThat(actual).isEqualTo(test.valid);
+    }
+
+    @ParameterizedTest
+    @EnumSource(Base64TestCase.class)
+    public void decodeShouldDecodeString(Base64TestCase test) {
+        Base64 base64 = new Base64();
+        if (test.valid) {
+            byte[] actual = base64.decode(test.src);
+            assertThat(actual).isEqualTo(test.decoded);
+        } else {
+            Throwable thrown = catchThrowable(() -> base64.decode(test.src));
+            assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }

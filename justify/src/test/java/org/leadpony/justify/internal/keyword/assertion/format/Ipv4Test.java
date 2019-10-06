@@ -18,11 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test class for {@link Ipv4}.
@@ -39,13 +36,9 @@ public class Ipv4Test {
         sut = new Ipv4();
     }
 
-    public static Stream<Fixture> provideFixtures() {
-        return Fixture.load("ipv4.json");
-    }
-
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("provideFixtures")
-    public void test(Fixture fixture) {
-        assertThat(sut.test(fixture.value())).isEqualTo(fixture.isValid());
+    @FormatSource("ipv4.json")
+    public void test(String value, boolean valid) {
+        assertThat(sut.test(value)).isEqualTo(valid);
     }
 }

@@ -18,14 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test class for {@link UriReference}.
@@ -37,38 +31,25 @@ public class UriReferenceTest {
     // System under test
     private static UriReference sut;
 
-    private static int index;
-
     @BeforeAll
     public static void setUpOnce() {
         sut = new UriReference(true);
     }
 
-    public static Stream<UriFixture> uris() {
-        return UriFixture.load("uri.json")
-                .filter(UriFixture::isValid);
-    }
-
-    public static Stream<UriFixture> uriRefs() {
-        List<String> files = Arrays.asList(
-                "uri-ref.json",
-                "/com/sporkmonger/addressable/uri.json");
-        return files.stream().flatMap(UriFixture::load);
+    @ParameterizedTest(name = "[{index}] {0}")
+    @UriSource(value = "uri.json", validOnly = true)
+    public void testUri(String value, boolean relative, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("uris")
-    public void testUri(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
-    }
-
-    @ParameterizedTest(name = "[{index}] {0}")
-    @MethodSource("uriRefs")
-    public void testUriReference(UriFixture fixture) {
-        Assumptions.assumeTrue(++index >= 0);
-        boolean valid = sut.test(fixture.value());
-        assertThat(valid).isEqualTo(fixture.isValid());
+    @UriSource({
+        "uri-ref.json",
+        "/com/sporkmonger/addressable/uri.json"
+    })
+    public void testUriReference(String value, boolean relative, boolean valid) {
+        boolean actual = sut.test(value);
+        assertThat(actual).isEqualTo(valid);
     }
 }
