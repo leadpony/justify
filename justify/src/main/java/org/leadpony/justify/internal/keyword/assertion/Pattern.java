@@ -26,6 +26,7 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.regex.Ecma262Pattern;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -52,7 +53,7 @@ public class Pattern extends AbstractStringAssertion {
             if (value.getValueType() == ValueType.STRING) {
                 String string = ((JsonString) value).getString();
                 try {
-                    return new Pattern(value, java.util.regex.Pattern.compile(string));
+                    return new Pattern(value, Ecma262Pattern.compile(string));
                 } catch (PatternSyntaxException e) {
                     throw new IllegalArgumentException(e);
                 }
