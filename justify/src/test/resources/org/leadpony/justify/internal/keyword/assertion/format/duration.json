@@ -1,0 +1,92 @@
+[
+    {
+        "description": "date and time",
+        "value": "P4Y3M21DT12H34M56S",
+        "valid": true
+    },
+    {
+        "description": "only date",
+        "value": "P4Y3M21D",
+        "valid": true
+    },
+    {
+        "description": "only time",
+        "value": "PT12H34M56S",
+        "valid": true
+    },
+    {
+        "description": "weeks",
+        "value": "P52W",
+        "valid": true
+    },
+    {
+        "description": "365 days",
+        "value": "P365D",
+        "valid": true
+    },
+    {
+        "description": "length of day",
+        "value": "PT86400S",
+        "valid": true
+    },
+    {
+        "description": "rotation period of the Mercury",
+        "value": "P58DT15H30M30S",
+        "valid": true
+    },
+    {
+        "description": "without P",
+        "value": "4Y3M21DT12H34M56S",
+        "valid": false
+    },
+    {
+        "description": "without T",
+        "value": "P12H34M56S",
+        "valid": false
+    },
+    {
+        "description": "redundant weeks",
+        "value": "P4Y3M21DT12H34M56S52W",
+        "valid": false
+    },
+    {
+        "description": "redundant space",
+        "value": "P4Y3M21DT12H34M56S ",
+        "valid": false
+    },
+    {
+        "description": "reversed date",
+        "value": "P12D34M",
+        "valid": false
+    },
+    {
+        "description": "reversed time",
+        "value": "PT12S34M",
+        "valid": false
+    },
+    {
+        "description": "decimal point is invalid",
+        "value": "PT20.345S",
+        "valid": false
+    },
+    {
+        "description": "nagative date is invalid",
+        "value": "P-2D",
+        "valid": false
+    },
+    {
+        "description": "nagative time is invalid",
+        "value": "PT-6H3M",
+        "valid": false
+    },
+    {
+        "description": "empty string",
+        "value": "",
+        "valid": false
+    },
+    {
+        "description": "blank string",
+        "value": " ",
+        "valid": false
+    }
+]
