@@ -1,0 +1,90 @@
+{
+    "type": "array",
+    "contains": {
+        "properties": {
+            "greeting": {
+                "const": "hello"
+            }
+        }
+    }
+}
+---
+[
+]
+---
+[
+    {
+        "location": [2, 1],
+        "pointer": "",
+        "keyword": "contains"
+    }
+]
+---
+{
+    "type": "array",
+    "contains": {
+        "properties": {
+            "greeting": {
+                "const": "hello"
+            }
+        }
+    }
+}
+---
+[
+    {
+        "greeting": "bye"
+    }
+]
+---
+[
+    {
+        "location": [3, 25],
+        "pointer": "/0/greeting",
+        "keyword": "const"
+    }
+]
+---
+{
+    "type": "array",
+    "contains": {
+        "properties": {
+            "greeting": {
+                "const": "hello"
+            }
+        }
+    }
+}
+---
+[
+    {
+        "greeting": "bye"
+    },
+    {
+        "greeting": "sayonara"
+    }
+]
+---
+[
+    {
+        "location": null,
+        "pointer": null,
+        "keyword": "contains",
+        "branches": [
+            [
+                {
+                    "location": [3, 25],
+                    "pointer": "/0/greeting",
+                    "keyword": "const"
+                }
+            ],
+            [
+                {
+                    "location": [6, 30],
+                    "pointer": "/1/greeting",
+                    "keyword": "const"
+                }
+            ]
+        ]
+    }
+]

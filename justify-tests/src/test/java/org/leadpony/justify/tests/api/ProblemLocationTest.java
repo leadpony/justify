@@ -62,6 +62,7 @@ public class ProblemLocationTest {
     @MultiJsonSource({
         "problem/additionalItems.txt",
         "problem/additionalProperties.txt",
+        "problem/contains.txt",
         "problem/format.txt",
         "problem/items.txt",
         "problem/maximum.txt",
@@ -96,7 +97,7 @@ public class ProblemLocationTest {
     }
 
     private static void checkProblems(List<Problem> actual, List<ExpectedProblem> expected) {
-        assertThat(actual).hasSameClassAs(expected);
+        assertThat(actual).hasSameSizeAs(expected);
 
         Iterator<Problem> a = actual.iterator();
         Iterator<ExpectedProblem> b = expected.iterator();
@@ -107,10 +108,22 @@ public class ProblemLocationTest {
 
     private static void checkProblem(Problem actual, ExpectedProblem expected) {
         JsonLocation loc = actual.getLocation();
-        assertThat(loc.getLineNumber()).isEqualTo(expected.location[0]);
-        assertThat(loc.getColumnNumber()).isEqualTo(expected.location[1]);
+        if (loc != null) {
+            assertThat(loc.getLineNumber()).isEqualTo(expected.location[0]);
+            assertThat(loc.getColumnNumber()).isEqualTo(expected.location[1]);
+        }
+
         assertThat(actual.getPointer()).isEqualTo(expected.pointer);
         assertThat(actual.getKeyword()).isEqualTo(expected.keyword);
+
+        assertThat(actual.hasBranches()).isEqualTo(expected.hasBranches());
+
+        if (actual.hasBranches()) {
+            assertThat(actual.countBranches()).isEqualTo(expected.branches.size());
+            for (int i = 0; i < actual.countBranches(); i++) {
+                checkProblems(actual.getBranch(i), expected.branches.get(i));
+            }
+        }
     }
 
     private static List<ExpectedProblem> toExpectedProblems(String string) {
@@ -126,6 +139,12 @@ public class ProblemLocationTest {
         public int[] location;
         public String pointer;
         public String keyword;
+
+        public List<List<ExpectedProblem>> branches;
+
+        boolean hasBranches() {
+            return branches != null;
+        }
     }
 
     private JsonSchema readSchema(String schema) {
