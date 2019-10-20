@@ -14,3 +14,53 @@
         "keyword": "required"
     }
 ]
+---
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": ["child"]
+    }
+}
+---
+[
+    {
+        "child": 42
+    },
+    {
+        "foo": 42
+    }
+]
+---
+[
+    {
+        "location": [7,5], 
+        "pointer": "/1", 
+        "keyword": "required"
+    }
+]
+---
+{
+    "type": "object",
+    "properties": {
+        "parent": {
+            "type": "object",
+             "required": ["child"]
+        }
+    }
+}
+---
+{
+    "parent": {
+        "foo": 42
+    }
+}
+---
+[
+    {
+        "location": [4, 5], 
+        "pointer": "/parent", 
+        "keyword": "required"
+    }
+]
+

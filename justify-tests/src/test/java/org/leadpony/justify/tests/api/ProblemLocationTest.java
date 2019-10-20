@@ -19,23 +19,25 @@ package org.leadpony.justify.tests.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-
 import javax.json.JsonReader;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import javax.json.stream.JsonLocation;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.MultiJsonSource;
 
 /**
  * A test class for testing problem locations.
@@ -49,72 +51,85 @@ public class ProblemLocationTest {
     private static JsonValidationService service;
     private static ProblemPrinter printer;
 
-    private static final String[] FILES = {
-            "problem/additionalItems.txt",
-            "problem/additionalItems-false.txt",
-            "problem/additionalProperties.txt",
-            "problem/additionalProperties-false.txt",
-            "problem/format.txt",
-            "problem/items.txt",
-            "problem/items-false.txt",
-            "problem/items-in-array.txt",
-            "problem/items-in-object.txt",
-            "problem/maximum.txt",
-            "problem/maxItems.txt",
-            "problem/maxProperties.txt",
-            "problem/minimum.txt",
-            "problem/minItems.txt",
-            "problem/minProperties.txt",
-            "problem/patternProperties.txt",
-            "problem/patternProperties-false.txt",
-            "problem/properties.txt",
-            "problem/properties-false.txt",
-            "problem/properties-in-array.txt",
-            "problem/properties-in-object.txt",
-            "problem/propertyNames.txt",
-            "problem/required.txt",
-            "problem/required-in-array.txt",
-            "problem/required-in-object.txt",
-            "problem/type.txt",
-            "problem/uniqueItems.txt",
-            "problem/uniqueItems-in-object.txt"
-    };
+    private static Jsonb jsonb;
 
-    public static Stream<ProblemLocationFixture> fixtureProvider() {
-        return Stream.of(FILES).map(ProblemLocationFixture::readFrom);
+    @BeforeAll
+    public static void setUpOnce() {
+        jsonb = JsonbBuilder.create();
     }
 
-    @ParameterizedTest
-    @MethodSource("fixtureProvider")
-    public void testProblem(ProblemLocationFixture fixture) {
-        JsonSchema schema = readSchema(fixture.schema());
-        List<Problem> problems = new ArrayList<>();
-        JsonReader reader = service.createReader(new StringReader(fixture.instance()), schema, problems::addAll);
-        reader.readValue();
-        assertThat(problems).hasSameSizeAs(fixture.problems());
-        Iterator<Problem> it = problems.iterator();
-        Iterator<ProblemLocationFixture.Problem> it2 = fixture.problems().iterator();
-        while (it.hasNext() && it2.hasNext()) {
-            Problem actual = it.next();
-            ProblemLocationFixture.Problem expected = it2.next();
-            JsonLocation loc = actual.getLocation();
-            assertThat(loc.getLineNumber()).isEqualTo(expected.lineNumber());
-            assertThat(loc.getColumnNumber()).isEqualTo(expected.columnNumber());
-            assertThat(actual.getPointer()).isEqualTo(expected.pointer());
-            assertThat(actual.getKeyword()).isEqualTo(expected.keyword());
+    @ParameterizedTest(name = "[{index}] {0}")
+    @MultiJsonSource({
+        "problem/additionalItems.txt",
+        "problem/additionalProperties.txt",
+        "problem/format.txt",
+        "problem/items.txt",
+        "problem/maximum.txt",
+        "problem/maxItems.txt",
+        "problem/maxProperties.txt",
+        "problem/minimum.txt",
+        "problem/minItems.txt",
+        "problem/minProperties.txt",
+        "problem/patternProperties.txt",
+        "problem/properties.txt",
+        "problem/propertyNames.txt",
+        "problem/required.txt",
+        "problem/type.txt",
+        "problem/uniqueItems.txt",
+    })
+    public void testProblem(String displayName, String schema, String instance, String problems) {
+        List<ExpectedProblem> expected = toExpectedProblems(problems);
+        JsonSchema jsonSchema = readSchema(schema);
+        List<Problem> actual = new ArrayList<>();
+
+        try (JsonReader reader = service.createReader(
+                new StringReader(instance), jsonSchema, actual::addAll)) {
+            reader.readValue();
         }
-        printProblems(problems, fixture);
+
+        checkProblems(actual, expected);
+
+        if (!actual.isEmpty()) {
+            log.info(displayName);
+            printer.print(actual);
+        }
+    }
+
+    private static void checkProblems(List<Problem> actual, List<ExpectedProblem> expected) {
+        assertThat(actual).hasSameClassAs(expected);
+
+        Iterator<Problem> a = actual.iterator();
+        Iterator<ExpectedProblem> b = expected.iterator();
+        while (a.hasNext() && b.hasNext()) {
+            checkProblem(a.next(), b.next());
+        }
+    }
+
+    private static void checkProblem(Problem actual, ExpectedProblem expected) {
+        JsonLocation loc = actual.getLocation();
+        assertThat(loc.getLineNumber()).isEqualTo(expected.location[0]);
+        assertThat(loc.getColumnNumber()).isEqualTo(expected.location[1]);
+        assertThat(actual.getPointer()).isEqualTo(expected.pointer);
+        assertThat(actual.getKeyword()).isEqualTo(expected.keyword);
+    }
+
+    private static List<ExpectedProblem> toExpectedProblems(String string) {
+        @SuppressWarnings("serial")
+        Type targetType = new ArrayList<ExpectedProblem>() { }.getClass().getGenericSuperclass();
+        return jsonb.fromJson(string, targetType);
+    }
+
+    /**
+     * @author leadpony
+     */
+    public static class ExpectedProblem {
+        public int[] location;
+        public String pointer;
+        public String keyword;
     }
 
     private JsonSchema readSchema(String schema) {
         JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
         return reader.read();
-    }
-
-    private void printProblems(List<Problem> problems, ProblemLocationFixture fixture) {
-        if (!problems.isEmpty()) {
-            log.info(fixture.toString());
-            printer.print(problems);
-        }
     }
 }

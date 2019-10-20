@@ -18,3 +18,102 @@
         "keyword": "type"
     }
 ]
+---
+{
+    "type": "object",
+    "properties": {
+        "foo": false
+    }
+}
+---
+{
+    "foo": 42
+}
+---
+[
+    {
+        "location": [2, 13], 
+        "pointer": "/foo"
+    }
+]
+---
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "first": {
+                "type": "string"
+            },
+            "second": {
+                "type": "string"
+            }
+        }
+    }
+}
+---
+[
+    {
+        "first": 42
+    },
+    {
+        "second": 42
+    }
+]
+---
+[
+    {
+        "location": [3, 19], 
+        "pointer": "/0/first", 
+        "keyword": "type"
+    },
+    {
+        "location": [6, 20], 
+        "pointer": "/1/second", 
+        "keyword": "type"
+    }
+]
+---
+{
+    "type": "object",
+    "properties": {
+        "first": {
+            "type": "object",
+            "properties": {
+                "child": {
+                    "maximum": 9
+                }
+            }
+        },
+        "second": {
+            "type": "object",
+            "properties": {
+                "child": {
+                    "maxLength": 2
+                }
+            }
+        }
+    }
+}
+---
+{
+    "first": {
+        "child": 10
+    },
+    "second": {
+        "child": "foo"
+    }
+}
+---
+[
+    {
+        "location": [3, 19], 
+        "pointer": "/first/child", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [6, 22], 
+        "pointer": "/second/child", 
+        "keyword": "maxLength"
+    }
+]

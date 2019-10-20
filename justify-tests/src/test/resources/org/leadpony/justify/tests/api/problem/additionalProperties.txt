@@ -16,3 +16,19 @@
         "keyword": "type"
     }
 ]
+---
+{
+    "type": "object",
+    "additionalProperties": false
+}
+---
+{
+    "foo": 42
+}
+---
+[
+    {
+        "pointer": "/foo",
+        "location": [2, 13]
+    }
+]

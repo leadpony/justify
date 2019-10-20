@@ -14,3 +14,87 @@
         "keyword": "type"
     }
 ]
+---
+{
+    "type": "array",
+    "items": [ true, false ]
+}
+---
+["first", "second"]
+---
+[
+    {
+        "location": [1, 18], 
+        "pointer": "/1"
+    }
+]
+---
+{
+    "type": "array",
+    "items": {
+        "type": "array",
+        "items": {
+            "maximum": 9
+        }
+    }
+}
+---
+[
+    [8, 9, 10],
+    [9, 10, 9],
+    [10, 9, 8]
+]
+---
+[
+    {
+        "location": [2, 13], 
+        "pointer": "/0/2", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [3, 10], 
+        "pointer": "/1/1", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [4, 7], 
+        "pointer": "/2/0", 
+        "keyword": "maximum"
+    }
+]
+---
+{
+    "type": "object",
+    "properties": {
+        "first": {
+            "type": "array",
+            "items": {
+                "maximum": 9
+            }
+        },
+        "second": {
+            "type": "array",
+            "items": {
+                "minimum": 9
+            }
+        }
+    }
+}
+---
+{
+    "first": [8, 9, 10],
+    "second": [8, 9, 10]
+}
+---
+[
+    {
+        "location": [2, 22], 
+        "pointer": "/first/2", 
+        "keyword": "maximum"
+    },
+    {
+        "location": [3, 16], 
+        "pointer": "/second/0", 
+        "keyword": "minimum"
+    }
+]

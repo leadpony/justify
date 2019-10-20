@@ -18,3 +18,21 @@
         "keyword": "type"
     }
 ]
+---
+{
+    "type": "object",
+    "patternProperties": {
+        "poto{8}": false
+    }
+}
+---
+{
+    "potoooooooo": 42
+}
+---
+[
+    {
+        "location": [2, 21], 
+        "pointer": "/potoooooooo"
+    }
+]
