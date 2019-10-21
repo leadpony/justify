@@ -39,9 +39,18 @@
 ---
 [
     {
-        "location": [3, 25],
-        "pointer": "/0/greeting",
-        "keyword": "const"
+        "location": [5, 1],
+        "pointer": "",
+        "keyword": "contains",
+        "branches": [
+            [
+                {
+                    "location": [3, 25],
+                    "pointer": "/0/greeting",
+                    "keyword": "const"
+                }
+            ]
+        ]
     }
 ]
 ---
@@ -67,8 +76,8 @@
 ---
 [
     {
-        "location": null,
-        "pointer": null,
+        "location": [8, 1],
+        "pointer": "",
         "keyword": "contains",
         "branches": [
             [
@@ -82,6 +91,60 @@
                 {
                     "location": [6, 30],
                     "pointer": "/1/greeting",
+                    "keyword": "const"
+                }
+            ]
+        ]
+    }
+]
+---
+{
+    "type": "array",
+    "contains": {
+        "properties": {
+            "greeting": {
+                "const": "hello"
+            }
+        }
+    }
+}
+---
+[
+    {
+        "greeting": "bye"
+    },
+    {
+        "greeting": "sayonara"
+    },
+    {
+        "greeting": "adios"
+    }
+]
+---
+[
+    {
+        "location": [11, 1],
+        "pointer": "",
+        "keyword": "contains",
+        "branches": [
+            [
+                {
+                    "location": [3, 25],
+                    "pointer": "/0/greeting",
+                    "keyword": "const"
+                }
+            ],
+            [
+                {
+                    "location": [6, 30],
+                    "pointer": "/1/greeting",
+                    "keyword": "const"
+                }
+            ],
+            [
+                {
+                    "location": [9, 27],
+                    "pointer": "/2/greeting",
                     "keyword": "const"
                 }
             ]

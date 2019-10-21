@@ -159,24 +159,28 @@ public class ProblemBuilder {
     }
 
     /**
-     * A skeletal implementation of {@link Problem}.
+     * A problem without any child problems.
      *
      * @author leadpony
      */
-    private abstract static class AbstractProblem implements Problem {
+    private static class SimpleProblem implements Problem {
 
         private final JsonSchema schema;
         private final String keyword;
         private final boolean resolvable;
         private final Message message;
         private final Map<String, Object> parameters;
+        private final JsonLocation location;
+        private final String pointer;
 
-        protected AbstractProblem(ProblemBuilder builder) {
+        protected SimpleProblem(ProblemBuilder builder) {
             this.schema = builder.schema;
             this.keyword = builder.keyword;
             this.resolvable = builder.resolvable;
             this.message = builder.message;
             this.parameters = Collections.unmodifiableMap(builder.parameters);
+            this.location = builder.location;
+            this.pointer = builder.pointer;
         }
 
         /**
@@ -205,6 +209,22 @@ public class ProblemBuilder {
             requireNonNull(lineConsumer, "lineConsumer");
             requireNonNull(locale, "locale");
             ProblemRenderer.DEFAULT_RENDERER.render(this, locale, lineConsumer);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public JsonLocation getLocation() {
+            return location;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getPointer() {
+            return pointer;
         }
 
         /**
@@ -259,49 +279,11 @@ public class ProblemBuilder {
     }
 
     /**
-     * Problem without child problems.
-     *
-     * @author leadpony
-     */
-    private static class SimpleProblem extends AbstractProblem {
-
-        private final JsonLocation location;
-        private final String pointer;
-
-        /**
-         * Constructs this problem.
-         *
-         * @param builder the builder of the problem.
-         */
-        protected SimpleProblem(ProblemBuilder builder) {
-            super(builder);
-            this.location = builder.location;
-            this.pointer = builder.pointer;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public JsonLocation getLocation() {
-            return location;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getPointer() {
-            return pointer;
-        }
-    }
-
-    /**
      * A problem with branch problems.
      *
      * @author leadpony
      */
-    private static class CompositeProblem extends AbstractProblem {
+    private static class CompositeProblem extends SimpleProblem {
 
         /**
          * The lists of branches.
@@ -316,16 +298,6 @@ public class ProblemBuilder {
         CompositeProblem(ProblemBuilder builder) {
             super(builder);
             this.branches = Collections.unmodifiableList(builder.branches);
-        }
-
-        @Override
-        public JsonLocation getLocation() {
-            return null;
-        }
-
-        @Override
-        public String getPointer() {
-            return null;
         }
 
         @Override

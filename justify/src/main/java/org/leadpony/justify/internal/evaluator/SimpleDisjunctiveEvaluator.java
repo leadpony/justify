@@ -92,14 +92,10 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         if (filterdLists.isEmpty()) {
             filterdLists = this.problemLists;
         }
-        if (filterdLists.size() == 1) {
-            dispatcher.dispatchAllProblems(filterdLists.get(0));
-        } else {
-            ProblemBuilder builder = createProblemBuilder(getContext())
-                    .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
-                    .withBranches(filterdLists);
-            dispatcher.dispatchProblem(builder.build());
-        }
+        ProblemBuilder builder = createProblemBuilder(getContext())
+                .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
+                .withBranches(filterdLists);
+        dispatcher.dispatchProblem(builder.build());
     }
 
     protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
