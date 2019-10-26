@@ -14,47 +14,55 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.json.JsonValue;
-
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
-import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
- * "additionalItems" keyword.
+ * A keyword which applies subschemas.
  *
  * @author leadpony
  */
-@KeywordType("additionalItems")
-@Spec(SpecVersion.DRAFT_04)
-@Spec(SpecVersion.DRAFT_06)
-@Spec(SpecVersion.DRAFT_07)
-public class AdditionalItems extends UnaryCombiner {
+public abstract class Applicator extends AbstractKeyword {
 
     /**
-     * Returns the mapper which maps a JSON value to this keyword.
+     * Constructs this keyword as an applicator.
      *
-     * @return the mapper for this keyword.
+     * @param json the JSON representation of this keyword.
      */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = AdditionalItems::new;
-        return mapper;
+    protected Applicator(JsonValue json) {
+        super(json);
     }
 
-    public AdditionalItems(JsonValue json, JsonSchema subschema) {
-        super(subschema);
+    /**
+     * Constructs this keyword as an applicator.
+     *
+     * @param name the name of this keyword.
+     * @param json the JSON representation of this keyword.
+     */
+    protected Applicator(String name, JsonValue json) {
+        super(name, json);
     }
 
     @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
+        evaluatables.add(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This method must be overridden.</p>
+     */
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        throw new UnsupportedOperationException();
     }
 }

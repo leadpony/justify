@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,7 +44,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
- * "items" combiner.
+ * A keyword type representing "items".
  *
  * @author leadpony
  */
@@ -52,7 +52,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public abstract class Items extends Combiner implements ArrayKeyword {
+public abstract class Items extends Applicator implements ArrayKeyword {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.

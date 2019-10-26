@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.json.JsonValue;
+
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -31,15 +30,13 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
+ * "Else" conditional keyword.
+ *
  * @author leadpony
  */
-@KeywordType("definitions")
-@Spec(SpecVersion.DRAFT_04)
-@Spec(SpecVersion.DRAFT_06)
+@KeywordType("else")
 @Spec(SpecVersion.DRAFT_07)
-public class Definitions extends Combiner {
-
-    private final Map<String, JsonSchema> definitionMap;
+public class Else extends Conditional {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -47,34 +44,20 @@ public class Definitions extends Combiner {
      * @return the mapper for this keyword.
      */
     public static KeywordMapper mapper() {
-        KeywordMapper.FromSchemaMap mapper = Definitions::new;
+        KeywordMapper.FromSchema mapper = Else::new;
         return mapper;
     }
 
-    public Definitions(JsonValue json, Map<String, JsonSchema> definitionMap) {
-        super(json);
-        this.definitionMap = definitionMap;
+    public Else(JsonValue json, JsonSchema schema) {
+        super(schema);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Evaluation will be done by "if" keyword.
+     */
     @Override
     public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-    }
-
-    @Override
-    public boolean hasSubschemas() {
-        return !definitionMap.isEmpty();
-    }
-
-    @Override
-    public Stream<JsonSchema> getSubschemas() {
-        return this.definitionMap.values().stream();
-    }
-
-    @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        if (jsonPointer.hasNext()) {
-            return definitionMap.get(jsonPointer.next());
-        }
-        return null;
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import javax.json.JsonValue;
 import javax.json.stream.JsonParser;

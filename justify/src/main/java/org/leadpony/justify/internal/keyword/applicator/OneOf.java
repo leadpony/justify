@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Collection;
 
@@ -31,15 +31,15 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
- * Boolean logic specified with "anyOf" validation keyword.
+ * Boolean logic specified with "oneOf" validation keyword.
  *
  * @author leadpony
  */
-@KeywordType("anyOf")
+@KeywordType("oneOf")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class AnyOf extends NaryBooleanLogic {
+public class OneOf extends NaryBooleanLogic {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -47,27 +47,25 @@ public class AnyOf extends NaryBooleanLogic {
      * @return the mapper for this keyword.
      */
     public static KeywordMapper mapper() {
-        KeywordMapper.FromSchemaList mapper = AnyOf::new;
+        KeywordMapper.FromSchemaList mapper = OneOf::new;
         return mapper;
     }
 
-    public AnyOf(JsonValue json, Collection<JsonSchema> subschemas) {
+    public OneOf(JsonValue json, Collection<JsonSchema> subschemas) {
         super(json, subschemas);
     }
 
     @Override
     protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
-        getSubschemas().distinct()
-                .map(s -> s.createEvaluator(context, type))
-                .forEach(evaluator::append);
-        return evaluator;
+        return Evaluators.exclusive(context, type,
+                getSubschemas().map(s -> s.createEvaluator(context, type)),
+                getSubschemas().map(s -> s.createNegatedEvaluator(context, type)));
     }
 
     @Override
     protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-        getSubschemas().distinct()
+        LogicalEvaluator evaluator = Evaluators.notExclusive(context, type);
+        getSubschemas()
                 .map(s -> s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;

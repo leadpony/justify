@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * A combiner representing "dependencies" keyword.
+ * A keyword type representing "dependencies".
  *
  * @author leadpony
  */
@@ -62,7 +62,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Dependencies extends Combiner implements ObjectKeyword {
+public class Dependencies extends Applicator implements ObjectKeyword {
 
     private final Map<String, Dependency> dependencyMap;
 

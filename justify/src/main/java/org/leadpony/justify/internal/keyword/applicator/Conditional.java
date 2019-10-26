@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.internal.keyword.applicator;
+
+import org.leadpony.justify.api.JsonSchema;
 
 /**
- * Provides validation keywords combining subschemas.
+ * A conditional keyword. This class is the abstract base class for {@link If},
+ * {@link Then} and {@link Else}.
  *
  * @author leadpony
  */
-package org.leadpony.justify.internal.keyword.combiner;
+abstract class Conditional extends UnaryCombiner {
+
+    protected Conditional(JsonSchema subschema) {
+        super(subschema);
+    }
+
+    @Override
+    public boolean isInPlace() {
+        return true;
+    }
+}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +35,7 @@ import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
  *
  * @author leadpony
  */
-abstract class NaryBooleanLogic extends Combiner {
+abstract class NaryBooleanLogic extends Applicator {
 
     private final List<JsonSchema> subschemas;
 

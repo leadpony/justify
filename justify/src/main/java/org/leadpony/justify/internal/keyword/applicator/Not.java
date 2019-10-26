@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
-
-import java.util.List;
-import java.util.Map;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import javax.json.JsonValue;
 
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
- * "Else" conditional keyword.
+ * Type representing "not" boolean logic.
  *
  * @author leadpony
  */
-@KeywordType("else")
+@KeywordType("not")
+@Spec(SpecVersion.DRAFT_04)
+@Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Else extends Conditional {
+public class Not extends UnaryCombiner {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -44,20 +44,26 @@ public class Else extends Conditional {
      * @return the mapper for this keyword.
      */
     public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = Else::new;
+        KeywordMapper.FromSchema mapper = Not::new;
         return mapper;
     }
 
-    public Else(JsonValue json, JsonSchema schema) {
-        super(schema);
+    public Not(JsonValue json, JsonSchema subschema) {
+        super(subschema);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Evaluation will be done by "if" keyword.
-     */
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
+    public boolean isInPlace() {
+        return true;
+    }
+
+    @Override
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        return getSubschema().createNegatedEvaluator(context, type);
+    }
+
+    @Override
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        return getSubschema().createEvaluator(context, type);
     }
 }

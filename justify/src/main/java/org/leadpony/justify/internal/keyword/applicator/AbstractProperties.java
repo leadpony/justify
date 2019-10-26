@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  *
  * @author leadpony
  */
-public abstract class AbstractProperties<K> extends Combiner implements ObjectKeyword {
+public abstract class AbstractProperties<K> extends Applicator implements ObjectKeyword {
 
     protected final Map<K, JsonSchema> propertyMap;
     private JsonSchema defaultSchema;

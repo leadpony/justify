@@ -42,7 +42,7 @@ import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.Unknown;
-import org.leadpony.justify.internal.keyword.combiner.Referenceable;
+import org.leadpony.justify.internal.keyword.applicator.Referenceable;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilder;

@@ -14,29 +14,39 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
- * Combiner operating on single subschema.
+ * A keyword containing referenceable subschema.
  *
  * @author leadpony
  */
-abstract class UnaryCombiner extends Combiner {
+public class Referenceable extends Applicator {
 
     private final JsonSchema subschema;
 
-    protected UnaryCombiner(JsonSchema subschema) {
-        super(subschema.toJson());
+    /**
+     * Constructs this keyword.
+     *
+     * @param name the name of this keyword.
+     * @param subschema the subschema contained by this keyword.
+     */
+    public Referenceable(String name, JsonSchema subschema) {
+        super(name, subschema.toJson());
         this.subschema = subschema;
     }
 
-    JsonSchema getSubschema() {
-        return subschema;
+    @Override
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 
     @Override

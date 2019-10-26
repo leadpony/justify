@@ -13,24 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword.combiner;
+
+package org.leadpony.justify.internal.keyword.applicator;
+
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
 
 /**
- * A conditional keyword. This class is the abstract base class for {@link If},
- * {@link Then} and {@link Else}.
+ * Combiner operating on single subschema.
  *
  * @author leadpony
  */
-abstract class Conditional extends UnaryCombiner {
+abstract class UnaryCombiner extends Applicator {
 
-    protected Conditional(JsonSchema subschema) {
-        super(subschema);
+    private final JsonSchema subschema;
+
+    protected UnaryCombiner(JsonSchema subschema) {
+        super(subschema.toJson());
+        this.subschema = subschema;
+    }
+
+    JsonSchema getSubschema() {
+        return subschema;
     }
 
     @Override
-    public boolean isInPlace() {
+    public boolean hasSubschemas() {
         return true;
+    }
+
+    @Override
+    public Stream<JsonSchema> getSubschemas() {
+        return Stream.of(subschema);
+    }
+
+    @Override
+    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
+        return subschema;
     }
 }

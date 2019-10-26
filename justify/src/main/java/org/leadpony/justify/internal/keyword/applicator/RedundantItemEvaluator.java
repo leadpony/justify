@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
 
 import javax.json.stream.JsonParser.Event;
 
@@ -29,22 +29,23 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 /**
  * @author leadpony
  */
-class RedundantPropertyEvaluator extends AbstractEvaluator {
+class RedundantItemEvaluator extends AbstractEvaluator {
 
-    private final String keyName;
+    private final int itemIndex;
     private final JsonSchema schema;
 
-    RedundantPropertyEvaluator(EvaluatorContext context, String keyName, JsonSchema schema) {
+    RedundantItemEvaluator(EvaluatorContext context, int itemIndex, JsonSchema schema) {
         super(context);
-        this.keyName = keyName;
+        assert schema.isBoolean() || schema == JsonSchema.EMPTY;
+        this.itemIndex = itemIndex;
         this.schema = schema;
     }
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(getContext())
-                .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_PROPERTY)
-                .withParameter("name", keyName)
+                .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_ITEM)
+                .withParameter("index", itemIndex)
                 .withSchema(schema)
                 .build();
         dispatcher.dispatchProblem(p);

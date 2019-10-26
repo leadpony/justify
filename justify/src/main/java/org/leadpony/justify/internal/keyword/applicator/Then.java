@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.combiner;
+package org.leadpony.justify.internal.keyword.applicator;
+
+import java.util.List;
+import java.util.Map;
 
 import javax.json.JsonValue;
 
-import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
- * Type representing "not" boolean logic.
+ * "Then" conditional keyword.
  *
  * @author leadpony
  */
-@KeywordType("not")
-@Spec(SpecVersion.DRAFT_04)
-@Spec(SpecVersion.DRAFT_06)
+@KeywordType("then")
 @Spec(SpecVersion.DRAFT_07)
-public class Not extends UnaryCombiner {
+public class Then extends Conditional {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -44,26 +44,20 @@ public class Not extends UnaryCombiner {
      * @return the mapper for this keyword.
      */
     public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = Not::new;
+        KeywordMapper.FromSchema mapper = Then::new;
         return mapper;
     }
 
-    public Not(JsonValue json, JsonSchema subschema) {
-        super(subschema);
+    public Then(JsonValue json, JsonSchema schema) {
+        super(schema);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Evaluation will be done by "if" keyword.
+     */
     @Override
-    public boolean isInPlace() {
-        return true;
-    }
-
-    @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return getSubschema().createNegatedEvaluator(context, type);
-    }
-
-    @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return getSubschema().createEvaluator(context, type);
+    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }
