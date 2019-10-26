@@ -237,6 +237,20 @@ JsonReaderFactory readerFactory = service.createReaderFactory(config.getAsMap())
 
 For more information, please see [the code sample](https://github.com/leadpony/justify-examples/tree/master/justify-examples-defaultvalue).
 
+## Building from Source
+
+The following tools are required to build this software.
+* [JDK] 11
+* [Apache Maven] 3.6.2 or higher
+
+The commands below build this software and install it into your local Maven repository.
+
+```bash
+$ git clone --recursive https://github.com/leadpony/justify.git
+$ cd justify
+$ mvn clean install -P release
+```
+
 ## Similar Solutions
 
 There exist several JSON validator implementations conformant to the JSON Schema Specification, including those for other programming languages. [The list of implementations] is available on the JSON Schema web site.
@@ -244,24 +258,24 @@ There exist several JSON validator implementations conformant to the JSON Schema
 ## Copyright Notice
 Copyright &copy; 2018-2019 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
-[JSON Schema Specification]: https://json-schema.org/
+[Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
+[Apache Johnzon]: https://johnzon.apache.org/
+[Apache Maven]: https://maven.apache.org/
+[API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
+[Changelog]: CHANGELOG.md
+[everit-org/json-schema]: https://github.com/everit-org/json-schema
+[Jakarta JSON Processing]: https://github.com/eclipse-ee4j/jsonp
 [Java API for JSON Processing (JSR 374)]: https://eclipse-ee4j.github.io/jsonp/
 [Java API for JSON Binding (JSR 367)]: http://json-b.net/
-[JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
-[Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
-[Justify Examples]: https://github.com/leadpony/justify-examples
-[Justify CLI]: https://github.com/leadpony/justify-cli
-[API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
-[Maven Central Repository]: https://mvnrepository.com/repos/central
-[Jakarta JSON Processing]: https://github.com/eclipse-ee4j/jsonp
-[Apache Johnzon]: https://johnzon.apache.org/
-[Joy]: https://github.com/leadpony/joy
-[The list of implementations]: https://json-schema.org/implementations.html  
-[Releases]: https://github.com/leadpony/justify/releases/latest
-[Changelog]: CHANGELOG.md
-
-[everit-org/json-schema]: https://github.com/everit-org/json-schema
 [java-json-tools/json-schema-validator]: https://github.com/java-json-tools/json-schema-validator
-[networknt/json-schema-validator]: https://github.com/networknt/json-schema-validator
-
+[JDK]: https://jdk.java.net/
+[Joy]: https://github.com/leadpony/joy
 [JSON Schema Conformance Test]: https://github.com/leadpony/json-schema-conformance-test
+[JSON Schema Specification]: https://json-schema.org/
+[JSON Schema Test Suite]: https://github.com/json-schema-org/JSON-Schema-Test-Suite
+[Justify CLI]: https://github.com/leadpony/justify-cli
+[Justify Examples]: https://github.com/leadpony/justify-examples
+[Maven Central Repository]: https://mvnrepository.com/repos/central
+[networknt/json-schema-validator]: https://github.com/networknt/json-schema-validator
+[Releases]: https://github.com/leadpony/justify/releases/latest
+[The list of implementations]: https://json-schema.org/implementations.html  
