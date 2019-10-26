@@ -93,9 +93,18 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
             filterdLists = this.problemLists;
         }
         ProblemBuilder builder = createProblemBuilder(getContext())
-                .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
+                .withMessage(getMessage())
                 .withBranches(filterdLists);
         dispatcher.dispatchProblem(builder.build());
+    }
+
+    /**
+     * Returns the problem message.
+     *
+     * @return the problem message.
+     */
+    protected Message getMessage() {
+        return Message.INSTANCE_PROBLEM_ANYOF;
     }
 
     protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {

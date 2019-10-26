@@ -27,6 +27,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
@@ -43,8 +44,6 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_07)
 public class Contains extends UnaryCombiner implements ArrayKeyword {
 
-    private int min;
-
     /**
      * Returns the mapper which maps a JSON value to this keyword.
      *
@@ -57,25 +56,16 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
 
     public Contains(JsonValue json, JsonSchema subschema) {
         super(subschema);
-        this.min = 1;
     }
 
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        if (this.min == 1) {
-            return createItemsEvaluator(context);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return createItemsEvaluator(context);
     }
 
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        if (this.min == 1) {
-            return createNegatedItemsEvaluator(context);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return createNegatedItemsEvaluator(context);
     }
 
     private Evaluator createItemsEvaluator(EvaluatorContext context) {
@@ -87,6 +77,11 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
                     append(subschema.createEvaluator(context, type));
                 }
+            }
+
+            @Override
+            protected Message getMessage() {
+                return Message.INSTANCE_PROBLEM_CONTAINS;
             }
         };
     }
