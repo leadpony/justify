@@ -1,0 +1,104 @@
+{
+    "oneOf": [
+        {
+            "required": ["foo"]
+        },
+        {
+            "required": ["bar"]
+        }
+    ]
+}
+---
+{
+    "foo": 42
+}
+---
+[]
+---
+{
+    "oneOf": [
+        {
+            "properties": {
+                "foo": {
+                    "type": "integer"
+                }
+            },
+            "required": ["bar"]
+        }
+    ]
+}
+---
+{
+    "foo": "hello"
+}
+---
+[
+    {
+        "location": [3, 1],
+        "pointer": "",
+        "keyword": "oneOf",
+        "branches": [
+            [
+                {
+                    "location": [2, 18],
+                    "pointer": "/foo",
+                    "keyword": "type"
+                },
+                {
+                    "location": [3, 1],
+                    "pointer": "",
+                    "keyword": "required"
+                }
+            ]
+        ]
+    }
+]
+---
+{
+    "oneOf": [
+        {
+            "properties": {
+                "foo": {
+                    "type": "integer"
+                }
+            },
+            "required": ["foo"]
+        },
+        {
+            "properties": {
+                "bar": {
+                    "type": "string"
+                }
+            },
+            "required": ["bar"]
+        }
+    ]
+}
+---
+{
+    "foo": "hello"
+}
+---
+[
+    {
+        "location": [3, 1],
+        "pointer": "",
+        "keyword": "oneOf",
+        "branches": [
+            [
+                {
+                    "location": [2, 18],
+                    "pointer": "/foo",
+                    "keyword": "type"
+                }
+            ],
+            [
+                {
+                    "location": [3, 1],
+                    "pointer": "",
+                    "keyword": "required"
+                }
+            ]
+        ]
+    }
+]

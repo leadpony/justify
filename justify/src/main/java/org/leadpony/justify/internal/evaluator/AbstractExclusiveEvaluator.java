@@ -42,14 +42,10 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
         if (filteredLists.isEmpty()) {
             filteredLists = problemLists;
         }
-        if (filteredLists.size() == 1) {
-            dispatcher.dispatchAllProblems(filteredLists.get(0));
-        } else {
-            ProblemBuilder builder = createProblemBuilder(getContext())
-                    .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
-                    .withBranches(filteredLists);
-            dispatcher.dispatchProblem(builder.build());
-        }
+        ProblemBuilder builder = createProblemBuilder(getContext())
+                .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
+                .withBranches(filteredLists);
+        dispatcher.dispatchProblem(builder.build());
     }
 
     protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {

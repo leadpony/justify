@@ -1,0 +1,77 @@
+{
+    "allOf": [
+        {
+            "required": ["foo"]
+        },
+        {
+            "required": ["bar"]
+        }
+    ]
+}
+---
+{
+    "foo": 1,
+    "bar": 2
+}
+---
+[]
+---
+{
+    "allOf": [
+        {
+            "required": ["foo"]
+        },
+        {
+            "required": ["bar"]
+        }
+    ]
+}
+---
+{
+    "foo": 1
+}
+---
+[
+    {
+        "location": [3, 1],
+        "pointer": "",
+        "keyword": "required"
+    }
+]
+---
+{
+    "allOf": [
+        {
+            "properties": {
+                "foo": {
+                    "maximum": 20
+                }
+            }
+        },
+        {
+            "properties": {
+                "bar": {
+                    "minimum": 10
+                }
+            }
+        }
+    ]
+}
+---
+{
+    "foo": 25,
+    "bar": 5
+}
+---
+[
+    {
+        "location": [2, 13],
+        "pointer": "/foo",
+        "keyword": "maximum"
+    },
+    {
+        "location": [3, 12],
+        "pointer": "/bar",
+        "keyword": "minimum"
+    }
+]

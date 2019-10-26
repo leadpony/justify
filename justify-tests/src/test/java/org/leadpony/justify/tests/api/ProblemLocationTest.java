@@ -62,6 +62,8 @@ public class ProblemLocationTest {
     @MultiJsonSource({
         "problem/additionalItems.txt",
         "problem/additionalProperties.txt",
+        "problem/allOf.txt",
+        "problem/anyOf.txt",
         "problem/contains.txt",
         "problem/format.txt",
         "problem/items.txt",
@@ -71,6 +73,7 @@ public class ProblemLocationTest {
         "problem/minimum.txt",
         "problem/minItems.txt",
         "problem/minProperties.txt",
+        "problem/oneOf.txt",
         "problem/patternProperties.txt",
         "problem/properties.txt",
         "problem/propertyNames.txt",
@@ -88,12 +91,12 @@ public class ProblemLocationTest {
             reader.readValue();
         }
 
-        checkProblems(actual, expected);
-
         if (!actual.isEmpty()) {
             log.info(displayName);
             printer.print(actual);
         }
+
+        checkProblems(actual, expected);
     }
 
     private static void checkProblems(List<Problem> actual, List<ExpectedProblem> expected) {
