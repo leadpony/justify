@@ -72,7 +72,7 @@ public class ProblemTest {
     @Test
     public void getMessageShouldReturnDifferentMessageByLocale() {
         Problem problem = createProblem(SCHEMA, INSTANCE);
-        String message1 = problem.getMessage(Locale.ENGLISH);
+        String message1 = problem.getMessage(Locale.ROOT);
         String message2 = problem.getMessage(Locale.JAPANESE);
 
         assertThat(message1).isNotEmpty();
