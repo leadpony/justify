@@ -74,6 +74,7 @@ public final class JsonInstanceBuilder {
         case VALUE_NULL:
             return JsonValue.NULL;
         case VALUE_STRING:
+        case KEY_NAME:
             return parser.getValue();
         case VALUE_NUMBER:
             return new BigDecimalJsonNumber(parser.getBigDecimal());
@@ -116,6 +117,7 @@ public final class JsonInstanceBuilder {
             case VALUE_NULL:
             case VALUE_NUMBER:
             case VALUE_STRING:
+            case KEY_NAME:
                 append(getLiteral(event, parser));
                 break;
             default:

@@ -1,0 +1,28 @@
+[
+    {
+        "description": "propertyNames with enum",
+        "schema": {
+            "type": "object",
+            "propertyNames": {
+                "enum": ["foo", "bar", "baz"]
+            }
+        },
+        "tests": [
+            {
+                "description": "property in enum",
+                "data": {
+                    "foo": "hello",
+                    "bar": 365
+                },
+                "valid": true
+            },
+            {
+                "description": "property not in enum",
+                "data": {
+                    "qux": true
+                },
+                "valid": false
+            }
+        ]
+    }
+]

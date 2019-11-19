@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * The problem messages are translated into Simplified Chinese by [@letui](https://github.com/letui).
 
+### Fixed
+* A bug which was causing `AssertionError` when `enum` keyword is used in `propertyNames` keyword. (Issue #38 reported by @DMittenMalwareBytes)
+
 ## 1.1.0 - 2019-08-16
 ### Added
 - `printProblems(PrintStream)` and `printProblems(PrintWriter)` methods to `JsonValidatingException` class.

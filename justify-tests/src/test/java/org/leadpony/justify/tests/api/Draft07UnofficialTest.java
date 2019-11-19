@@ -31,6 +31,7 @@ public class Draft07UnofficialTest extends AbstractOfficialTest {
     private static final String[] MANDATORY = {
             "/org/leadpony/justify/tests/api/instance/additionalProperties.json",
             "/org/leadpony/justify/tests/api/instance/if-then-else.json",
+            "/org/leadpony/justify/tests/api/instance/propertyNames.json",
     };
 
     public static Stream<Fixture> mandatory() {
