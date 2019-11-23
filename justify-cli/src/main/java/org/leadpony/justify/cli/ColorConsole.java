@@ -22,7 +22,7 @@ import java.io.PrintStream;
  *
  * @author leadpony
  */
-public class ColorConsole extends Console {
+class ColorConsole extends Console {
 
     private static final String RESET = "\u001b[0m";
 

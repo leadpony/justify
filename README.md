@@ -30,13 +30,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation group: 'org.leadpony.justify', name: 'justify', version: '1.1.0'
+implementation group: 'org.leadpony.justify', name: 'justify', version: '2.0.0'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -59,14 +59,14 @@ Please add exactly one dependency to your build as shown below.
     <groupId>org.glassfish</groupId>
     <artifactId>jakarta.json</artifactId>
     <classifier>module</classifier>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly group: 'org.glassfish', name: 'jakarta.json', classifier: 'module', version: '1.1.5'
+runtimeOnly group: 'org.glassfish', name: 'jakarta.json', classifier: 'module', version: '1.1.6'
 ```
 
 Please note that the classifier `module` is required when using this implementation.
@@ -77,14 +77,14 @@ Please note that the classifier `module` is required when using this implementat
 <dependency>
     <groupId>org.apache.johnzon</groupId>
     <artifactId>johnzon-core</artifactId>
-    <version>1.1.12</version>
+    <version>1.2.1</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly group: 'org.apache.johnzon', name: 'johnzon-core', version: '1.1.12'
+runtimeOnly group: 'org.apache.johnzon', name: 'johnzon-core', version: '1.2.1'
 ```
 
 #### Joy
@@ -93,14 +93,14 @@ runtimeOnly group: 'org.apache.johnzon', name: 'johnzon-core', version: '1.1.12'
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly group: 'org.leadpony.joy', name: 'joy', version: '1.1.0'
+runtimeOnly group: 'org.leadpony.joy', name: 'joy', version: '1.2.0'
 ```
 
 ### Using with the Streaming API of JSON Processing

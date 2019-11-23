@@ -32,6 +32,12 @@ public class Launcher {
 
     public static final String PROPERTY_USE_JANSI = "org.leadpony.justify.cli.use.jansi";
 
+    /**
+     * Launches the problem.
+     *
+     * @param args the arguments given to this program.
+     * @return the status code of this problem.
+     */
     public Status launch(String[] args) {
         return launch(new LinkedList<>(Arrays.asList(args)));
     }

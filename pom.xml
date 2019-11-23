@@ -7,7 +7,7 @@
 
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <name>org.leadpony.justify.parent</name>
 
@@ -245,7 +245,7 @@
             <properties>
                 <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
                 <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.1.13</jsonp.provider.version>
+                <jsonp.provider.version>1.2.1</jsonp.provider.version>
                 <jsonp.provider.classifier></jsonp.provider.classifier>
             </properties>
         </profile>
