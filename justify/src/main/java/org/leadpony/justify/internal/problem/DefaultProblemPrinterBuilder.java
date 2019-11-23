@@ -42,7 +42,7 @@ public class DefaultProblemPrinterBuilder implements ProblemPrinterBuilder {
     @Override
     public ProblemHandler build() {
         LineFormat format = LineFormat.get(location, pointer);
-        ProblemRenderer renderer = new DefaultProblemRenderer(format);
+        ProblemRenderer renderer = new BasicProblemRenderer(format);
         return new ProblemPrinter(renderer, lineConsumer, locale);
     }
 

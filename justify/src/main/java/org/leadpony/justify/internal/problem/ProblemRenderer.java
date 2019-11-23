@@ -25,7 +25,8 @@ import org.leadpony.justify.api.Problem;
  */
 public interface ProblemRenderer {
 
-    ProblemRenderer DEFAULT_RENDERER = new DefaultProblemRenderer(LineFormat.FULL);
+//    ProblemRenderer DEFAULT_RENDERER = new DefaultProblemRenderer(LineFormat.FULL);
+    ProblemRenderer DEFAULT_RENDERER = new BasicProblemRenderer(LineFormat.FULL);
 
     void render(Problem problem, Locale locale, Consumer<String> consumer);
 
