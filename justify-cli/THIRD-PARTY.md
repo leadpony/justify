@@ -12,14 +12,12 @@
     You may obtain a copy of the License at
     <http://www.apache.org/licenses/LICENSE-2.0>
 
-- JSR 374 (JSON Processing) API
+- Jakarta JSON Processing API
   > Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
     <http://www.eclipse.org/legal/epl-2.0>.
 
-- JSR 374 (JSON Processing) Default Provider
-  > Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
-    This program and the accompanying materials are made available under the
-    terms of the Eclipse Public License v. 2.0, which is available at
-    <http://www.eclipse.org/legal/epl-2.0>.
+- Joy
+  > Copyright 2019 the Joy Authors.
+  This software is licensed under the Apache License, Versions 2.0.
