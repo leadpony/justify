@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * The problem messages are translated into Simplified Chinese by [@letui](https://github.com/letui).
 
+### Changed
+* All the branching problems are now preserved even when they have only one branch of problems (Issue #37 reported by @adityamandhare).
+* Problem printers built with `ProblemPrinterBuilder` now skip intermediate problems if and only if they have only one branch of problems.
+* Revised the problem message emitted by `contains` keyword.
+
 ### Fixed
 * A bug which was causing `AssertionError` when `enum` keyword is used in `propertyNames` keyword. (Issue #38 reported by @DMittenMalwareBytes)
 
