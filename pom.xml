@@ -54,7 +54,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.13.2</version>
+                <version>3.14.0</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.json</groupId>
@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>9.4.21.v20190926</version>
+                <version>9.4.23.v20191118</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -101,7 +101,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -145,7 +145,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
