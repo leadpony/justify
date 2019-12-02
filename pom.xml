@@ -90,7 +90,7 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>9.4.23.v20191118</version>
+                <version>9.4.24.v20191120</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
