@@ -16,6 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
+import com.ibm.icu.lang.UCharacter;
+import com.ibm.icu.lang.UProperty;
+
 /**
  * {@link RegExpMatcher} for non unicode mode.
  * <p>
@@ -37,7 +40,7 @@ class NonUnicodeRegExpMatcher extends RegExpMatcher {
 
     @Override
     protected boolean identityEscape() {
-        if (hasNext() && !Character.isUnicodeIdentifierPart(peek())) {
+        if (hasNext() && !isUnicodeIDContinue(peek())) {
             // SourceCharacter but not UnicodeIDContinue
             return withClassAtomOf(next());
         }
@@ -52,5 +55,9 @@ class NonUnicodeRegExpMatcher extends RegExpMatcher {
     @Override
     protected int offsetByCodePoint(CharSequence input, int index) {
         return index + 1;
+    }
+
+    private static boolean isUnicodeIDContinue(int ch) {
+        return UCharacter.hasBinaryProperty(ch, UProperty.ID_CONTINUE);
     }
 }

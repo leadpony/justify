@@ -52,22 +52,22 @@ class Regex extends AbstractFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return testUnicode(value);
+        return testWithoutUnicodeFlag(value);
     }
 
     public boolean test(String value, String flags) {
         if (flags.indexOf('u') >= 0) {
-            return testUnicode(value);
+            return testWithUnicodeFlag(value);
         } else {
-            return testNonUnicode(value);
+            return testWithoutUnicodeFlag(value);
         }
     }
 
-    private boolean testUnicode(String value) {
+    private boolean testWithUnicodeFlag(String value) {
         return new UnicodeRegExpMatcher(value).matches();
     }
 
-    private boolean testNonUnicode(String value) {
+    private boolean testWithoutUnicodeFlag(String value) {
         return new NonUnicodeRegExpMatcher(value).matches();
     }
 }
