@@ -42,13 +42,14 @@ public abstract class JsonValidationProvider {
      * @throws JsonException if there is no provider found.
      */
     public static JsonValidationProvider provider() {
-        ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class);
-        Iterator<JsonValidationProvider> it = loader.iterator();
-        if (it.hasNext()) {
-            return it.next();
-        } else {
-            throw new JsonException("JSON validation provider was not found.");
+        JsonValidationProvider provider = loadProvider(Thread.currentThread().getContextClassLoader());
+        if (provider == null) {
+            provider = loadProvider(JsonValidationProvider.class.getClassLoader());
+            if (provider == null) {
+                throw new JsonException("JSON validation provider was not found.");
+            }
         }
+        return provider;
     }
 
     /**
@@ -64,4 +65,13 @@ public abstract class JsonValidationProvider {
      * @throws JsonException if an error is encountered while creating the instance.
      */
     public abstract JsonValidationService createService();
+
+    private static JsonValidationProvider loadProvider(ClassLoader classLoader) {
+        ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class, classLoader);
+        Iterator<JsonValidationProvider> it = loader.iterator();
+        if (it.hasNext()) {
+            return it.next();
+        }
+        return null;
+    }
 }
