@@ -32,6 +32,7 @@ import org.leadpony.justify.tests.api.AbstractOfficialTest;
  */
 @EnabledOnJre(JRE.JAVA_8)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class CustomFormatAttributeTest extends AbstractOfficialTest {
 
     private static final String[] FILES = {

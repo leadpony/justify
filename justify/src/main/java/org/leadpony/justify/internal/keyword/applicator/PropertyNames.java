@@ -46,6 +46,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @KeywordType("propertyNames")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class PropertyNames extends UnaryCombiner {
 
     /**

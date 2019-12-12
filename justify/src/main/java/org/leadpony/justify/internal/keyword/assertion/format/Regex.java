@@ -38,6 +38,7 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class Regex extends AbstractFormatAttribute {
 
     @Override

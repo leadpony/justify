@@ -30,6 +30,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
  */
 @KeywordType("$comment")
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class Comment extends AbstractMetadataKeyword<String> {
 
     public static KeywordMapper mapper() {

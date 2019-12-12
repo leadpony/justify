@@ -30,6 +30,7 @@ import org.leadpony.justify.internal.base.Message;
  * @author leadpony
  */
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class Date extends AbstractFormatAttribute {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;

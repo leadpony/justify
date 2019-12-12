@@ -39,7 +39,11 @@ public enum SpecVersion {
     /**
      * JSON Schema specification of Draft-07.
      */
-    DRAFT_07("http://json-schema.org/draft-07/schema#");
+    DRAFT_07("http://json-schema.org/draft-07/schema#"),
+    /**
+     * AJV Extension.
+     */
+    AJV_EXTENSION_PROPOSAL("https://ajv.js.org/keywords.html");
 
     private static final Map<URI, SpecVersion> VERSION_MAP = Stream.of(SpecVersion.values())
             .collect(Collectors.toMap(SpecVersion::id, Function.identity()));
@@ -66,7 +70,7 @@ public enum SpecVersion {
      * @return the current stable version.
      */
     public static SpecVersion current() {
-        return DRAFT_07;
+        return AJV_EXTENSION_PROPOSAL;
     }
 
     /**

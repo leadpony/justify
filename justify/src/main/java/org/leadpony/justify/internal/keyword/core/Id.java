@@ -34,6 +34,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(value = SpecVersion.DRAFT_04, name = "id")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class Id extends AbstractMetadataKeyword<URI> {
 
     public static KeywordMapper mapper(String name) {

@@ -32,6 +32,7 @@ import org.leadpony.justify.internal.base.Message;
  */
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class UriReference extends AbstractFormatAttribute {
 
     private final boolean verbose;

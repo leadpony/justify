@@ -30,6 +30,7 @@ import org.leadpony.justify.internal.base.Message;
  * @author leadpony
  */
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class Time extends AbstractFormatAttribute {
 
     private static final Pattern LOCAL_TIME_PATTERN = Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");

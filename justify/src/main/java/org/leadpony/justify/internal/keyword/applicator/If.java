@@ -40,6 +40,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 @KeywordType("if")
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class If extends Conditional {
 
     private JsonSchema thenSchema;

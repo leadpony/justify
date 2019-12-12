@@ -34,6 +34,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @KeywordType("exclusiveMaximum")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
 
     /**

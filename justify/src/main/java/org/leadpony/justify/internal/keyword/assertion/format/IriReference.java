@@ -30,6 +30,7 @@ import org.leadpony.justify.internal.base.Message;
  *      "Internationalized Resource Identifiers (IRIs)", RFC 3987</a>
  */
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class IriReference extends AbstractFormatAttribute {
 
     @Override

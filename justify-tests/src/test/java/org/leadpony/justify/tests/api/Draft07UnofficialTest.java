@@ -26,6 +26,7 @@ import org.leadpony.justify.internal.annotation.Spec;
  * @author leadpony
  */
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class Draft07UnofficialTest extends AbstractOfficialTest {
 
     private static final String[] MANDATORY = {

@@ -29,6 +29,7 @@ import org.leadpony.justify.internal.base.Message;
  * @see <a href="https://tools.ietf.org/html/rfc6531">RFC 6531</a>
  */
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 class IdnEmail extends Email {
 
     @Override

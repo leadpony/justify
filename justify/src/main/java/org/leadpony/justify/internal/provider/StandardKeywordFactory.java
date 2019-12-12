@@ -51,8 +51,12 @@ import org.leadpony.justify.internal.keyword.assertion.Const;
 import org.leadpony.justify.internal.keyword.assertion.Draft04Maximum;
 import org.leadpony.justify.internal.keyword.assertion.Draft04Minimum;
 import org.leadpony.justify.internal.keyword.assertion.Draft04Type;
+import org.leadpony.justify.internal.keyword.assertion.ExclusiveFormatMaximum;
+import org.leadpony.justify.internal.keyword.assertion.ExclusiveFormatMinimum;
 import org.leadpony.justify.internal.keyword.assertion.ExclusiveMaximum;
 import org.leadpony.justify.internal.keyword.assertion.ExclusiveMinimum;
+import org.leadpony.justify.internal.keyword.assertion.FormatMaximum;
+import org.leadpony.justify.internal.keyword.assertion.FormatMinimum;
 import org.leadpony.justify.internal.keyword.assertion.MaxItems;
 import org.leadpony.justify.internal.keyword.assertion.MaxLength;
 import org.leadpony.justify.internal.keyword.assertion.MaxProperties;
@@ -132,6 +136,12 @@ class StandardKeywordFactory implements KeywordFactory {
             Title.class,
             Type.class,
             UniqueItems.class,
+
+            // AJV extension
+            FormatMinimum.class,
+            FormatMaximum.class,
+            ExclusiveFormatMinimum.class,
+            ExclusiveFormatMaximum.class,
     };
 
     private final Map<String, KeywordMapper> mappers;

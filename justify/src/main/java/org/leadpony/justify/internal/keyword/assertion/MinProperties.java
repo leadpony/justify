@@ -42,6 +42,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class MinProperties extends AbstractAssertion implements ObjectKeyword {
 
     private final int limit;

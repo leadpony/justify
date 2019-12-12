@@ -49,6 +49,7 @@ import org.leadpony.justify.spi.ContentMimeType;
  */
 @KeywordType("contentMediaType")
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class ContentMediaType extends AbstractAssertion {
 
     private final ContentMimeType mimeType;

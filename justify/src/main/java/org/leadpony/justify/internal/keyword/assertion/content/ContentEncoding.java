@@ -43,6 +43,7 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
  */
 @KeywordType("contentEncoding")
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class ContentEncoding extends AbstractAssertion {
 
     private final ContentEncodingScheme scheme;

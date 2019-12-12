@@ -36,6 +36,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 @KeywordType("else")
 @Spec(SpecVersion.DRAFT_07)
+@Spec(SpecVersion.AJV_EXTENSION_PROPOSAL)
 public class Else extends Conditional {
 
     /**
