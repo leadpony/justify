@@ -1,9 +1,0 @@
-language: java
-jdk:
-    - openjdk11
-script:
-    - mvn package
-    - cd justify-cli/target
-    - tar xzf justify-cli-*.tar.gz
-    - cd justify-cli
-    - ./justify -s examples/person.schema.json -i examples/person.json

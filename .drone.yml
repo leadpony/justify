@@ -1,0 +1,94 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: compile
+    image: maven:3.6.2-jdk-11-slim
+    environment:
+      LOCAL_REPO: ${DRONE_WORKSPACE}
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - mvn --settings settings.xml --no-transfer-progress clean compile
+    when:
+      event:
+        - pull_request
+
+  - name: code analysis
+    image: maven:3.6.2-jdk-11-slim
+    environment:
+      LOCAL_REPO: ${DRONE_WORKSPACE}
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - mvn --settings settings.xml --no-transfer-progress validate
+    when:
+      event:
+        - pull_request
+
+  - name: unit tests
+    image: maven:3.6.2-jdk-11-slim
+    environment:
+      LOCAL_REPO: ${DRONE_WORKSPACE}
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - mvn --settings settings.xml test  -DskipChecks=true
+    when:
+      event:
+        - pull_request
+
+  - name: build maven snapshot
+    image: maven:3.6.2-jdk-11-slim
+    environment:
+      LOCAL_REPO: ${DRONE_WORKSPACE}
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - mvn --settings settings.xml install -DskipChecks -DskipTests
+    when:
+      ref:
+        - pull_request
+
+  - name: build and publish maven snapshot to nexus
+    image: nexus.wfm.talkdeskstg.com:9001/docker-maven-base:3.6.0-jdk-11
+    environment:
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - mvn --settings settings.xml clean install deploy
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: build and publish maven release to nexus
+    image: nexus.wfm.talkdeskstg.com:9001/docker-maven-base:3.6.0-jdk-11
+    environment:
+      REPO_USERNAME:
+        from_secret: NEXUS_USER
+      REPO_PASSWORD:
+        from_secret: NEXUS_PASSWORD
+    commands:
+      - apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends git ssh-client && apt-get clean && rm -rf /var/lib/apt/lists/*
+      - git config --global user.email "drone-ci@talkdesk.com"
+      - git config --global user.name "Drone CI"
+      - git config --global url."https://$GH_TOKEN@github.com/talkdesk-tdx/".insteadOf "https://github.com/talkdesk-tdx/"
+      - mvn --settings settings.xml -B release:prepare release:perform
+      - git push --set-upstream origin master && git push --set-upstream origin master --tags
+    when:
+      event:
+        - promote
+      environment:
+        - release
