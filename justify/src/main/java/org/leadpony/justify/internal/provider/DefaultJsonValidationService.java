@@ -138,6 +138,14 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      * {@inheritDoc}
      */
     @Override
+    public JsonSchemaReader createSchemaReader(JsonParser parser) {
+        return createSchemaReaderFactory().createSchemaReader(parser);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
         return createDefaultSchemaBuilderFactory();
     }
@@ -240,6 +248,17 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      * {@inheritDoc}
      */
     @Override
+    public JsonParser createParser(JsonParser parser, JsonSchema schema, ProblemHandler handler) {
+        requireNonNull(parser, "parser");
+        requireNonNull(schema, "schema");
+        requireNonNull(handler, "handler");
+        return createValidator(parser, schema, handler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public JsonReaderFactory createReaderFactory(Map<String, ?> config) {
         if (config == null) {
             config = Collections.emptyMap();
@@ -301,6 +320,15 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     @Override
     public JsonReader createReader(Path path, JsonSchema schema, ProblemHandler handler) {
         JsonParser parser = createParser(path, schema, handler);
+        return createReader(parser);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonReader createReader(JsonParser parser, JsonSchema schema, ProblemHandler handler) {
+        JsonParser validatingParser = createParser(parser, schema, handler);
         return createReader(parser);
     }
 

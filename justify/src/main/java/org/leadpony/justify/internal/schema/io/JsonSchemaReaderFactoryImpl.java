@@ -118,6 +118,13 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
         }
     }
 
+    @Override
+    public JsonSchemaReader createSchemaReader(JsonParser parser) {
+        requireNonNull(parser, "parser");
+        SchemaSpec spec = getSpec(defaultVersion);
+        return createSpecificSchemaReader(parser, spec);
+    }
+
     /**
      * Returns the instance of {@link SchemaSpec} for the specified version.
      *

@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 
 import javax.json.JsonException;
+import javax.json.stream.JsonParser;
 
 /**
  * A factory interface for creating {@link JsonSchemaReader} instances.
@@ -97,4 +98,13 @@ public interface JsonSchemaReaderFactory {
      * @see JsonSchemaReader
      */
     JsonSchemaReader createSchemaReader(Path path);
+
+    /**
+     * Creates a JSON schema reader from a specific parser.
+     *
+     * @param parser the parser to use to read the schema.
+     * @throws NullPointerException if the specified {@code in} is {@code null}.
+     * @see JsonSchemaReader
+     */
+    JsonSchemaReader createSchemaReader(JsonParser parser);
 }

@@ -176,6 +176,22 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     }
 
     /**
+     * Reads a JSON schema from a specified non-validating parser.
+     *
+     * @param parser the parser to reader from
+     * @return the read JSON schema.
+     * @throws NullPointerException    if the specified {@code parser} is
+     *                                 {@code null}.
+     * @throws JsonValidatingException if the reader found problems during
+     *                                 validation of the schema.
+     */
+    default JsonSchema readSchema(JsonParser parser) {
+        try (JsonSchemaReader schemaReader = createSchemaReader(parser)) {
+            return schemaReader.read();
+        }
+    }
+
+    /**
      * Creates a factory for creating JSON schema builders.
      *
      * @return the newly created instance of JSON schema builder factory.
@@ -302,6 +318,22 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonParser createParser(Path path, JsonSchema schema, ProblemHandler handler);
 
     /**
+     * Creates a JSON parser from the specified not validating parser, which validates
+     * the JSON document while parsing.
+     *
+     * @param parser  the parser from which JSON is to be read.
+     * @param schema  the JSON schema to apply when validating JSON document.
+     * @param handler the object which handles problems found during the validation,
+     *                cannot be {@code null}.
+     * @return newly created instance of {@code JsonParser}, which is defined in the
+     *         JSON Processing API. It must be closed by the method caller after
+     *         use.
+     * @throws JsonException        if an I/O error occurs while creating parser.
+     * @throws NullPointerException if any of specified parameters is {@code null}.
+     */
+    JsonParser createParser(JsonParser parser, JsonSchema schema, ProblemHandler handler);
+
+    /**
      * Creates a reader factory for creating {@code JsonReader} instances. Readers
      * created by the factory can validate JSON documents while reading.
      * <p>
@@ -402,6 +434,22 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
      * @throws NullPointerException if any of specified parameters is {@code null}.
      */
     JsonReader createReader(Path path, JsonSchema schema, ProblemHandler handler);
+
+    /**
+     * Creates a JSON reader from a non-validating JSON parser, which validates the
+     * JSON document while reading.
+     *
+     * @param parser  the parser from which JSON is to be read.
+     * @param schema  the JSON schema to apply when validating JSON document.
+     * @param handler the object which handles problems found during the validation,
+     *                cannot be {@code null}.
+     * @return newly created instance of {@code JsonReader}, which is defined in the
+     *         JSON Processing API. It must be closed by the method caller after
+     *         use.
+     * @throws JsonException        if an I/O error occurs while creating reader.
+     * @throws NullPointerException if any of specified parameters is {@code null}.
+     */
+    JsonReader createReader(JsonParser parser, JsonSchema schema, ProblemHandler handler);
 
     /**
      * Creates a JSON provider for validating JSON documents while parsing and
