@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,7 +329,7 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     @Override
     public JsonReader createReader(JsonParser parser, JsonSchema schema, ProblemHandler handler) {
         JsonParser validatingParser = createParser(parser, schema, handler);
-        return createReader(parser);
+        return createReader(validatingParser);
     }
 
     /**

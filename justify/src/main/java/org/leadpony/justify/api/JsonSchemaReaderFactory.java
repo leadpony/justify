@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,9 @@ public interface JsonSchemaReaderFactory {
      * Creates a JSON schema reader from a specific parser.
      *
      * @param parser the parser to use to read the schema.
-     * @throws NullPointerException if the specified {@code in} is {@code null}.
+     * @return newly created instance of JSON schema reader. It must be closed by
+     *         the method caller after use.
+     * @throws NullPointerException if the specified {@code parser} is {@code null}.
      * @see JsonSchemaReader
      */
     JsonSchemaReader createSchemaReader(JsonParser parser);

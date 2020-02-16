@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,7 +178,9 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     /**
      * Reads a JSON schema from a specified non-validating parser.
      *
-     * @param parser the parser to reader from
+     * @param parser the parser from which a JSON schema is to be read.
+     *               The specified parser will be closed automatically in this
+     *               method.
      * @return the read JSON schema.
      * @throws NullPointerException    if the specified {@code parser} is
      *                                 {@code null}.
