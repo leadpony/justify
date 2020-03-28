@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.condition.EnabledOnJre;
@@ -39,24 +40,27 @@ public class IdnPropertyTest {
     private static final String TABLE_6_2_0 = "/org/iana/idna-tables-properties-" + getUnicodeVersion() + ".csv";
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("fixtures")
+    @MethodSource("testCases")
     @EnabledOnJre(JRE.JAVA_8)
-    public void ofShouldReturnIdnPropertyAsExpected(Fixture fixture) {
-        for (int codePoint = fixture.startCodePoint; codePoint <= fixture.endCodePoint; codePoint++) {
+    public void ofShouldReturnIdnPropertyAsExpected(TestCase test) {
+        for (int codePoint = test.startCodePoint; codePoint <= test.endCodePoint; codePoint++) {
             IdnProperty actual = IdnProperty.of(codePoint);
-            assertThat(actual).isEqualTo(fixture.expected);
+            assertThat(actual).isEqualTo(test.expected);
         }
     }
 
-    public static Stream<Fixture> fixtures() throws IOException {
+    public static Stream<TestCase> testCases() throws IOException {
         InputStream in = IdnPropertyTest.class.getResourceAsStream(TABLE_6_2_0);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        return reader.lines()
-                .skip(1) // Skips header line.
-                .map(IdnPropertyTest::mapLine);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            return reader.lines()
+                    .skip(1) // Skips header line.
+                    .map(IdnPropertyTest::mapToTestCase)
+                    .collect(Collectors.toList())
+                    .stream();
+        }
     }
 
-    private static Fixture mapLine(String line) {
+    private static TestCase mapToTestCase(String line) {
         String[] tokens = line.split(",");
         IdnProperty property = IdnProperty.valueOf(tokens[1]);
         String[] range = tokens[0].trim().split("\\-");
@@ -65,7 +69,7 @@ public class IdnPropertyTest {
         if (range.length > 1) {
             end = Integer.parseInt(range[1], 16);
         }
-        return new Fixture(start, end, property);
+        return new TestCase(start, end, property);
     }
 
     private static String getUnicodeVersion() {
@@ -80,17 +84,17 @@ public class IdnPropertyTest {
     }
 
     /**
-     * A test fixture for {@link IdnProperty}.
+     * A test case for {@link IdnProperty}.
      *
      * @author leadpony
      */
-    private static class Fixture {
+    private static class TestCase {
 
         final int startCodePoint;
         final int endCodePoint;
         final IdnProperty expected;
 
-        Fixture(int start, int end, IdnProperty expected) {
+        TestCase(int start, int end, IdnProperty expected) {
             this.startCodePoint = start;
             this.endCodePoint = end;
             this.expected = expected;
