@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class ApiTestExtension implements BeforeAllCallback {
                 Class<?> fieldType = field.getType();
                 if (fieldType.isAssignableFrom(Logger.class)) {
                     assignFieldValue(field, log);
-                } else if (fieldType.isAssignableFrom(JsonValidationService.class)) {
+                } else if (fieldType == JsonValidationService.class) {
                     assignFieldValue(field, service);
                 } else if (fieldType.isAssignableFrom(ProblemPrinter.class)) {
                     assignFieldValue(field, new LogProblemPrinter(log));
