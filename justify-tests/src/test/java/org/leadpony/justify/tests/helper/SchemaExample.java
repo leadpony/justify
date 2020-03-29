@@ -47,8 +47,16 @@ public enum SchemaExample {
         this.name = name;
     }
 
-    public String getName() {
+    public String getSchemaName() {
         return name;
+    }
+
+    public String getValidInstanceName() {
+        return getInstanceName(".json");
+    }
+
+    public String getInvalidInstanceName() {
+        return getInstanceName("-invalid.json");
     }
 
     public Charset getCharset() {
@@ -56,11 +64,11 @@ public enum SchemaExample {
     }
 
     public InputStream getSchemaAsStream() {
-        return getResourceAsString(this.name);
+        return getResourceAsStream(getSchemaName());
     }
 
     public Path getSchemaPath() {
-        return BASE_PATH.resolve(this.name);
+        return getPath(getSchemaName());
     }
 
     public JsonValue getSchemaAsJson() {
@@ -68,11 +76,11 @@ public enum SchemaExample {
     }
 
     public InputStream getValidInstanceAsStream() {
-        return getInstanceAsStream(".json");
+        return getResourceAsStream(getValidInstanceName());
     }
 
     public InputStream getInvalidInstanceAsStream() {
-        return getInstanceAsStream("-invalid.json");
+        return getResourceAsStream(getInvalidInstanceName());
     }
 
     public JsonValue getValidInstanceAsJson() {
@@ -83,7 +91,15 @@ public enum SchemaExample {
         return readJsonFrom(getInvalidInstanceAsStream());
     }
 
-    private JsonValue readJsonFrom(InputStream in) {
+    private String getInstanceName(String suffix) {
+        return this.name.replaceFirst("\\.schema\\.json$", suffix);
+    }
+
+    private static Path getPath(String name) {
+        return BASE_PATH.resolve(name);
+    }
+
+    private static JsonValue readJsonFrom(InputStream in) {
         if (in == null) {
             return null;
         }
@@ -92,12 +108,7 @@ public enum SchemaExample {
         }
     }
 
-    private InputStream getInstanceAsStream(String suffix) {
-        String name = this.name.replaceFirst("\\.schema\\.json$", suffix);
-        return getResourceAsString(name);
-    }
-
-    private InputStream getResourceAsString(String name) {
+    private InputStream getResourceAsStream(String name) {
         return getClass().getResourceAsStream(BASE_PACKAGE + name);
     }
 }
