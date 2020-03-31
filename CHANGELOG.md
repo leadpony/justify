@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+* New API for reading JSON and JSON schema with a JsonParser as a source. Contributed by [@simon-greatrix](https://github.com/simon-greatrix)
+  * `JsonValidationService.readSchema(JsonParser)`
+  * `JsonValidationService.createParser(JsonParser, JsonSchema, ProblemHandler)`
+  * `JsonValidationService.createReader(JsonParser, JsonSchema, ProblemHandler)`
+  * `JsonSchemaReaderFactory.createSchemaReader(JsonParser)`
+
+### Changed
+* Regex patterns are now validated as BMP pattern described by the ECMAScript Language Specification, changed from Unicode pattern which was adopted by older versions. (Issue #47 reported by [@marsangr](https://github.com/marsangr)).
+
 ## 2.0.0 - 2019-11-23
 ### Added
 * The problem messages are translated into Simplified Chinese by [@letui](https://github.com/letui).
