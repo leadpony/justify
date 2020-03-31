@@ -19,36 +19,39 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * JSON schema examples provided by json-schema.org.
- *
  * @author leadpony
  */
-public enum SchemaExample {
-    ARRAY("arrays.schema.json"),
-    FSTAB("fstab.schema.json"),
-    GEOGRAPHICAL_LOCATION("geographical-location.schema.json"),
-    PERSON("person.schema.json"),
-    PRODUCT("product.schema.json");
-
-    static final String BASE_PACKAGE = "/org/json_schema/examples/draft7/";
-    static final Path BASE_PATH = Paths.get(
-            "target", "test-classes", "org", "json_schema", "examples", "draft7");
+public enum JsonExample {
+    ARRAY("arrays.json", SchemaExample.ARRAY, true),
+    FSTAB("fstab.json", SchemaExample.FSTAB, true),
+    FSTAB_INVALID("fstab-invalid.json",  SchemaExample.FSTAB, false),
+    GEOGRAPHICAL_LOCATION("geographical-location.json", SchemaExample.GEOGRAPHICAL_LOCATION, true),
+    PERSON("person.json", SchemaExample.PERSON, true),
+    PRODUCT("product.json", SchemaExample.PRODUCT, true),
+    PRODUCT_INVALID("product-invalid.json", SchemaExample.PRODUCT, false);
 
     private final String name;
+    private final SchemaExample schema;
+    private final boolean valid;
 
-    SchemaExample(String name) {
+    JsonExample(String name, SchemaExample schema, boolean valid) {
         this.name = name;
+        this.schema = schema;
+        this.valid = valid;
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 
     public Charset getCharset() {
@@ -56,16 +59,20 @@ public enum SchemaExample {
     }
 
     public Path getPath() {
-        return BASE_PATH.resolve(getName());
+        return SchemaExample.BASE_PATH.resolve(getName());
     }
 
     public InputStream getAsStream() {
-        return getClass().getResourceAsStream(BASE_PACKAGE + getName());
+        return getClass().getResourceAsStream(SchemaExample.BASE_PACKAGE + getName());
     }
 
     public JsonValue getAsJson() {
         try (JsonReader reader = Json.createReader(getAsStream())) {
             return reader.readValue();
         }
+    }
+
+    public InputStream getSchemaAsStream() {
+        return schema.getAsStream();
     }
 }
