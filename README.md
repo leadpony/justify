@@ -30,13 +30,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation group: 'org.leadpony.justify', name: 'justify', version: '2.0.0'
+implementation group: 'org.leadpony.justify', name: 'justify', version: '2.1.0'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -256,7 +256,7 @@ $ mvn clean install -P release
 There exist several JSON validator implementations conformant to the JSON Schema Specification, including those for other programming languages. [The list of implementations] is available on the JSON Schema web site.
 
 ## Copyright Notice
-Copyright &copy; 2018-2019 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
+Copyright &copy; 2018-2020 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
 [Apache Johnzon]: https://johnzon.apache.org/
