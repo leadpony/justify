@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 /**
  * An empty JSON schema.

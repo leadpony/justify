@@ -20,8 +20,8 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
-import javax.json.JsonException;
-import javax.json.stream.JsonParser;
+import jakarta.json.JsonException;
+import jakarta.json.stream.JsonParser;
 
 /**
  * A factory interface for creating {@link JsonSchemaReader} instances.

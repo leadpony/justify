@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.problem;
 
-import javax.json.stream.JsonLocation;
+import jakarta.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.internal.base.json.SimpleJsonLocation;

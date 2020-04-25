@@ -19,9 +19,9 @@ package org.leadpony.justify.tests.api;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.spi.JsonProvider;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.spi.JsonProvider;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;

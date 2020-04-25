@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 /**
  * A builder interface for building a JSON schema programmatically.

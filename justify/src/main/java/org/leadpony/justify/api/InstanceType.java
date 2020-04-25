@@ -18,8 +18,8 @@ package org.leadpony.justify.api;
 
 import java.util.Objects;
 
-import javax.json.JsonNumber;
-import javax.json.JsonValue;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonValue;
 
 /**
  * The primitive types of JSON instances.

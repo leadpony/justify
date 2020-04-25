@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.base.json;
 
-import javax.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser;
 
 /**
  * A JSON parser type which can track the current parsing position as a JSON

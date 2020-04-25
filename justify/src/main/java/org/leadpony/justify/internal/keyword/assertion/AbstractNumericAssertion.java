@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
 
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;

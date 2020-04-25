@@ -22,7 +22,7 @@ module org.leadpony.justify {
     exports org.leadpony.justify.spi;
 
     requires com.ibm.icu;
-    requires transitive java.json;
+    requires transitive jakarta.json;
     requires java.logging;
 
     uses org.leadpony.justify.spi.ContentEncodingScheme;

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import javax.json.stream.JsonLocation;
+import jakarta.json.stream.JsonLocation;
 
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;

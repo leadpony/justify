@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.keyword;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 /**
  * An unrecognized keyword.

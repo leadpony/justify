@@ -18,8 +18,8 @@ package org.leadpony.justify.internal.base.json;
 
 import java.util.EnumSet;
 
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.InstanceType;
 

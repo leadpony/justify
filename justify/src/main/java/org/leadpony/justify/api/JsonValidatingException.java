@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.json.stream.JsonLocation;
-import javax.json.stream.JsonParsingException;
+import jakarta.json.stream.JsonLocation;
+import jakarta.json.stream.JsonParsingException;
 
 /**
  * {@code JsonValidatingException} indicates that some exception happened while

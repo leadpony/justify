@@ -19,9 +19,9 @@ import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.Map;
 
-import javax.json.JsonException;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
+import jakarta.json.JsonException;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.spi.ContentMimeType;
 

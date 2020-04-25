@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;

@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Collection;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;

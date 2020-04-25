@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.json.stream.JsonLocation;
+import jakarta.json.stream.JsonLocation;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;

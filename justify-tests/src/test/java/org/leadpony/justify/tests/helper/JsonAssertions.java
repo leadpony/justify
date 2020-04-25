@@ -18,10 +18,10 @@ package org.leadpony.justify.tests.helper;
 
 import java.io.StringReader;
 
-import javax.json.Json;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
-import javax.json.stream.JsonLocation;
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonLocation;
 
 import org.assertj.core.api.AbstractAssert;
 

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.provider;
 
-import javax.json.spi.JsonProvider;
+import jakarta.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.spi.JsonValidationProvider;

@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.base.json;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import javax.json.JsonException;
+import jakarta.json.JsonException;
 
 /**
  * Tokenizer for a JSON pointer.

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.base.json;
 
-import javax.json.stream.JsonLocation;
+import jakarta.json.stream.JsonLocation;
 
 /**
  * A simple implementation of {@link JsonLocation}.

@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import javax.json.spi.JsonProvider;
+import jakarta.json.spi.JsonProvider;
 
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;

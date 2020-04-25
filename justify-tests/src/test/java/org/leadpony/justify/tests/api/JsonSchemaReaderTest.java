@@ -24,8 +24,8 @@ import java.net.URI;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue;
-import javax.json.stream.JsonParsingException;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParsingException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

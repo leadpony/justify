@@ -21,10 +21,10 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParserFactory;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.stream.JsonParser;
+import jakarta.json.stream.JsonParserFactory;
 
 /**
  * The default implementation of {@link JsonReaderFactory}.

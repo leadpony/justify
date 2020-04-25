@@ -18,10 +18,10 @@ package org.leadpony.justify.api;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonValue;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonValue;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParser;
 
 /**
  * A context shared by all evaluators participating in the current validation.

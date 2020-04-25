@@ -17,11 +17,11 @@ package org.leadpony.justify.internal.base.json;
 
 import java.util.Collections;
 
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParserFactory;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParserFactory;
 
 /**
  * A JSON service type which wraps {@code JsonProvider}.

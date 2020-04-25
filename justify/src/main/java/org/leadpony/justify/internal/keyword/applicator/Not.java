@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;

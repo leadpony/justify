@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.api;
 
-import javax.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser;
 
 /**
  * A factory interface for creating {@link ProblemHandler} instances.

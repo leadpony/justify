@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.evaluator;
 
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;

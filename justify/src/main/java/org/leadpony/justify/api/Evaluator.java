@@ -16,8 +16,8 @@
 
 package org.leadpony.justify.api;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser.Event;
 
 /**
  * An evaluator interface for applying a JSON schema to a JSON instance.

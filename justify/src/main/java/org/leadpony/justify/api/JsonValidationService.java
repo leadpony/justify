@@ -24,12 +24,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.json.JsonException;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParserFactory;
+import jakarta.json.JsonException;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParser;
+import jakarta.json.stream.JsonParserFactory;
 
 import org.leadpony.justify.spi.JsonValidationProvider;
 

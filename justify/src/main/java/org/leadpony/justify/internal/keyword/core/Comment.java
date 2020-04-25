@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;

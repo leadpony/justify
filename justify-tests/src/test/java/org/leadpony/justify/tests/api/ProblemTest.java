@@ -24,9 +24,9 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import javax.json.JsonReader;
-import javax.json.JsonValue;
-import javax.json.stream.JsonLocation;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonLocation;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

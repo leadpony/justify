@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.internal.base.json;
 
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParser;
 
 /**
  * A default implementation of {@link PointerAwareJsonParser}.

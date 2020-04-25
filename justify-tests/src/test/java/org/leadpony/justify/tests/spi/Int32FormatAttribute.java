@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.tests.spi;
 
-import javax.json.JsonNumber;
-import javax.json.JsonValue;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.spi.FormatAttribute;

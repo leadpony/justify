@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.api;
 
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * A boolean type of JSON schema.

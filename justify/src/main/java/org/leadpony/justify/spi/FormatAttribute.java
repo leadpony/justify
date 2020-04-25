@@ -18,7 +18,7 @@ package org.leadpony.justify.spi;
 
 import java.util.Locale;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Localizable;

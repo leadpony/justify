@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.api;
 
-import javax.json.JsonValue;
+import jakarta.json.JsonValue;
 
 /**
  * A schema keyword which composes a JSON schema.

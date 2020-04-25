@@ -15,8 +15,8 @@
  */
 package org.leadpony.justify.internal.validator;
 
-import javax.json.stream.JsonParser;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser.Event;
 
 /**
  * A handler type of JSON parser events.

@@ -18,7 +18,7 @@ package org.leadpony.justify.spi;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
-import javax.json.JsonException;
+import jakarta.json.JsonException;
 
 import org.leadpony.justify.api.JsonValidationService;
 

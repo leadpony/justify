@@ -19,8 +19,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonParser;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;

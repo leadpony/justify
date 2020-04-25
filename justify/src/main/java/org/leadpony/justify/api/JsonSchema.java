@@ -19,9 +19,9 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.json.JsonException;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonException;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * An immutable JSON schema.

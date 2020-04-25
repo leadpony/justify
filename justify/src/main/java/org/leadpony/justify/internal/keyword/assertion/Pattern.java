@@ -18,9 +18,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import java.util.regex.PatternSyntaxException;
 
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;

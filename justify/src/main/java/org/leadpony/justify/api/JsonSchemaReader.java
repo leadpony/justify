@@ -18,8 +18,8 @@ package org.leadpony.justify.api;
 
 import java.io.Closeable;
 
-import javax.json.JsonException;
-import javax.json.stream.JsonParsingException;
+import jakarta.json.JsonException;
+import jakarta.json.stream.JsonParsingException;
 
 /**
  * A reader interface for reading a JSON schema from an input source.

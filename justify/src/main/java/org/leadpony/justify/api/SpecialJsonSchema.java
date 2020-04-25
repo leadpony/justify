@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.api;
 
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.stream.JsonParser.Event;
 
 /**
  * A skeletal implementation of special JSON schemas.

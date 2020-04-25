@@ -19,9 +19,9 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;

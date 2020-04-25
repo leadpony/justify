@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.base.json;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import javax.json.JsonNumber;
+import jakarta.json.JsonNumber;
 
 /**
  * Implementation of {@link JsonNumber}.

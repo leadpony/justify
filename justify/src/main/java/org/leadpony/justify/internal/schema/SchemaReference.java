@@ -21,9 +21,9 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.net.URI;
 import java.util.Map;
 
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser.Event;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;

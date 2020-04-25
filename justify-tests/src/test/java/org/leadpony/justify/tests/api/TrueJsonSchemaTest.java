@@ -17,7 +17,7 @@ package org.leadpony.justify.tests.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonValue.ValueType;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
 

@@ -17,7 +17,7 @@ package org.leadpony.justify.api;
 
 import java.util.Map;
 
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * A JSON schema type represented by a JSON object. This type can be viewed as
