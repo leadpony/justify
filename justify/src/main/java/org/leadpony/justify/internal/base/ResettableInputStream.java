@@ -55,7 +55,7 @@ public class ResettableInputStream extends FilterInputStream {
     public final int read(byte[] b, int off, int len) throws IOException {
         int result = super.read(b, off, len);
         if (result > 0) {
-            out.write(b, off, len);
+            out.write(b, off, result);
         }
         return result;
     }
