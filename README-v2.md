@@ -4,13 +4,13 @@
 [![Javadocs](https://www.javadoc.io/badge/org.leadpony.justify/justify.svg?color=green)](https://www.javadoc.io/doc/org.leadpony.justify/justify)
 [![Build Status](https://travis-ci.org/leadpony/justify.svg?branch=master)](https://travis-ci.org/leadpony/justify)
 
-Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JSON Processing] (JSON-P).
+Justify is a JSON validator based on [JSON Schema Specification] and [Java API for JSON Processing (JSR 374)].
 
 ## Key Features
 
 * Compliant with [JSON Schema Specification] Draft-07, -06, and -04.
-* Reinforces [Jakarta JSON Processing] (JSON-P) transparently with the validation functionality.
-* Can be used with [Jakarta JSON Binding] (JSON-B) via a custom JsonProvider.
+* Reinforces [Java API for JSON Processing (JSR 374)] transparently with the validation functionality.
+* Can be used with [Java API for JSON Binding (JSR 367)] via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
 * Passes all test cases provided by [JSON Schema Test Suite] including both mandatory and optional tests.
 * Validates the input in streaming way, which claims small memory footprint even when the input is a large JSON.
@@ -21,9 +21,6 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JS
 
 ## Getting Started
 
-_For Justify version 2.x users:_
-Please refer to old [README](./README-v2.md) for the instructions.
-
 ### Minimum Setup
 
 This software is available in the [Maven Central Repository] and the following dependency should be added to your build.
@@ -33,13 +30,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>3.0.0-RC1</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation group: 'org.leadpony.justify', name: 'justify', version: '3.0.0-RC1'
+implementation group: 'org.leadpony.justify', name: 'justify', version: '2.1.0'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -47,10 +44,11 @@ Note that the addition of this dependency brings the following artifacts as tran
 * `jakarta.json:jakarta.json-api`
 * `com.ibm.icu:icu4j`
 
-Besides the library itself, one of [Jakarta JSON Processing] implementations is needed during runtime.
+Besides the library itself, one of [Java API for JSON Processing (JSR 374)] implementations is needed during runtime.
 This library supports the following implementations and you can select whichever you prefer.
 1. [Jakarta JSON Processing]
-2. [Joy]
+2. [Apache Johnzon]
+3. [Joy]
 
 Please add exactly one dependency to your build as shown below.
 
@@ -61,32 +59,48 @@ Please add exactly one dependency to your build as shown below.
     <groupId>org.glassfish</groupId>
     <artifactId>jakarta.json</artifactId>
     <classifier>module</classifier>
-    <version>2.0.0-RC2</version>
+    <version>1.1.6</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly group: 'org.glassfish', name: 'jakarta.json', classifier: 'module', version: '2.0.0-RC2'
+runtimeOnly group: 'org.glassfish', name: 'jakarta.json', classifier: 'module', version: '1.1.6'
 ```
 
 Please note that the classifier `module` is required when using this implementation.
+
+#### Apache Johnzon
+*Maven*
+```xml
+<dependency>
+    <groupId>org.apache.johnzon</groupId>
+    <artifactId>johnzon-core</artifactId>
+    <version>1.2.1</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+*Gradle*
+```
+runtimeOnly group: 'org.apache.johnzon', name: 'johnzon-core', version: '1.2.1'
+```
 
 #### Joy
 *Maven*
 ```xml
 <dependency>
     <groupId>org.leadpony.joy</groupId>
-    <artifactId>joy-classic</artifactId>
-    <version>2.0.0-RC2</version>
+    <artifactId>joy</artifactId>
+    <version>1.2.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly group: 'org.leadpony.joy', name: 'joy', version: '2.0.0-RC2'
+runtimeOnly group: 'org.leadpony.joy', name: 'joy', version: '1.2.0'
 ```
 
 ### Using with the Streaming API of JSON Processing
@@ -245,11 +259,15 @@ There exist several JSON validator implementations conformant to the JSON Schema
 Copyright &copy; 2018-2020 the Justify authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
+[Apache Johnzon]: https://johnzon.apache.org/
 [Apache Maven]: https://maven.apache.org/
 [API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
 [Changelog]: CHANGELOG.md
-[Jakarta JSON Processing]: https://eclipse-ee4j.github.io/jsonp/
-[Jakarta JSON Binding]: http://json-b.net/
+[everit-org/json-schema]: https://github.com/everit-org/json-schema
+[Jakarta JSON Processing]: https://github.com/eclipse-ee4j/jsonp
+[Java API for JSON Processing (JSR 374)]: https://eclipse-ee4j.github.io/jsonp/
+[Java API for JSON Binding (JSR 367)]: http://json-b.net/
+[java-json-tools/json-schema-validator]: https://github.com/java-json-tools/json-schema-validator
 [JDK]: https://jdk.java.net/
 [Joy]: https://github.com/leadpony/joy
 [JSON Schema Conformance Test]: https://github.com/leadpony/json-schema-conformance-test
@@ -258,5 +276,6 @@ Copyright &copy; 2018-2020 the Justify authors. This software is licensed under 
 [Justify CLI]: https://github.com/leadpony/justify-cli
 [Justify Examples]: https://github.com/leadpony/justify-examples
 [Maven Central Repository]: https://mvnrepository.com/repos/central
+[networknt/json-schema-validator]: https://github.com/networknt/json-schema-validator
 [Releases]: https://github.com/leadpony/justify/releases/latest
 [The list of implementations]: https://json-schema.org/implementations.html  
