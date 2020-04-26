@@ -69,8 +69,8 @@
             </dependency>
             <dependency>
                 <groupId>org.leadpony.joy</groupId>
-                <artifactId>joy</artifactId>
-                <version>2.0.0-RC1</version>
+                <artifactId>joy-classic</artifactId>
+                <version>2.0.0-RC2</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.json.bind</groupId>
@@ -81,6 +81,12 @@
                 <groupId>org.eclipse</groupId>
                 <artifactId>yasson</artifactId>
                 <version>2.0.0-M1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>jakarta.json</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.fusesource.jansi</groupId>
@@ -241,20 +247,11 @@
             </properties>
         </profile>
         <profile>
-            <id>test-with-johnzon</id>
-            <properties>
-                <jsonp.provider.groupId>org.apache.johnzon</jsonp.provider.groupId>
-                <jsonp.provider.artifactId>johnzon-core</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.2.1</jsonp.provider.version>
-                <jsonp.provider.classifier></jsonp.provider.classifier>
-            </properties>
-        </profile>
-        <profile>
             <id>test-with-joy</id>
             <properties>
                 <jsonp.provider.groupId>org.leadpony.joy</jsonp.provider.groupId>
-                <jsonp.provider.artifactId>joy</jsonp.provider.artifactId>
-                <jsonp.provider.version>1.2.0</jsonp.provider.version>
+                <jsonp.provider.artifactId>joy-classic</jsonp.provider.artifactId>
+                <jsonp.provider.version>2.0.0-RC2</jsonp.provider.version>
                 <jsonp.provider.classifier></jsonp.provider.classifier>
             </properties>
         </profile>

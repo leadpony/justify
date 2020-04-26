@@ -495,10 +495,13 @@ public class JsonParserTest {
         sut.close();
     }
 
+    /**
+     * This test will fail when using YAML parser.
+     */
     @Test
     public void getArrayStreamShouldReturnStreamThrowingException() {
         String schema = "true";
-        // ill-formed
+        // ill-formed as a JSON document
         String instance = "[ \"key\" : 123 ]";
 
         List<Problem> problems = new ArrayList<>();
@@ -541,7 +544,6 @@ public class JsonParserTest {
         JsonParser parser = newParser(instance);
         parser.next();
         Stream<Map.Entry<String, JsonValue>> expected = parser.getObjectStream();
-        parser.close();
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
@@ -551,6 +553,8 @@ public class JsonParserTest {
         assertThat(actual).containsExactlyElementsOf(
                 expected.collect(Collectors.toList()));
         assertThat(problems).isEmpty();
+
+        parser.close();
         sut.close();
     }
 
@@ -563,7 +567,6 @@ public class JsonParserTest {
         JsonParser parser = newParser(instance);
         parser.next();
         Stream<Map.Entry<String, JsonValue>> expected = parser.getObjectStream();
-        parser.close();
 
         List<Problem> problems = new ArrayList<>();
         JsonParser sut = newParser(instance, schema, problems::addAll);
@@ -573,13 +576,18 @@ public class JsonParserTest {
         assertThat(actual).containsExactlyElementsOf(
                 expected.collect(Collectors.toList()));
         assertThat(problems).isNotEmpty();
+
+        parser.close();
         sut.close();
     }
 
+    /**
+     * This test will fail when using YAML parser.
+     */
     @Test
     public void getObjectStreamShouldReturnStreamThrowingException() {
         String schema = "true";
-        // ill-formed
+        // ill-formed as a JSON document
         String instance = "{ \"key\", 123 }";
 
         List<Problem> problems = new ArrayList<>();

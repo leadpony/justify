@@ -113,7 +113,7 @@ public class JsonValidationServiceTest {
 
         assertThat(schema.toJson()).isEqualTo(example.getAsJson());
 
-        // The parser shoud be closed.
+        // The parser should be closed.
         Throwable thrown = catchThrowable(() -> {
             parser.next();
         });

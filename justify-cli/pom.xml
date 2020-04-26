@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>org.leadpony.joy</groupId>
-            <artifactId>joy</artifactId>
+            <artifactId>joy-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

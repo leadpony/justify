@@ -4,28 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Changed
+- Updated Jakarta JSON Processing API to 2.0.0, which causes the API package `javax.json` to be migirated to `jakarta.json`.
+
+### Fixed
+- Fixed a bug which was causing auto detection of schema version to fail.
+
 ## 2.1.0 - 2020-04-02
 ### Added
-* New API for reading JSON and JSON schema with a JsonParser as a source. Contributed by [@simon-greatrix](https://github.com/simon-greatrix)
-  * `JsonValidationService.readSchema(JsonParser)`
-  * `JsonValidationService.createParser(JsonParser, JsonSchema, ProblemHandler)`
-  * `JsonValidationService.createReader(JsonParser, JsonSchema, ProblemHandler)`
-  * `JsonSchemaReaderFactory.createSchemaReader(JsonParser)`
+- New API for reading JSON and JSON schema with a JsonParser as a source. Contributed by [@simon-greatrix](https://github.com/simon-greatrix)
+  - `JsonValidationService.readSchema(JsonParser)`
+  - `JsonValidationService.createParser(JsonParser, JsonSchema, ProblemHandler)`
+  - `JsonValidationService.createReader(JsonParser, JsonSchema, ProblemHandler)`
+  - `JsonSchemaReaderFactory.createSchemaReader(JsonParser)`
 
 ### Changed
-* Regex patterns are now validated as BMP pattern described by the ECMAScript Language Specification, changed from Unicode pattern which was adopted by older versions. (Issue #47 reported by [@marsangr](https://github.com/marsangr)).
+- Regex patterns are now validated as BMP pattern described by the ECMAScript Language Specification, changed from Unicode pattern which was adopted by older versions. (Issue #47 reported by [@marsangr](https://github.com/marsangr)).
 
 ## 2.0.0 - 2019-11-23
 ### Added
-* The problem messages are translated into Simplified Chinese by [@letui](https://github.com/letui).
+- The problem messages are translated into Simplified Chinese by [@letui](https://github.com/letui).
 
 ### Changed
-* All the branching problems are now preserved even when they have only one branch of problems (Issue #37 reported by [@adityamandhare](https://github.com/adityamandhare)).
-* Problem printers built with `ProblemPrinterBuilder` now skip intermediate problems if and only if they have only one branch of problems.
-* Revised the problem message emitted by `contains` keyword.
+- All the branching problems are now preserved even when they have only one branch of problems (Issue #37 reported by [@adityamandhare](https://github.com/adityamandhare)).
+- Problem printers built with `ProblemPrinterBuilder` now skip intermediate problems if and only if they have only one branch of problems.
+- Revised the problem message emitted by `contains` keyword.
 
 ### Fixed
-* A bug which was causing `AssertionError` when `enum` keyword is used in `propertyNames` keyword. (Issue #38 reported by [@DMittenMalwareBytes](https://github.com/DMittenMalwareBytes))
+- A bug which was causing `AssertionError` when `enum` keyword is used in `propertyNames` keyword. (Issue #38 reported by [@DMittenMalwareBytes](https://github.com/DMittenMalwareBytes))
 
 ## 1.1.0 - 2019-08-16
 ### Added
