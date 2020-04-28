@@ -39,7 +39,7 @@ This software is available in the [Maven Central Repository] and the following d
 
 *Gradle*
 ```
-implementation group: 'org.leadpony.justify', name: 'justify', version: '3.0.0-RC1'
+implementation 'org.leadpony.justify:justify:3.0.0-RC1'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -47,9 +47,9 @@ Note that the addition of this dependency brings the following artifacts as tran
 * `jakarta.json:jakarta.json-api`
 * `com.ibm.icu:icu4j`
 
-Besides the library itself, one of [Jakarta JSON Processing] implementations is needed during runtime.
+Besides the library itself, an implementation of [Jakarta JSON Processing] API is needed during runtime.
 This library supports the following implementations and you can select whichever you prefer.
-1. [Jakarta JSON Processing]
+1. [Jakarta JSON Processing] (Reference Implementation)
 2. [Joy]
 
 Please add exactly one dependency to your build as shown below.
@@ -68,7 +68,7 @@ Please add exactly one dependency to your build as shown below.
 
 *Gradle*
 ```
-runtimeOnly group: 'org.glassfish', name: 'jakarta.json', classifier: 'module', version: '2.0.0-RC2'
+runtimeOnly 'org.glassfish:jakarta.json:2.0.0-RC2:module'
 ```
 
 Please note that the classifier `module` is required when using this implementation.
@@ -86,7 +86,7 @@ Please note that the classifier `module` is required when using this implementat
 
 *Gradle*
 ```
-runtimeOnly group: 'org.leadpony.joy', name: 'joy', version: '2.0.0-RC2'
+runtimeOnly 'org.leadpony.joy:joy-classic:2.0.0-RC2'
 ```
 
 ### Using with the Streaming API of JSON Processing
@@ -101,7 +101,7 @@ JsonSchema schema = service.readSchema(Paths.get("news.schema.json"));
 ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
 Path path = Paths.get("fake-news.json");
-// Parses the JSON instance by javax.json.stream.JsonParser
+// Parses the JSON instance by JsonParser
 try (JsonParser parser = service.createParser(path, schema, handler)) {
     while (parser.hasNext()) {
         JsonParser.Event event = parser.next();
@@ -122,7 +122,7 @@ JsonSchema schema = service.readSchema(Paths.get("news.schema.json"));
 ProblemHandler handler = service.createProblemPrinter(System.out::println);
 
 Path path = Paths.get("fake-news.json");
-// Reads the JSON instance by javax.json.JsonReader
+// Reads the JSON instance by JsonReader
 try (JsonReader reader = service.createReader(path, schema, handler)) {
     JsonValue value = reader.readValue();
     // Do something useful here
