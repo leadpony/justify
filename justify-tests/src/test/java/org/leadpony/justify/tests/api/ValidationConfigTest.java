@@ -34,23 +34,22 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ValidationConfig;
-import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for {@link ValidationConfig}.
  *
  * @author leadpony
  */
-@ApiTest
 public class ValidationConfigTest {
 
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     private ValidationConfig sut;
 
     @BeforeEach
     public void setUp() {
-        sut = service.createValidationConfig();
+        sut = SERVICE.createValidationConfig();
     }
 
     @Test
@@ -110,7 +109,7 @@ public class ValidationConfigTest {
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandler(problems::addAll);
 
-        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();
@@ -126,7 +125,7 @@ public class ValidationConfigTest {
         sut.withSchema(JsonSchema.FALSE);
         sut.withProblemHandlerFactory(handlerFactory);
 
-        JsonParserFactory factory = service.createParserFactory(sut.getAsMap());
+        JsonParserFactory factory = SERVICE.createParserFactory(sut.getAsMap());
         JsonParser parser = factory.createParser(new StringReader("{}"));
         while (parser.hasNext()) {
             parser.next();

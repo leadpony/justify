@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,33 @@
  */
 package org.leadpony.justify.tests.helper;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
+import java.util.logging.Logger;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.leadpony.justify.api.Problem;
 
 /**
- * An annotation which indicates a class is a container for testing API.
- *
  * @author leadpony
  */
-@Retention(RUNTIME)
-@Target({TYPE, ANNOTATION_TYPE})
-@Inherited
-@ExtendWith(ApiTestExtension.class)
-public @interface ApiTest {
+public interface Loggable {
+
+    Logger LOG = Logger.getLogger(Loggable.class.getName());
+
+    ProblemPrinter PRINTER = problems -> {
+        for (Problem problem : problems) {
+            problem.print(LOG::info);
+        }
+    };
+
+    default Logger getLogger() {
+        return LOG;
+    }
+
+    default ProblemPrinter getPrinter() {
+        return PRINTER;
+    }
+
+    default void printProblems(List<Problem> problems) {
+        getPrinter().print(problems);
+    }
 }

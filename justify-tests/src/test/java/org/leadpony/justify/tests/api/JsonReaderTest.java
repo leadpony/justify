@@ -39,19 +39,17 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing validations using {@link JsonReader} .
  *
  * @author leadpony
  */
-@ApiTest
-public class JsonReaderTest {
+public class JsonReaderTest implements Loggable {
 
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -72,8 +70,8 @@ public class JsonReaderTest {
     }
 
     private static JsonReader newReader(String instance, String schema, ProblemHandler handler) {
-        JsonSchema s = service.readSchema(new StringReader(schema));
-        return service.createReader(new StringReader(instance), s, handler);
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        return SERVICE.createReader(new StringReader(instance), s, handler);
     }
 
     @Test
@@ -184,7 +182,7 @@ public class JsonReaderTest {
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
 
-        printer.print(problems);
+        printProblems(problems);
     }
 
     @ParameterizedTest
@@ -211,6 +209,6 @@ public class JsonReaderTest {
             assertThat(problems).isNotEmpty();
         }
 
-        printer.print(problems);
+        printProblems(problems);
     }
 }

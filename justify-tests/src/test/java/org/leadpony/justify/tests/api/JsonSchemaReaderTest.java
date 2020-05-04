@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
 import java.net.URI;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
@@ -36,20 +35,19 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonAssertions;
 import org.leadpony.justify.tests.helper.JsonSource;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing the {@link JsonSchemaReader} implementation.
  *
  * @author leadpony
  */
-@ApiTest
-public class JsonSchemaReaderTest {
+public class JsonSchemaReaderTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     public static Stream<Arguments> schemas() {
         return Stream.of(
@@ -64,11 +62,11 @@ public class JsonSchemaReaderTest {
     @ParameterizedTest(name = "{index}")
     @MethodSource("schemas")
     public void readShouldThrowIfSchemaIsInvalid(String schemaJson, Class<?> exceptionClass) {
-        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schemaJson));
+        JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(schemaJson));
         Throwable thrown = catchThrowable(() -> reader.read());
         if (exceptionClass != null) {
             assertThat(thrown).isInstanceOf(exceptionClass);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         } else {
             assertThat(thrown).isNull();
         }
@@ -83,7 +81,7 @@ public class JsonSchemaReaderTest {
                 + "\"description\": \"A product from Acme's catalog\","
                 + "\"$comment\": \"As an example.\""
                 + "}";
-        JsonSchema schema = service.readSchema(new StringReader(source));
+        JsonSchema schema = SERVICE.readSchema(new StringReader(source));
 
         assertThat(schema.hasId()).isTrue();
         assertThat(schema.schema()).isEqualTo(URI.create("http://json-schema.org/draft-07/schema#"));
@@ -113,7 +111,7 @@ public class JsonSchemaReaderTest {
     @ParameterizedTest
     @JsonSource("jsonschemareadertest-unknownkeywords.json")
     public void readShouldThrowIfStrictWithKeywords(StrictKeywordTestCase test) {
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withStrictKeywords(true)
                 .build();
         String json = test.schema.toString();
@@ -123,7 +121,7 @@ public class JsonSchemaReaderTest {
             assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
             JsonValidatingException e = (JsonValidatingException) thrown;
             assertThat(e.getProblems()).hasSize(test.errors);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         } else {
             assertThat(thrown).isNull();
         }
@@ -132,7 +130,7 @@ public class JsonSchemaReaderTest {
     @ParameterizedTest
     @JsonSource("jsonschemareadertest-unknownkeywords.json")
     public void readShouldNotThrowIfNotStrictWithKeywords(StrictKeywordTestCase test) {
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withStrictKeywords(false)
                 .build();
         String json = test.schema.toString();
@@ -147,20 +145,20 @@ public class JsonSchemaReaderTest {
     @Test
     public void readShouldThrowIfStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictFormats(true)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictFormats(true)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
         assertThat(thrown).isNotNull().isInstanceOf(JsonValidatingException.class);
         JsonValidatingException e = (JsonValidatingException) thrown;
         assertThat(e.getProblems()).hasSize(1);
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
     public void readShouldNotThrowIfNotStrictWithFormats() {
         String source = SCHEMA_INCLUDING_UNKNOWN_FORMAT_ATTRIBUTE;
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder().withStrictFormats(false)
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder().withStrictFormats(false)
                 .build();
         JsonSchemaReader reader = factory.createSchemaReader(new StringReader(source));
         Throwable thrown = catchThrowable(() -> reader.read());
@@ -188,7 +186,7 @@ public class JsonSchemaReaderTest {
     public void readShouldValidateAgainstMetaschema(MetaschemaTestCase test) {
         JsonSchema metaschema = readSchema(test.metaschema);
 
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withMetaschema(metaschema)
                 .withSpecVersionDetection(false)
                 .build();
@@ -200,7 +198,7 @@ public class JsonSchemaReaderTest {
         reader.close();
 
         if (thrown != null) {
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
 
         if (test.valid) {
@@ -217,7 +215,7 @@ public class JsonSchemaReaderTest {
     }
 
     private static JsonSchema readSchema(String string) {
-        JsonSchemaReaderFactory factory = service.createSchemaReaderFactoryBuilder()
+        JsonSchemaReaderFactory factory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withSpecVersionDetection(false)
                 .build();
         try (JsonSchemaReader reader = factory.createSchemaReader(new StringReader(string))) {

@@ -28,19 +28,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ObjectJsonSchema;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonResource;
 import org.leadpony.justify.tests.helper.JsonSource;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test type for testing {@link ObjectJsonSchema}.
  *
  * @author leadpony
  */
-@ApiTest
 public class ObjectJsonSchemaTest {
 
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
      * A test case for {@link ObjectJsonSchema#get(Object)}.
@@ -143,6 +142,6 @@ public class ObjectJsonSchemaTest {
     }
 
     private static ObjectJsonSchema fromString(String string) {
-        return service.readSchema(new StringReader(string)).asObjectJsonSchema();
+        return SERVICE.readSchema(new StringReader(string)).asObjectJsonSchema();
     }
 }

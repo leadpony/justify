@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import jakarta.json.JsonReader;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -35,21 +34,18 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
 import org.leadpony.justify.tests.helper.MultiJsonSource;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing problem locations.
  *
  * @author leadpony
  */
-@ApiTest
-public class ProblemLocationTest {
+public class ProblemLocationTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     private static Jsonb jsonb;
 
@@ -86,14 +82,14 @@ public class ProblemLocationTest {
         JsonSchema jsonSchema = readSchema(schema);
         List<Problem> actual = new ArrayList<>();
 
-        try (JsonReader reader = service.createReader(
+        try (JsonReader reader = SERVICE.createReader(
                 new StringReader(instance), jsonSchema, actual::addAll)) {
             reader.readValue();
         }
 
         if (!actual.isEmpty()) {
-            log.info(displayName);
-            printer.print(actual);
+            LOG.info(displayName);
+            printProblems(actual);
         }
 
         checkProblems(actual, expected);
@@ -151,7 +147,7 @@ public class ProblemLocationTest {
     }
 
     private JsonSchema readSchema(String schema) {
-        JsonSchemaReader reader = service.createSchemaReader(new StringReader(schema));
+        JsonSchemaReader reader = SERVICE.createSchemaReader(new StringReader(schema));
         return reader.read();
     }
 }

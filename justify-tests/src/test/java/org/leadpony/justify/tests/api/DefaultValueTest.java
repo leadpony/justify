@@ -39,19 +39,17 @@ import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ValidationConfig;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for filling with default values.
  *
  * @author leadpony
  */
-@ApiTest
-public class DefaultValueTest {
+public class DefaultValueTest implements Loggable {
 
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
      * A fixture for this test.
@@ -156,7 +154,7 @@ public class DefaultValueTest {
             actual = reader.readValue();
         }
 
-        printer.print(problems);
+        printProblems(problems);
 
         assertThat(actual).isEqualTo(fixture.result);
 
@@ -191,7 +189,7 @@ public class DefaultValueTest {
             }
         }
 
-        printer.print(problems);
+        printProblems(problems);
 
         assertThat(actual).containsExactlyElementsOf(expected);
 
@@ -210,24 +208,24 @@ public class DefaultValueTest {
 
     private JsonSchema readSchema(JsonValue value) {
         StringReader reader = new StringReader(value.toString());
-        return service.readSchema(reader);
+        return SERVICE.readSchema(reader);
     }
 
     private JsonParser createJsonParser(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withProblemHandler(handler)
                 .withDefaultValues(true);
-        return service.createParserFactory(config.getAsMap())
+        return SERVICE.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(value.toString()));
     }
 
     private JsonReader createJsonReader(JsonValue value, JsonSchema schema, ProblemHandler handler) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withProblemHandler(handler)
                 .withDefaultValues(true);
-        return service.createReaderFactory(config.getAsMap())
+        return SERVICE.createReaderFactory(config.getAsMap())
                 .createReader(new StringReader(value.toString()));
     }
 

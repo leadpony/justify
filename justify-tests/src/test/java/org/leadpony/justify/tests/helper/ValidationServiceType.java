@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.tests.api;
+package org.leadpony.justify.tests.helper;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
- * Test cases for {@link JsonSchemaReaderFactory}.
- *
  * @author leadpony
  */
-public class JsonSchemaReaderFactoryTest implements BaseJsonSchemaReaderFactoryTest {
+public enum ValidationServiceType {
+    DEFAULT(createDefaultService());
 
-    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
+    private final JsonValidationService service;
 
-    private JsonSchemaReaderFactory sut;
-
-    @BeforeEach
-    public void setUp() {
-        sut = SERVICE.createSchemaReaderFactory();
+    ValidationServiceType(JsonValidationService service) {
+        this.service = service;
     }
 
-    @Override
-    public JsonSchemaReaderFactory sut() {
-        return sut;
+    public JsonValidationService getService() {
+        return service;
+    }
+
+    private static JsonValidationService createDefaultService() {
+        return JsonValidationService.newInstance();
     }
 }

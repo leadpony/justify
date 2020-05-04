@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
@@ -34,28 +33,27 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonSource;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing the {@link Problem} implementation.
  *
  * @author leadpony
  */
-@ApiTest
-public class ProblemTest {
+public class ProblemTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     private static final String SCHEMA = "{ \"properties\": { \"foo\": { \"type\": \"string\" } } }";
     private static final String INSTANCE = "{\n\"foo\": 42\n}";
 
     private static Problem createProblem(String schemaDoc, String instanceDoc) {
-        JsonSchema schema = service.readSchema(new StringReader(schemaDoc));
+        JsonSchema schema = SERVICE.readSchema(new StringReader(schemaDoc));
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonReader reader = service.createReader(new StringReader(instanceDoc), schema, handler)) {
+        try (JsonReader reader = SERVICE.createReader(new StringReader(instanceDoc), schema, handler)) {
             reader.readValue();
         }
         return problems.get(0);
@@ -167,7 +165,7 @@ public class ProblemTest {
     public void getContextualMessageShouldReturnMessageOfExpectedLines(ProblemTestCase test) {
         Problem problem = createProblem(test);
         String message = problem.getContextualMessage(Locale.ROOT);
-        log.info(message);
+        LOG.info(message);
         String[] lines = message.split("\n", -1);
         assertThat(lines.length).isEqualTo(test.lines);
     }
@@ -185,7 +183,7 @@ public class ProblemTest {
         };
         problem.print(consumer, Locale.ROOT);
         String message = builder.toString();
-        log.info(message);
+        LOG.info(message);
         String[] lines = message.split("\n", -1);
         assertThat(lines.length).isEqualTo(test.lines);
     }

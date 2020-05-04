@@ -22,7 +22,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.logging.Logger;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 
@@ -32,14 +31,15 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.tests.helper.JsonSource;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * @author leadpony
  */
-public class JsonValidatingExceptionTest {
+public class JsonValidatingExceptionTest implements Loggable {
 
-    private static final Logger LOG = Logger.getLogger(JsonValidatingExceptionTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationService.newInstance();
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
      * @author leadpony

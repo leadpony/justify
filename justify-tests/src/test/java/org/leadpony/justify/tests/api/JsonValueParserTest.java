@@ -19,8 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonStructure;
@@ -35,16 +33,17 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ValidationConfig;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * Tests for {@link JsonParser} which parses in-memory JSON structures.
  *
  * @author leadpony
  */
-public class JsonValueParserTest extends AbstractJsonValueParserTest {
+public class JsonValueParserTest extends AbstractJsonValueParserTest implements Loggable {
 
-    private static final Logger LOG = Logger.getLogger(JsonValueParserTest.class.getName());
-    private static final JsonValidationService SERVICE = JsonValidationService.newInstance();
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
     private static final ProblemHandler PRINTER = SERVICE.createProblemPrinter(LOG::info);
 
     @ParameterizedTest

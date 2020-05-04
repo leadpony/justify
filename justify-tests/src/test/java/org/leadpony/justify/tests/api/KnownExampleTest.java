@@ -33,36 +33,34 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
 import org.leadpony.justify.tests.helper.JsonExample;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing the examples provided by json-schema.org.
  *
  * @author leadpony
  */
-@ApiTest
-public class KnownExampleTest {
+public class KnownExampleTest implements Loggable {
 
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
     public void validateUsingJsonParser(JsonExample example) {
-        JsonSchema schema = service.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
         InputStream in = example.getAsStream();
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonParser parser = service.createParser(in, schema, handler)) {
+        try (JsonParser parser = SERVICE.createParser(in, schema, handler)) {
             while (parser.hasNext()) {
                 parser.next();
             }
         }
 
-        printer.print(problems);
+        printProblems(problems);
 
         assertThat(problems.isEmpty()).isEqualTo(example.isValid());
     }
@@ -70,17 +68,17 @@ public class KnownExampleTest {
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
     public void validateUsingJsonReader(JsonExample example) {
-        JsonSchema schema = service.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
         InputStream in = example.getAsStream();
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
         JsonValue value = null;
-        try (JsonReader reader = service.createReader(in, schema, handler)) {
+        try (JsonReader reader = SERVICE.createReader(in, schema, handler)) {
             value = reader.readValue();
         }
 
-        printer.print(problems);
+        printProblems(problems);
 
         assertThat(value).isNotNull();
         assertThat(problems.isEmpty()).isEqualTo(example.isValid());
@@ -89,7 +87,7 @@ public class KnownExampleTest {
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
     public void validateUsingJsonParserFromValue(JsonExample example) {
-        JsonSchema schema = service.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
         JsonValue value = example.getAsJson();
 
         List<Problem> problems = validateValue(value, schema);
@@ -97,11 +95,11 @@ public class KnownExampleTest {
         assertThat(problems.isEmpty()).isEqualTo(example.isValid());
     }
 
-    private static List<Problem> validateValue(JsonValue value, JsonSchema schema) {
+    private List<Problem> validateValue(JsonValue value, JsonSchema schema) {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
 
-        JsonParserFactory factory = service.createParserFactory(null, schema, p -> handler);
+        JsonParserFactory factory = SERVICE.createParserFactory(null, schema, p -> handler);
         JsonParser parser = null;
         switch (value.getValueType()) {
         case ARRAY:
@@ -120,7 +118,7 @@ public class KnownExampleTest {
 
         parser.close();
 
-        printer.print(problems);
+        printProblems(problems);
 
         return problems;
     }

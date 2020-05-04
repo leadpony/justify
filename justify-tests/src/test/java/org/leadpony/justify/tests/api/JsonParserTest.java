@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,21 +45,18 @@ import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonAssertions;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for testing validations using {@link JsonParser} .
  *
  * @author leadpony
  */
-@ApiTest
-public class JsonParserTest {
+public class JsonParserTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     private static final String PERSON_SCHEMA = "{"
             + "\"type\":\"object\","
@@ -81,8 +77,8 @@ public class JsonParserTest {
     }
 
     private static JsonParser newParser(String instance, String schema, ProblemHandler handler) {
-        JsonSchema s = service.readSchema(new StringReader(schema));
-        return service.createParser(new StringReader(instance), s, handler);
+        JsonSchema s = SERVICE.readSchema(new StringReader(schema));
+        return SERVICE.createParser(new StringReader(instance), s, handler);
     }
 
     @Test
@@ -316,7 +312,7 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
@@ -373,7 +369,7 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
@@ -533,7 +529,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
@@ -619,7 +615,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     @Test
@@ -651,7 +647,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     public static Stream<Arguments> argumentsForGetValue() {
@@ -691,7 +687,7 @@ public class JsonParserTest {
 
         assertThat(actual).isEqualTo(expected);
         assertThat(problems.isEmpty()).isEqualTo(valid);
-        printer.print(problems);
+        printProblems(problems);
     }
 
     @Test
@@ -709,6 +705,6 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
         assertThat(problems).isEmpty();
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 }

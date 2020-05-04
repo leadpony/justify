@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,18 +36,17 @@ import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ValidationConfig;
-import org.leadpony.justify.tests.helper.ApiTest;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test type for testing of parsing default values.
  *
  * @author leadpony
  */
-@ApiTest
-public class DefaultValueParsingTest {
+public class DefaultValueParsingTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     @Test
     public void getStringShouldReturnString() {
@@ -95,7 +93,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -145,7 +143,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -180,7 +178,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -215,7 +213,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -251,7 +249,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -288,7 +286,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -325,7 +323,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -477,7 +475,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -513,7 +511,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -554,7 +552,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -572,7 +570,7 @@ public class DefaultValueParsingTest {
             });
 
             assertThat(thrown).isInstanceOf(IllegalStateException.class);
-            log.info(thrown.getMessage());
+            LOG.info(thrown.getMessage());
         }
     }
 
@@ -611,14 +609,14 @@ public class DefaultValueParsingTest {
     }
 
     private static JsonSchema readSchema(String json) {
-        return service.readSchema(new StringReader(json));
+        return SERVICE.readSchema(new StringReader(json));
     }
 
     private static JsonParser createParser(String json, JsonSchema schema) {
-        ValidationConfig config = service.createValidationConfig()
+        ValidationConfig config = SERVICE.createValidationConfig()
                 .withSchema(schema)
                 .withDefaultValues(true);
-        return service.createParserFactory(config.getAsMap())
+        return SERVICE.createParserFactory(config.getAsMap())
                 .createParser(new StringReader(json));
     }
 

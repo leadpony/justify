@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import jakarta.json.Json;
@@ -55,20 +54,17 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test type for official test suite.
  *
  * @author leadpony
  */
-@ApiTest
-public abstract class AbstractOfficialTest {
+public abstract class AbstractOfficialTest implements Loggable {
 
-    private static Logger log;
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
      * A test fixture for official test suite.
@@ -164,7 +160,7 @@ public abstract class AbstractOfficialTest {
         Spec spec = testClass.getAnnotation(Spec.class);
         specVersion = spec.value();
         basePath = TESTS_PATH.resolve(DRAFT_PATHS.get(specVersion));
-        schemaReaderFactory = service.createSchemaReaderFactoryBuilder()
+        schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
                 .withSchemaValidation(true)
@@ -231,7 +227,7 @@ public abstract class AbstractOfficialTest {
 
     private JsonSchema getNegatedSchema(JsonValue value) {
         JsonSchema schema = getSchema(value);
-        return service.createSchemaBuilderFactory()
+        return SERVICE.createSchemaBuilderFactory()
                 .createBuilder()
                 .withNot(schema)
                 .build();
@@ -250,7 +246,7 @@ public abstract class AbstractOfficialTest {
 
     private JsonParser createValidator(JsonValue data, JsonSchema schema, ProblemHandler handler) {
         StringReader reader = new StringReader(data.toString());
-        return service.createParser(reader, schema, handler);
+        return SERVICE.createParser(reader, schema, handler);
     }
 
     private static Stream<Fixture> readFixtures(String name) {
@@ -306,15 +302,15 @@ public abstract class AbstractOfficialTest {
     }
 
     private void printProblems(Fixture fixture, List<Problem> problems) {
-        if (problems.isEmpty() || !log.isLoggable(Level.INFO)) {
+        if (problems.isEmpty() || !LOG.isLoggable(Level.INFO)) {
             return;
         }
         StringBuilder builder = new StringBuilder("- ");
         builder.append(fixture.toString());
 
-        log.info(builder.toString());
-        printer.print(problems);
-        log.info("");
+        LOG.info(builder.toString());
+        printProblems(problems);
+        LOG.info("");
     }
 
     private static InputStream openResource(String name) {
@@ -343,7 +339,7 @@ public abstract class AbstractOfficialTest {
             String rootless = id.getPath().substring(1);
             Path path = REMOTE_PATH.resolve(rootless);
             try {
-                try (JsonSchemaReader reader = service.createSchemaReader(
+                try (JsonSchemaReader reader = SERVICE.createSchemaReader(
                         Files.newInputStream(path))) {
                     return reader.read();
                 }

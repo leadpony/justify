@@ -27,16 +27,15 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ObjectJsonSchema;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonResource;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * @author leadpony
  */
-@ApiTest
 public class KeywordTest {
 
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
      * @author leadpony
@@ -101,6 +100,6 @@ public class KeywordTest {
 
     private static JsonSchema fromValue(JsonValue value) {
         String string = value.toString();
-        return service.readSchema(new StringReader(string));
+        return SERVICE.readSchema(new StringReader(string));
     }
 }

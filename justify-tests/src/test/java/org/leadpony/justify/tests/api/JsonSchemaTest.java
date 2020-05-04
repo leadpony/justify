@@ -38,18 +38,17 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.tests.helper.ApiTest;
 import org.leadpony.justify.tests.helper.JsonResource;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test class for tesing the {@link JsonSchema} implementation.
  *
  * @author leadpony
  */
-@ApiTest
 public class JsonSchemaTest {
 
-    private static JsonValidationService service;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     @Test
     public void defaultValueShouldReturnValueIfExists() {
@@ -314,6 +313,6 @@ public class JsonSchemaTest {
     }
 
     private static JsonSchema fromString(String string) {
-        return service.readSchema(new StringReader(string));
+        return SERVICE.readSchema(new StringReader(string));
     }
 }

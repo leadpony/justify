@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.tests.helper.JsonExample;
 import org.leadpony.justify.tests.helper.SchemaExample;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -56,7 +57,7 @@ public class JsonValidationServiceTest {
 
     @BeforeEach
     public void setUp() {
-        sut = JsonValidationService.newInstance();
+        sut = ValidationServiceType.DEFAULT.getService();
     }
 
     @ParameterizedTest()

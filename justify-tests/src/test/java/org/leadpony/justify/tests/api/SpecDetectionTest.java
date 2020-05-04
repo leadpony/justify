@@ -33,19 +33,17 @@ import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonValidatingException;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.tests.helper.ApiTest;
-import org.leadpony.justify.tests.helper.ProblemPrinter;
+import org.leadpony.justify.tests.helper.Loggable;
+import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
  * A test type for testing the auto detection of spec versions.
  *
  * @author leadpony
  */
-@ApiTest
-public class SpecDetectionTest {
+public class SpecDetectionTest implements Loggable {
 
-    private static JsonValidationService service;
-    private static ProblemPrinter printer;
+    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     public static Stream<Arguments> supportedVersions() {
         return Stream.of(
@@ -119,7 +117,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        printer.print(e.getProblems());
+        printProblems(e.getProblems());
     }
 
     @ParameterizedTest
@@ -138,7 +136,7 @@ public class SpecDetectionTest {
         assertThat(thrown).isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        printer.print(e.getProblems());
+        printProblems(e.getProblems());
     }
 
     public static Stream<Arguments> matchedVersions() {
@@ -197,7 +195,7 @@ public class SpecDetectionTest {
             .isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        printer.print(e.getProblems());
+        printProblems(e.getProblems());
     }
 
     @ParameterizedTest
@@ -219,13 +217,13 @@ public class SpecDetectionTest {
             .isInstanceOf(JsonValidatingException.class);
 
         JsonValidatingException e = (JsonValidatingException) thrown;
-        printer.print(e.getProblems());
+        printProblems(e.getProblems());
     }
 
     /* helpers */
 
     private static JsonSchemaReaderFactory createFactory(SpecVersion defaultVersion, boolean detection) {
-        return service.createSchemaReaderFactoryBuilder()
+        return SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(defaultVersion)
                 .withStrictKeywords(true)
                 .withSchemaValidation(true)
