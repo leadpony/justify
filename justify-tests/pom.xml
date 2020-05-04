@@ -16,8 +16,7 @@
     <name>org.leadpony.justify.tests</name>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>14</maven.compiler.release>
     </properties>
 
     <dependencies>
@@ -47,6 +46,11 @@
             <artifactId>${jsonp.provider.artifactId}</artifactId>
             <version>${jsonp.provider.version}</version>
             <classifier>${jsonp.provider.classifier}</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.leadpony.joy</groupId>
+            <artifactId>joy-yaml</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

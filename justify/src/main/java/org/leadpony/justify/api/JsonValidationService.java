@@ -86,6 +86,21 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     }
 
     /**
+     * Creates a new instance of this type using the specified instance of
+     * {@link JsonProvider}.
+     *
+     * @param jsonProvider the JSON provider.
+     * @return newly created instance of this type, never be {@code null}.
+     * @throws NullPointerException if the specified {@code jsonProvider} is
+     *                              {@code null}.
+     * @throws JsonException        if an error is encountered while creating the
+     *                              instance.
+     */
+    static JsonValidationService newInstance(JsonProvider jsonProvider) {
+        return JsonValidationProvider.provider().createService(jsonProvider);
+    }
+
+    /**
      * Creates a factory for creating JSON schema readers with default
      * configuration.
      *
@@ -178,9 +193,8 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     /**
      * Reads a JSON schema from a specified non-validating parser.
      *
-     * @param parser the parser from which a JSON schema is to be read.
-     *               The specified parser will be closed automatically in this
-     *               method.
+     * @param parser the parser from which a JSON schema is to be read. The
+     *               specified parser will be closed automatically in this method.
      * @return the read JSON schema.
      * @throws NullPointerException    if the specified {@code parser} is
      *                                 {@code null}.
@@ -320,8 +334,8 @@ public interface JsonValidationService extends JsonSchemaReaderFactory {
     JsonParser createParser(Path path, JsonSchema schema, ProblemHandler handler);
 
     /**
-     * Creates a JSON parser from the specified not validating parser, which validates
-     * the JSON document while parsing.
+     * Creates a JSON parser from the specified not validating parser, which
+     * validates the JSON document while parsing.
      *
      * @param parser  the parser from which JSON is to be read.
      * @param schema  the JSON schema to apply when validating JSON document.

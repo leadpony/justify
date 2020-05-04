@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.ServiceLoader;
 
 import jakarta.json.JsonException;
+import jakarta.json.spi.JsonProvider;
 
 import org.leadpony.justify.api.JsonValidationService;
 
@@ -26,8 +27,8 @@ import org.leadpony.justify.api.JsonValidationService;
  * Service provider for JSON validation objects.
  *
  * <p>
- * All the public methods in this class are safe for use by multiple concurrent threads.
- * This type is not intended to be used directly by end users.
+ * All the public methods in this class are safe for use by multiple concurrent
+ * threads. This type is not intended to be used directly by end users.
  * </p>
  *
  * @author leadpony
@@ -65,6 +66,19 @@ public abstract class JsonValidationProvider {
      * @throws JsonException if an error is encountered while creating the instance.
      */
     public abstract JsonValidationService createService();
+
+    /**
+     * Creates a new instance of {@link JsonValidationService} using the specified
+     * instance of {@link JsonProvider}.
+     *
+     * @param jsonProvider the JSON provider.
+     * @return newly created instance of {@link JsonValidationService}.
+     * @throws NullPointerException if the specified {@code jsonProvider} is
+     *                              {@code null}.
+     * @throws JsonException        if an error is encountered while creating the
+     *                              instance.
+     */
+    public abstract JsonValidationService createService(JsonProvider jsonProvider);
 
     private static JsonValidationProvider loadProvider(ClassLoader classLoader) {
         ServiceLoader<JsonValidationProvider> loader = ServiceLoader.load(JsonValidationProvider.class, classLoader);

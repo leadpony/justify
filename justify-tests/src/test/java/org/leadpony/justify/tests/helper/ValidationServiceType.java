@@ -15,13 +15,20 @@
  */
 package org.leadpony.justify.tests.helper;
 
+import java.util.ServiceLoader;
+import java.util.function.Predicate;
+
 import org.leadpony.justify.api.JsonValidationService;
+
+import jakarta.json.spi.JsonProvider;
 
 /**
  * @author leadpony
  */
 public enum ValidationServiceType {
     DEFAULT(createDefaultService());
+
+    private static final String YAML_PROVIDER = "org.leadpony.joy.yaml.YamlProvider";
 
     private final JsonValidationService service;
 
@@ -34,6 +41,20 @@ public enum ValidationServiceType {
     }
 
     private static JsonValidationService createDefaultService() {
-        return JsonValidationService.newInstance();
+        return createService(provider -> !supportsYaml(provider));
+    }
+
+    private static JsonValidationService createService(Predicate<ServiceLoader.Provider<JsonProvider>> predicate) {
+        ServiceLoader<JsonProvider> loader = ServiceLoader.load(JsonProvider.class);
+        JsonProvider jsonProvider = loader.stream()
+                .filter(predicate)
+                .findFirst()
+                .map(ServiceLoader.Provider::get)
+                .orElseThrow();
+        return JsonValidationService.newInstance(jsonProvider);
+    }
+
+    private static boolean supportsYaml(ServiceLoader.Provider<JsonProvider> provider) {
+        return provider.type().getName().equals(YAML_PROVIDER);
     }
 }

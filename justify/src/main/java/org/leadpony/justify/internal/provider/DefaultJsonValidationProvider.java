@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.provider;
 
 import jakarta.json.spi.JsonProvider;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.spi.JsonValidationProvider;
 
@@ -39,7 +41,15 @@ public class DefaultJsonValidationProvider extends JsonValidationProvider {
      */
     @Override
     public JsonValidationService createService() {
-        JsonProvider provider = JsonProvider.provider();
-        return new DefaultJsonValidationService(provider);
+        return createService(JsonProvider.provider());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonValidationService createService(JsonProvider jsonProvider) {
+        requireNonNull(jsonProvider, "jsonProvider");
+        return new DefaultJsonValidationService(jsonProvider);
     }
 }
