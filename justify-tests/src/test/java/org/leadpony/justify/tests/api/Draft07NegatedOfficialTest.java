@@ -28,23 +28,23 @@ import org.leadpony.justify.internal.annotation.Spec;
 @Spec(SpecVersion.DRAFT_07)
 public class Draft07NegatedOfficialTest extends AbstractOfficialTest {
 
-    public static Stream<Fixture> mandatory() {
+    public static Stream<TestCase> mandatory() {
         return Draft07OfficialTest.mandatory();
     }
 
-    public static Stream<Fixture> optional() {
+    public static Stream<TestCase> optional() {
         return Draft07OfficialTest.optional();
     }
 
     @ParameterizedTest
     @MethodSource("mandatory")
-    public void testMandatory(Fixture fixture) {
-        testNegated(fixture);
+    public void testMandatory(TestCase test) {
+        testNegated(test);
     }
 
     @ParameterizedTest
     @MethodSource("optional")
-    public void testOptional(Fixture fixture) {
-        testNegated(fixture);
+    public void testOptional(TestCase test) {
+        testNegated(test);
     }
 }

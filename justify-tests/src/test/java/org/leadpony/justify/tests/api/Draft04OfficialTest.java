@@ -61,7 +61,7 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "uniqueItems.json",
     };
 
-    public static Stream<Fixture> mandatory() {
+    public static Stream<TestCase> mandatory() {
         return generateFixtures(MANDATORY);
     }
 
@@ -73,19 +73,19 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "optional/zeroTerminatedFloats.json",
     };
 
-    public static Stream<Fixture> optional() {
+    public static Stream<TestCase> optional() {
         return generateFixtures(OPTIONAL);
     }
 
     @ParameterizedTest
     @MethodSource("mandatory")
-    public void testMandatory(Fixture fixture) {
-        test(fixture);
+    public void testMandatory(TestCase test) {
+        test(test);
     }
 
     @ParameterizedTest
     @MethodSource("optional")
-    public void testOptional(Fixture fixture) {
-        test(fixture);
+    public void testOptional(TestCase test) {
+        test(test);
     }
 }

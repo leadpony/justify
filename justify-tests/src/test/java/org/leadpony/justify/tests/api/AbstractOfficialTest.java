@@ -67,11 +67,11 @@ public abstract class AbstractOfficialTest implements Loggable {
     private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
 
     /**
-     * A test fixture for official test suite.
+     * A test case for official test suite.
      *
      * @author leadpony
      */
-    public static class Fixture {
+    public static class TestCase {
 
         private final String name;
         private final int index;
@@ -80,7 +80,7 @@ public abstract class AbstractOfficialTest implements Loggable {
         private final String description;
         private final boolean result;
 
-        Fixture(String name,
+        TestCase(String name,
                 int index,
                 JsonValue schema,
                 JsonValue data,
@@ -167,18 +167,18 @@ public abstract class AbstractOfficialTest implements Loggable {
                 .build();
     }
 
-    public static Stream<Fixture> generateFixtures(String... files) {
-        return Stream.of(files).flatMap(AbstractOfficialTest::readFixtures);
+    public static Stream<TestCase> generateFixtures(String... files) {
+        return Stream.of(files).flatMap(AbstractOfficialTest::readTestCases);
     }
 
     /**
-     * Tests with a fixture.
+     * Tests with a test case.
      *
-     * @param fixture
+     * @param test
      */
-    public void test(Fixture fixture) {
-        JsonSchema schema = getSchema(fixture.getSchema());
-        JsonValue data = fixture.getData();
+    public void test(TestCase test) {
+        JsonSchema schema = getSchema(test.getSchema());
+        JsonValue data = test.getData();
 
         List<Problem> problems = new ArrayList<>();
 
@@ -188,19 +188,19 @@ public abstract class AbstractOfficialTest implements Loggable {
         }
         parser.close();
 
-        assertThat(problems.isEmpty()).isEqualTo(fixture.getResult());
+        assertThat(problems.isEmpty()).isEqualTo(test.getResult());
         checkProblems(problems);
-        printProblems(fixture, problems);
+        printProblems(test, problems);
     }
 
     /**
-     * Tests with a negated fixture.
+     * Tests with a negated test case.
      *
-     * @param fixture
+     * @param test
      */
-    public void testNegated(Fixture fixture) {
-        JsonSchema schema = getNegatedSchema(fixture.getSchema());
-        JsonValue data = fixture.getData();
+    public void testNegated(TestCase test) {
+        JsonSchema schema = getNegatedSchema(test.getSchema());
+        JsonValue data = test.getData();
 
         List<Problem> problems = new ArrayList<>();
 
@@ -210,9 +210,9 @@ public abstract class AbstractOfficialTest implements Loggable {
         }
         parser.close();
 
-        assertThat(problems.isEmpty()).isEqualTo(!fixture.getResult());
+        assertThat(problems.isEmpty()).isEqualTo(!test.getResult());
         checkProblems(problems);
-        printProblems(fixture, problems);
+        printProblems(test, problems);
     }
 
     private JsonSchema getSchema(JsonValue value) {
@@ -249,15 +249,15 @@ public abstract class AbstractOfficialTest implements Loggable {
         return SERVICE.createParser(reader, schema, handler);
     }
 
-    private static Stream<Fixture> readFixtures(String name) {
-        Function<JsonObject, Stream<Fixture>> mapper = new Function<JsonObject, Stream<Fixture>>() {
+    private static Stream<TestCase> readTestCases(String name) {
+        Function<JsonObject, Stream<TestCase>> mapper = new Function<JsonObject, Stream<TestCase>>() {
             private int index;
 
             @Override
-            public Stream<Fixture> apply(JsonObject schema) {
+            public Stream<TestCase> apply(JsonObject schema) {
                 return schema.getJsonArray("tests").stream()
                         .map(JsonValue::asJsonObject)
-                        .map(test -> new Fixture(
+                        .map(test -> new TestCase(
                                 name,
                                 index++,
                                 schema.getValue("/schema"),
@@ -301,12 +301,12 @@ public abstract class AbstractOfficialTest implements Loggable {
         }
     }
 
-    private void printProblems(Fixture fixture, List<Problem> problems) {
+    private void printProblems(TestCase test, List<Problem> problems) {
         if (problems.isEmpty() || !LOG.isLoggable(Level.INFO)) {
             return;
         }
         StringBuilder builder = new StringBuilder("- ");
-        builder.append(fixture.toString());
+        builder.append(test.toString());
 
         LOG.info(builder.toString());
         printProblems(problems);

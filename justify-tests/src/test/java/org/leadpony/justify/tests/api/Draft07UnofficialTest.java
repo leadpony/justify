@@ -34,13 +34,13 @@ public class Draft07UnofficialTest extends AbstractOfficialTest {
             "/org/leadpony/justify/tests/api/instance/propertyNames.json",
     };
 
-    public static Stream<Fixture> mandatory() {
+    public static Stream<TestCase> mandatory() {
         return generateFixtures(MANDATORY);
     }
 
     @ParameterizedTest
     @MethodSource("mandatory")
-    public void testMandatory(Fixture fixture) {
-        test(fixture);
+    public void testMandatory(TestCase test) {
+        test(test);
     }
 }

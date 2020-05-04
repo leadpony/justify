@@ -38,21 +38,21 @@ class CustomFormatAttributeTest extends AbstractOfficialTest {
             "/org/leadpony/justify/tests/spi/customFormat.json",
     };
 
-    static Stream<Fixture> fixtures() {
+    static Stream<TestCase> testCases() {
         return generateFixtures(FILES);
     }
 
     @ParameterizedTest
-    @MethodSource("fixtures")
+    @MethodSource("testCases")
     @Override
-    public void test(Fixture fixture) {
-        super.test(fixture);
+    public void test(TestCase test) {
+        super.test(test);
     }
 
     @ParameterizedTest
-    @MethodSource("fixtures")
+    @MethodSource("testCases")
     @Override
-    public void testNegated(Fixture fixture) {
-        super.testNegated(fixture);
+    public void testNegated(TestCase test) {
+        super.testNegated(test);
     }
 }
