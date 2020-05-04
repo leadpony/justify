@@ -226,7 +226,7 @@ For more information, please see [the code sample](https://github.com/leadpony/j
 ## Building from Source
 
 The following tools are required to build this software.
-* [JDK] 11
+* [JDK] 14
 * [Apache Maven] 3.6.2 or higher
 
 The commands below build this software and install it into your local Maven repository.
