@@ -23,7 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.tests.api.AbstractOfficialTest;
+import org.leadpony.justify.tests.extra.json.AbstractOfficialTest;
 
 /**
  * A test for custom formats.

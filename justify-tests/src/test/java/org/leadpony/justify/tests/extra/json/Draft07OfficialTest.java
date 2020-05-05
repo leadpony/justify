@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.tests.api;
+package org.leadpony.justify.tests.extra.json;
 
 import java.util.stream.Stream;
 
@@ -23,22 +23,28 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 
 /**
- * The official test suite tests for Draft-04.
+ * The official test suite tests for Draft-07.
  *
  * @author leadpony
  */
-@Spec(SpecVersion.DRAFT_04)
-public class Draft04OfficialTest extends AbstractOfficialTest {
+@Spec(SpecVersion.DRAFT_07)
+public class Draft07OfficialTest extends AbstractOfficialTest {
 
     private static final String[] MANDATORY = {
             "additionalItems.json",
             "additionalProperties.json",
             "allOf.json",
             "anyOf.json",
+            "boolean_schema.json",
+            "const.json",
+            "contains.json",
             "default.json",
             "definitions.json",
             "dependencies.json",
             "enum.json",
+            "exclusiveMaximum.json",
+            "exclusiveMinimum.json",
+            "if-then-else.json",
             "items.json",
             "maximum.json",
             "maxItems.json",
@@ -54,11 +60,12 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "pattern.json",
             "patternProperties.json",
             "properties.json",
+            "propertyNames.json",
             "ref.json",
             "refRemote.json",
             "required.json",
             "type.json",
-            "uniqueItems.json",
+            "uniqueItems.json"
     };
 
     public static Stream<TestCase> mandatory() {
@@ -67,10 +74,27 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
 
     private static final String[] OPTIONAL = {
             "optional/bignum.json",
-            // Draft-04 does not have the "regex" format.
+            "optional/content.json",
             "optional/ecmascript-regex.json",
-            "optional/format.json",
             "optional/zeroTerminatedFloats.json",
+
+            "optional/format/date.json",
+            "optional/format/date-time.json",
+            "optional/format/email.json",
+            "optional/format/hostname.json",
+            "optional/format/idn-email.json",
+            "optional/format/idn-hostname.json",
+            "optional/format/ipv4.json",
+            "optional/format/ipv6.json",
+            "optional/format/iri.json",
+            "optional/format/iri-reference.json",
+            "optional/format/json-pointer.json",
+            "optional/format/regex.json",
+            "optional/format/relative-json-pointer.json",
+            "optional/format/time.json",
+            "optional/format/uri.json",
+            "optional/format/uri-reference.json",
+            "optional/format/uri-template.json"
     };
 
     public static Stream<TestCase> optional() {

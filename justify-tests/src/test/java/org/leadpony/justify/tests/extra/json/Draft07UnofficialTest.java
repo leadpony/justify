@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.tests.api;
+package org.leadpony.justify.tests.extra.json;
 
 import java.util.stream.Stream;
 
@@ -25,26 +25,22 @@ import org.leadpony.justify.internal.annotation.Spec;
 /**
  * @author leadpony
  */
-@Spec(SpecVersion.DRAFT_04)
-public class Draft04NegatedOfficialTest extends AbstractOfficialTest {
+@Spec(SpecVersion.DRAFT_07)
+public class Draft07UnofficialTest extends AbstractOfficialTest {
+
+    private static final String[] MANDATORY = {
+            "/org/leadpony/justify/tests/api/instance/additionalProperties.json",
+            "/org/leadpony/justify/tests/api/instance/if-then-else.json",
+            "/org/leadpony/justify/tests/api/instance/propertyNames.json",
+    };
 
     public static Stream<TestCase> mandatory() {
-        return Draft04OfficialTest.mandatory();
-    }
-
-    public static Stream<TestCase> optional() {
-        return Draft04OfficialTest.optional();
+        return generateFixtures(MANDATORY);
     }
 
     @ParameterizedTest
     @MethodSource("mandatory")
     public void testMandatory(TestCase test) {
-        testNegated(test);
-    }
-
-    @ParameterizedTest
-    @MethodSource("optional")
-    public void testOptional(TestCase test) {
-        testNegated(test);
+        test(test);
     }
 }
