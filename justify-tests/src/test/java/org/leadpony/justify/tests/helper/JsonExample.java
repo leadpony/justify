@@ -36,18 +36,26 @@ public enum JsonExample {
     PRODUCT("product.json", SchemaExample.PRODUCT, true),
     PRODUCT_INVALID("product-invalid.json", SchemaExample.PRODUCT, false);
 
-    private final String name;
+    private static final String BASE_PACKAGE = SchemaExample.BASE_PACKAGE;
+
+    private final String jsonName;
+    private final String yamlName;
     private final SchemaExample schema;
     private final boolean valid;
 
-    JsonExample(String name, SchemaExample schema, boolean valid) {
-        this.name = name;
+    JsonExample(String jsonName, SchemaExample schema, boolean valid) {
+        this.jsonName = jsonName;
+        this.yamlName = jsonName.replaceAll("\\.json$", ".yaml");
         this.schema = schema;
         this.valid = valid;
     }
 
-    public String getName() {
-        return name;
+    public String getJsonName() {
+        return jsonName;
+    }
+
+    public String getYamlName() {
+        return yamlName;
     }
 
     public boolean isValid() {
@@ -59,20 +67,32 @@ public enum JsonExample {
     }
 
     public Path getPath() {
-        return SchemaExample.BASE_PATH.resolve(getName());
+        return SchemaExample.BASE_PATH.resolve(getJsonName());
     }
 
-    public InputStream getAsStream() {
-        return getClass().getResourceAsStream(SchemaExample.BASE_PACKAGE + getName());
+    public InputStream getJsonAsStream() {
+        return getResourceAsStream(getJsonName());
+    }
+
+    public InputStream getYamlAsStream() {
+        return getResourceAsStream(getYamlName());
     }
 
     public JsonValue getAsJson() {
-        try (JsonReader reader = Json.createReader(getAsStream())) {
+        try (JsonReader reader = Json.createReader(getJsonAsStream())) {
             return reader.readValue();
         }
     }
 
-    public InputStream getSchemaAsStream() {
-        return schema.getAsStream();
+    public InputStream getJsonSchemaAsStream() {
+        return schema.getJsonAsStream();
+    }
+
+    public InputStream getYamlSchemaAsStream() {
+        return schema.getYamlAsStream();
+    }
+
+    private InputStream getResourceAsStream(String name) {
+        return getClass().getResourceAsStream(BASE_PACKAGE + name);
     }
 }

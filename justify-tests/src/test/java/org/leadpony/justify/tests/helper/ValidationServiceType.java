@@ -26,7 +26,8 @@ import jakarta.json.spi.JsonProvider;
  * @author leadpony
  */
 public enum ValidationServiceType {
-    DEFAULT(createDefaultService());
+    DEFAULT(createDefaultService()),
+    YAML(createYamlService());
 
     private static final String YAML_PROVIDER = "org.leadpony.joy.yaml.YamlProvider";
 
@@ -42,6 +43,10 @@ public enum ValidationServiceType {
 
     private static JsonValidationService createDefaultService() {
         return createService(provider -> !supportsYaml(provider));
+    }
+
+    private static JsonValidationService createYamlService() {
+        return createService(ValidationServiceType::supportsYaml);
     }
 
     private static JsonValidationService createService(Predicate<ServiceLoader.Provider<JsonProvider>> predicate) {

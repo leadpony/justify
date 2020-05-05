@@ -1,0 +1,14 @@
+productId: 1
+productName: An ice sculpture
+price: -12.5
+tags:
+  - cold
+  - ice
+  - 42
+dimensions:
+  length: 7
+  width: 12
+  height: 9.5
+warehouseLocation:
+  latitude: -100
+  longitude: 20.4

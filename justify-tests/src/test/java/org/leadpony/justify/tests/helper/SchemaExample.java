@@ -41,14 +41,20 @@ public enum SchemaExample {
     static final Path BASE_PATH = Paths.get(
             "target", "test-classes", "org", "json_schema", "examples", "draft7");
 
-    private final String name;
+    private final String jsonName;
+    private final String yamlName;
 
-    SchemaExample(String name) {
-        this.name = name;
+    SchemaExample(String jsonName) {
+        this.jsonName = jsonName;
+        this.yamlName = jsonName.replaceAll("\\.json$", ".yaml");
     }
 
-    public String getName() {
-        return name;
+    public String getJsonName() {
+        return jsonName;
+    }
+
+    public String getYamlName() {
+        return yamlName;
     }
 
     public Charset getCharset() {
@@ -56,16 +62,24 @@ public enum SchemaExample {
     }
 
     public Path getPath() {
-        return BASE_PATH.resolve(getName());
+        return BASE_PATH.resolve(getJsonName());
     }
 
-    public InputStream getAsStream() {
-        return getClass().getResourceAsStream(BASE_PACKAGE + getName());
+    public InputStream getJsonAsStream() {
+        return getResourceAsStream(getJsonName());
+    }
+
+    public InputStream getYamlAsStream() {
+        return getResourceAsStream(getYamlName());
     }
 
     public JsonValue getAsJson() {
-        try (JsonReader reader = Json.createReader(getAsStream())) {
+        try (JsonReader reader = Json.createReader(getJsonAsStream())) {
             return reader.readValue();
         }
+    }
+
+    private InputStream getResourceAsStream(String name) {
+        return getClass().getResourceAsStream(BASE_PACKAGE + name);
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.tests.api;
+package org.leadpony.justify.tests.extra.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +27,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.leadpony.justify.api.JsonSchema;
@@ -42,19 +43,27 @@ import org.leadpony.justify.tests.helper.ValidationServiceType;
  *
  * @author leadpony
  */
-public class KnownExampleTest implements Loggable {
+public class JsonExampleTest implements Loggable {
 
-    private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
+    private JsonValidationService service;
+
+    @BeforeEach
+    public void setUp() {
+        service = createService();
+    }
 
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
-    public void validateUsingJsonParser(JsonExample example) {
-        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
-        InputStream in = example.getAsStream();
+    public void validateJsonAgainstJsonSchemaUsingJsonParser(JsonExample example) {
+        validateUsingJsonParser(example.getJsonAsStream(), example.getJsonSchemaAsStream(), example.isValid());
+    }
+
+    protected void validateUsingJsonParser(InputStream stream, InputStream schemaStream, boolean valid) {
+        JsonSchema schema = service.readSchema(schemaStream);
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        try (JsonParser parser = SERVICE.createParser(in, schema, handler)) {
+        try (JsonParser parser = service.createParser(stream, schema, handler)) {
             while (parser.hasNext()) {
                 parser.next();
             }
@@ -62,32 +71,35 @@ public class KnownExampleTest implements Loggable {
 
         printProblems(problems);
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        assertThat(problems.isEmpty()).isEqualTo(valid);
     }
 
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
-    public void validateUsingJsonReader(JsonExample example) {
-        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
-        InputStream in = example.getAsStream();
+    public void validateJsonAgainstJsonSchemaUsingJsonReader(JsonExample example) {
+        validateUsingJsonReader(example.getJsonAsStream(), example.getJsonSchemaAsStream(), example.isValid());
+    }
+
+    protected void validateUsingJsonReader(InputStream stream, InputStream schemaStream, boolean valid) {
+        JsonSchema schema = service.readSchema(schemaStream);
 
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
         JsonValue value = null;
-        try (JsonReader reader = SERVICE.createReader(in, schema, handler)) {
+        try (JsonReader reader = service.createReader(stream, schema, handler)) {
             value = reader.readValue();
         }
 
         printProblems(problems);
 
         assertThat(value).isNotNull();
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        assertThat(problems.isEmpty()).isEqualTo(valid);
     }
 
     @ParameterizedTest()
     @EnumSource(JsonExample.class)
     public void validateUsingJsonParserFromValue(JsonExample example) {
-        JsonSchema schema = SERVICE.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = service.readSchema(example.getJsonSchemaAsStream());
         JsonValue value = example.getAsJson();
 
         List<Problem> problems = validateValue(value, schema);
@@ -99,7 +111,7 @@ public class KnownExampleTest implements Loggable {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
 
-        JsonParserFactory factory = SERVICE.createParserFactory(null, schema, p -> handler);
+        JsonParserFactory factory = service.createParserFactory(null, schema, p -> handler);
         JsonParser parser = null;
         switch (value.getValueType()) {
         case ARRAY:
@@ -121,5 +133,9 @@ public class KnownExampleTest implements Loggable {
         printProblems(problems);
 
         return problems;
+    }
+
+    protected JsonValidationService createService() {
+        return ValidationServiceType.DEFAULT.getService();
     }
 }

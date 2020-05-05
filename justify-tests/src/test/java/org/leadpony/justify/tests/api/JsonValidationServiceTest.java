@@ -128,9 +128,9 @@ public class JsonValidationServiceTest {
     public void createParserShouldCreateParserFromInputStream(JsonExample example) {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        InputStream source = example.getAsStream();
+        InputStream source = example.getJsonAsStream();
         try (JsonParser parser = sut.createParser(source, schema, handler)) {
             parseAll(parser);
         }
@@ -143,9 +143,9 @@ public class JsonValidationServiceTest {
     public void createParserShouldCreateParserFromInputStreamAndCharset(JsonExample example) {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        InputStream source = example.getAsStream();
+        InputStream source = example.getJsonAsStream();
         try (JsonParser parser = sut.createParser(source, example.getCharset(), schema, handler)) {
             parseAll(parser);
         }
@@ -158,7 +158,7 @@ public class JsonValidationServiceTest {
     public void createParserShouldCreateParserFromReader(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
         Reader source = Files.newBufferedReader(example.getPath());
         try (JsonParser parser = sut.createParser(source, schema, handler)) {
@@ -173,7 +173,7 @@ public class JsonValidationServiceTest {
     public void createParserShouldCreateParserFromPath(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
         Path source = example.getPath();
         try (JsonParser parser = sut.createParser(source, schema, handler)) {
@@ -188,9 +188,9 @@ public class JsonValidationServiceTest {
     public void createParserShouldCreateParserFromJsonParser(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        JsonParser source = Json.createParser(example.getAsStream());
+        JsonParser source = Json.createParser(example.getJsonAsStream());
         try (JsonParser parser = sut.createParser(source, schema, handler)) {
             parseAll(parser);
         }
@@ -205,9 +205,9 @@ public class JsonValidationServiceTest {
     public void createReaderShouldCreateReaderFromInputStream(JsonExample example) {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        InputStream source = example.getAsStream();
+        InputStream source = example.getJsonAsStream();
         try (JsonReader reader = sut.createReader(source, schema, handler)) {
             reader.readValue();
         }
@@ -220,9 +220,9 @@ public class JsonValidationServiceTest {
     public void createReaderShouldCreateReaderFromInputStreamAndCharset(JsonExample example) {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        InputStream source = example.getAsStream();
+        InputStream source = example.getJsonAsStream();
         try (JsonReader reader = sut.createReader(source, example.getCharset(), schema, handler)) {
             reader.readValue();
         }
@@ -235,7 +235,7 @@ public class JsonValidationServiceTest {
     public void createReaderShouldCreateReaderFromReader(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
         Reader source = Files.newBufferedReader(example.getPath());
         try (JsonReader reader = sut.createReader(source, schema, handler)) {
@@ -250,7 +250,7 @@ public class JsonValidationServiceTest {
     public void createReaderShouldCreateReaderFromPath(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
         Path source = example.getPath();
         try (JsonReader reader = sut.createReader(source, schema, handler)) {
@@ -265,9 +265,9 @@ public class JsonValidationServiceTest {
     public void createReaderShouldCreateReaderFromJsonParser(JsonExample example) throws IOException {
         List<Problem> problems = new ArrayList<>();
         ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getSchemaAsStream());
+        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
 
-        JsonParser source = Json.createParser(example.getAsStream());
+        JsonParser source = Json.createParser(example.getJsonAsStream());
         try (JsonReader reader = sut.createReader(source, schema, handler)) {
             reader.readValue();
         }
