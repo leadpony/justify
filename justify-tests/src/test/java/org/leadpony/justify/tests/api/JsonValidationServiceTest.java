@@ -15,8 +15,6 @@
  */
 package org.leadpony.justify.tests.api;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -41,7 +39,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonReader;
 import jakarta.json.stream.JsonParser;
@@ -53,301 +50,360 @@ import jakarta.json.stream.JsonParser;
  */
 public class JsonValidationServiceTest {
 
-    private JsonValidationService sut;
+    abstract static class AbstractTest extends JsonSchemaReaderFactoryTest.AbstractTest {
 
-    @BeforeEach
-    public void setUp() {
-        sut = ValidationServiceType.DEFAULT.getService();
-    }
+        protected JsonValidationService sut;
 
-    @ParameterizedTest()
-    @EnumSource(SchemaExample.class)
-    public void readSchemaShouldReadSchemaFromInputStream(SchemaExample example)
-            throws IOException {
-
-        InputStream in = Files.newInputStream(example.getPath());
-        JsonSchema schema = sut.readSchema(in);
-
-        assertThat(schema.toJson()).isEqualTo(example.getAsJson());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(SchemaExample.class)
-    public void readSchemaShouldReadSchemaFromInputStreamAndCharset(SchemaExample example)
-            throws IOException {
-
-        InputStream in = Files.newInputStream(example.getPath());
-        JsonSchema schema = sut.readSchema(in, example.getCharset());
-
-        assertThat(schema.toJson()).isEqualTo(example.getAsJson());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(SchemaExample.class)
-    public void readSchemaShouldReadSchemaFromReader(SchemaExample example)
-            throws IOException {
-
-        Reader reader = Files.newBufferedReader(example.getPath());
-        JsonSchema schema = sut.readSchema(reader);
-
-        assertThat(schema.toJson()).isEqualTo(example.getAsJson());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(SchemaExample.class)
-    public void readSchemaShouldReadSchemaFromPath(SchemaExample example)
-            throws IOException {
-
-        JsonSchema schema = sut.readSchema(example.getPath());
-
-        assertThat(schema.toJson()).isEqualTo(example.getAsJson());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(SchemaExample.class)
-    public void readSchemaShouldReadSchemaFromJsonParser(SchemaExample example)
-            throws IOException {
-
-        InputStream in = Files.newInputStream(example.getPath());
-        JsonParser parser = Json.createParser(in);
-        JsonSchema schema = sut.readSchema(parser);
-
-        assertThat(schema.toJson()).isEqualTo(example.getAsJson());
-
-        // The parser should be closed.
-        Throwable thrown = catchThrowable(() -> {
-            parser.next();
-        });
-        assertThat(thrown).isInstanceOf(JsonException.class);
-    }
-
-    /* Tests for createParser() */
-
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createParserShouldCreateParserFromInputStream(JsonExample example) {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
-
-        InputStream source = example.getJsonAsStream();
-        try (JsonParser parser = sut.createParser(source, schema, handler)) {
-            parseAll(parser);
+        protected AbstractTest(ValidationServiceType type) {
+            super(type);
+            this.sut = this.service;
         }
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
+        @ParameterizedTest()
+        @EnumSource(SchemaExample.class)
+        public void readSchemaShouldReadSchemaFromInputStream(SchemaExample example)
+                throws IOException {
 
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createParserShouldCreateParserFromInputStreamAndCharset(JsonExample example) {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
+            InputStream in = Files.newInputStream(getPathOf(example));
+            JsonSchema schema = sut.readSchema(in);
 
-        InputStream source = example.getJsonAsStream();
-        try (JsonParser parser = sut.createParser(source, example.getCharset(), schema, handler)) {
-            parseAll(parser);
+            assertThat(schema.toJson()).isEqualTo(example.getAsJson());
         }
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
+        @ParameterizedTest()
+        @EnumSource(SchemaExample.class)
+        public void readSchemaShouldReadSchemaFromInputStreamAndCharset(SchemaExample example)
+                throws IOException {
 
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createParserShouldCreateParserFromReader(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
+            InputStream in = Files.newInputStream(getPathOf(example));
+            JsonSchema schema = sut.readSchema(in, example.getCharset());
 
-        Reader source = Files.newBufferedReader(example.getPath());
-        try (JsonParser parser = sut.createParser(source, schema, handler)) {
-            parseAll(parser);
+            assertThat(schema.toJson()).isEqualTo(example.getAsJson());
         }
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
+        @ParameterizedTest()
+        @EnumSource(SchemaExample.class)
+        public void readSchemaShouldReadSchemaFromReader(SchemaExample example)
+                throws IOException {
 
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createParserShouldCreateParserFromPath(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
+            Reader reader = Files.newBufferedReader(getPathOf(example));
+            JsonSchema schema = sut.readSchema(reader);
 
-        Path source = example.getPath();
-        try (JsonParser parser = sut.createParser(source, schema, handler)) {
-            parseAll(parser);
+            assertThat(schema.toJson()).isEqualTo(example.getAsJson());
         }
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
+        @ParameterizedTest()
+        @EnumSource(SchemaExample.class)
+        public void readSchemaShouldReadSchemaFromPath(SchemaExample example)
+                throws IOException {
 
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createParserShouldCreateParserFromJsonParser(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
+            JsonSchema schema = sut.readSchema(getPathOf(example));
 
-        JsonParser source = Json.createParser(example.getJsonAsStream());
-        try (JsonParser parser = sut.createParser(source, schema, handler)) {
-            parseAll(parser);
+            assertThat(schema.toJson()).isEqualTo(example.getAsJson());
         }
 
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
+        @ParameterizedTest()
+        @EnumSource(SchemaExample.class)
+        public void readSchemaShouldReadSchemaFromJsonParser(SchemaExample example)
+                throws IOException {
 
-    /* Test for createReader() */
+            InputStream in = Files.newInputStream(getPathOf(example));
+            JsonParser parser = getJsonProvider().createParser(in);
+            JsonSchema schema = sut.readSchema(parser);
 
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createReaderShouldCreateReaderFromInputStream(JsonExample example) {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
+            assertThat(schema.toJson()).isEqualTo(example.getAsJson());
 
-        InputStream source = example.getJsonAsStream();
-        try (JsonReader reader = sut.createReader(source, schema, handler)) {
-            reader.readValue();
-        }
-
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createReaderShouldCreateReaderFromInputStreamAndCharset(JsonExample example) {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
-
-        InputStream source = example.getJsonAsStream();
-        try (JsonReader reader = sut.createReader(source, example.getCharset(), schema, handler)) {
-            reader.readValue();
-        }
-
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createReaderShouldCreateReaderFromReader(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
-
-        Reader source = Files.newBufferedReader(example.getPath());
-        try (JsonReader reader = sut.createReader(source, schema, handler)) {
-            reader.readValue();
-        }
-
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createReaderShouldCreateReaderFromPath(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
-
-        Path source = example.getPath();
-        try (JsonReader reader = sut.createReader(source, schema, handler)) {
-            reader.readValue();
-        }
-
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
-
-    @ParameterizedTest()
-    @EnumSource(JsonExample.class)
-    public void createReaderShouldCreateReaderFromJsonParser(JsonExample example) throws IOException {
-        List<Problem> problems = new ArrayList<>();
-        ProblemHandler handler = problems::addAll;
-        JsonSchema schema = sut.readSchema(example.getJsonSchemaAsStream());
-
-        JsonParser source = Json.createParser(example.getJsonAsStream());
-        try (JsonReader reader = sut.createReader(source, schema, handler)) {
-            reader.readValue();
-        }
-
-        assertThat(problems.isEmpty()).isEqualTo(example.isValid());
-    }
-
-    /* */
-
-    @Test
-    public void createSchemaReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
-        Throwable thrown = catchThrowable(() -> {
-            Path path = Paths.get("nonexistent.schema.json");
-            sut.createSchemaReader(path);
-        });
-
-        assertThat(thrown)
-                .isInstanceOf(JsonException.class)
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("nonexistent.schema.json");
-    }
-
-    @Test
-    public void readSchemaShouldThrowJsonExceptionIfPathDoesNotExist() {
-        Throwable thrown = catchThrowable(() -> {
-            Path path = Paths.get("nonexistent.schema.json");
-            sut.readSchema(path);
-        });
-
-        assertThat(thrown)
-                .isInstanceOf(JsonException.class)
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("nonexistent.schema.json");
-    }
-
-    @Test
-    public void createParserShouldThrowJsonExceptionIfPathDoesNotExist() {
-        Throwable thrown = catchThrowable(() -> {
-            Path path = Paths.get("nonexistent.json");
-            sut.createParser(path, JsonSchema.TRUE, problems -> {
+            // The parser should be closed.
+            Throwable thrown = catchThrowable(() -> {
+                parser.next();
             });
-        });
-
-        assertThat(thrown)
-                .isInstanceOf(JsonException.class)
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("nonexistent.json");
-    }
-
-    @Test
-    public void createReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
-        Throwable thrown = catchThrowable(() -> {
-            Path path = Paths.get("nonexistent.json");
-            sut.createReader(path, JsonSchema.TRUE, problems -> {
-            });
-        });
-
-        assertThat(thrown)
-                .isInstanceOf(JsonException.class)
-                .hasCauseInstanceOf(IOException.class)
-                .hasMessageContaining("nonexistent.json");
-    }
-
-    @Test
-    public void getJsonProviderShouldReturnValidJsonProvider() {
-        assertThat(sut.getJsonProvider()).isNotNull();
-    }
-
-    private static void parseAll(JsonParser parser) {
-        while (parser.hasNext()) {
-            parser.next();
+            assertThat(thrown).isInstanceOf(JsonException.class);
         }
-    }
 
-    @Nested
-    public class JsonSchemaReaderFactoryTest implements BaseJsonSchemaReaderFactoryTest {
+        /* Tests for createParser() */
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createParserShouldCreateParserFromInputStream(JsonExample example) {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            InputStream source = getStreamFrom(example);
+            try (JsonParser parser = sut.createParser(source, schema, handler)) {
+                parseAll(parser);
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createParserShouldCreateParserFromInputStreamAndCharset(JsonExample example) {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            InputStream source = getStreamFrom(example);
+            try (JsonParser parser = sut.createParser(source, example.getCharset(), schema, handler)) {
+                parseAll(parser);
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createParserShouldCreateParserFromReader(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            Reader source = Files.newBufferedReader(getPathOf(example));
+            try (JsonParser parser = sut.createParser(source, schema, handler)) {
+                parseAll(parser);
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createParserShouldCreateParserFromPath(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            Path source = getPathOf(example);
+            try (JsonParser parser = sut.createParser(source, schema, handler)) {
+                parseAll(parser);
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createParserShouldCreateParserFromJsonParser(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            JsonParser source = getJsonProvider().createParser(getStreamFrom(example));
+            try (JsonParser parser = sut.createParser(source, schema, handler)) {
+                parseAll(parser);
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        /* Test for createReader() */
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createReaderShouldCreateReaderFromInputStream(JsonExample example) {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            InputStream source = getStreamFrom(example);
+            try (JsonReader reader = sut.createReader(source, schema, handler)) {
+                reader.readValue();
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createReaderShouldCreateReaderFromInputStreamAndCharset(JsonExample example) {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            InputStream source = getStreamFrom(example);
+            try (JsonReader reader = sut.createReader(source, example.getCharset(), schema, handler)) {
+                reader.readValue();
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createReaderShouldCreateReaderFromReader(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            Reader source = Files.newBufferedReader(getPathOf(example));
+            try (JsonReader reader = sut.createReader(source, schema, handler)) {
+                reader.readValue();
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createReaderShouldCreateReaderFromPath(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            Path source = getPathOf(example);
+            try (JsonReader reader = sut.createReader(source, schema, handler)) {
+                reader.readValue();
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        @ParameterizedTest()
+        @EnumSource(JsonExample.class)
+        public void createReaderShouldCreateReaderFromJsonParser(JsonExample example) throws IOException {
+            List<Problem> problems = new ArrayList<>();
+            ProblemHandler handler = problems::addAll;
+            JsonSchema schema = sut.readSchema(getSchemaStreamFrom(example));
+
+            JsonParser source = getJsonProvider().createParser(getStreamFrom(example));
+            try (JsonReader reader = sut.createReader(source, schema, handler)) {
+                reader.readValue();
+            }
+
+            assertThat(problems.isEmpty()).isEqualTo(example.isValid());
+        }
+
+        /* */
+
+        @Test
+        public void createSchemaReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
+            Throwable thrown = catchThrowable(() -> {
+                Path path = Paths.get("nonexistent.schema.json");
+                sut.createSchemaReader(path);
+            });
+
+            assertThat(thrown)
+                    .isInstanceOf(JsonException.class)
+                    .hasCauseInstanceOf(IOException.class)
+                    .hasMessageContaining("nonexistent.schema.json");
+        }
+
+        @Test
+        public void readSchemaShouldThrowJsonExceptionIfPathDoesNotExist() {
+            Throwable thrown = catchThrowable(() -> {
+                Path path = Paths.get("nonexistent.schema.json");
+                sut.readSchema(path);
+            });
+
+            assertThat(thrown)
+                    .isInstanceOf(JsonException.class)
+                    .hasCauseInstanceOf(IOException.class)
+                    .hasMessageContaining("nonexistent.schema.json");
+        }
+
+        @Test
+        public void createParserShouldThrowJsonExceptionIfPathDoesNotExist() {
+            Throwable thrown = catchThrowable(() -> {
+                Path path = Paths.get("nonexistent.json");
+                sut.createParser(path, JsonSchema.TRUE, problems -> {
+                });
+            });
+
+            assertThat(thrown)
+                    .isInstanceOf(JsonException.class)
+                    .hasCauseInstanceOf(IOException.class)
+                    .hasMessageContaining("nonexistent.json");
+        }
+
+        @Test
+        public void createReaderShouldThrowJsonExceptionIfPathDoesNotExist() {
+            Throwable thrown = catchThrowable(() -> {
+                Path path = Paths.get("nonexistent.json");
+                sut.createReader(path, JsonSchema.TRUE, problems -> {
+                });
+            });
+
+            assertThat(thrown)
+                    .isInstanceOf(JsonException.class)
+                    .hasCauseInstanceOf(IOException.class)
+                    .hasMessageContaining("nonexistent.json");
+        }
+
+        @Test
+        public void getJsonProviderShouldReturnValidJsonProvider() {
+            assertThat(sut.getJsonProvider()).isNotNull();
+        }
 
         @Override
-        public JsonSchemaReaderFactory sut() {
-            return sut;
+        protected JsonSchemaReaderFactory createSchemaReaderFactory(JsonValidationService service) {
+            return service;
+        }
+
+        protected abstract Path getPathOf(JsonExample example);
+
+        protected abstract InputStream getStreamFrom(JsonExample example);
+
+        protected abstract InputStream getSchemaStreamFrom(JsonExample example);
+
+        private static void parseAll(JsonParser parser) {
+            while (parser.hasNext()) {
+                parser.next();
+            }
+        }
+    }
+
+    public static class JsonTest extends AbstractTest {
+
+        public JsonTest() {
+            super(ValidationServiceType.DEFAULT);
+        }
+
+        @Override
+        protected Path getPathOf(SchemaExample example) {
+            return example.getJsonPath();
+        }
+
+        @Override
+        protected Path getPathOf(JsonExample example) {
+            return example.getJsonPath();
+        }
+
+        @Override
+        protected InputStream getStreamFrom(JsonExample example) {
+            return example.getJsonAsStream();
+        }
+
+        @Override
+        protected InputStream getSchemaStreamFrom(JsonExample example) {
+            return example.getJsonSchemaAsStream();
+        }
+    }
+
+    public static class YamlTest extends AbstractTest {
+
+        public YamlTest() {
+            super(ValidationServiceType.YAML);
+        }
+
+        @Override
+        protected Path getPathOf(SchemaExample example) {
+            return example.getYamlPath();
+        }
+
+        @Override
+        protected Path getPathOf(JsonExample example) {
+            return example.getYamlPath();
+        }
+
+        @Override
+        protected InputStream getStreamFrom(JsonExample example) {
+            return example.getYamlAsStream();
+        }
+
+        @Override
+        protected InputStream getSchemaStreamFrom(JsonExample example) {
+            return example.getYamlSchemaAsStream();
         }
     }
 }

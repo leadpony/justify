@@ -26,37 +26,42 @@ import jakarta.json.spi.JsonProvider;
  * @author leadpony
  */
 public enum ValidationServiceType {
-    DEFAULT(createDefaultService()),
-    YAML(createYamlService());
+    DEFAULT(createJsonProvider()),
+    YAML(createYamlProvider());
 
     private static final String YAML_PROVIDER = "org.leadpony.joy.yaml.YamlProvider";
 
+    private final JsonProvider jsonProvider;
     private final JsonValidationService service;
 
-    ValidationServiceType(JsonValidationService service) {
-        this.service = service;
+    ValidationServiceType(JsonProvider jsonProvider) {
+        this.jsonProvider = jsonProvider;
+        this.service = JsonValidationService.newInstance(jsonProvider);
+    }
+
+    public JsonProvider getJsonProvider() {
+        return jsonProvider;
     }
 
     public JsonValidationService getService() {
         return service;
     }
 
-    private static JsonValidationService createDefaultService() {
-        return createService(provider -> !supportsYaml(provider));
+    private static JsonProvider createJsonProvider() {
+        return findJsonProvider(provider -> !supportsYaml(provider));
     }
 
-    private static JsonValidationService createYamlService() {
-        return createService(ValidationServiceType::supportsYaml);
+    private static JsonProvider createYamlProvider() {
+        return findJsonProvider(ValidationServiceType::supportsYaml);
     }
 
-    private static JsonValidationService createService(Predicate<ServiceLoader.Provider<JsonProvider>> predicate) {
+    private static JsonProvider findJsonProvider(Predicate<ServiceLoader.Provider<JsonProvider>> predicate) {
         ServiceLoader<JsonProvider> loader = ServiceLoader.load(JsonProvider.class);
-        JsonProvider jsonProvider = loader.stream()
+        return loader.stream()
                 .filter(predicate)
                 .findFirst()
                 .map(ServiceLoader.Provider::get)
                 .orElseThrow();
-        return JsonValidationService.newInstance(jsonProvider);
     }
 
     private static boolean supportsYaml(ServiceLoader.Provider<JsonProvider> provider) {

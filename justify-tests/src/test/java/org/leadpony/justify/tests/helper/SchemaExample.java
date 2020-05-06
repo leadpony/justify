@@ -61,8 +61,12 @@ public enum SchemaExample {
         return StandardCharsets.UTF_8;
     }
 
-    public Path getPath() {
-        return BASE_PATH.resolve(getJsonName());
+    public Path getJsonPath() {
+        return getPath(getJsonName());
+    }
+
+    public Path getYamlPath() {
+        return getPath(getYamlName());
     }
 
     public InputStream getJsonAsStream() {
@@ -77,6 +81,10 @@ public enum SchemaExample {
         try (JsonReader reader = Json.createReader(getJsonAsStream())) {
             return reader.readValue();
         }
+    }
+
+    private static Path getPath(String name) {
+        return BASE_PATH.resolve(name);
     }
 
     private InputStream getResourceAsStream(String name) {

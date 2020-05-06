@@ -37,6 +37,7 @@ public enum JsonExample {
     PRODUCT_INVALID("product-invalid.json", SchemaExample.PRODUCT, false);
 
     private static final String BASE_PACKAGE = SchemaExample.BASE_PACKAGE;
+    private static final Path BASE_PATH = SchemaExample.BASE_PATH;
 
     private final String jsonName;
     private final String yamlName;
@@ -66,8 +67,12 @@ public enum JsonExample {
         return StandardCharsets.UTF_8;
     }
 
-    public Path getPath() {
-        return SchemaExample.BASE_PATH.resolve(getJsonName());
+    public Path getJsonPath() {
+        return BASE_PATH.resolve(getJsonName());
+    }
+
+    public Path getYamlPath() {
+        return BASE_PATH.resolve(getYamlName());
     }
 
     public InputStream getJsonAsStream() {
