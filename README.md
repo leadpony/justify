@@ -232,7 +232,7 @@ Just replacing the JSON-P implementation with `joy-yaml` provided by [Joy] proje
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy-yaml</artifactId>
-    <version>2.0.0-RC1</version>
+    <version>2.0.0-RC2</version>
     <scope>runtime</scope>
 </dependency>
 ```
