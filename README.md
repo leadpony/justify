@@ -4,25 +4,26 @@
 [![Javadocs](https://www.javadoc.io/badge/org.leadpony.justify/justify.svg?color=green)](https://www.javadoc.io/doc/org.leadpony.justify/justify)
 [![Build Status](https://travis-ci.org/leadpony/justify.svg?branch=master)](https://travis-ci.org/leadpony/justify)
 
-Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JSON Processing] (JSON-P).
+Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JSON Processing API] (JSON-P).
 
 ## Key Features
 
 * Compliant with [JSON Schema Specification] Draft-07, -06, and -04.
-* Reinforces [Jakarta JSON Processing] (JSON-P) transparently with the validation functionality.
-* Can be used with [Jakarta JSON Binding] (JSON-B) via a custom JsonProvider.
+* Reinforces [Jakarta JSON Processing API] (JSON-P) transparently with the validation functionality.
+* Can be used with [Jakarta JSON Binding API] (JSON-B) via a custom JsonProvider.
 * Reports problems with the source locations including line and column numbers.
 * Passes all test cases provided by [JSON Schema Test Suite] including both mandatory and optional tests.
 * Validates the input in streaming way, which claims small memory footprint even when the input is a large JSON.
 * Accepts custom formats for string and other simple types.
-* Supports Java 8, 9, 10, 11, and 12.
+* Supports YAML validation with [Joy].
+* Runs under Java 8 and higher.
 * Can be used as a modular jar in Java 9 and higher.
 * Internationalized problem messages, including Japanese language support.
 
 ## Getting Started
 
 _For Justify version 2.x users:_
-Please refer to old [README](./README-v2.md) for the instructions.
+Please refer to [old README](./README-v2.md) instead of this one for more appropriate instructions.
 
 ### Minimum Setup
 
@@ -47,7 +48,7 @@ Note that the addition of this dependency brings the following artifacts as tran
 * `jakarta.json:jakarta.json-api`
 * `com.ibm.icu:icu4j`
 
-Besides the library itself, an implementation of [Jakarta JSON Processing] API is needed during runtime.
+Besides the library itself, an implementation of [Jakarta JSON Processing API] is needed during runtime.
 This library supports the following implementations and you can select whichever you prefer.
 1. [Jakarta JSON Processing] (Reference Implementation)
 2. [Joy]
@@ -221,7 +222,22 @@ JsonParserFactory parserFactory = service.createParserFactory(config.getAsMap())
 JsonReaderFactory readerFactory = service.createReaderFactory(config.getAsMap());
 ```
 
-For more information, please see [the code sample](https://github.com/leadpony/justify-examples/tree/master/justify-examples-defaultvalue).
+For more information, please see [Default Value example](https://github.com/leadpony/justify-examples/tree/master/justify-examples-defaultvalue).
+
+## YAML Validation
+
+Just replacing the JSON-P implementation with `joy-yaml` provided by [Joy] project as shown below enables the validation of YAML documents.
+
+```xml
+<dependency>
+    <groupId>org.leadpony.joy</groupId>
+    <artifactId>joy-yaml</artifactId>
+    <version>2.0.0-RC1</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+For more information, please see [YAML Validator example](https://github.com/leadpony/justify-examples/tree/master/justify-examples-yamlvalidator).
 
 ## Building from Source
 
@@ -248,8 +264,9 @@ Copyright &copy; 2018-2020 the Justify authors. This software is licensed under 
 [Apache Maven]: https://maven.apache.org/
 [API Reference in Javadoc]: https://www.javadoc.io/doc/org.leadpony.justify/justify
 [Changelog]: CHANGELOG.md
-[Jakarta JSON Processing]: https://eclipse-ee4j.github.io/jsonp/
-[Jakarta JSON Binding]: http://json-b.net/
+[Jakarta JSON Processing]: https://github.com/eclipse-ee4j/jsonp
+[Jakarta JSON Processing API]: https://eclipse-ee4j.github.io/jsonp/
+[Jakarta JSON Binding API]: http://json-b.net/
 [JDK]: https://jdk.java.net/
 [Joy]: https://github.com/leadpony/joy
 [JSON Schema Conformance Test]: https://github.com/leadpony/json-schema-conformance-test
