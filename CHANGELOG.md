@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - new API `JsonValidationService.newInstance(JsonProvider)` 
 
+## Fixed
+- A bug that was causing `uniqueItems` having `false` to produce wrong validation result.
+
 ## 3.0.0-RC1 - 2020-04-27
 ### Changed
 - Updated Jakarta JSON Processing API to 2.0.0, which causes the API package `javax.json` to be migrated to `jakarta.json`.

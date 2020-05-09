@@ -71,6 +71,7 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "optional/ecmascript-regex.json",
             "optional/format.json",
             "optional/zeroTerminatedFloats.json",
+            "optional/non-bmp-regex.json",
     };
 
     public static Stream<TestCase> optional() {

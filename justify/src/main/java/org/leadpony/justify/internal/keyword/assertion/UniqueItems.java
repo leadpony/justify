@@ -67,7 +67,11 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
 
     @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return new AssertionEvaluator(context);
+        if (unique) {
+            return new AssertionEvaluator(context);
+        } else {
+            return Evaluator.ALWAYS_TRUE;
+        }
     }
 
     @Override
