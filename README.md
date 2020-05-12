@@ -34,13 +34,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>3.0.0-RC1</version>
+    <version>3.0.0-RC2</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation 'org.leadpony.justify:justify:3.0.0-RC1'
+implementation 'org.leadpony.justify:justify:3.0.0-RC2'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
