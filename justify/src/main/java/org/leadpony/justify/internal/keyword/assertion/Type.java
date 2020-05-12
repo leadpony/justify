@@ -29,12 +29,14 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -137,15 +139,15 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new Evaluator() {
+            return new AbstractKeywordEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                    Problem p = createProblemBuilder(context)
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_TYPE)
                             .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedType)
@@ -157,15 +159,15 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new Evaluator() {
+            return new AbstractKeywordEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                    Problem p = createProblemBuilder(context)
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE)
                             .withParameter("expected", expectedType)
                             .build();
@@ -201,15 +203,15 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new Evaluator() {
+            return new AbstractKeywordEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                    Problem p = createProblemBuilder(context)
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)
                             .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedTypes)
@@ -221,15 +223,15 @@ public abstract class Type extends AbstractAssertion {
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new Evaluator() {
+            return new AbstractKeywordEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                    Problem p = createProblemBuilder(context)
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_NOT_TYPE_PLURAL)
                             .withParameter("actual", narrowerType)
                             .withParameter("expected", expectedTypes)

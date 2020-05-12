@@ -137,13 +137,13 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         @Override
         public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createEvaluator(context, type);
+            return evaluatable.createEvaluator(context, this, type);
         }
 
         @Override
         public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createNegatedEvaluator(context, type);
+            return evaluatable.createNegatedEvaluator(context, this, type);
         }
     }
 
@@ -175,17 +175,16 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.conjunctive(type);
             for (Evaluatable evaluatable : this.evaluatables) {
-                Evaluator child = evaluatable.createEvaluator(context, type);
+                Evaluator child = evaluatable.createEvaluator(context, this, type);
                 evaluator.append(child);
             }
             return evaluator;
         }
 
         private Evaluator createCombinedNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
-            evaluator.withProblemBuilderFactory(this);
+            LogicalEvaluator evaluator = Evaluators.disjunctive(context, this, null, type);
             for (Evaluatable evaluatable : this.evaluatables) {
-                Evaluator child = evaluatable.createNegatedEvaluator(context, type);
+                Evaluator child = evaluatable.createNegatedEvaluator(context, this, type);
                 evaluator.append(child);
             }
             return evaluator;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -31,8 +33,8 @@ import org.leadpony.justify.internal.problem.ProblemList;
  */
 abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    protected AbstractExclusiveEvaluator(EvaluatorContext context) {
-        super(context);
+    protected AbstractExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        super(context, schema, keyword);
     }
 
     protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
@@ -42,14 +44,14 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
         if (filteredLists.isEmpty()) {
             filteredLists = problemLists;
         }
-        ProblemBuilder builder = createProblemBuilder(getContext())
+        ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
                 .withBranches(filteredLists);
         dispatcher.dispatchProblem(builder.build());
     }
 
     protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
-        ProblemBuilder builder = createProblemBuilder(getContext())
+        ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_MANY)
                 .withBranches(problemLists);
         dispatcher.dispatchProblem(builder.build());

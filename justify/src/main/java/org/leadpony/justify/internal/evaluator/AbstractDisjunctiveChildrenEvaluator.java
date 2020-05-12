@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,18 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
 abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
 
-    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, Event closingEvent,
-            ProblemBuilderFactory problemBuilderFactory) {
-        super(context, closingEvent);
-        withProblemBuilderFactory(problemBuilderFactory);
+    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+            Event closingEvent) {
+        super(context, schema, keyword, closingEvent);
     }
 
     @Override

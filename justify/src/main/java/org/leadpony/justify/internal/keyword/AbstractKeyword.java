@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,20 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Skeletal implementation of {@link SchemaKeyword}.
  *
  * @author leadpony
  */
-public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFactory {
+public abstract class AbstractKeyword implements SchemaKeyword {
 
     /*
      * the name of this keyword.
@@ -49,11 +49,6 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
      * JSON representation of this keyword.
      */
     private final JsonValue json;
-
-    /*
-     * the schema enclosing this keyword.
-     */
-    private JsonSchema schema;
 
     /**
      * Constructs this keyword.
@@ -87,40 +82,31 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
     }
 
     @Override
-    public JsonSchema getEnclosingSchema() {
-        return schema;
-    }
-
-    @Override
-    public void setEnclosingSchema(JsonSchema schema) {
-        this.schema = schema;
-    }
-
-    @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         assert context != null;
         if (!supportsType(type)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return doCreateEvaluator(context, type);
+        return doCreateEvaluator(context, schema, type);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         assert context != null;
         if (!supportsType(type)) {
-            return new TypeMismatchEvaluator(context, type);
+            return new TypeMismatchEvaluator(context, schema, this, type);
         }
-        return doCreateNegatedEvaluator(context, type);
+        return doCreateNegatedEvaluator(context, schema, type);
     }
 
     /**
      * Creates an evaluator for this keyword.
      *
      * @param context the context of the evaluator to create.
+     * @param schema  the enclosing schema.
      * @param type    the type of the instance, cannot be {@code null}.
      */
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
 
@@ -128,9 +114,10 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
      * Creates an evaluator for the negation of this keyword.
      *
      * @param context the context of the evaluator to create.
+     * @param schema  the enclosing schema.
      * @param type    the type of the instance, cannot be {@code null}.
      */
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         throw new UnsupportedOperationException(name() + " does not support evaluation.");
     }
 
@@ -138,23 +125,11 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
      * Creates an evaluator which evaluates anything as false.
      *
      * @param context the context of the evaluator to be created.
+     * @param schema  the enclosing schema.
      * @return the created evaluator.
      */
-    protected final Evaluator createAlwaysFalseEvaluator(EvaluatorContext context) {
-        return Evaluators.alwaysFalse(getEnclosingSchema(), context);
-    }
-
-    /**
-     * Creates a new instance of problem builder for this keyword.
-     *
-     * @param context the context of the evaluator, cannot be {@code null}.
-     * @return newly created instance of {@link ProblemBuilder}.
-     */
-    @Override
-    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
-        return ProblemBuilderFactory.super.createProblemBuilder(context)
-                .withSchema(schema)
-                .withKeyword(name());
+    protected final Evaluator createAlwaysFalseEvaluator(EvaluatorContext context, JsonSchema schema) {
+        return Evaluators.alwaysFalse(schema, context);
     }
 
     private String guessOwnName() {
@@ -163,23 +138,24 @@ public abstract class AbstractKeyword implements SchemaKeyword, ProblemBuilderFa
     }
 
     /**
-     * An evaluator used when the type does not matched to the expected.
+     * An evaluator used when the type does not match the expected type.
      *
      * @author leadpony
      */
-    private final class TypeMismatchEvaluator extends AbstractEvaluator {
+    private final class TypeMismatchEvaluator extends AbstractKeywordEvaluator {
 
         private final InstanceType actual;
 
-        private TypeMismatchEvaluator(EvaluatorContext context, InstanceType actual) {
-            super(context);
+        private TypeMismatchEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+                InstanceType actual) {
+            super(context, schema, keyword);
             this.actual = actual;
         }
 
         @Override
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             Set<InstanceType> expected = getSupportedTypes();
-            ProblemBuilder builder = createProblemBuilder(getContext())
+            ProblemBuilder builder = newProblemBuilder()
                     .withParameter("actual", actual);
             if (expected.size() > 1) {
                 builder.withMessage(Message.INSTANCE_PROBLEM_TYPE_PLURAL)

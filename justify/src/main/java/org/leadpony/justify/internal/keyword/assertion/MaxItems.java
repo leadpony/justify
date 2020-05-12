@@ -22,6 +22,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -32,7 +34,6 @@ import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Assertion specified with "maxItems" validation keyword.
@@ -63,13 +64,13 @@ public class MaxItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return new AssertionEvaluator(context, limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return new MinItems.AssertionEvaluator(context, limit + 1, this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return new MinItems.AssertionEvaluator(context, schema, this, limit + 1);
     }
 
     /**
@@ -80,13 +81,11 @@ public class MaxItems extends AbstractAssertion implements ArrayKeyword {
     static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int maxItems;
-        private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, int maxItems, ProblemBuilderFactory factory) {
-            super(context);
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxItems) {
+            super(context, schema, keyword);
             this.maxItems = maxItems;
-            this.factory = factory;
         }
 
         @Override
@@ -99,7 +98,7 @@ public class MaxItems extends AbstractAssertion implements ArrayKeyword {
                 if (currentCount <= maxItems) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(getContext())
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_MAXITEMS)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxItems)

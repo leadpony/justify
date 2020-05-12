@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,13 +91,13 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return decorateEvaluator(super.doCreateEvaluator(context, type), context);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return decorateEvaluator(super.doCreateEvaluator(context, schema, type), context);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return decorateEvaluator(super.doCreateNegatedEvaluator(context, type), context);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return decorateEvaluator(super.doCreateNegatedEvaluator(context, schema, type), context);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class Properties extends AbstractProperties<String> {
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             Result result = super.evaluate(event, depth, dispatcher);
             if (depth == 1 && event == Event.KEY_NAME) {
-                defaultValues.remove(getParser().getString());
+                defaultValues.remove(getContext().getParser().getString());
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (!defaultValues.isEmpty()) {
                     supplyDefaultValues();

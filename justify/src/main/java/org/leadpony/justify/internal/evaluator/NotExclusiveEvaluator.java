@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.Iterator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
@@ -30,8 +32,8 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
     private final Event closingEvent;
 
-    NotExclusiveEvaluator(EvaluatorContext context, Event closingEvent) {
-        super(context);
+    NotExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, Event closingEvent) {
+        super(context, schema, keyword);
         this.closingEvent = closingEvent;
     }
 

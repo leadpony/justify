@@ -26,6 +26,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -33,7 +35,7 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
@@ -66,20 +68,20 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (unique) {
-            return new AssertionEvaluator(context);
+            return new AssertionEvaluator(context, schema, this);
         } else {
             return Evaluator.ALWAYS_TRUE;
         }
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (unique) {
-            return new NegatedAssertionEvaluator(context);
+            return new NegatedAssertionEvaluator(context, schema, this);
         } else {
-            return createAlwaysFalseEvaluator(context);
+            return createAlwaysFalseEvaluator(context, schema);
         }
     }
 
@@ -88,7 +90,7 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
      *
      * @author leadpony
      */
-    private class AssertionEvaluator extends AbstractEvaluator {
+    private class AssertionEvaluator extends AbstractKeywordEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
@@ -97,8 +99,8 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
         private int index;
         private JsonInstanceBuilder builder;
 
-        protected AssertionEvaluator(EvaluatorContext context) {
-            super(context);
+        protected AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
             this.builderFactory = context.getJsonBuilderFactory();
         }
 
@@ -143,7 +145,7 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
 
         protected Result getFinalResult(ProblemDispatcher dispatcher) {
             if (duplicated) {
-                Problem p = createProblemBuilder(getContext())
+                Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_UNIQUEITEMS)
                         .withParameter("index", secondOccurrenceAt)
                         .withParameter("firstIndex", firstOccurrenceAt)
@@ -163,8 +165,8 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
      */
     private final class NegatedAssertionEvaluator extends AssertionEvaluator {
 
-        private NegatedAssertionEvaluator(EvaluatorContext context) {
-            super(context);
+        private NegatedAssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
         }
 
         @Override
@@ -172,7 +174,7 @@ public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
             if (hasDuplicatedItems()) {
                 return Result.TRUE;
             } else {
-                Problem p = createProblemBuilder(getContext())
+                Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_UNIQUEITEMS)
                         .build();
                 dispatcher.dispatchProblem(p);

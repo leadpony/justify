@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +17,17 @@
 package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 
 /**
  * Skeletal implementation of {@link LogicalEvaluator}.
  *
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator extends AbstractEvaluator implements LogicalEvaluator {
+abstract class AbstractLogicalEvaluator extends AbstractKeywordEvaluator implements LogicalEvaluator {
 
-    protected AbstractLogicalEvaluator(EvaluatorContext context) {
-        super(context);
-    }
-
-    private ProblemBuilderFactory problemBuilderFactory = ProblemBuilderFactory.DEFAULT;
-
-    @Override
-    public LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
-        this.problemBuilderFactory = problemBuilderFactory;
-        return this;
-    }
-
-    protected ProblemBuilder createProblemBuilder(EvaluatorContext context) {
-        return this.problemBuilderFactory.createProblemBuilder(context);
+    protected AbstractLogicalEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        super(context, schema, keyword);
     }
 }

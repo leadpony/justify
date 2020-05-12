@@ -39,13 +39,14 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
@@ -113,19 +114,19 @@ public class Dependencies extends Applicator implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependencyMap.values().stream()
-                .map(d -> d.createEvaluator(context))
+                .map(d -> d.createEvaluator(context, schema))
                 .forEach(evaluator::append);
         return evaluator;
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(context, type).withProblemBuilderFactory(this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
         dependencyMap.values().stream()
-                .map(d -> d.createNegatedEvaluator(context))
+                .map(d -> d.createNegatedEvaluator(context, schema))
                 .forEach(evaluator::append);
         return evaluator;
     }
@@ -191,13 +192,13 @@ public class Dependencies extends Applicator implements ObjectKeyword {
      *
      * @author leadpony
      */
-    private abstract class DependencyEvaluator extends AbstractEvaluator {
+    private abstract class DependencyEvaluator extends AbstractKeywordEvaluator {
 
         protected final String property;
         protected boolean active;
 
-        protected DependencyEvaluator(EvaluatorContext context, String property) {
-            super(context);
+        protected DependencyEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String property) {
+            super(context, schema, keyword);
             this.property = property;
             this.active = false;
         }
@@ -207,7 +208,7 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         protected Evaluator.Result dispatchMissingDependantProblem(ProblemDispatcher dispatcher) {
-            Problem p = createProblemBuilder(getContext())
+            Problem p = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                     .withParameter("required", property)
                     .build();
@@ -242,14 +243,14 @@ public class Dependencies extends Applicator implements ObjectKeyword {
          *
          * @return newly created evaluator.
          */
-        abstract Evaluator createEvaluator(EvaluatorContext context);
+        abstract Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema);
 
         /**
          * Creates a new evaluator for the negation of this dependency.
          *
          * @return newly created evaluator.
          */
-        abstract Evaluator createNegatedEvaluator(EvaluatorContext context);
+        abstract Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema);
 
         abstract JsonValue getValue(JsonProvider jsonProvider);
 
@@ -274,15 +275,15 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context) {
+        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
             Evaluator subschemaEvaluator = subschema.createEvaluator(context, InstanceType.OBJECT);
-            return new SchemaDependencyEvaluator(context, getProperty(), subschemaEvaluator);
+            return new SchemaDependencyEvaluator(context, schema, Dependencies.this, getProperty(), subschemaEvaluator);
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
             Evaluator subschemaEvaluator = subschema.createNegatedEvaluator(context, InstanceType.OBJECT);
-            return new NegatedSchemaDependencyEvaluator(context, getProperty(), subschemaEvaluator);
+            return new NegatedSchemaDependencyEvaluator(context, schema, getProperty(), subschemaEvaluator);
         }
 
         @Override
@@ -314,12 +315,13 @@ public class Dependencies extends Applicator implements ObjectKeyword {
             super(property, subschema);
         }
 
-        Evaluator createEvaluator(EvaluatorContext context) {
+        @Override
+        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context) {
+        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
             return Evaluators.alwaysFalse(getSubschema(), context);
         }
     }
@@ -334,8 +336,8 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context) {
-            return new ForbiddenDependantEvaluator(context, getProperty());
+        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new ForbiddenDependantEvaluator(context, schema, getProperty());
         }
     }
 
@@ -348,8 +350,9 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         private Result result;
         private List<Problem> problems;
 
-        SchemaDependencyEvaluator(EvaluatorContext context, String property, Evaluator subschemaEvaluator) {
-            super(context, property);
+        SchemaDependencyEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String property,
+                Evaluator subschemaEvaluator) {
+            super(context, schema, keyword, property);
             this.subschemaEvaluator = subschemaEvaluator;
         }
 
@@ -410,8 +413,9 @@ public class Dependencies extends Applicator implements ObjectKeyword {
      */
     private final class NegatedSchemaDependencyEvaluator extends SchemaDependencyEvaluator {
 
-        NegatedSchemaDependencyEvaluator(EvaluatorContext context, String property, Evaluator subschemaEvaluator) {
-            super(context, property, subschemaEvaluator);
+        NegatedSchemaDependencyEvaluator(EvaluatorContext context, JsonSchema schema, String property,
+                Evaluator subschemaEvaluator) {
+            super(context, schema, Dependencies.this, property, subschemaEvaluator);
         }
 
         @Override
@@ -435,13 +439,13 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context) {
-            return new PropertyDependencyEvaluator(context, getProperty(), requiredProperties);
+        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new PropertyDependencyEvaluator(context, schema, getProperty(), requiredProperties);
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context) {
-            return new NegatedPropertyDependencyEvaluator(context, getProperty(), requiredProperties);
+        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new NegatedPropertyDependencyEvaluator(context, schema, getProperty(), requiredProperties);
         }
 
         @Override
@@ -469,13 +473,13 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context) {
+        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context) {
-            return new NegatedForbiddenDependantEvaluator(context, getProperty());
+        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new NegatedForbiddenDependantEvaluator(context, schema, getProperty());
         }
     }
 
@@ -489,8 +493,9 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         protected final Set<String> required;
         protected final Set<String> missing;
 
-        PropertyDependencyEvaluator(EvaluatorContext context, String property, Set<String> required) {
-            super(context, property);
+        PropertyDependencyEvaluator(EvaluatorContext context, JsonSchema schema, String property,
+                Set<String> required) {
+            super(context, schema, Dependencies.this, property);
             this.required = required;
             this.missing = new LinkedHashSet<>(required);
         }
@@ -518,7 +523,7 @@ public class Dependencies extends Applicator implements ObjectKeyword {
                 return Result.TRUE;
             } else {
                 for (String entry : missing) {
-                    Problem p = createProblemBuilder(getContext())
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_DEPENDENCIES)
                             .withParameter("required", entry)
                             .withParameter("dependant", property)
@@ -535,8 +540,9 @@ public class Dependencies extends Applicator implements ObjectKeyword {
      */
     private class NegatedPropertyDependencyEvaluator extends PropertyDependencyEvaluator {
 
-        NegatedPropertyDependencyEvaluator(EvaluatorContext context, String property, Set<String> required) {
-            super(context, property, required);
+        NegatedPropertyDependencyEvaluator(EvaluatorContext context, JsonSchema schema, String property,
+                Set<String> required) {
+            super(context, schema, property, required);
         }
 
         @Override
@@ -547,14 +553,14 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         @Override
         protected Result test(ProblemDispatcher dispatcher) {
             if (required.isEmpty()) {
-                Problem p = createProblemBuilder(getContext())
+                Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                         .withParameter("required", this.property)
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
-                ProblemBuilder b = createProblemBuilder(getContext())
+                ProblemBuilder b = newProblemBuilder()
                         .withParameter("dependant", property);
                 if (required.size() == 1) {
                     b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES)
@@ -578,8 +584,8 @@ public class Dependencies extends Applicator implements ObjectKeyword {
      */
     private class ForbiddenDependantEvaluator extends DependencyEvaluator {
 
-        ForbiddenDependantEvaluator(EvaluatorContext context, String property) {
-            super(context, property);
+        ForbiddenDependantEvaluator(EvaluatorContext context, JsonSchema schema, String property) {
+            super(context, schema, Dependencies.this, property);
         }
 
         @Override
@@ -595,7 +601,7 @@ public class Dependencies extends Applicator implements ObjectKeyword {
         }
 
         private Result dispatchProblem(ProblemDispatcher dispatcher) {
-            Problem problem = createProblemBuilder(getContext())
+            Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                     .withParameter("required", this.property)
                     .build();
@@ -609,8 +615,8 @@ public class Dependencies extends Applicator implements ObjectKeyword {
      */
     private class NegatedForbiddenDependantEvaluator extends ForbiddenDependantEvaluator {
 
-        NegatedForbiddenDependantEvaluator(EvaluatorContext context, String property) {
-            super(context, property);
+        NegatedForbiddenDependantEvaluator(EvaluatorContext context, JsonSchema schema, String property) {
+            super(context, schema, property);
         }
 
         @Override

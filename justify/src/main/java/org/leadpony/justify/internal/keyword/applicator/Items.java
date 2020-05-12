@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,20 +105,20 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return createForbiddenItemsEvaluator(context);
+                return createForbiddenItemsEvaluator(context, schema);
             } else {
-                return createItemsEvaluator(context);
+                return createItemsEvaluator(context, schema);
             }
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return createNegatedForbiddenItemsEvaluator(context);
+                return createNegatedForbiddenItemsEvaluator(context, schema);
             } else {
-                return createNegatedItemsEvaluator(context);
+                return createNegatedItemsEvaluator(context, schema);
             }
         }
 
@@ -137,9 +137,9 @@ public abstract class Items extends Applicator implements ArrayKeyword {
             return subschema;
         }
 
-        private Evaluator createItemsEvaluator(EvaluatorContext context) {
+        private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
             JsonSchema subschema = this.subschema;
-            return new AbstractConjunctiveItemsEvaluator(context) {
+            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -150,9 +150,9 @@ public abstract class Items extends Applicator implements ArrayKeyword {
             };
         }
 
-        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
+        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
             JsonSchema subschema = this.subschema;
-            return new AbstractDisjunctiveItemsEvaluator(context, this) {
+            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -163,27 +163,27 @@ public abstract class Items extends Applicator implements ArrayKeyword {
             };
         }
 
-        private Evaluator createForbiddenItemsEvaluator(EvaluatorContext context) {
-            return new AbstractConjunctiveItemsEvaluator(context) {
+        private Evaluator createForbiddenItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
                 private int itemIndex;
 
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(context, itemIndex++, subschema));
+                        append(new RedundantItemEvaluator(context, subschema, itemIndex++));
                     }
                 }
             };
         }
 
-        private Evaluator createNegatedForbiddenItemsEvaluator(EvaluatorContext context) {
-            return new AbstractDisjunctiveItemsEvaluator(context, this) {
+        private Evaluator createNegatedForbiddenItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
                 private int itemIndex;
 
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(context, itemIndex++, subschema));
+                        append(new RedundantItemEvaluator(context, subschema, itemIndex++));
                     }
                 }
             };
@@ -208,13 +208,13 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-            return decorateEvaluator(createItemsEvaluator(context), context);
+        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+            return decorateEvaluator(createItemsEvaluator(context, schema), context);
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return decorateEvaluator(createNegatedItemsEvaluator(context), context);
+        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+            return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
         }
 
         @Override
@@ -261,7 +261,7 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         private Evaluator createSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
                 InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return new RedundantItemEvaluator(context, itemIndex, subschema);
+                return new RedundantItemEvaluator(context, subschema, itemIndex);
             } else {
                 return subschema.createEvaluator(context, type);
             }
@@ -270,14 +270,14 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
                 InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return new RedundantItemEvaluator(context, itemIndex, subschema);
+                return new RedundantItemEvaluator(context, subschema, itemIndex);
             } else {
                 return subschema.createNegatedEvaluator(context, type);
             }
         }
 
-        private Evaluator createItemsEvaluator(EvaluatorContext context) {
-            return new AbstractConjunctiveItemsEvaluator(context) {
+        private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
                 private int itemIndex;
 
                 @Override
@@ -292,8 +292,8 @@ public abstract class Items extends Applicator implements ArrayKeyword {
             };
         }
 
-        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
-            return new AbstractDisjunctiveItemsEvaluator(context, this) {
+        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
                 private int itemIndex;
 
                 @Override

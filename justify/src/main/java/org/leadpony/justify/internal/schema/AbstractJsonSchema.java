@@ -51,7 +51,6 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         this.id = id;
         this.json = json;
         this.keywordMap = Collections.unmodifiableMap(keywords);
-        this.keywordMap.forEach((k, v) -> v.setEnclosingSchema(this));
         if (hasAbsoluteId()) {
             resolveSubschemas(id());
         }

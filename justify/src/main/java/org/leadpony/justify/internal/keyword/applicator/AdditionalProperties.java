@@ -75,21 +75,21 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (getSubschema() == JsonSchema.FALSE) {
-            return createForbiddenPropertiesEvaluator(context);
+            return createForbiddenPropertiesEvaluator(context, schema);
         } else {
-            return createPropertiesEvaluator(context);
+            return createPropertiesEvaluator(context, schema);
         }
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return createNegatedForbiddenPropertiesEvaluator(context);
+            return createNegatedForbiddenPropertiesEvaluator(context, schema);
         } else {
-            return createNegatedPropertiesEvaluator(context);
+            return createNegatedPropertiesEvaluator(context, schema);
         }
     }
 
@@ -113,9 +113,9 @@ public class AdditionalProperties extends UnaryCombiner {
      *
      * @return newly created evaluator.
      */
-    private Evaluator createPropertiesEvaluator(EvaluatorContext context) {
+    private Evaluator createPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
         JsonSchema subschema = getSubschema();
-        return new AbstractConjunctivePropertiesEvaluator(context) {
+        return new AbstractConjunctivePropertiesEvaluator(context, schema, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -132,9 +132,9 @@ public class AdditionalProperties extends UnaryCombiner {
      *
      * @return newly created evaluator.
      */
-    private Evaluator createNegatedPropertiesEvaluator(EvaluatorContext context) {
+    private Evaluator createNegatedPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
         JsonSchema subschema = getSubschema();
-        return new AbstractDisjunctivePropertiesEvaluator(context, this) {
+        return new AbstractDisjunctivePropertiesEvaluator(context, schema, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -145,8 +145,8 @@ public class AdditionalProperties extends UnaryCombiner {
         };
     }
 
-    private Evaluator createForbiddenPropertiesEvaluator(EvaluatorContext context) {
-        return new AbstractConjunctivePropertiesEvaluator(context) {
+    private Evaluator createForbiddenPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
+        return new AbstractConjunctivePropertiesEvaluator(context, schema, this) {
             private String keyName;
             @Override
             public void updateChildren(Event event, JsonParser parser) {
@@ -159,8 +159,8 @@ public class AdditionalProperties extends UnaryCombiner {
         };
     }
 
-    private Evaluator createNegatedForbiddenPropertiesEvaluator(EvaluatorContext context) {
-        return new AbstractDisjunctivePropertiesEvaluator(context, this) {
+    private Evaluator createNegatedForbiddenPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
+        return new AbstractDisjunctivePropertiesEvaluator(context, schema, this) {
             private String keyName;
             @Override
             public void updateChildren(Event event, JsonParser parser) {
@@ -174,6 +174,6 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     private Evaluator createRedundantPropertyEvaluator(EvaluatorContext context, String keyName) {
-        return new RedundantPropertyEvaluator(context, keyName, getSubschema());
+        return new RedundantPropertyEvaluator(context, getSubschema(), keyName);
     }
 }

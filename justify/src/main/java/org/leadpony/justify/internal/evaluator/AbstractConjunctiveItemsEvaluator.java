@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -33,8 +35,8 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     private Result finalResult = Result.TRUE;
     private Evaluator childEvaluator;
 
-    protected AbstractConjunctiveItemsEvaluator(EvaluatorContext context) {
-        super(context);
+    protected AbstractConjunctiveItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        super(context, schema, keyword);
     }
 
     @Override

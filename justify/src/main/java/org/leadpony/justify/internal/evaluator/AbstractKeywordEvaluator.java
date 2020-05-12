@@ -13,34 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.evaluator;
 
-import jakarta.json.stream.JsonParser.Event;
-
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * An evaluator type which will observes only shallow events.
+ * An implementation of {@link Evaluator} which is provided by a keyword.
  *
  * @author leadpony
  */
-public abstract class ShallowEvaluator extends AbstractKeywordEvaluator {
+public abstract class AbstractKeywordEvaluator extends AbstractEvaluator {
 
-    protected ShallowEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    // this can be null.
+    private final Keyword keyword;
+
+    protected AbstractKeywordEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        super(context, schema);
+        this.keyword = keyword;
     }
 
     @Override
-    public final Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        if (depth > 1) {
-            return Result.PENDING;
+    protected ProblemBuilder newProblemBuilder() {
+        ProblemBuilder builder = super.newProblemBuilder();
+        if (this.keyword != null) {
+            builder.withKeyword(this.keyword.name());
         }
-        return evaluateShallow(event, depth, dispatcher);
+        return builder;
     }
-
-    public abstract Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher);
 }

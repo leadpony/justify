@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,11 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.StringKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -40,15 +42,16 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Stri
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new AbstractKeywordEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context, event, value);
+                ProblemBuilder builder = newProblemBuilder();
+                buildProblem(builder, event, value);
                 dispatcher.dispatchProblem(createProblem(builder));
                 return Result.FALSE;
             }
@@ -56,23 +59,23 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Stri
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (!testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new AbstractKeywordEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context, event, value);
+                ProblemBuilder builder = newProblemBuilder();
+                buildProblem(builder, event, value);
                 dispatcher.dispatchProblem(createNegatedProblem(builder));
                 return Result.FALSE;
             }
         };
     }
 
-    public ProblemBuilder createProblemBuilder(EvaluatorContext context, Event event, String actual) {
-        ProblemBuilder builder = super.createProblemBuilder(context);
+    public void buildProblem(ProblemBuilder builder, Event event, String actual) {
         if (event == Event.KEY_NAME) {
             builder.withParameter("subject", "key")
                    .withParameter("localizedSubject", Message.STRING_KEY)
@@ -82,7 +85,6 @@ abstract class AbstractStringAssertion extends AbstractAssertion implements Stri
                    .withParameter("localizedSubject", Message.STRING_VALUE);
         }
         builder.withParameter("actual", toActualValue(actual));
-        return builder;
     }
 
     protected abstract boolean testValue(String value);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,18 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**
@@ -91,30 +95,30 @@ public class ContentEncoding extends AbstractAssertion {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (test(context.getParser().getString())) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new ContentEncodingEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchProblem(
-                        buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTENCODING));
+                Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTENCODING).build();
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             }
         };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (!test(context.getParser().getString())) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new ContentEncodingEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchProblem(
-                        buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING));
+                Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING).build();
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             }
         };
@@ -133,7 +137,15 @@ public class ContentEncoding extends AbstractAssertion {
         return scheme;
     }
 
-    private Problem buildProblem(EvaluatorContext context, Message message) {
-        return createProblemBuilder(context).withMessage(message).withParameter("encoding", scheme.name()).build();
+    abstract class ContentEncodingEvaluator extends AbstractKeywordEvaluator {
+
+        ContentEncodingEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
+        }
+
+        @Override
+        protected ProblemBuilder newProblemBuilder() {
+            return super.newProblemBuilder().withParameter("encoding", scheme.name());
+        }
     }
 }

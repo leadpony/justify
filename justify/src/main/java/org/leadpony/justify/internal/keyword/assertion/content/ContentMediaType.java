@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -35,10 +37,12 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 
@@ -105,32 +109,32 @@ public class ContentMediaType extends AbstractAssertion {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (testValue(value, true)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new ContentMediaTypeEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchProblem(
-                        buildProblem(context, Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE));
+                Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE).build();
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             }
         };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (!testValue(value, false)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new ContentMediaTypeEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchProblem(
-                        buildProblem(context, Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE));
+                Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE).build();
+                dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             }
         };
@@ -176,7 +180,15 @@ public class ContentMediaType extends AbstractAssertion {
         return builder.toString();
     }
 
-    private Problem buildProblem(EvaluatorContext context, Message message) {
-        return createProblemBuilder(context).withMessage(message).withParameter("type", value()).build();
+    abstract class ContentMediaTypeEvaluator extends AbstractKeywordEvaluator {
+
+        ContentMediaTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
+        }
+
+        @Override
+        protected ProblemBuilder newProblemBuilder() {
+            return super.newProblemBuilder().withParameter("type", value());
+        }
     }
 }

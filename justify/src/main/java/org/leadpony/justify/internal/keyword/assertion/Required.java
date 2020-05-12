@@ -27,6 +27,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -78,20 +80,20 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (names.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         } else {
-            return new AssertionEvaluator(context, names);
+            return new AssertionEvaluator(context, schema, this, names);
         }
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (names.isEmpty()) {
-            return createAlwaysFalseEvaluator(context);
+            return createAlwaysFalseEvaluator(context, schema);
         } else {
-            return new NegatedAssertionEvaluator(context, names);
+            return new NegatedAssertionEvaluator(context, schema, this, names);
         }
     }
 
@@ -104,8 +106,8 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
 
         private final Set<String> missing;
 
-        private AssertionEvaluator(EvaluatorContext context, Set<String> required) {
-            super(context);
+        private AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, Set<String> required) {
+            super(context, schema, keyword);
             this.missing = new LinkedHashSet<>(required);
         }
 
@@ -128,7 +130,7 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
 
         private Result dispatchProblems(ProblemDispatcher dispatcher) {
             for (String property : missing) {
-                Problem p = createProblemBuilder(getContext())
+                Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                         .withParameter("required", property)
                         .build();
@@ -147,8 +149,9 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
 
         private final Set<String> missing;
 
-        private NegatedAssertionEvaluator(EvaluatorContext context, Set<String> names) {
-            super(context);
+        private NegatedAssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+                Set<String> names) {
+            super(context, schema, keyword);
             this.missing = new LinkedHashSet<>(names);
         }
 
@@ -173,12 +176,12 @@ public class Required extends AbstractAssertion implements ObjectKeyword {
             Problem p = null;
             if (names.size() == 1) {
                 String name = names.iterator().next();
-                p = createProblemBuilder(getContext())
+                p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                         .withParameter("required", name)
                         .build();
             } else {
-                p = createProblemBuilder(getContext())
+                p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED_PLURAL)
                         .withParameter("required", names)
                         .build();
