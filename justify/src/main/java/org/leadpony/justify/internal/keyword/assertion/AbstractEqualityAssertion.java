@@ -18,13 +18,16 @@ package org.leadpony.justify.internal.keyword.assertion;
 
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.Evaluator.Result;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -39,40 +42,46 @@ abstract class AbstractEqualityAssertion extends AbstractAssertion {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return (event, depth, dispatcher) -> {
-            if (builder.append(event, context.getParser())) {
-                return Result.PENDING;
+        return new AbstractKeywordEvaluator(context, schema, this) {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                if (builder.append(event, context.getParser())) {
+                    return Result.PENDING;
+                }
+                JsonValue value = builder.build();
+                if (testValue(value)) {
+                    return Result.TRUE;
+                }
+                ProblemBuilder problemBuilder = newProblemBuilder()
+                        .withParameter("actual", value);
+                dispatcher.dispatchProblem(createProblem(problemBuilder));
+                return Result.FALSE;
             }
-            JsonValue value = builder.build();
-            if (testValue(value)) {
-                return Result.TRUE;
-            }
-            ProblemBuilder problemBuilder = createProblemBuilder(context)
-                    .withParameter("actual", value);
-            dispatcher.dispatchProblem(createProblem(problemBuilder));
-            return Result.FALSE;
         };
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return (event, depth, dispatcher) -> {
-            if (builder.append(event, context.getParser())) {
-                return Result.PENDING;
+        return new AbstractKeywordEvaluator(context, schema, this) {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                if (builder.append(event, context.getParser())) {
+                    return Result.PENDING;
+                }
+                JsonValue value = builder.build();
+                if (!testValue(value)) {
+                    return Result.TRUE;
+                }
+                ProblemBuilder problemBuilder = newProblemBuilder()
+                        .withParameter("actual", value);
+                dispatcher.dispatchProblem(createNegatedProblem(problemBuilder));
+                return Result.FALSE;
             }
-            JsonValue value = builder.build();
-            if (!testValue(value)) {
-                return Result.TRUE;
-            }
-            ProblemBuilder problemBuilder = createProblemBuilder(context)
-                    .withParameter("actual", value);
-            dispatcher.dispatchProblem(createNegatedProblem(problemBuilder));
-            return Result.FALSE;
         };
     }
 

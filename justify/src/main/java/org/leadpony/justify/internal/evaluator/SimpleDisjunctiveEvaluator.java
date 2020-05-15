@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
@@ -41,8 +43,8 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     private final List<DeferredEvaluator> operands = new ArrayList<>();
     private List<ProblemList> problemLists;
 
-    SimpleDisjunctiveEvaluator(EvaluatorContext context) {
-        super(context);
+    SimpleDisjunctiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        super(context, schema, keyword);
     }
 
     @Override
@@ -92,7 +94,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         if (filterdLists.isEmpty()) {
             filterdLists = this.problemLists;
         }
-        ProblemBuilder builder = createProblemBuilder(getContext())
+        ProblemBuilder builder = newProblemBuilder()
                 .withMessage(getMessage())
                 .withBranches(filterdLists);
         dispatcher.dispatchProblem(builder.build());

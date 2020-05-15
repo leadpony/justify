@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 
 import jakarta.json.stream.JsonLocation;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.internal.base.Message;
@@ -56,9 +57,18 @@ public class ProblemBuilder {
      * @param pointer  the JSON pointer to the location where problem occurred in
      *                 the instance, may be {@code null}.
      */
-    ProblemBuilder(JsonLocation location, String pointer) {
+    public ProblemBuilder(JsonLocation location, String pointer) {
         this.location = location;
         this.pointer = pointer;
+    }
+
+    /**
+     * Constructs this builder.
+     *
+     * @param context the context of the evaluators.
+     */
+    public ProblemBuilder(EvaluatorContext context) {
+        this(context.getParser().getLocation(), context.getPointer());
     }
 
     /**

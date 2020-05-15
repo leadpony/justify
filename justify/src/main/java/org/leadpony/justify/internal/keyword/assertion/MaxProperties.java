@@ -22,6 +22,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -31,7 +33,6 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Assertion specified with "maxProperties" validation keyword.
@@ -62,13 +63,13 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return new AssertionEvaluator(context, limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return new MinProperties.AssertionEvaluator(context, limit + 1, this);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return new MinProperties.AssertionEvaluator(context, schema, this, limit + 1);
     }
 
     /**
@@ -79,13 +80,11 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
     static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int maxProperties;
-        private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, int maxProperties, ProblemBuilderFactory factory) {
-            super(context);
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxProperties) {
+            super(context, schema, keyword);
             this.maxProperties = maxProperties;
-            this.factory = factory;
         }
 
         @Override
@@ -98,7 +97,7 @@ public class MaxProperties extends AbstractAssertion implements ObjectKeyword {
                 if (currentCount <= maxProperties) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(getContext())
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_MAXPROPERTIES)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", maxProperties)

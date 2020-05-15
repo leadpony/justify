@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,25 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * @author leadpony
  */
 public abstract class AbstractDisjunctiveItemsEvaluator extends AbstractDisjunctiveChildrenEvaluator {
 
-    public AbstractDisjunctiveItemsEvaluator(EvaluatorContext context, ProblemBuilderFactory problemBuilderFactory) {
-        super(context, Event.END_ARRAY, problemBuilderFactory);
+    public AbstractDisjunctiveItemsEvaluator(EvaluatorContext context, JsonSchema schema,
+            Keyword keyword) {
+        super(context, schema, keyword, Event.END_ARRAY);
     }
 
     @Override
     protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
-        ProblemBuilder b = createProblemBuilder(getContext())
+        ProblemBuilder b = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ARRAY_EMPTY);
         dispatcher.dispatchProblem(b.build());
     }

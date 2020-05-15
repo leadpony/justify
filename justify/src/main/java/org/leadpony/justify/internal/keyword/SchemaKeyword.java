@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,6 @@ import org.leadpony.justify.api.Keyword;
  * @author leadpony
  */
 public interface SchemaKeyword extends Keyword, Evaluatable {
-
-    /**
-     * Returns the JSON schema enclosing this keyword.
-     *
-     * @return the enclosing schema of this keyword.
-     */
-    JsonSchema getEnclosingSchema();
-
-    /**
-     * Assigns the JSON schema enclosing this keyword.
-     *
-     * @param schema the enclosing schema of this keyword.
-     */
-    void setEnclosingSchema(JsonSchema schema);
 
     /**
      * Checks if this keyword supports the specified type.

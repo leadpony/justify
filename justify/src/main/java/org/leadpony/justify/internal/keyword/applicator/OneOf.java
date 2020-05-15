@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,15 @@ public class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        return Evaluators.exclusive(context, type,
+    public LogicalEvaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return Evaluators.exclusive(context, schema, this, type,
                 getSubschemas().map(s -> s.createEvaluator(context, type)),
                 getSubschemas().map(s -> s.createNegatedEvaluator(context, type)));
     }
 
     @Override
-    protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.notExclusive(context, type);
+    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.notExclusive(context, schema, this, type);
         getSubschemas()
                 .map(s -> s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);

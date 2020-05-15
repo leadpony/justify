@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
-import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 
 /**
  * N-ary boolean logic. This class is the abstract base class for {@link AllOf},
@@ -42,16 +38,6 @@ abstract class NaryBooleanLogic extends Applicator {
     protected NaryBooleanLogic(JsonValue json, Collection<JsonSchema> subschemas) {
         super(json);
         this.subschemas = new ArrayList<>(subschemas);
-    }
-
-    @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return createLogicalEvaluator(context, type).withProblemBuilderFactory(this);
-    }
-
-    @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return createNegatedLogicalEvaluator(context, type).withProblemBuilderFactory(this);
     }
 
     @Override
@@ -82,22 +68,4 @@ abstract class NaryBooleanLogic extends Applicator {
         }
         return null;
     }
-
-    /**
-     * Creates a new evaluator for this boolean logic.
-     *
-     * @param context the context of the evaluator to be created.
-     * @param type    the type of the instance to validate.
-     * @return newly created evaluator.
-     */
-    protected abstract LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type);
-
-    /**
-     * Creates a new evaluator for the negated version of this boolean logic.
-     *
-     * @param context the context of the evaluator to be created.
-     * @param type    the type of the instance to validate.
-     * @return newly created evaluator.
-     */
-    protected abstract LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type);
 }

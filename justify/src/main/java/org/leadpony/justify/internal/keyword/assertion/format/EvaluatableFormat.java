@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,11 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -64,15 +67,15 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (test(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new FormatEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context)
+                ProblemBuilder builder = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
                 dispatcher.dispatchProblem(builder.build());
                 return Result.FALSE;
@@ -81,15 +84,15 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (!test(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new FormatEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context)
+                ProblemBuilder builder = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
                 dispatcher.dispatchProblem(builder.build());
                 return Result.FALSE;
@@ -97,14 +100,21 @@ public class EvaluatableFormat extends Format {
         };
     }
 
-    @Override
-    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
-        return super.createProblemBuilder(context)
-                    .withParameter("attribute", attribute.name())
-                    .withParameter("localizedAttribute", attribute.localizedName());
-    }
-
     private boolean test(JsonValue value) {
         return attribute.test(value);
+    }
+
+    abstract class FormatEvaluator extends AbstractKeywordEvaluator {
+
+        FormatEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
+        }
+
+        @Override
+        protected ProblemBuilder newProblemBuilder() {
+            return super.newProblemBuilder()
+                .withParameter("attribute", attribute.name())
+                .withParameter("localizedAttribute", attribute.localizedName());
+        }
     }
 }

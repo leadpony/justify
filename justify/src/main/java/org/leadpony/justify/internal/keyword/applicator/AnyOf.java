@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ public class AnyOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createLogicalEvaluator(EvaluatorContext context, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(context, type);
+    public LogicalEvaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
         getSubschemas().distinct()
                 .map(s -> s.createEvaluator(context, type))
                 .forEach(evaluator::append);
@@ -65,7 +65,7 @@ public class AnyOf extends NaryBooleanLogic {
     }
 
     @Override
-    protected LogicalEvaluator createNegatedLogicalEvaluator(EvaluatorContext context, InstanceType type) {
+    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         getSubschemas().distinct()
                 .map(s -> s.createNegatedEvaluator(context, type))

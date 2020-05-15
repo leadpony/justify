@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,15 @@ import org.leadpony.justify.api.ProblemDispatcher;
  *
  * @author leadpony
  */
-public class EvaluatorDecorator extends AbstractEvaluator {
+public class EvaluatorDecorator implements Evaluator {
 
     private final Evaluator real;
+    private final EvaluatorContext context;
     private Result finalResult;
 
     public EvaluatorDecorator(Evaluator evaluator, EvaluatorContext context) {
-        super(context);
         this.real = evaluator;
+        this.context = context;
     }
 
     @Override
@@ -51,5 +52,9 @@ public class EvaluatorDecorator extends AbstractEvaluator {
     @Override
     public boolean isAlwaysFalse() {
         return real.isAlwaysFalse();
+    }
+
+    protected final EvaluatorContext getContext() {
+        return context;
     }
 }

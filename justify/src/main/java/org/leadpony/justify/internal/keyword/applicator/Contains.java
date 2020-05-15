@@ -59,18 +59,18 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return createItemsEvaluator(context);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return createItemsEvaluator(context, schema);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return createNegatedItemsEvaluator(context);
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return createNegatedItemsEvaluator(context, schema);
     }
 
-    private Evaluator createItemsEvaluator(EvaluatorContext context) {
+    private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractDisjunctiveItemsEvaluator(context, this) {
+        return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -86,9 +86,9 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
         };
     }
 
-    private Evaluator createNegatedItemsEvaluator(EvaluatorContext context) {
+    private Evaluator createNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractConjunctiveItemsEvaluator(context) {
+        return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {

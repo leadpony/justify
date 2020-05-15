@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
@@ -39,7 +40,7 @@ public final class Evaluators {
     /**
      * Creates an evaluator which always evaluates the specified schema as false.
      *
-     * @param schema the schema to evaluate, cannot be {@code null}.
+     * @param schema  the schema to evaluate, cannot be {@code null}.
      * @param context the context of the evaluator to be created.
      * @return newly created evaluator. It must not be {@code null}.
      */
@@ -69,37 +70,41 @@ public final class Evaluators {
         }
     }
 
-    public static LogicalEvaluator disjunctive(EvaluatorContext context, InstanceType type) {
+    public static LogicalEvaluator disjunctive(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+            InstanceType type) {
         switch (type) {
         case ARRAY:
-            return new DisjunctiveEvaluator(context, Event.END_ARRAY);
+            return new DisjunctiveEvaluator(context, schema, keyword, Event.END_ARRAY);
         case OBJECT:
-            return new DisjunctiveEvaluator(context, Event.END_OBJECT);
+            return new DisjunctiveEvaluator(context, schema, keyword, Event.END_OBJECT);
         default:
-            return new SimpleDisjunctiveEvaluator(context);
+            return new SimpleDisjunctiveEvaluator(context, schema, keyword);
         }
     }
 
-    public static LogicalEvaluator exclusive(EvaluatorContext context, InstanceType type, Stream<Evaluator> operands,
+    public static LogicalEvaluator exclusive(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+            InstanceType type,
+            Stream<Evaluator> operands,
             Stream<Evaluator> negated) {
         switch (type) {
         case ARRAY:
-            return new ExclusiveEvaluator(context, Event.END_ARRAY, operands, negated);
+            return new ExclusiveEvaluator(context, schema, keyword, Event.END_ARRAY, operands, negated);
         case OBJECT:
-            return new ExclusiveEvaluator(context, Event.END_OBJECT, operands, negated);
+            return new ExclusiveEvaluator(context, schema, keyword, Event.END_OBJECT, operands, negated);
         default:
-            return new SimpleExclusiveEvaluator(context, operands, negated);
+            return new SimpleExclusiveEvaluator(context, schema, keyword, operands, negated);
         }
     }
 
-    public static LogicalEvaluator notExclusive(EvaluatorContext context, InstanceType type) {
+    public static LogicalEvaluator notExclusive(EvaluatorContext context, JsonSchema schema,
+            Keyword keyword, InstanceType type) {
         switch (type) {
         case ARRAY:
-            return new NotExclusiveEvaluator(context, Event.END_ARRAY);
+            return new NotExclusiveEvaluator(context, schema, keyword, Event.END_ARRAY);
         case OBJECT:
-            return new NotExclusiveEvaluator(context, Event.END_OBJECT);
+            return new NotExclusiveEvaluator(context, schema, keyword, Event.END_OBJECT);
         default:
-            return new SimpleNotExclusiveEvaluator(context);
+            return new SimpleNotExclusiveEvaluator(context, schema, keyword);
         }
     }
 }

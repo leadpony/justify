@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,23 +60,23 @@ public class If extends Conditional {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
         Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
                 : Evaluator.ALWAYS_TRUE;
         Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(context, type)
                 : Evaluator.ALWAYS_TRUE;
-        return new ConditionalEvaluator(context, ifEvaluator, thenEvaluator, elseEvaluator);
+        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
         Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
                 : getSubschema().createNegatedEvaluator(context, type);
         Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
                 : getSubschema().createEvaluator(context, type);
-        return new ConditionalEvaluator(context, ifEvaluator, thenEvaluator, elseEvaluator);
+        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
     }
 
     @Override

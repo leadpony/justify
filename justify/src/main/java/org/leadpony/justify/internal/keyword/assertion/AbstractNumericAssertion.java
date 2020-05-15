@@ -24,8 +24,10 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
 import org.leadpony.justify.internal.keyword.NumericKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -41,15 +43,15 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Num
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         BigDecimal value = context.getParser().getBigDecimal();
         if (testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new AbstractKeywordEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context)
+                ProblemBuilder builder = newProblemBuilder()
                         .withParameter("actual", value);
                 dispatcher.dispatchProblem(createProblem(builder));
                 return Result.FALSE;
@@ -58,15 +60,15 @@ abstract class AbstractNumericAssertion extends AbstractAssertion implements Num
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         BigDecimal value = context.getParser().getBigDecimal();
         if (!testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new Evaluator() {
+        return new AbstractKeywordEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = createProblemBuilder(context)
+                ProblemBuilder builder = newProblemBuilder()
                         .withParameter("actual", value);
                 dispatcher.dispatchProblem(createNegatedProblem(builder));
                 return Result.FALSE;

@@ -22,6 +22,8 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -31,7 +33,6 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Assertion specified with "minProperties" validation keyword.
@@ -62,16 +63,16 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, InstanceType type) {
-        return new AssertionEvaluator(context, limit, this);
+    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (limit > 0) {
-            return new MaxProperties.AssertionEvaluator(context, limit - 1, this);
+            return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
         } else {
-            return createAlwaysFalseEvaluator(context);
+            return createAlwaysFalseEvaluator(context, schema);
         }
     }
 
@@ -83,13 +84,11 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
     static class AssertionEvaluator extends ShallowEvaluator {
 
         private final int minProperties;
-        private final ProblemBuilderFactory factory;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, int minProperties, ProblemBuilderFactory factory) {
-            super(context);
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int minProperties) {
+            super(context, schema, keyword);
             this.minProperties = minProperties;
-            this.factory = factory;
         }
 
         @Override
@@ -102,7 +101,7 @@ public class MinProperties extends AbstractAssertion implements ObjectKeyword {
                 if (currentCount >= minProperties) {
                     return Result.TRUE;
                 } else {
-                    Problem p = factory.createProblemBuilder(getContext())
+                    Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_MINPROPERTIES)
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minProperties)

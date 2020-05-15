@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
  * Logical connective evaluator.
@@ -25,16 +24,6 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  * @author leadpony
  */
 public interface LogicalEvaluator extends Evaluator {
-
-    /**
-     * Assigns the factory for producing problem builders.
-     *
-     * @param problemBuilderFactory the factory for producing problem builders, cannot be {@code null}.
-     * @return this evaluator.
-     */
-    default LogicalEvaluator withProblemBuilderFactory(ProblemBuilderFactory problemBuilderFactory) {
-        return this;
-    }
 
     /**
      * Appends an evaluator.

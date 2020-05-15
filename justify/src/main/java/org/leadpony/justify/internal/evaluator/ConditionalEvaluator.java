@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
@@ -28,7 +27,7 @@ import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
  *
  * @author leadpony
  */
-public class ConditionalEvaluator extends AbstractEvaluator {
+public class ConditionalEvaluator implements Evaluator {
 
     private final Evaluator ifEvaluator;
     private final DeferredEvaluator thenEvaluator;
@@ -38,9 +37,7 @@ public class ConditionalEvaluator extends AbstractEvaluator {
     private Result thenResult;
     private Result elseResult;
 
-    public ConditionalEvaluator(EvaluatorContext context, Evaluator ifEvaluator, Evaluator thenEvaluator,
-            Evaluator elseEvaluator) {
-        super(context);
+    public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
         assert ifEvaluator != null;
         assert thenEvaluator != null;
         assert elseEvaluator != null;

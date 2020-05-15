@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * @author leadpony
@@ -28,15 +29,17 @@ public interface Evaluatable {
      * Creates an evaluator.
      *
      * @param context the context shared by all evaluators in the validation.
+     * @param schema  the enclosing schema, cannot be {@code null}.
      * @param type    the type of the target JSON instance, cannot be {@code null}.
      */
-    Evaluator createEvaluator(EvaluatorContext context, InstanceType type);
+    Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type);
 
     /**
      * Creates a negated evaluator.
      *
      * @param context the context shared by all evaluators in the validation.
+     * @param schema  the enclosing schema, cannot be {@code null}.
      * @param type    the type of the target JSON instance, cannot be {@code null}.
      */
-    Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type);
+    Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type);
 }
