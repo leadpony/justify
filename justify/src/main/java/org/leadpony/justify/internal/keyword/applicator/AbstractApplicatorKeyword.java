@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,25 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.ApplicatorKeyword;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import org.leadpony.justify.internal.keyword.AbstractEvaluatorKeyword;
 
 /**
  * A keyword which applies subschemas.
  *
  * @author leadpony
  */
-public abstract class Applicator extends AbstractKeyword {
+abstract class AbstractApplicatorKeyword extends AbstractEvaluatorKeyword implements ApplicatorKeyword {
 
     /**
      * Constructs this keyword as an applicator.
      *
      * @param json the JSON representation of this keyword.
      */
-    protected Applicator(JsonValue json) {
+    protected AbstractApplicatorKeyword(JsonValue json) {
         super(json);
     }
 
@@ -48,13 +45,8 @@ public abstract class Applicator extends AbstractKeyword {
      * @param name the name of this keyword.
      * @param json the JSON representation of this keyword.
      */
-    protected Applicator(String name, JsonValue json) {
+    protected AbstractApplicatorKeyword(String name, JsonValue json) {
         super(name, json);
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        evaluatables.add(this);
     }
 
     /**

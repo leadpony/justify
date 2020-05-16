@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,15 +28,14 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * A keyword representing "additionalItems".
@@ -49,6 +47,8 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class AdditionalProperties extends UnaryCombiner {
+
+    private boolean alone;
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -62,6 +62,24 @@ public class AdditionalProperties extends UnaryCombiner {
 
     public AdditionalProperties(JsonValue json, JsonSchema subschema) {
         super(subschema);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * If there are neither "properties" nor "patternProperties", the instance must evaluated
+     * by this keyword.
+     * </p>
+     */
+    @Override
+    public Keyword link(Map<String, Keyword> siblings) {
+        alone = !siblings.containsKey("properties") && !siblings.containsKey("patternProperties");
+        return this;
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return alone;
     }
 
     @Override
@@ -90,20 +108,6 @@ public class AdditionalProperties extends UnaryCombiner {
             return createNegatedForbiddenPropertiesEvaluator(context, schema);
         } else {
             return createNegatedPropertiesEvaluator(context, schema);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * If there are neither "properties" nor "patternProperties", make this keyword
-     * to be evaluated.
-     * </p>
-     */
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (!keywords.containsKey("properties") && !keywords.containsKey("patternProperties")) {
-            evaluatables.add(this);
         }
     }
 

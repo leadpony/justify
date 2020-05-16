@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -29,14 +28,13 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * An assertion keyword representing "properties".
@@ -73,12 +71,12 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        super.addToEvaluatables(evaluatables, keywords);
-        if (keywords.containsKey("patternProperties")) {
-            this.patternProperties = (PatternProperties) keywords.get("patternProperties");
+    public Keyword link(Map<String, Keyword> siblings) {
+        super.link(siblings);
+        if (siblings.containsKey("patternProperties")) {
+            this.patternProperties = (PatternProperties) siblings.get("patternProperties");
         }
-        evaluatables.add(this);
+        return this;
     }
 
     @Override

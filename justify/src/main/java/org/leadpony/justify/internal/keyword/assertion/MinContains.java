@@ -16,13 +16,8 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.List;
-import java.util.Map;
-
 import jakarta.json.JsonValue;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * The type representing "minContains" keyword.
@@ -45,9 +40,5 @@ public class MinContains extends AbstractKeyword {
      */
     public int value() {
         return limit;
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 }

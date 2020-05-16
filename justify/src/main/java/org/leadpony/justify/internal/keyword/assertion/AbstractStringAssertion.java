@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.StringKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -35,7 +36,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-abstract class AbstractStringAssertion extends AbstractAssertion implements StringKeyword  {
+abstract class AbstractStringAssertion extends AbstractAssertionKeyword implements StringKeyword  {
 
     protected AbstractStringAssertion(JsonValue json) {
         super(json);

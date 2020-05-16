@@ -35,8 +35,8 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
@@ -47,7 +47,7 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
  */
 @KeywordType("contentEncoding")
 @Spec(SpecVersion.DRAFT_07)
-public class ContentEncoding extends AbstractAssertion {
+public class ContentEncoding extends AbstractAssertionKeyword {
 
     private final ContentEncodingScheme scheme;
 

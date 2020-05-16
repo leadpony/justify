@@ -37,6 +37,7 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -47,7 +48,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @KeywordType("type")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public abstract class Type extends AbstractAssertion {
+public abstract class Type extends AbstractAssertionKeyword {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.

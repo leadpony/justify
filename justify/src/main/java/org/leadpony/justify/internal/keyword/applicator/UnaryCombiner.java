@@ -26,7 +26,7 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-abstract class UnaryCombiner extends Applicator {
+abstract class UnaryCombiner extends AbstractApplicatorKeyword {
 
     private final JsonSchema subschema;
 

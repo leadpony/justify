@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.applicator;
+package org.leadpony.justify.internal.keyword.core;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -26,9 +25,8 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -37,7 +35,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Definitions extends Applicator {
+public class Definitions extends AbstractKeyword {
 
     private final Map<String, JsonSchema> definitionMap;
 
@@ -54,10 +52,6 @@ public class Definitions extends Applicator {
     public Definitions(JsonValue json, Map<String, JsonSchema> definitionMap) {
         super(json);
         this.definitionMap = definitionMap;
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 
     @Override

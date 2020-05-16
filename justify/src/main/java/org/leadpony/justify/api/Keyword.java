@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.leadpony.justify.api;
+
+import java.util.Map;
 
 import jakarta.json.JsonValue;
 
@@ -37,4 +39,17 @@ public interface Keyword {
      * @return the value of this keyword, cannot be {@code null}.
      */
     JsonValue getValueAsJson();
+
+    default Keyword link(Map<String, Keyword> siblings) {
+        return this;
+    }
+
+    /**
+     * Checks if this keyword can evaluate a JSON instance.
+     *
+     * @return {@code true} if this keyword can evaluate, {@code false} otherwise.
+     */
+    default boolean canEvaluate() {
+        return false;
+    }
 }

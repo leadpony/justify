@@ -23,6 +23,7 @@ import jakarta.json.JsonValue;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -56,14 +57,15 @@ public class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    public LogicalEvaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public LogicalEvaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return Evaluators.exclusive(context, schema, this, type,
                 getSubschemas().map(s -> s.createEvaluator(context, type)),
                 getSubschemas().map(s -> s.createNegatedEvaluator(context, type)));
     }
 
     @Override
-    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
+            InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.notExclusive(context, schema, this, type);
         getSubschemas()
                 .map(s -> s.createNegatedEvaluator(context, type))

@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -29,12 +28,11 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * @author leadpony
@@ -44,6 +42,8 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class PatternProperties extends AbstractProperties<Pattern> {
+
+    private Properties properties;
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -72,11 +72,15 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        super.addToEvaluatables(evaluatables, keywords);
-        if (!keywords.containsKey("properties")) {
-            evaluatables.add(this);
-        }
+    public Keyword link(Map<String, Keyword> siblings) {
+        super.link(siblings);
+        this.properties = (Properties) siblings.get("properties");
+        return this;
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return this.properties == null;
     }
 
     @Override

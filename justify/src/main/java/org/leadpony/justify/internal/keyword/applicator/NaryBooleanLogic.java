@@ -31,7 +31,7 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-abstract class NaryBooleanLogic extends Applicator {
+abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
 
     private final List<JsonSchema> subschemas;
 

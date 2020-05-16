@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import java.util.Map;
 import jakarta.json.JsonObject;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -46,13 +47,13 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 public abstract class BasicJsonSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
     public static JsonSchema of(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
-        List<Evaluatable> evaluatables = collectEvaluatables(keywords);
-        if (evaluatables.isEmpty()) {
+        List<EvaluatorSource> sources = collectEvaluatorSources(keywords);
+        if (sources.isEmpty()) {
             return new None(id, json, keywords);
-        } else if (evaluatables.size() == 1) {
-            return new One(id, json, keywords, evaluatables.get(0));
+        } else if (sources.size() == 1) {
+            return new One(id, json, keywords, sources.get(0));
         } else {
-            return new Many(id, json, keywords, evaluatables);
+            return new Many(id, json, keywords, sources);
         }
     }
 
@@ -91,12 +92,17 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
                 .withSchema(this);
     }
 
-    private static List<Evaluatable> collectEvaluatables(Map<String, SchemaKeyword> keywords) {
-        List<Evaluatable> evaluatables = new ArrayList<>();
+    private static List<EvaluatorSource> collectEvaluatorSources(Map<String, SchemaKeyword> keywords) {
+        List<EvaluatorSource> sources = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        Map<String, Keyword> siblings = (Map<String, Keyword>) (Map<String, ?>) keywords;
         for (SchemaKeyword keyword : keywords.values()) {
-            keyword.addToEvaluatables(evaluatables, keywords);
+            keyword.link(siblings);
+            if (keyword.canEvaluate()) {
+                sources.add((EvaluatorSource) keyword);
+            }
         }
-        return evaluatables;
+        return sources;
     }
 
     /**
@@ -126,24 +132,24 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      */
     private static final class One extends BasicJsonSchema {
 
-        private final Evaluatable evaluatable;
+        private final EvaluatorSource source;
 
         private One(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
-                Evaluatable evaluatable) {
+                EvaluatorSource source) {
             super(id, json, keywords);
-            this.evaluatable = evaluatable;
+            this.source = source;
         }
 
         @Override
         public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createEvaluator(context, this, type);
+            return source.createEvaluator(context, this, type);
         }
 
         @Override
         public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return evaluatable.createNegatedEvaluator(context, this, type);
+            return source.createNegatedEvaluator(context, this, type);
         }
     }
 
@@ -152,12 +158,12 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      */
     private static final class Many extends BasicJsonSchema {
 
-        private final List<Evaluatable> evaluatables;
+        private final List<EvaluatorSource> sources;
 
         private Many(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
-                List<Evaluatable> evaluatables) {
+                List<EvaluatorSource> sources) {
             super(id, json, keywords);
-            this.evaluatables = evaluatables;
+            this.sources = sources;
         }
 
         @Override
@@ -174,8 +180,8 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
 
         private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-            for (Evaluatable evaluatable : this.evaluatables) {
-                Evaluator child = evaluatable.createEvaluator(context, this, type);
+            for (EvaluatorSource source : this.sources) {
+                Evaluator child = source.createEvaluator(context, this, type);
                 evaluator.append(child);
             }
             return evaluator;
@@ -183,8 +189,8 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
 
         private Evaluator createCombinedNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.disjunctive(context, this, null, type);
-            for (Evaluatable evaluatable : this.evaluatables) {
-                Evaluator child = evaluatable.createNegatedEvaluator(context, this, type);
+            for (EvaluatorSource source : this.sources) {
+                Evaluator child = source.createNegatedEvaluator(context, this, type);
                 evaluator.append(child);
             }
             return evaluator;

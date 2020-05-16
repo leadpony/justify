@@ -16,18 +16,17 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * An assertion keyword representing "minimum" for Draft-04.
@@ -36,7 +35,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  */
 @KeywordType("minimum")
 @Spec(SpecVersion.DRAFT_04)
-public class Draft04Minimum extends Maximum {
+public class Draft04Minimum extends Minimum {
 
     private boolean exclusive = false;
 
@@ -55,12 +54,12 @@ public class Draft04Minimum extends Maximum {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (keywords.containsKey("exclusiveMinimum")) {
-            ExclusiveMinimum keyword = (ExclusiveMinimum) keywords.get("exclusiveMinimum");
+    public Keyword link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("exclusiveMinimum")) {
+            ExclusiveMinimum keyword = (ExclusiveMinimum) siblings.get("exclusiveMinimum");
             exclusive = keyword.value;
         }
-        super.addToEvaluatables(evaluatables, keywords);
+        return this;
     }
 
     @Override
