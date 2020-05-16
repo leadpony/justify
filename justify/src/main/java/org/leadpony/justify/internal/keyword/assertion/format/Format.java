@@ -16,19 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import java.util.List;
-import java.util.Map;
-
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
-import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
@@ -40,7 +35,7 @@ import org.leadpony.justify.spi.FormatAttribute;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Format extends AbstractAssertion {
+public class Format extends AbstractAssertionKeyword {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -68,6 +63,7 @@ public class Format extends AbstractAssertion {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
+    public boolean canEvaluate() {
+        return false;
     }
 }

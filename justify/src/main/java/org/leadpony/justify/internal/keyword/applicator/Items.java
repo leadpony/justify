@@ -30,6 +30,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -39,9 +40,7 @@ import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * A keyword type representing "items".
@@ -52,7 +51,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public abstract class Items extends Applicator implements ArrayKeyword {
+public abstract class Items extends AbstractApplicatorKeyword implements ArrayKeyword {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -208,6 +207,15 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         }
 
         @Override
+        public Keyword link(Map<String, Keyword> siblings) {
+            if (siblings.containsKey("additionalItems")) {
+                AdditionalItems additionalItems = (AdditionalItems) siblings.get("additionalItems");
+                this.defaultSchema = additionalItems.getSubschema();
+            }
+            return this;
+        }
+
+        @Override
         protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             return decorateEvaluator(createItemsEvaluator(context, schema), context);
         }
@@ -215,15 +223,6 @@ public abstract class Items extends Applicator implements ArrayKeyword {
         @Override
         protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
-        }
-
-        @Override
-        public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-            if (keywords.containsKey("additionalItems")) {
-                AdditionalItems additionalItems = (AdditionalItems) keywords.get("additionalItems");
-                this.defaultSchema = additionalItems.getSubschema();
-            }
-            evaluatables.add(this);
         }
 
         @Override

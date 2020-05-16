@@ -23,6 +23,7 @@ import jakarta.json.JsonValue;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -56,7 +57,7 @@ public class AllOf extends NaryBooleanLogic {
     }
 
     @Override
-    public LogicalEvaluator createEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public LogicalEvaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         getSubschemas().distinct()
                 .map(s -> s.createEvaluator(context, type))
@@ -65,7 +66,8 @@ public class AllOf extends NaryBooleanLogic {
     }
 
     @Override
-    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
+            InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
         getSubschemas().distinct()
                 .map(s -> s.createNegatedEvaluator(context, type))

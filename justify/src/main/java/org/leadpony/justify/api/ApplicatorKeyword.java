@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.util.List;
-import java.util.Map;
-
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+package org.leadpony.justify.api;
 
 /**
- * Assertion on JSON instances.
+ * A keyword which applies subschemas to JSON instances.
  *
  * @author leadpony
  */
-public interface Assertion extends SchemaKeyword {
+public interface ApplicatorKeyword extends Keyword, EvaluatorSource {
 
+    /**
+     * {@inheritDoc}
+     *
+     * An ApplicatorKeyword can evaluate JSON instances by default.
+     */
     @Override
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        evaluatables.add(this);
+    default boolean canEvaluate() {
+        return true;
     }
 }

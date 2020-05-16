@@ -16,18 +16,13 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.List;
-import java.util.Map;
-
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * "Then" conditional keyword.
@@ -52,12 +47,8 @@ public class Then extends Conditional {
         super(schema);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Evaluation will be done by "if" keyword.
-     */
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
+    public boolean canEvaluate() {
+        return false;
     }
 }

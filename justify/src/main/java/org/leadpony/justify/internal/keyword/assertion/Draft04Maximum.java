@@ -16,18 +16,17 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * An assertion keyword representing "maximum" for Draft-04.
@@ -55,12 +54,12 @@ public class Draft04Maximum extends Maximum {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (keywords.containsKey("exclusiveMaximum")) {
-            ExclusiveMaximum keyword = (ExclusiveMaximum) keywords.get("exclusiveMaximum");
+    public Keyword link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("exclusiveMaximum")) {
+            ExclusiveMaximum keyword = (ExclusiveMaximum) siblings.get("exclusiveMaximum");
             exclusive = keyword.value;
         }
-        super.addToEvaluatables(evaluatables, keywords);
+        return this;
     }
 
     @Override

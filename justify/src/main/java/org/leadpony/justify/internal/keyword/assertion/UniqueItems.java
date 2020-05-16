@@ -36,6 +36,7 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.ArrayKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
@@ -48,7 +49,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class UniqueItems extends AbstractAssertion implements ArrayKeyword {
+public class UniqueItems extends AbstractAssertionKeyword implements ArrayKeyword {
 
     private final boolean unique;
 

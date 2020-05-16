@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -33,8 +32,6 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.ObjectKeyword;
 
 /**
@@ -44,7 +41,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  *
  * @author leadpony
  */
-public abstract class AbstractProperties<K> extends Applicator implements ObjectKeyword {
+public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword implements ObjectKeyword {
 
     protected final Map<K, JsonSchema> propertyMap;
     private JsonSchema defaultSchema;
@@ -56,6 +53,15 @@ public abstract class AbstractProperties<K> extends Applicator implements Object
     }
 
     @Override
+    public Keyword link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("additionalProperties")) {
+            AdditionalProperties additionalProperties = (AdditionalProperties) siblings.get("additionalProperties");
+            this.defaultSchema = additionalProperties.getSubschema();
+        }
+        return this;
+    }
+
+    @Override
     protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new PropertiesEvaluator(context, schema, this, defaultSchema);
     }
@@ -63,14 +69,6 @@ public abstract class AbstractProperties<K> extends Applicator implements Object
     @Override
     protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new NegatedPropertiesEvaluator(context, schema, this, defaultSchema);
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (keywords.containsKey("additionalProperties")) {
-            AdditionalProperties additionalProperties = (AdditionalProperties) keywords.get("additionalProperties");
-            this.defaultSchema = additionalProperties.getSubschema();
-        }
     }
 
     @Override

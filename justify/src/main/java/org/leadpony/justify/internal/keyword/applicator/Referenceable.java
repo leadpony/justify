@@ -17,20 +17,16 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * A keyword containing referenceable subschema.
  *
  * @author leadpony
  */
-public class Referenceable extends Applicator {
+public class Referenceable extends AbstractApplicatorKeyword {
 
     private final JsonSchema subschema;
 
@@ -46,7 +42,8 @@ public class Referenceable extends Applicator {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
+    public boolean canEvaluate() {
+        return false;
     }
 
     @Override

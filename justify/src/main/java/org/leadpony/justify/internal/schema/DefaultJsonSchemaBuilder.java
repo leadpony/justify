@@ -55,7 +55,6 @@ import org.leadpony.justify.internal.keyword.applicator.AdditionalProperties;
 import org.leadpony.justify.internal.keyword.applicator.AllOf;
 import org.leadpony.justify.internal.keyword.applicator.AnyOf;
 import org.leadpony.justify.internal.keyword.applicator.Contains;
-import org.leadpony.justify.internal.keyword.applicator.Definitions;
 import org.leadpony.justify.internal.keyword.applicator.Dependencies;
 import org.leadpony.justify.internal.keyword.applicator.Else;
 import org.leadpony.justify.internal.keyword.applicator.If;
@@ -91,6 +90,7 @@ import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMed
 import org.leadpony.justify.internal.keyword.assertion.format.EvaluatableFormat;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
 import org.leadpony.justify.internal.keyword.core.Comment;
+import org.leadpony.justify.internal.keyword.core.Definitions;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.spi.ContentEncodingScheme;

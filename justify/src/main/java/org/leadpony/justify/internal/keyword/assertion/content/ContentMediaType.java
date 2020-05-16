@@ -16,7 +16,6 @@
 package org.leadpony.justify.internal.keyword.assertion.content;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,10 +37,8 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
+import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
-import org.leadpony.justify.internal.keyword.assertion.AbstractAssertion;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -53,11 +50,12 @@ import org.leadpony.justify.spi.ContentMimeType;
  */
 @KeywordType("contentMediaType")
 @Spec(SpecVersion.DRAFT_07)
-public class ContentMediaType extends AbstractAssertion {
+public class ContentMediaType extends AbstractAssertionKeyword {
 
     private final ContentMimeType mimeType;
     private final Map<String, String> parameters;
     private ContentEncodingScheme encodingScheme;
+    private boolean unknownEncodingScheme;
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -96,6 +94,25 @@ public class ContentMediaType extends AbstractAssertion {
         super(json);
         this.mimeType = mimeType;
         this.parameters = parameters;
+    }
+
+    @Override
+    public Keyword link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("contentEncoding")) {
+            Keyword keyword = siblings.get("contentEncoding");
+            if (keyword instanceof ContentEncoding) {
+                this.encodingScheme = ((ContentEncoding) keyword).scheme();
+            } else {
+                // Unknown encoding scheme
+                unknownEncodingScheme = true;
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return !unknownEncodingScheme;
     }
 
     @Override
@@ -138,20 +155,6 @@ public class ContentMediaType extends AbstractAssertion {
                 return Result.FALSE;
             }
         };
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (keywords.containsKey("contentEncoding")) {
-            SchemaKeyword keyword = keywords.get("contentEncoding");
-            if (keyword instanceof ContentEncoding) {
-                this.encodingScheme = ((ContentEncoding) keyword).scheme();
-            } else {
-                // Unknown encoding scheme
-                return;
-            }
-        }
-        evaluatables.add(this);
     }
 
     private boolean testValue(String value, boolean defaultResult) {

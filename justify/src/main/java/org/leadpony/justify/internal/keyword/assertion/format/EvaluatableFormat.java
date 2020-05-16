@@ -17,8 +17,6 @@
 package org.leadpony.justify.internal.keyword.assertion.format;
 
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import jakarta.json.JsonValue;
@@ -32,8 +30,6 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
@@ -62,8 +58,8 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        evaluatables.add(this);
+    public boolean canEvaluate() {
+        return true;
     }
 
     @Override

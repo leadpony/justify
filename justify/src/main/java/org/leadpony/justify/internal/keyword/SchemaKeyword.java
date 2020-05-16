@@ -18,8 +18,6 @@ package org.leadpony.justify.internal.keyword;
 
 import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -32,7 +30,7 @@ import org.leadpony.justify.api.Keyword;
  *
  * @author leadpony
  */
-public interface SchemaKeyword extends Keyword, Evaluatable {
+public interface SchemaKeyword extends Keyword {
 
     /**
      * Checks if this keyword supports the specified type.
@@ -51,15 +49,6 @@ public interface SchemaKeyword extends Keyword, Evaluatable {
      */
     default Set<InstanceType> getSupportedTypes() {
         return EnumSet.allOf(InstanceType.class);
-    }
-
-    /**
-     * Adds this keyword to the list if this keyword is evaluatables.
-     *
-     * @param evaluatables the list of evaluatable objects.
-     * @param keywords     all keywords in the enclosing schema.
-     */
-    default void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
     }
 
     /**

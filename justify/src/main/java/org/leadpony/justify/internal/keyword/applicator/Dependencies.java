@@ -63,7 +63,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Dependencies extends Applicator implements ObjectKeyword {
+public class Dependencies extends AbstractApplicatorKeyword implements ObjectKeyword {
 
     private final Map<String, Dependency> dependencyMap;
 

@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword;
+
+import org.leadpony.justify.api.AssertionKeyword;
 
 import jakarta.json.JsonValue;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
- * The type representing "maxContains" keyword.
+ * A skeletal implementation of {@link AssertionKeyword}.
  *
  * @author leadpony
  */
-public class MaxContains extends AbstractKeyword {
+public abstract class AbstractAssertionKeyword extends AbstractEvaluatorKeyword implements AssertionKeyword {
 
-    private final int limit;
-
-    public MaxContains(JsonValue json, int limit) {
+    protected AbstractAssertionKeyword(JsonValue json) {
         super(json);
-        this.limit = limit;
-    }
-
-    /**
-     * Return the value of this keyword.
-     *
-     * @return the value of this keyword.
-     */
-    public int value() {
-        return limit;
     }
 }

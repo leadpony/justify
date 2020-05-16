@@ -16,7 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.List;
 import java.util.Map;
 
 import jakarta.json.JsonValue;
@@ -25,13 +24,13 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
-import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 
 /**
  * "If" conditional keyword.
@@ -60,7 +59,29 @@ public class If extends Conditional {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Keyword link(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("then")) {
+            Keyword thenKeyword = siblings.get("then");
+            if (thenKeyword instanceof UnaryCombiner) {
+                thenSchema = ((UnaryCombiner) thenKeyword).getSubschema();
+            }
+        }
+        if (siblings.containsKey("else")) {
+            Keyword elseKeyword = siblings.get("else");
+            if (elseKeyword instanceof UnaryCombiner) {
+                elseSchema = ((UnaryCombiner) elseKeyword).getSubschema();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public boolean canEvaluate() {
+        return thenSchema != null || elseSchema != null;
+    }
+
+    @Override
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
         Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
                 : Evaluator.ALWAYS_TRUE;
@@ -70,31 +91,12 @@ public class If extends Conditional {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
         Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
                 : getSubschema().createNegatedEvaluator(context, type);
         Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
                 : getSubschema().createEvaluator(context, type);
         return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
-    }
-
-    @Override
-    public void addToEvaluatables(List<Evaluatable> evaluatables, Map<String, SchemaKeyword> keywords) {
-        if (keywords.containsKey("then")) {
-            SchemaKeyword thenKeyword = keywords.get("then");
-            if (thenKeyword instanceof UnaryCombiner) {
-                thenSchema = ((UnaryCombiner) thenKeyword).getSubschema();
-            }
-        }
-        if (keywords.containsKey("else")) {
-            SchemaKeyword elseKeyword = keywords.get("else");
-            if (elseKeyword instanceof UnaryCombiner) {
-                elseSchema = ((UnaryCombiner) elseKeyword).getSubschema();
-            }
-        }
-        if (thenSchema != null || elseSchema != null) {
-            evaluatables.add(this);
-        }
     }
 }
