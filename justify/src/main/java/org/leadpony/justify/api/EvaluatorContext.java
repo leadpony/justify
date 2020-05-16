@@ -17,8 +17,6 @@ package org.leadpony.justify.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
@@ -94,17 +92,4 @@ public interface EvaluatorContext {
      * @return newly created evaluator. It must not be {@code null}.
      */
     Evaluator createAlwaysFalseEvaluator(JsonSchema schema);
-
-    /**
-     * Creates an evaluator which always evaluates the specified schema as
-     * {@code false} because the instance type is not supoorted.
-     *
-     * @param schema the schema against which the instance will be evaluated, cannot be {@code null}.
-     * @param keyword the keyword against which the instance will be evaluated, cannot be {@code null}.
-     * @param expected the expected instance types, cannot be {@code null}.
-     * @param actual the actual instance type, cannot be {@code null}.
-     * @return newly created evaluator. It must not be {@code null}.
-     */
-    Evaluator createMismatchedTypeEvaluator(JsonSchema schema, Keyword keyword, Set<InstanceType> expected,
-            InstanceType actual);
 }

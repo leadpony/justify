@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jakarta.json.JsonObject;
 
@@ -33,6 +34,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -105,6 +107,30 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         return sources;
     }
 
+    protected final Evaluator createEvaluatorFromKeyword(EvaluatorSource source, EvaluatorContext context,
+            InstanceType type) {
+        if (source.supportsType(type)) {
+            return source.createEvaluator(context, this, type);
+        } else {
+            return Evaluator.ALWAYS_TRUE;
+        }
+    }
+
+    protected final Evaluator createNegatedEvaluatorFromKeyword(EvaluatorSource source, EvaluatorContext context,
+            InstanceType type) {
+        if (source.supportsType(type)) {
+            return source.createNegatedEvaluator(context, this, type);
+        } else {
+            return createUnsupportedTypeEvaluator(source, context, type);
+        }
+    }
+
+    private Evaluator createUnsupportedTypeEvaluator(EvaluatorSource source, EvaluatorContext context,
+            InstanceType type) {
+        Set<InstanceType> supported = source.getSupportedTypes();
+        return new UnsupportedTypeEvaluator(context, this, source, supported, type);
+    }
+
     /**
      * JSON Schema without any evalutable keywords.
      */
@@ -143,13 +169,13 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         @Override
         public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return source.createEvaluator(context, this, type);
+            return createEvaluatorFromKeyword(source, context, type);
         }
 
         @Override
         public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return source.createNegatedEvaluator(context, this, type);
+            return createNegatedEvaluatorFromKeyword(source, context, type);
         }
     }
 
@@ -181,7 +207,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         private Evaluator createCombinedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.conjunctive(type);
             for (EvaluatorSource source : this.sources) {
-                Evaluator child = source.createEvaluator(context, this, type);
+                Evaluator child = createEvaluatorFromKeyword(source, context, type);
                 evaluator.append(child);
             }
             return evaluator;
@@ -190,7 +216,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         private Evaluator createCombinedNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             LogicalEvaluator evaluator = Evaluators.disjunctive(context, this, null, type);
             for (EvaluatorSource source : this.sources) {
-                Evaluator child = source.createNegatedEvaluator(context, this, type);
+                Evaluator child = createNegatedEvaluatorFromKeyword(source, context, type);
                 evaluator.append(child);
             }
             return evaluator;

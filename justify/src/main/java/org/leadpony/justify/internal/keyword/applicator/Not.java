@@ -22,6 +22,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -58,12 +59,12 @@ public class Not extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return getSubschema().createNegatedEvaluator(context, type);
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return getSubschema().createEvaluator(context, type);
     }
 }

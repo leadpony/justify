@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -64,12 +65,12 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         if (limit > 0) {
             return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -140,7 +140,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -160,7 +160,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -204,7 +204,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -224,7 +224,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;

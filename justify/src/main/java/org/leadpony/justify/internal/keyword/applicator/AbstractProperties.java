@@ -29,6 +29,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
@@ -62,12 +63,12 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return new PropertiesEvaluator(context, schema, this, defaultSchema);
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return new NegatedPropertiesEvaluator(context, schema, this, defaultSchema);
     }
 

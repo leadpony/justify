@@ -29,6 +29,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -89,13 +90,13 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
-        return decorateEvaluator(super.doCreateEvaluator(context, schema, type), context);
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        return decorateEvaluator(super.createEvaluator(context, schema, type), context);
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
-        return decorateEvaluator(super.doCreateNegatedEvaluator(context, schema, type), context);
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        return decorateEvaluator(super.createNegatedEvaluator(context, schema, type), context);
     }
 
     @Override

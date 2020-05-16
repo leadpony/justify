@@ -28,16 +28,16 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 import jakarta.json.stream.JsonParser.Event;
 
 /**
- * An evaluator used when the type does not match the expected type.
+ * An evaluator used when the instance type is not supported by the keyword.
  *
  * @author leadpony
  */
-final class MismatchedTypeEvaluator extends AbstractKeywordAwareEvaluator {
+public final class UnsupportedTypeEvaluator extends AbstractKeywordAwareEvaluator {
 
     private final Set<InstanceType> expected;
     private final InstanceType actual;
 
-    MismatchedTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+    public UnsupportedTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
             Set<InstanceType> expected, InstanceType actual) {
         super(context, schema, keyword);
         this.expected = expected;

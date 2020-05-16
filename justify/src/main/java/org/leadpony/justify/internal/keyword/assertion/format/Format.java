@@ -48,7 +48,7 @@ public class Format extends AbstractAssertionKeyword {
                 String name = ((JsonString) value).getString();
                 FormatAttribute attribute = context.getFormateAttribute(name);
                 if (attribute != null) {
-                    return new EvaluatableFormat(value, attribute);
+                    return new RecognizedFormat(value, attribute);
                 } else {
                     return new Format(value, name);
                 }

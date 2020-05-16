@@ -26,6 +26,7 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.EvaluatorContext;
@@ -73,7 +74,7 @@ public class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema, subschema);
@@ -83,7 +84,7 @@ public class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return context.createAlwaysFalseEvaluator(subschema);

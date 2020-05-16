@@ -31,6 +31,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
@@ -104,7 +105,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
                 return createForbiddenItemsEvaluator(context, schema);
             } else {
@@ -113,7 +114,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 return createNegatedForbiddenItemsEvaluator(context, schema);
             } else {
@@ -216,12 +217,12 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             return decorateEvaluator(createItemsEvaluator(context, schema), context);
         }
 
         @Override
-        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
             return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
         }
 

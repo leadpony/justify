@@ -15,13 +15,9 @@
  */
 package org.leadpony.justify.internal.evaluator;
 
-import java.util.Set;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
 
 /**
  * An {@link EvaluatorContext} with default method implementation.
@@ -30,12 +26,8 @@ import org.leadpony.justify.api.Keyword;
  */
 public interface DefaultEvaluatorContext extends EvaluatorContext {
 
+    @Override
     default Evaluator createAlwaysFalseEvaluator(JsonSchema schema) {
         return new AlwaysFalseEvaluator(this, schema);
-    }
-
-    default Evaluator createMismatchedTypeEvaluator(JsonSchema schema, Keyword keyword, Set<InstanceType> expected,
-            InstanceType actual) {
-        return new MismatchedTypeEvaluator(this, schema, keyword, expected, actual);
     }
 }

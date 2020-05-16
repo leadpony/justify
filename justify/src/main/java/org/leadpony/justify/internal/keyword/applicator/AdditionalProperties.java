@@ -29,6 +29,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -93,7 +94,7 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         if (getSubschema() == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema);
         } else {
@@ -102,7 +103,7 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return createNegatedForbiddenPropertiesEvaluator(context, schema);

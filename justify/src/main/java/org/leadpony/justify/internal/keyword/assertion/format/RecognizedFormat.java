@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
@@ -34,15 +35,15 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
- * A format which can be evaluated.
+ * A format which can evaluate JSON instances.
  *
  * @author leadpony
  */
-public class EvaluatableFormat extends Format {
+public class RecognizedFormat extends Format {
 
     private final FormatAttribute attribute;
 
-    public EvaluatableFormat(JsonValue json, FormatAttribute attribute) {
+    public RecognizedFormat(JsonValue json, FormatAttribute attribute) {
         super(json, attribute.name());
         this.attribute = attribute;
     }
@@ -63,7 +64,7 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (test(value)) {
             return Evaluator.ALWAYS_TRUE;
@@ -80,7 +81,7 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (!test(value)) {
             return Evaluator.ALWAYS_TRUE;

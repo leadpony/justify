@@ -87,7 +87,7 @@ import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentEncoding;
 import org.leadpony.justify.internal.keyword.assertion.content.UnknownContentMediaType;
-import org.leadpony.justify.internal.keyword.assertion.format.EvaluatableFormat;
+import org.leadpony.justify.internal.keyword.assertion.format.RecognizedFormat;
 import org.leadpony.justify.internal.keyword.assertion.format.Format;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Definitions;
@@ -553,7 +553,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(attribute, "attribute");
         FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
         if (foundAttribute != null) {
-            Format format = new EvaluatableFormat(
+            Format format = new RecognizedFormat(
                     toJson(attribute), foundAttribute);
             addKeyword(format);
         } else {
@@ -568,7 +568,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         Format format = null;
         FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
         if (foundAttribute != null) {
-            format = new EvaluatableFormat(
+            format = new RecognizedFormat(
                     toJson(attribute), foundAttribute);
         } else {
             format = new Format(toJson(attribute), attribute);
