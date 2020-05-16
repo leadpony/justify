@@ -40,6 +40,12 @@ public interface Keyword {
      */
     JsonValue getValueAsJson();
 
+    /**
+     * Links this keyword with sibling keywords if needed.
+     *
+     * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
+     * @return this keyword.
+     */
     default Keyword link(Map<String, Keyword> siblings) {
         return this;
     }
@@ -47,7 +53,7 @@ public interface Keyword {
     /**
      * Checks if this keyword can evaluate a JSON instance.
      *
-     * @return {@code true} if this keyword can evaluate, {@code false} otherwise.
+     * @return {@code true} if this keyword can evaluate, {@code false} it cannot.
      */
     default boolean canEvaluate() {
         return false;

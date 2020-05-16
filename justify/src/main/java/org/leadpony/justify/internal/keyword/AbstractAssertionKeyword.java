@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword;
 
 import org.leadpony.justify.api.AssertionKeyword;
-
 import jakarta.json.JsonValue;
 
 /**
@@ -25,7 +24,7 @@ import jakarta.json.JsonValue;
  *
  * @author leadpony
  */
-public abstract class AbstractAssertionKeyword extends AbstractEvaluatorKeyword implements AssertionKeyword {
+public abstract class AbstractAssertionKeyword extends AbstractKeyword implements AssertionKeyword {
 
     protected AbstractAssertionKeyword(JsonValue json) {
         super(json);

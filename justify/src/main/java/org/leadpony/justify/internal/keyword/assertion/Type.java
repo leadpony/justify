@@ -36,7 +36,7 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
@@ -140,12 +140,12 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new AbstractKeywordEvaluator(context, schema, this) {
+            return new AbstractKeywordAwareEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = newProblemBuilder()
@@ -160,12 +160,12 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new AbstractKeywordEvaluator(context, schema, this) {
+            return new AbstractKeywordAwareEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = newProblemBuilder()
@@ -204,12 +204,12 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new AbstractKeywordEvaluator(context, schema, this) {
+            return new AbstractKeywordAwareEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = newProblemBuilder()
@@ -224,12 +224,12 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
             }
-            return new AbstractKeywordEvaluator(context, schema, this) {
+            return new AbstractKeywordAwareEvaluator(context, schema, this) {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                     Problem p = newProblemBuilder()

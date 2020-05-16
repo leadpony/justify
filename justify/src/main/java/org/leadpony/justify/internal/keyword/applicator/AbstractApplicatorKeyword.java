@@ -21,14 +21,14 @@ import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.ApplicatorKeyword;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.AbstractEvaluatorKeyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
  * A keyword which applies subschemas.
  *
  * @author leadpony
  */
-abstract class AbstractApplicatorKeyword extends AbstractEvaluatorKeyword implements ApplicatorKeyword {
+abstract class AbstractApplicatorKeyword extends AbstractKeyword implements ApplicatorKeyword {
 
     /**
      * Constructs this keyword as an applicator.

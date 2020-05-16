@@ -93,7 +93,7 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (getSubschema() == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema);
         } else {
@@ -102,7 +102,7 @@ public class AdditionalProperties extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return createNegatedForbiddenPropertiesEvaluator(context, schema);

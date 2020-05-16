@@ -28,7 +28,7 @@ import org.leadpony.justify.api.ProblemDispatcher;
  *
  * @author leadpony
  */
-public abstract class ShallowEvaluator extends AbstractKeywordEvaluator {
+public abstract class ShallowEvaluator extends AbstractKeywordAwareEvaluator {
 
     protected ShallowEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
         super(context, schema, keyword);

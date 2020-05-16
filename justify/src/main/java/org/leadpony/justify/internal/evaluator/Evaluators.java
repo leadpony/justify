@@ -25,7 +25,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Provides various kinds of evaluators.
@@ -35,28 +34,6 @@ import org.leadpony.justify.api.ProblemDispatcher;
 public final class Evaluators {
 
     private Evaluators() {
-    }
-
-    /**
-     * Creates an evaluator which always evaluates the specified schema as false.
-     *
-     * @param schema  the schema to evaluate, cannot be {@code null}.
-     * @param context the context of the evaluator to be created.
-     * @return newly created evaluator. It must not be {@code null}.
-     */
-    public static Evaluator alwaysFalse(JsonSchema schema, EvaluatorContext context) {
-        return new Evaluator() {
-            @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                dispatcher.dispatchInevitableProblem(context, schema);
-                return Result.FALSE;
-            }
-
-            @Override
-            public boolean isAlwaysFalse() {
-                return true;
-            }
-        };
     }
 
     public static LogicalEvaluator conjunctive(InstanceType type) {

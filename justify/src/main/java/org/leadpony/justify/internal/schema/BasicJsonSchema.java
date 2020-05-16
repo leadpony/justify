@@ -123,7 +123,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         @Override
         public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
             requireNonNull(type, "type");
-            return Evaluators.alwaysFalse(this, context);
+            return context.createAlwaysFalseEvaluator(this);
         }
     }
 

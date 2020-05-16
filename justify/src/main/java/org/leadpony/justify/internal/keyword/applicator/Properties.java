@@ -89,12 +89,12 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return decorateEvaluator(super.doCreateEvaluator(context, schema, type), context);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return decorateEvaluator(super.doCreateNegatedEvaluator(context, schema, type), context);
     }
 

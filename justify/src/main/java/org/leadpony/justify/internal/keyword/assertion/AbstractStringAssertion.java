@@ -20,15 +20,18 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.StringKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -36,19 +39,31 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-abstract class AbstractStringAssertion extends AbstractAssertionKeyword implements StringKeyword  {
+abstract class AbstractStringAssertion extends AbstractAssertionKeyword {
+
+    private static final Set<InstanceType> SUPPORTED_TYPES = EnumSet.of(InstanceType.STRING);
 
     protected AbstractStringAssertion(JsonValue json) {
         super(json);
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public boolean supportsType(InstanceType type) {
+        return type == InstanceType.STRING;
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return SUPPORTED_TYPES;
+    }
+
+    @Override
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder();
@@ -60,12 +75,12 @@ abstract class AbstractStringAssertion extends AbstractAssertionKeyword implemen
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (!testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder();

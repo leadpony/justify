@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
+import org.leadpony.justify.internal.evaluator.DefaultEvaluatorContext;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -43,7 +43,7 @@ import org.leadpony.justify.api.Evaluator.Result;
  * @author leadpony
  */
 public class JsonValidator extends DefaultPointerAwareJsonParser
-    implements EvaluatorContext, DefaultProblemDispatcher, ParserEventHandler {
+    implements DefaultEvaluatorContext, DefaultProblemDispatcher, ParserEventHandler {
 
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;

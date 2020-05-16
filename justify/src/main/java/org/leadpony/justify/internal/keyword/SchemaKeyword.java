@@ -16,12 +16,9 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import java.util.EnumSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 
@@ -31,25 +28,6 @@ import org.leadpony.justify.api.Keyword;
  * @author leadpony
  */
 public interface SchemaKeyword extends Keyword {
-
-    /**
-     * Checks if this keyword supports the specified type.
-     *
-     * @param type the type to check.
-     * @return {@code true} if this keyword supports the type.
-     */
-    default boolean supportsType(InstanceType type) {
-        return true;
-    }
-
-    /**
-     * Returns the types supported by this keyword.
-     *
-     * @return the supported types.
-     */
-    default Set<InstanceType> getSupportedTypes() {
-        return EnumSet.allOf(InstanceType.class);
-    }
 
     /**
      * Checks whether the subschemas provided by this keyword will be applied to the

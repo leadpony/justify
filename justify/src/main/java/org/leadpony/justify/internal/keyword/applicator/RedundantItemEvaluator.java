@@ -23,12 +23,12 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractContextAwareEvaluator;
 
 /**
  * @author leadpony
  */
-class RedundantItemEvaluator extends AbstractEvaluator {
+class RedundantItemEvaluator extends AbstractContextAwareEvaluator {
 
     private final int itemIndex;
 

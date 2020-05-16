@@ -35,9 +35,9 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -49,7 +49,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class UniqueItems extends AbstractAssertionKeyword implements ArrayKeyword {
+public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
     private final boolean unique;
 
@@ -69,7 +69,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayKeywor
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (unique) {
             return new AssertionEvaluator(context, schema, this);
         } else {
@@ -78,11 +78,11 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayKeywor
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (unique) {
             return new NegatedAssertionEvaluator(context, schema, this);
         } else {
-            return createAlwaysFalseEvaluator(context, schema);
+            return context.createAlwaysFalseEvaluator(schema);
         }
     }
 
@@ -91,7 +91,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayKeywor
      *
      * @author leadpony
      */
-    private class AssertionEvaluator extends AbstractKeywordEvaluator {
+    private class AssertionEvaluator extends AbstractKeywordAwareEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();

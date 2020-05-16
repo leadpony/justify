@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.assertion;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.Set;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -27,9 +29,8 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.NumericKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -37,19 +38,31 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-abstract class AbstractNumericAssertion extends AbstractAssertionKeyword implements NumericKeyword {
+abstract class AbstractNumericAssertion extends AbstractAssertionKeyword {
+
+    private static final Set<InstanceType> SUPPORTED_TYPES = EnumSet.of(InstanceType.NUMBER, InstanceType.INTEGER);
 
     protected AbstractNumericAssertion(JsonValue json) {
         super(json);
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public boolean supportsType(InstanceType type) {
+        return type.isNumeric();
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return SUPPORTED_TYPES;
+    }
+
+    @Override
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         BigDecimal value = context.getParser().getBigDecimal();
         if (testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder()
@@ -61,12 +74,12 @@ abstract class AbstractNumericAssertion extends AbstractAssertionKeyword impleme
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         BigDecimal value = context.getParser().getBigDecimal();
         if (!testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder()

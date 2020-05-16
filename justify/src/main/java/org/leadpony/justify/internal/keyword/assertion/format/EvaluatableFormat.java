@@ -29,7 +29,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
@@ -63,7 +63,7 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (test(value)) {
             return Evaluator.ALWAYS_TRUE;
@@ -80,7 +80,7 @@ public class EvaluatableFormat extends Format {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonValue value = context.getParser().getValue();
         if (!test(value)) {
             return Evaluator.ALWAYS_TRUE;
@@ -100,7 +100,7 @@ public class EvaluatableFormat extends Format {
         return attribute.test(value);
     }
 
-    abstract class FormatEvaluator extends AbstractKeywordEvaluator {
+    abstract class FormatEvaluator extends AbstractKeywordAwareEvaluator {
 
         FormatEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
             super(context, schema, keyword);

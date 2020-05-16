@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.ObjectKeyword;
+import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
  * Assertion specified with "maxProperties" validation keyword.
@@ -44,7 +44,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MaxProperties extends AbstractAssertionKeyword implements ObjectKeyword {
+public class MaxProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
     private final int limit;
 
@@ -64,12 +64,12 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectKey
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new MinProperties.AssertionEvaluator(context, schema, this, limit + 1);
     }
 

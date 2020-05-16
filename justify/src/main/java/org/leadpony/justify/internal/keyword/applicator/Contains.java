@@ -31,7 +31,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
-import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -42,7 +42,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @KeywordType("contains")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Contains extends UnaryCombiner implements ArrayKeyword {
+public class Contains extends UnaryCombiner implements ArrayEvaluatorSource {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -59,12 +59,12 @@ public class Contains extends UnaryCombiner implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return createItemsEvaluator(context, schema);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return createNegatedItemsEvaluator(context, schema);
     }
 

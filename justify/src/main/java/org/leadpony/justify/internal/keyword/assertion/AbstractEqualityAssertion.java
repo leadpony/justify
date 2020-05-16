@@ -27,7 +27,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -43,10 +43,10 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 if (builder.append(event, context.getParser())) {
@@ -65,10 +65,10 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 if (builder.append(event, context.getParser())) {

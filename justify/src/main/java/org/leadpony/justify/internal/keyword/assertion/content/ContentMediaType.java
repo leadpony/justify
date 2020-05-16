@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -126,7 +126,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (testValue(value, true)) {
             return Evaluator.ALWAYS_TRUE;
@@ -142,7 +142,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
         if (!testValue(value, false)) {
             return Evaluator.ALWAYS_TRUE;
@@ -183,7 +183,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         return builder.toString();
     }
 
-    abstract class ContentMediaTypeEvaluator extends AbstractKeywordEvaluator {
+    abstract class ContentMediaTypeEvaluator extends AbstractKeywordAwareEvaluator {
 
         ContentMediaTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
             super(context, schema, keyword);

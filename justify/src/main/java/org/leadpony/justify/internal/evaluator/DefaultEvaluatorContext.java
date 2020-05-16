@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.Set;
+
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 
 /**
- * Skeletal implementation of {@link LogicalEvaluator}.
+ * An {@link EvaluatorContext} with default method implementation.
  *
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator extends AbstractKeywordAwareEvaluator implements LogicalEvaluator {
+public interface DefaultEvaluatorContext extends EvaluatorContext {
 
-    protected AbstractLogicalEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    default Evaluator createAlwaysFalseEvaluator(JsonSchema schema) {
+        return new AlwaysFalseEvaluator(this, schema);
+    }
+
+    default Evaluator createMismatchedTypeEvaluator(JsonSchema schema, Keyword keyword, Set<InstanceType> expected,
+            InstanceType actual) {
+        return new MismatchedTypeEvaluator(this, schema, keyword, expected, actual);
     }
 }

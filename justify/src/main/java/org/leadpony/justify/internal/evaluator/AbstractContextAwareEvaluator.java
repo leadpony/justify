@@ -29,12 +29,12 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-public abstract class AbstractEvaluator implements Evaluator {
+public abstract class AbstractContextAwareEvaluator implements Evaluator {
 
     private final EvaluatorContext context;
     private final JsonSchema schema;
 
-    protected AbstractEvaluator(EvaluatorContext context, JsonSchema schema) {
+    protected AbstractContextAwareEvaluator(EvaluatorContext context, JsonSchema schema) {
         this.context = context;
         this.schema = schema;
     }

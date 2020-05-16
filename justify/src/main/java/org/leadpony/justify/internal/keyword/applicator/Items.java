@@ -39,7 +39,7 @@ import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
-import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -51,7 +51,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public abstract class Items extends AbstractApplicatorKeyword implements ArrayKeyword {
+public abstract class Items extends AbstractApplicatorKeyword implements ArrayEvaluatorSource {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -104,7 +104,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayKe
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
                 return createForbiddenItemsEvaluator(context, schema);
             } else {
@@ -113,7 +113,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayKe
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 return createNegatedForbiddenItemsEvaluator(context, schema);
             } else {
@@ -216,12 +216,12 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayKe
         }
 
         @Override
-        protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             return decorateEvaluator(createItemsEvaluator(context, schema), context);
         }
 
         @Override
-        protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+        public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
             return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
         }
 

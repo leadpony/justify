@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.ArrayKeyword;
+import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
@@ -45,7 +45,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MinItems extends AbstractAssertionKeyword implements ArrayKeyword {
+public class MinItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
     private final int limit;
 
@@ -65,16 +65,16 @@ public class MinItems extends AbstractAssertionKeyword implements ArrayKeyword {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (limit > 0) {
             return new MaxItems.AssertionEvaluator(context, schema, this, limit - 1);
         } else {
-            return createAlwaysFalseEvaluator(context, schema);
+            return context.createAlwaysFalseEvaluator(schema);
         }
     }
 

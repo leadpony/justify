@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,28 @@
  */
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.internal.problem.ProblemBuilder;
+import org.leadpony.justify.api.ProblemDispatcher;
+import jakarta.json.stream.JsonParser.Event;
 
 /**
- * An implementation of {@link Evaluator} which is provided by a keyword.
- *
  * @author leadpony
  */
-public abstract class AbstractKeywordEvaluator extends AbstractEvaluator {
+final class AlwaysFalseEvaluator extends AbstractContextAwareEvaluator {
 
-    // this can be null.
-    private final Keyword keyword;
-
-    protected AbstractKeywordEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+    AlwaysFalseEvaluator(EvaluatorContext context, JsonSchema schema) {
         super(context, schema);
-        this.keyword = keyword;
     }
 
     @Override
-    protected ProblemBuilder newProblemBuilder() {
-        ProblemBuilder builder = super.newProblemBuilder();
-        if (this.keyword != null) {
-            builder.withKeyword(this.keyword.name());
-        }
-        return builder;
+    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        dispatcher.dispatchInevitableProblem(getContext(), getSchema());
+        return Result.FALSE;
+    }
+
+    @Override
+    public boolean isAlwaysFalse() {
+        return true;
     }
 }

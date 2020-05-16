@@ -38,7 +38,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.ObjectKeyword;
+import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
  * Assertion specified with "required" validation keyword.
@@ -49,7 +49,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Required extends AbstractAssertionKeyword implements ObjectKeyword {
+public class Required extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
     private final Set<String> names;
 
@@ -81,7 +81,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectKeyword 
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (names.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         } else {
@@ -90,9 +90,9 @@ public class Required extends AbstractAssertionKeyword implements ObjectKeyword 
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         if (names.isEmpty()) {
-            return createAlwaysFalseEvaluator(context, schema);
+            return context.createAlwaysFalseEvaluator(schema);
         } else {
             return new NegatedAssertionEvaluator(context, schema, this, names);
         }

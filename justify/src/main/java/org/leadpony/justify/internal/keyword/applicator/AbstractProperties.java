@@ -32,7 +32,7 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
-import org.leadpony.justify.internal.keyword.ObjectKeyword;
+import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
  * A skeletal implementation for "properties" and "patternProperties" keywords.
@@ -41,7 +41,7 @@ import org.leadpony.justify.internal.keyword.ObjectKeyword;
  *
  * @author leadpony
  */
-public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword implements ObjectKeyword {
+public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
 
     protected final Map<K, JsonSchema> propertyMap;
     private JsonSchema defaultSchema;
@@ -62,12 +62,12 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new PropertiesEvaluator(context, schema, this, defaultSchema);
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         return new NegatedPropertiesEvaluator(context, schema, this, defaultSchema);
     }
 

@@ -34,8 +34,7 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
-import org.leadpony.justify.internal.evaluator.Evaluators;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -74,7 +73,7 @@ public class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema, subschema);
@@ -84,10 +83,10 @@ public class PropertyNames extends UnaryCombiner {
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return Evaluators.alwaysFalse(subschema, context);
+            return context.createAlwaysFalseEvaluator(subschema);
         } else {
             return createNegatedPropertiesEvaluator(context, schema, subschema);
         }
@@ -95,7 +94,7 @@ public class PropertyNames extends UnaryCombiner {
 
     private Evaluator createForbiddenPropertyEvaluator(EvaluatorContext context, JsonSchema schema,
             JsonSchema subschema) {
-        return new AbstractKeywordEvaluator(context, schema, this) {
+        return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder b = newProblemBuilder()

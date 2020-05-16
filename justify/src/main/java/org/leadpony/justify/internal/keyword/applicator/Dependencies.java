@@ -46,11 +46,11 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.ObjectKeyword;
+import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -63,7 +63,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Dependencies extends AbstractApplicatorKeyword implements ObjectKeyword {
+public class Dependencies extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
 
     private final Map<String, Dependency> dependencyMap;
 
@@ -114,7 +114,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectKey
     }
 
     @Override
-    protected Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependencyMap.values().stream()
                 .map(d -> d.createEvaluator(context, schema))
@@ -123,7 +123,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectKey
     }
 
     @Override
-    protected Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
+    public Evaluator doCreateNegatedEvaluator(EvaluatorContext context, JsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
         dependencyMap.values().stream()
                 .map(d -> d.createNegatedEvaluator(context, schema))
@@ -192,7 +192,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectKey
      *
      * @author leadpony
      */
-    private abstract class DependencyEvaluator extends AbstractKeywordEvaluator {
+    private abstract class DependencyEvaluator extends AbstractKeywordAwareEvaluator {
 
         protected final String property;
         protected boolean active;
@@ -322,7 +322,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectKey
 
         @Override
         Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return Evaluators.alwaysFalse(getSubschema(), context);
+            return context.createAlwaysFalseEvaluator(getSubschema());
         }
     }
 
