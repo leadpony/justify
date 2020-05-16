@@ -17,9 +17,9 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
@@ -90,6 +90,11 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         super(json);
     }
 
+    @Override
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
+    }
+
     /**
      * "items" keyword with single schema.
      *
@@ -123,18 +128,22 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public boolean hasSubschemas() {
+        public boolean containsSchemas() {
             return true;
         }
 
         @Override
-        public Stream<JsonSchema> getSubschemas() {
+        public Stream<JsonSchema> getSchemas() {
             return Stream.of(subschema);
         }
 
         @Override
-        public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-            return subschema;
+        public Optional<JsonSchema> findSchema(String token) {
+            if (token.isEmpty()) {
+                return Optional.of(subschema);
+            } else {
+                return Optional.empty();
+            }
         }
 
         private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
@@ -227,27 +236,25 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public boolean hasSubschemas() {
+        public boolean containsSchemas() {
             return !subschemas.isEmpty();
         }
 
         @Override
-        public Stream<JsonSchema> getSubschemas() {
+        public Stream<JsonSchema> getSchemas() {
             return this.subschemas.stream();
         }
 
         @Override
-        public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-            if (jsonPointer.hasNext()) {
-                try {
-                    int index = Integer.parseInt(jsonPointer.next());
-                    if (index < subschemas.size()) {
-                        return subschemas.get(index);
-                    }
-                } catch (NumberFormatException e) {
+        public Optional<JsonSchema> findSchema(String token) {
+            try {
+                int index = Integer.parseInt(token);
+                if (index < subschemas.size()) {
+                    return Optional.of(subschemas.get(index));
                 }
+            } catch (NumberFormatException e) {
             }
-            return null;
+            return Optional.empty();
         }
 
         private JsonSchema findSubschemaAt(int itemIndex) {

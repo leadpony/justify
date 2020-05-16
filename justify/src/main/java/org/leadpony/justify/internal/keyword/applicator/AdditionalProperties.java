@@ -47,7 +47,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class AdditionalProperties extends UnaryCombiner {
+public class AdditionalProperties extends UnaryApplicator {
 
     private boolean alone;
 
@@ -110,6 +110,11 @@ public class AdditionalProperties extends UnaryCombiner {
         } else {
             return createNegatedPropertiesEvaluator(context, schema);
         }
+    }
+
+    @Override
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
     }
 
     /**

@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import jakarta.json.JsonValue;
@@ -81,11 +81,11 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        if (jsonPointer.hasNext()) {
-            return propertyMap.get(jsonPointer.next());
+    public Optional<JsonSchema> findSchema(String token) {
+        if (propertyMap.containsKey(token)) {
+            return Optional.of(propertyMap.get(token));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 

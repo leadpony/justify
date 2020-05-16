@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.applicator;
+package org.leadpony.justify.internal.keyword;
 
-import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.SchemaContainer;
 
 /**
  * A keyword containing referenceable subschema.
  *
  * @author leadpony
  */
-public class Referenceable extends AbstractApplicatorKeyword {
+public class Referenceable extends AbstractKeyword implements SchemaContainer {
 
     private final JsonSchema subschema;
 
@@ -47,17 +48,21 @@ public class Referenceable extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public boolean hasSubschemas() {
+    public boolean containsSchemas() {
         return true;
     }
 
     @Override
-    public Stream<JsonSchema> getSubschemas() {
+    public Stream<JsonSchema> getSchemas() {
         return Stream.of(subschema);
     }
 
     @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        return subschema;
+    public Optional<JsonSchema> findSchema(String token) {
+        if (token.isEmpty()) {
+            return Optional.of(subschema);
+        } else {
+            return Optional.empty();
+        }
     }
 }

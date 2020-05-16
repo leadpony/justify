@@ -73,12 +73,17 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public boolean hasSubschemas() {
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
+    }
+
+    @Override
+    public boolean containsSchemas() {
         return !propertyMap.isEmpty();
     }
 
     @Override
-    public Stream<JsonSchema> getSubschemas() {
+    public Stream<JsonSchema> getSchemas() {
         return propertyMap.values().stream();
     }
 

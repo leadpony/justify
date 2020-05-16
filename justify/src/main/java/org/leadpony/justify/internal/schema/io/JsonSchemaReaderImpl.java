@@ -32,6 +32,7 @@ import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaResolver;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.internal.base.Message;
@@ -40,9 +41,8 @@ import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import org.leadpony.justify.internal.keyword.Referenceable;
 import org.leadpony.justify.internal.keyword.Unknown;
-import org.leadpony.justify.internal.keyword.applicator.Referenceable;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -260,7 +260,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
         SchemaBuilder builder = new SchemaBuilder();
         for (Map.Entry<String, JsonValue> entry : value.entrySet()) {
             String name = entry.getKey();
-            SchemaKeyword keyword = createKeyword(name, entry.getValue(), lax);
+            Keyword keyword = createKeyword(name, entry.getValue(), lax);
             builder.add(name, keyword);
         }
         JsonSchema schema = builder.build(value);
@@ -273,15 +273,15 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
         return schema;
     }
 
-    private SchemaKeyword createKeyword(String name, JsonValue value, boolean lax) {
-        SchemaKeyword keyword = keywordFactory.createKeyword(name, value, this);
+    private Keyword createKeyword(String name, JsonValue value, boolean lax) {
+        Keyword keyword = keywordFactory.createKeyword(name, value, this);
         if (keyword == null) {
             keyword = createUnknownKeyword(name, value, lax);
         }
         return keyword;
     }
 
-    private SchemaKeyword createUnknownKeyword(String name, JsonValue value, boolean lax) {
+    private Keyword createUnknownKeyword(String name, JsonValue value, boolean lax) {
         if (isStrictWithKeywords() && !lax) {
             ProblemBuilder builder = createProblemBuilder(Message.SCHEMA_PROBLEM_KEYWORD_UNKNOWN)
                     .withParameter("keyword", name);
@@ -402,12 +402,12 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
      * @author leadpony
      */
     @SuppressWarnings("serial")
-    class SchemaBuilder extends LinkedHashMap<String, SchemaKeyword> {
+    class SchemaBuilder extends LinkedHashMap<String, Keyword> {
 
         private URI id;
         private boolean referencing;
 
-        void add(String name, SchemaKeyword keyword) {
+        void add(String name, Keyword keyword) {
             if (keyword instanceof Id) {
                 this.id = ((Id) keyword).value();
             } else if (keyword instanceof Ref) {

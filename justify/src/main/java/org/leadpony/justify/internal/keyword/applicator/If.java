@@ -62,14 +62,14 @@ public class If extends Conditional {
     public Keyword link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("then")) {
             Keyword thenKeyword = siblings.get("then");
-            if (thenKeyword instanceof UnaryCombiner) {
-                thenSchema = ((UnaryCombiner) thenKeyword).getSubschema();
+            if (thenKeyword instanceof UnaryApplicator) {
+                thenSchema = ((UnaryApplicator) thenKeyword).getSubschema();
             }
         }
         if (siblings.containsKey("else")) {
             Keyword elseKeyword = siblings.get("else");
-            if (elseKeyword instanceof UnaryCombiner) {
-                elseSchema = ((UnaryCombiner) elseKeyword).getSubschema();
+            if (elseKeyword instanceof UnaryApplicator) {
+                elseSchema = ((UnaryApplicator) elseKeyword).getSubschema();
             }
         }
         return this;

@@ -22,12 +22,12 @@ import java.util.Map;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -145,7 +145,7 @@ class StandardKeywordFactory implements KeywordFactory {
     }
 
     @Override
-    public SchemaKeyword createKeyword(String name, JsonValue value, CreationContext context) {
+    public Keyword createKeyword(String name, JsonValue value, CreationContext context) {
         KeywordMapper mapper = mappers.get(name);
         if (mapper == null) {
             return null;

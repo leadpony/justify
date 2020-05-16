@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
 
 /**
- * Combiner operating on single subschema.
+ * An applicator operating on single subschema.
  *
  * @author leadpony
  */
-abstract class UnaryCombiner extends AbstractApplicatorKeyword {
+abstract class UnaryApplicator extends AbstractApplicatorKeyword {
 
     private final JsonSchema subschema;
 
-    protected UnaryCombiner(JsonSchema subschema) {
+    protected UnaryApplicator(JsonSchema subschema) {
         super(subschema.toJson());
         this.subschema = subschema;
     }
@@ -40,17 +40,21 @@ abstract class UnaryCombiner extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public boolean hasSubschemas() {
+    public boolean containsSchemas() {
         return true;
     }
 
     @Override
-    public Stream<JsonSchema> getSubschemas() {
+    public Stream<JsonSchema> getSchemas() {
         return Stream.of(subschema);
     }
 
     @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        return subschema;
+    public Optional<JsonSchema> findSchema(String token) {
+        if (token.isEmpty()) {
+            return Optional.of(subschema);
+        } else {
+            return Optional.empty();
+        }
     }
 }

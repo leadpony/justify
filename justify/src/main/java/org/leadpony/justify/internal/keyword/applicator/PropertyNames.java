@@ -47,7 +47,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @KeywordType("propertyNames")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class PropertyNames extends UnaryCombiner {
+public class PropertyNames extends UnaryApplicator {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -91,6 +91,11 @@ public class PropertyNames extends UnaryCombiner {
         } else {
             return createNegatedPropertiesEvaluator(context, schema, subschema);
         }
+    }
+
+    @Override
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CURRENT;
     }
 
     private Evaluator createForbiddenPropertyEvaluator(EvaluatorContext context, JsonSchema schema,

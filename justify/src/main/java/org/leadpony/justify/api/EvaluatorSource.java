@@ -23,7 +23,14 @@ import java.util.Set;
  *
  * @author leadpony
  */
-public interface EvaluatorSource extends Keyword {
+public interface EvaluatorSource {
+
+    /**
+     * Return the name of this source.
+     *
+     * @return the name of this source.
+     */
+    String name();
 
     /**
      * Checks if the evaluator supports the specified instance type. All instance

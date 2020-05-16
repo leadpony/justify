@@ -35,7 +35,6 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -48,7 +47,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
  */
 public abstract class BasicJsonSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
-    public static JsonSchema of(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+    public static JsonSchema of(URI id, JsonObject json, Map<String, Keyword> keywords) {
         List<EvaluatorSource> sources = collectEvaluatorSources(keywords);
         if (sources.isEmpty()) {
             return new None(id, json, keywords);
@@ -66,7 +65,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      * @param json     the JSON representation of this schema.
      * @param keywords all keywords.
      */
-    protected BasicJsonSchema(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+    protected BasicJsonSchema(URI id, JsonObject json, Map<String, Keyword> keywords) {
         super(id, json, keywords);
     }
 
@@ -94,12 +93,10 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
                 .withSchema(this);
     }
 
-    private static List<EvaluatorSource> collectEvaluatorSources(Map<String, SchemaKeyword> keywords) {
+    private static List<EvaluatorSource> collectEvaluatorSources(Map<String, Keyword> keywords) {
         List<EvaluatorSource> sources = new ArrayList<>();
-        @SuppressWarnings("unchecked")
-        Map<String, Keyword> siblings = (Map<String, Keyword>) (Map<String, ?>) keywords;
-        for (SchemaKeyword keyword : keywords.values()) {
-            keyword.link(siblings);
+        for (Keyword keyword : keywords.values()) {
+            keyword.link(keywords);
             if (keyword.canEvaluate()) {
                 sources.add((EvaluatorSource) keyword);
             }
@@ -128,7 +125,9 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     private Evaluator createUnsupportedTypeEvaluator(EvaluatorSource source, EvaluatorContext context,
             InstanceType type) {
         Set<InstanceType> supported = source.getSupportedTypes();
-        return new UnsupportedTypeEvaluator(context, this, source, supported, type);
+        // We know that the source came from a keyword.
+        Keyword keyword = (Keyword) source;
+        return new UnsupportedTypeEvaluator(context, this, keyword, supported, type);
     }
 
     /**
@@ -136,7 +135,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      */
     private static final class None extends BasicJsonSchema {
 
-        private None(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+        private None(URI id, JsonObject json, Map<String, Keyword> keywords) {
             super(id, json, keywords);
         }
 
@@ -160,7 +159,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
 
         private final EvaluatorSource source;
 
-        private One(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
+        private One(URI id, JsonObject json, Map<String, Keyword> keywords,
                 EvaluatorSource source) {
             super(id, json, keywords);
             this.source = source;
@@ -186,7 +185,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
 
         private final List<EvaluatorSource> sources;
 
-        private Many(URI id, JsonObject json, Map<String, SchemaKeyword> keywords,
+        private Many(URI id, JsonObject json, Map<String, Keyword> keywords,
                 List<EvaluatorSource> sources) {
             super(id, json, keywords);
             this.sources = sources;

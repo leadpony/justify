@@ -23,14 +23,14 @@ import org.leadpony.justify.api.JsonSchema;
  *
  * @author leadpony
  */
-abstract class Conditional extends UnaryCombiner {
+abstract class Conditional extends UnaryApplicator {
 
     protected Conditional(JsonSchema subschema) {
         super(subschema);
     }
 
     @Override
-    public boolean isInPlace() {
-        return true;
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CURRENT;
     }
 }

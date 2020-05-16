@@ -28,7 +28,7 @@ import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.keyword.core.Id;
 
 /**
@@ -55,7 +55,7 @@ public class SchemaCatalogTest {
 
     private static JsonSchema createSchema(URI id) {
         JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
-        Map<String, SchemaKeyword> keywords = new HashMap<>();
+        Map<String, Keyword> keywords = new HashMap<>();
         JsonValue json = jsonProvider.createValue(id.toString());
         keywords.put("$id", new Id(json, id));
         builder.add("$id", json);

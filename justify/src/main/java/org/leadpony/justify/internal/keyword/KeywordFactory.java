@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword;
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -37,7 +38,7 @@ public interface KeywordFactory {
      * @param context the creation context never be {@code null}.
      * @return newly created keyword, or {@code null}.
      */
-    SchemaKeyword createKeyword(String name, JsonValue value, CreationContext context);
+    Keyword createKeyword(String name, JsonValue value, CreationContext context);
 
     /**
      * A context of keyword creation.

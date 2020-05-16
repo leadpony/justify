@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,17 @@ import java.net.URI;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.SchemaContainer;
+import org.leadpony.justify.api.ApplicatorKeyword;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Schema;
@@ -45,9 +47,9 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     private URI id;
     private final JsonValue json;
 
-    private final Map<String, SchemaKeyword> keywordMap;
+    private final Map<String, Keyword> keywordMap;
 
-    protected AbstractJsonSchema(URI id, JsonValue json, Map<String, SchemaKeyword> keywords) {
+    protected AbstractJsonSchema(URI id, JsonValue json, Map<String, Keyword> keywords) {
         this.id = id;
         this.json = json;
         this.keywordMap = Collections.unmodifiableMap(keywords);
@@ -126,17 +128,17 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
 
     @Override
     public Stream<JsonSchema> getSubschemas() {
-        return keywordMap.values().stream()
-                .filter(SchemaKeyword::hasSubschemas)
-                .flatMap(SchemaKeyword::getSubschemas);
+        return getContainerKeywordsAsStream()
+                .filter(SchemaContainer::containsSchemas)
+                .flatMap(SchemaContainer::getSchemas);
     }
 
     @Override
     public Stream<JsonSchema> getInPlaceSubschemas() {
-        return keywordMap.values().stream()
-                .filter(SchemaKeyword::hasSubschemas)
-                .filter(SchemaKeyword::isInPlace)
-                .flatMap(SchemaKeyword::getSubschemas);
+        return getApplicatorKeywordsAsStream()
+                .filter(ApplicatorKeyword::containsSchemas)
+                .filter(keyword -> keyword.getApplicableLocation() == ApplicatorKeyword.ApplicableLocation.CURRENT)
+                .flatMap(ApplicatorKeyword::getSchemas);
     }
 
     @Override
@@ -145,7 +147,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         if (jsonPointer.isEmpty()) {
             return this;
         }
-        return searchKeywordsForSubschema(jsonPointer);
+        return searchKeywordsForSubschema(jsonPointer).orElse(null);
     }
 
     @Override
@@ -219,20 +221,34 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         return (T) keywordMap.get(name);
     }
 
-    private JsonSchema searchKeywordsForSubschema(String jsonPointer) {
+    private Stream<SchemaContainer> getContainerKeywordsAsStream() {
+        return keywordMap.values().stream()
+                .filter(keyword -> keyword instanceof SchemaContainer)
+                .map(keyword -> (SchemaContainer) keyword);
+    }
+
+    private Stream<ApplicatorKeyword> getApplicatorKeywordsAsStream() {
+        return keywordMap.values().stream()
+                .filter(keyword -> keyword instanceof ApplicatorKeyword)
+                .map(keyword -> (ApplicatorKeyword) keyword);
+    }
+
+    private Optional<JsonSchema> searchKeywordsForSubschema(String jsonPointer) {
         JsonPointerTokenizer tokenizer = new JsonPointerTokenizer(jsonPointer);
-        SchemaKeyword keyword = keywordMap.get(tokenizer.next());
-        if (keyword != null) {
-            JsonSchema candidate = keyword.getSubschema(tokenizer);
-            if (candidate != null) {
+        Keyword keyword = keywordMap.get(tokenizer.next());
+        if (keyword != null && keyword instanceof SchemaContainer) {
+            SchemaContainer container = (SchemaContainer) keyword;
+            String token = tokenizer.hasNext() ? tokenizer.next() : "";
+            Optional<JsonSchema> found =  container.findSchema(token);
+            return found.map(schema -> {
                 if (tokenizer.hasNext()) {
-                    return candidate.getSubschemaAt(tokenizer.remaining());
+                    return schema.getSubschemaAt(tokenizer.remaining());
                 } else {
-                    return candidate;
+                    return schema;
                 }
-            }
+            });
         }
-        return null;
+        return Optional.empty();
     }
 
     private void resolveSubschemas(URI baseUri) {

@@ -16,9 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,16 +84,13 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        if (jsonPointer.hasNext()) {
-            String token = jsonPointer.next();
-            for (Pattern key : propertyMap.keySet()) {
-                if (key.pattern().equals(token)) {
-                    return propertyMap.get(key);
-                }
+    public Optional<JsonSchema> findSchema(String token) {
+        for (Pattern key : propertyMap.keySet()) {
+            if (key.pattern().equals(token)) {
+                return Optional.of(propertyMap.get(key));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

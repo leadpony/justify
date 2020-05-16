@@ -44,9 +44,9 @@ import jakarta.json.spi.JsonProvider;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.annotation.Description;
 import org.leadpony.justify.internal.keyword.annotation.Title;
@@ -111,7 +111,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     private final JsonObjectBuilder objectBuilder;
 
     private final SchemaSpec spec;
-    private final Map<String, SchemaKeyword> keywords = new LinkedHashMap<>();
+    private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI id;
 
     private final Map<String, KeywordBuilder> builders = new HashMap<>();
@@ -643,7 +643,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         return this;
     }
 
-    private void addKeyword(SchemaKeyword keyword) {
+    private void addKeyword(Keyword keyword) {
         this.keywords.put(keyword.name(), keyword);
         this.objectBuilder.add(keyword.name(), keyword.getValueAsJson());
     }
@@ -750,7 +750,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      */
     interface KeywordBuilder {
 
-        SchemaKeyword build();
+        Keyword build();
     }
 
     /**
@@ -803,7 +803,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
 
         @Override
-        public SchemaKeyword build() {
+        public Keyword build() {
             return new Properties(toJson(), this.map);
         }
     }
@@ -826,7 +826,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
 
         @Override
-        public SchemaKeyword build() {
+        public Keyword build() {
             return new PatternProperties(toJson(), this.map);
         }
     }
@@ -849,7 +849,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
 
         @Override
-        public SchemaKeyword build() {
+        public Keyword build() {
             return new Definitions(toJson(), this.map);
         }
     }
@@ -886,7 +886,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         }
 
         @Override
-        public SchemaKeyword build() {
+        public Keyword build() {
             return new Dependencies(toJson(), this.map);
         }
     }

@@ -16,11 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.Iterator;
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.ApplicatorKeyword;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
@@ -47,14 +45,5 @@ abstract class AbstractApplicatorKeyword extends AbstractKeyword implements Appl
      */
     protected AbstractApplicatorKeyword(String name, JsonValue json) {
         super(name, json);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This method must be overridden.</p>
-     */
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        throw new UnsupportedOperationException();
     }
 }

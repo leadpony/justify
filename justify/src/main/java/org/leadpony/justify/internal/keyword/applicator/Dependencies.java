@@ -133,17 +133,17 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     }
 
     @Override
-    public boolean isInPlace() {
-        return true;
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
     }
 
     @Override
-    public boolean hasSubschemas() {
+    public boolean containsSchemas() {
         return dependencyMap.values().stream().anyMatch(Dependency::hasSubschema);
     }
 
     @Override
-    public Stream<JsonSchema> getSubschemas() {
+    public Stream<JsonSchema> getSchemas() {
         return dependencyMap.values().stream()
                 .filter(Dependency::hasSubschema)
                 .map(d -> (SchemaDependency) d)

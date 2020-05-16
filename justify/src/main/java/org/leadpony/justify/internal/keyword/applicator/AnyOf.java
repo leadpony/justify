@@ -59,7 +59,7 @@ public class AnyOf extends NaryBooleanLogic {
     @Override
     public LogicalEvaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
-        getSubschemas().distinct()
+        getSchemas().distinct()
                 .map(s -> s.createEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;
@@ -69,7 +69,7 @@ public class AnyOf extends NaryBooleanLogic {
     public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
             InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-        getSubschemas().distinct()
+        getSchemas().distinct()
                 .map(s -> s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;

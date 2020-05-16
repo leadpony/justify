@@ -35,7 +35,6 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.AbstractEmptyMap;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
@@ -56,7 +55,7 @@ public class SchemaReference extends AbstractJsonSchema {
      * @param json        the JSON representation of this schema.
      * @param keywords    all keywords.
      */
-    public SchemaReference(URI id, JsonObject json, Map<String, SchemaKeyword> keywords) {
+    public SchemaReference(URI id, JsonObject json, Map<String, Keyword> keywords) {
         super(id, json, keywords);
         this.referencedSchema = new NonexistentSchema();
         if (hasAbsoluteId()) {

@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class AdditionalItems extends UnaryCombiner {
+public class AdditionalItems extends UnaryApplicator {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -52,5 +52,10 @@ public class AdditionalItems extends UnaryCombiner {
     @Override
     public boolean canEvaluate() {
         return false;
+    }
+
+    @Override
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
     }
 }

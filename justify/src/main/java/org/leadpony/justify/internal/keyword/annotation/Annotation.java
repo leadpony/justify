@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.annotation;
 
-import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import org.leadpony.justify.api.Keyword;
 
 /**
  * A keyword for annotation purpose.
@@ -25,7 +25,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
  *
  * @author leadpony
  */
-public interface Annotation<T> extends SchemaKeyword {
+public interface Annotation<T> extends Keyword {
 
     T value();
 }

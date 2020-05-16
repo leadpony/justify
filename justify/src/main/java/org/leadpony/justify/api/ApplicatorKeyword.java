@@ -20,7 +20,23 @@ package org.leadpony.justify.api;
  *
  * @author leadpony
  */
-public interface ApplicatorKeyword extends Keyword, EvaluatorSource {
+public interface ApplicatorKeyword extends Keyword, EvaluatorSource, SchemaContainer {
+
+    /**
+     * The location where applicator applies schemas.
+     *
+     * @author leadpony
+     */
+    enum ApplicableLocation {
+        /**
+         * Schemas will be applied in-place to the current location.
+         */
+        CURRENT,
+        /**
+         * Schemas will be applied to a child location.
+         */
+        CHILD
+    }
 
     /**
      * {@inheritDoc}
@@ -31,4 +47,11 @@ public interface ApplicatorKeyword extends Keyword, EvaluatorSource {
     default boolean canEvaluate() {
         return true;
     }
+
+    /**
+     * Return the location where this applicator applies schemas.
+     *
+     * @return the location.
+     */
+    ApplicableLocation getApplicableLocation();
 }

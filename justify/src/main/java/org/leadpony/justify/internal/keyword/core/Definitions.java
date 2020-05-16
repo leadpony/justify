@@ -16,13 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.core;
 
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.SchemaContainer;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
@@ -35,7 +36,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Definitions extends AbstractKeyword {
+public class Definitions extends AbstractKeyword implements SchemaContainer {
 
     private final Map<String, JsonSchema> definitionMap;
 
@@ -55,20 +56,20 @@ public class Definitions extends AbstractKeyword {
     }
 
     @Override
-    public boolean hasSubschemas() {
+    public boolean containsSchemas() {
         return !definitionMap.isEmpty();
     }
 
     @Override
-    public Stream<JsonSchema> getSubschemas() {
+    public Stream<JsonSchema> getSchemas() {
         return this.definitionMap.values().stream();
     }
 
     @Override
-    public JsonSchema getSubschema(Iterator<String> jsonPointer) {
-        if (jsonPointer.hasNext()) {
-            return definitionMap.get(jsonPointer.next());
+    public Optional<JsonSchema> findSchema(String token) {
+        if (definitionMap.containsKey(token)) {
+            return Optional.of(definitionMap.get(token));
         }
-        return null;
+        return Optional.empty();
     }
 }

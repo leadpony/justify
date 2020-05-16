@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Not extends UnaryCombiner {
+public class Not extends UnaryApplicator {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -54,8 +54,8 @@ public class Not extends UnaryCombiner {
     }
 
     @Override
-    public boolean isInPlace() {
-        return true;
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CURRENT;
     }
 
     @Override

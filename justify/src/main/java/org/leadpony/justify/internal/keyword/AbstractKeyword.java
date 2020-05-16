@@ -17,14 +17,16 @@
 package org.leadpony.justify.internal.keyword;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.annotation.KeywordType;
 
 /**
- * Skeletal implementation of {@link SchemaKeyword}.
+ * A skeletal implementation of {@link Keyword}.
  *
  * @author leadpony
  */
-public abstract class AbstractKeyword implements SchemaKeyword {
+public abstract class AbstractKeyword implements Keyword {
 
     /*
      * the name of this keyword.

@@ -43,7 +43,7 @@ import org.leadpony.justify.internal.keyword.KeywordMapper;
 @KeywordType("contains")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Contains extends UnaryCombiner implements ArrayEvaluatorSource {
+public class Contains extends UnaryApplicator implements ArrayEvaluatorSource {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -67,6 +67,11 @@ public class Contains extends UnaryCombiner implements ArrayEvaluatorSource {
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return createNegatedItemsEvaluator(context, schema);
+    }
+
+    @Override
+    public ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CHILD;
     }
 
     private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
