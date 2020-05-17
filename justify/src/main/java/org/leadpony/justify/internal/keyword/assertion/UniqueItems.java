@@ -28,45 +28,43 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * An assertion specified with "uniqueItems" validation keyword.
  *
  * @author leadpony
  */
-@KeywordType("uniqueItems")
+@KeywordClass("uniqueItems")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
-    private final boolean unique;
+    public static final KeywordType TYPE = KeywordTypes.mappingBoolean("uniqueItems", UniqueItems::new);
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromBoolean mapper = UniqueItems::new;
-        return mapper;
-    }
+    private final boolean unique;
 
     public UniqueItems(JsonValue json, boolean unique) {
         super(json);
         this.unique = unique;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

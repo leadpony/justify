@@ -31,51 +31,57 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * A keyword type representing "items".
  *
  * @author leadpony
  */
-@KeywordType("items")
+@KeywordClass("items")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public abstract class Items extends AbstractApplicatorKeyword implements ArrayEvaluatorSource {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            switch (value.getValueType()) {
-            case ARRAY:
-                List<JsonSchema> schemas = new ArrayList<>();
-                for (JsonValue item : value.asJsonArray()) {
-                    schemas.add(context.asJsonSchema(item));
-                }
-                return of(value, schemas);
-            case OBJECT:
-            case TRUE:
-            case FALSE:
-                return of(value, context.asJsonSchema(value));
-            default:
-                throw new IllegalArgumentException();
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "items";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Items.newInstance(jsonValue, context);
+        }
+    };
+
+    private static Items newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        switch (jsonValue.getValueType()) {
+        case ARRAY:
+            List<JsonSchema> schemas = new ArrayList<>();
+            for (JsonValue item : jsonValue.asJsonArray()) {
+                schemas.add(context.asJsonSchema(item));
             }
-        };
+            return of(jsonValue, schemas);
+        case OBJECT:
+        case TRUE:
+        case FALSE:
+            return of(jsonValue, context.asJsonSchema(jsonValue));
+        default:
+            throw new IllegalArgumentException();
+        }
     }
 
     public static Items of(JsonValue json, JsonSchema subschema) {
@@ -88,6 +94,11 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
 
     protected Items(JsonValue json) {
         super(json);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

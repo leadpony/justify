@@ -19,32 +19,30 @@ package org.leadpony.justify.internal.keyword.applicator;
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * "Else" conditional keyword.
  *
  * @author leadpony
  */
-@KeywordType("else")
+@KeywordClass("else")
 @Spec(SpecVersion.DRAFT_07)
 public class Else extends Conditional {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = Else::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingSchema("else", Else::new);
 
     public Else(JsonValue json, JsonSchema schema) {
         super(schema);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

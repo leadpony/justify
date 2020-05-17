@@ -24,39 +24,37 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * Combiner representing "contains" keyword.
  *
  * @author leadpony
  */
-@KeywordType("contains")
+@KeywordClass("contains")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Contains extends UnaryApplicator implements ArrayEvaluatorSource {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = Contains::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingSchema("contains", Contains::new);
 
     public Contains(JsonValue json, JsonSchema subschema) {
         super(subschema);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

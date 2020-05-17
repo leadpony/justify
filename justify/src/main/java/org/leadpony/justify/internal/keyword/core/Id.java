@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,33 +19,30 @@ import java.net.URI;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * A keyword type representing "$id" keyword.
  *
  * @author leadpony
  */
-@KeywordType("$id")
-@Spec(value = SpecVersion.DRAFT_04, name = "id")
+@KeywordClass("$id")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Id extends AbstractMetadataKeyword<URI> {
+public class Id extends LegacyId {
 
-    public static KeywordMapper mapper(String name) {
-        KeywordMapper.FromUri mapper = (json, value) -> new Id(name, json, value);
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingUri("$id", Id::new);
 
     public Id(JsonValue json, URI value) {
-        this("$id", json, value);
+        super(json, value);
     }
 
-    public Id(String name, JsonValue json, URI value) {
-        super(name, json, value);
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 }

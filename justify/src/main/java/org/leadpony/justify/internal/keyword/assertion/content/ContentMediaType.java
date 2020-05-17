@@ -29,17 +29,17 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -49,39 +49,45 @@ import org.leadpony.justify.spi.ContentMimeType;
  *
  * @author leadpony
  */
-@KeywordType("contentMediaType")
+@KeywordClass("contentMediaType")
 @Spec(SpecVersion.DRAFT_07)
 public class ContentMediaType extends AbstractAssertionKeyword {
+
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "contentMediaType";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return ContentMediaType.newInstance(jsonValue, context);
+        }
+    };
 
     private final ContentMimeType mimeType;
     private final Map<String, String> parameters;
     private ContentEncodingScheme encodingScheme;
     private boolean unknownEncodingScheme;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.STRING) {
-                final String name = ((JsonString) value).getString();
-                try {
-                    MediaType mediaType = MediaType.valueOf(name);
-                    ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
-                    if (mimeType != null) {
-                        return new ContentMediaType(value, mimeType, mediaType.parameters());
-                    } else {
-                        return new UnknownContentMediaType(value, name);
-                    }
-                } catch (IllegalArgumentException e) {
-                    return new UnknownContentMediaType(value, name);
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.STRING) {
+            final String name = ((JsonString) jsonValue).getString();
+            try {
+                MediaType mediaType = MediaType.valueOf(name);
+                ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
+                if (mimeType != null) {
+                    return new ContentMediaType(jsonValue, mimeType, mediaType.parameters());
+                } else {
+                    return new UnknownContentMediaType(jsonValue, name);
                 }
-            } else {
-                throw new IllegalArgumentException();
+            } catch (IllegalArgumentException e) {
+                return new UnknownContentMediaType(jsonValue, name);
             }
-        };
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -95,6 +101,11 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         super(json);
         this.mimeType = mimeType;
         this.parameters = parameters;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

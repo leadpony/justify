@@ -25,6 +25,14 @@ public interface AssertionKeyword extends Keyword, EvaluatorSource {
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    default String name() {
+        return Keyword.super.name();
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * An AssertinKeyword can evaluate JSON instances by default.
      */

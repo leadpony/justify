@@ -17,11 +17,8 @@ package org.leadpony.justify.internal.keyword;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.spi.ContentEncodingScheme;
-import org.leadpony.justify.spi.ContentMimeType;
-import org.leadpony.justify.spi.FormatAttribute;
+import org.leadpony.justify.api.KeywordType.CreationContext;
 
 /**
  * A factory of keywords.
@@ -39,45 +36,4 @@ public interface KeywordFactory {
      * @return newly created keyword, or {@code null}.
      */
     Keyword createKeyword(String name, JsonValue value, CreationContext context);
-
-    /**
-     * A context of keyword creation.
-     *
-     * @author leadpony
-     */
-    interface CreationContext {
-
-        /**
-         * Returns the JSON schema generated from the specified JSON value.
-         *
-         * @param value the JSON value from which a JSON schema was generated.
-         * @return the JSON schema.
-         * @throws IllegalArgumentException if the specified {@code value} is not a JSON schema.
-         */
-        JsonSchema asJsonSchema(JsonValue value);
-
-        /**
-         * Returns the format attribute of the specified name.
-         *
-         * @param name the name of the format attribute.
-         * @return the format attribute if found, or {@code null} if not found.
-         */
-        FormatAttribute getFormateAttribute(String name);
-
-        /**
-         * Returns the encoding scheme of the specified name.
-         *
-         * @param name the name of the encoding scheme.
-         * @return the encoding scheme.
-         */
-        ContentEncodingScheme getEncodingScheme(String name);
-
-        /**
-         * Returns the MIME type of the specified value.
-         *
-         * @param value the value of the MIME type.
-         * @return the MIME type.
-         */
-        ContentMimeType getMimeType(String value);
-    }
 }

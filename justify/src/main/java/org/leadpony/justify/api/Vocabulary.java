@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword;
+package org.leadpony.justify.api;
 
-import jakarta.json.JsonValue;
+import java.net.URI;
+import java.util.Map;
 
 /**
- * An unrecognized keyword.
+ * A schema vocabulary wchich is a set of keywords, their syntax, and their
+ * semantics..
  *
  * @author leadpony
  */
-public class Unknown extends AbstractKeyword {
-
-    private final String name;
+public interface Vocabulary {
 
     /**
-     * Constructs this keyword.
+     * Returns the identifier of this vocabulary as a URI.
      *
-     * @param name the name of this keyword.
-     * @param value the value of this keyword.
+     * @return the identifier of this vocabulary as a URI.
      */
-    public Unknown(String name, JsonValue value) {
-        super(value);
-        this.name = name;
-    }
+    URI getId();
 
-    @Override
-    public String name() {
-        return name;
-    }
+    /**
+     * Returns all keywords provided by this vocabulary.
+     *
+     * @return all keywords as a map, never be {@code null}.
+     */
+    Map<String, KeywordType> asMap();
 }

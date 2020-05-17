@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,34 +18,32 @@ package org.leadpony.justify.internal.keyword.annotation;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * An annotation keyword representing "title".
  *
  * @author leadpony
  */
-@KeywordType("description")
+@KeywordClass("description")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Description extends AbstractMetadataKeyword<String> implements Annotation<String> {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromString mapper = Description::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingString("description", Description::new);
 
     public Description(JsonValue json, String value) {
         super(json, value);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 }

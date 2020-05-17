@@ -28,16 +28,16 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
@@ -46,31 +46,37 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
  *
  * @author leadpony
  */
-@KeywordType("contentEncoding")
+@KeywordClass("contentEncoding")
 @Spec(SpecVersion.DRAFT_07)
 public class ContentEncoding extends AbstractAssertionKeyword {
 
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "contentEncoding";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return ContentEncoding.newInstance(jsonValue, context);
+        }
+    };
+
     private final ContentEncodingScheme scheme;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.STRING) {
-                final String name = ((JsonString) value).getString();
-                ContentEncodingScheme scheme = context.getEncodingScheme(name);
-                if (scheme != null) {
-                    return new ContentEncoding(value, scheme);
-                } else {
-                    return new UnknownContentEncoding(value, name);
-                }
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.STRING) {
+            final String name = ((JsonString) jsonValue).getString();
+            ContentEncodingScheme scheme = context.getEncodingScheme(name);
+            if (scheme != null) {
+                return new ContentEncoding(jsonValue, scheme);
             } else {
-                throw new IllegalArgumentException();
+                return new UnknownContentEncoding(jsonValue, name);
             }
-        };
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -83,6 +89,11 @@ public class ContentEncoding extends AbstractAssertionKeyword {
         super(json);
         assert scheme != null;
         this.scheme = scheme;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

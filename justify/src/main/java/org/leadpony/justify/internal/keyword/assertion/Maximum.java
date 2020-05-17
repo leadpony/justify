@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,34 +20,32 @@ import java.math.BigDecimal;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * Assertion specified with "maximum" validation keyword.
  *
  * @author leadpony
  */
-@KeywordType("maximum")
+@KeywordClass("maximum")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Maximum extends AbstractNumericBoundAssertion {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromNumber mapper = Maximum::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingNumber("maximum", Maximum::new);
 
     public Maximum(JsonValue json, BigDecimal limit) {
         super(json, limit);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

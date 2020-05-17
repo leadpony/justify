@@ -29,51 +29,58 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * An assertion representing "type" keyword.
  *
  * @author leadpony
  */
-@KeywordType("type")
+@KeywordClass("type")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public abstract class Type extends AbstractAssertionKeyword {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            switch (value.getValueType()) {
-            case STRING:
-                return new Single(value, toInstanceType((JsonString) value));
-            case ARRAY:
-                Set<InstanceType> types = new LinkedHashSet<>();
-                for (JsonValue item : value.asJsonArray()) {
-                    if (item.getValueType() == ValueType.STRING) {
-                        types.add(toInstanceType((JsonString) item));
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "type";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Type.newInstance(jsonValue, context);
+        }
+    };
+
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        switch (jsonValue.getValueType()) {
+        case STRING:
+            return new Single(jsonValue, toInstanceType((JsonString) jsonValue));
+        case ARRAY:
+            Set<InstanceType> types = new LinkedHashSet<>();
+            for (JsonValue item : jsonValue.asJsonArray()) {
+                if (item.getValueType() == ValueType.STRING) {
+                    types.add(toInstanceType((JsonString) item));
+                } else {
+                    throw new IllegalArgumentException();
                 }
-                return new Multiple(value, types);
-            default:
-                throw new IllegalArgumentException();
             }
-        };
+            return new Multiple(jsonValue, types);
+        default:
+            throw new IllegalArgumentException();
+        }
     }
 
     public static Type of(JsonValue json, InstanceType type) {
@@ -123,6 +130,11 @@ public abstract class Type extends AbstractAssertionKeyword {
 
     protected Type(JsonValue json) {
         super(json);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     /**

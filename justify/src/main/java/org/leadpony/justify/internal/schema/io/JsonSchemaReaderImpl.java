@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.internal.base.Message;
@@ -40,10 +41,10 @@ import org.leadpony.justify.internal.base.Sets;
 import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.internal.keyword.IdKeyword;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.Referenceable;
 import org.leadpony.justify.internal.keyword.Unknown;
-import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.BasicJsonSchema;
@@ -59,7 +60,7 @@ import org.leadpony.justify.spi.FormatAttribute;
  * @author leadpony
  */
 public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
-    implements ProblemHandler, KeywordFactory.CreationContext {
+    implements ProblemHandler, KeywordType.CreationContext {
 
     private final PointerAwareJsonParser parser;
     private final JsonService jsonService;
@@ -408,8 +409,8 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
         private boolean referencing;
 
         void add(String name, Keyword keyword) {
-            if (keyword instanceof Id) {
-                this.id = ((Id) keyword).value();
+            if (keyword instanceof IdKeyword) {
+                this.id = ((IdKeyword) keyword).value();
             } else if (keyword instanceof Ref) {
                 referencing = true;
             }

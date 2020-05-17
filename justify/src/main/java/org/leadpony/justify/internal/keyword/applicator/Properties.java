@@ -29,37 +29,30 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * An assertion keyword representing "properties".
  *
  * @author leadpony
  */
-@KeywordType("properties")
+@KeywordClass("properties")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Properties extends AbstractProperties<String> {
 
+    public static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("properties", Properties::new);
+
     private PatternProperties patternProperties;
     private Map<String, JsonValue> defaultValues;
-
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchemaMap mapper = Properties::new;
-        return mapper;
-    }
 
     public Properties(JsonValue json, Map<String, JsonSchema> subschemas) {
         super(json, subschemas);
@@ -69,6 +62,11 @@ public class Properties extends AbstractProperties<String> {
                 addDefaultValue(entry.getKey(), subschema.defaultValue());
             }
         }
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

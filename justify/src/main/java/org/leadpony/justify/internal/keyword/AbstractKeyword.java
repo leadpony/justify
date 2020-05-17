@@ -19,7 +19,7 @@ package org.leadpony.justify.internal.keyword;
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.api.KeywordType;
 
 /**
  * A skeletal implementation of {@link Keyword}.
@@ -27,11 +27,6 @@ import org.leadpony.justify.internal.annotation.KeywordType;
  * @author leadpony
  */
 public abstract class AbstractKeyword implements Keyword {
-
-    /*
-     * the name of this keyword.
-     */
-    private final String name;
 
     /*
      * JSON representation of this keyword.
@@ -44,24 +39,7 @@ public abstract class AbstractKeyword implements Keyword {
      * @param json the JSON representation of this keyword.
      */
     protected AbstractKeyword(JsonValue json) {
-        this.name = guessOwnName();
         this.json = json;
-    }
-
-    /**
-     * Constructs this keyword.
-     *
-     * @param name the name of this keyword.
-     * @param json the JSON representation of this keyword.
-     */
-    protected AbstractKeyword(String name, JsonValue json) {
-        this.name = name;
-        this.json = json;
-    }
-
-    @Override
-    public final String name() {
-        return name;
     }
 
     @Override
@@ -69,8 +47,8 @@ public abstract class AbstractKeyword implements Keyword {
         return json;
     }
 
-    private String guessOwnName() {
-        KeywordType keywordType = getClass().getAnnotation(KeywordType.class);
-        return keywordType.value();
+    @Override
+    public KeywordType getType() {
+        throw new UnsupportedOperationException();
     }
 }

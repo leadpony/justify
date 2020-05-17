@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.annotation;
+package org.leadpony.justify.internal.keyword;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.net.URI;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.leadpony.justify.api.Keyword;
 
 /**
  * @author leadpony
  */
-@Retention(RUNTIME)
-@Target(TYPE)
-@Inherited
-public @interface KeywordType {
+public interface IdKeyword extends Keyword {
 
-    String value();
+    URI value();
 }

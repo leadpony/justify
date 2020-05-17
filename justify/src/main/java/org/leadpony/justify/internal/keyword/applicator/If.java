@@ -25,37 +25,35 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.ConditionalEvaluator;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * "If" conditional keyword.
  *
  * @author leadpony
  */
-@KeywordType("if")
+@KeywordClass("if")
 @Spec(SpecVersion.DRAFT_07)
 public class If extends Conditional {
+
+    public static final KeywordType TYPE = KeywordTypes.mappingSchema("if", If::new);
 
     private JsonSchema thenSchema;
     private JsonSchema elseSchema;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchema mapper = If::new;
-        return mapper;
-    }
-
     public If(JsonValue json, JsonSchema schema) {
         super(schema);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

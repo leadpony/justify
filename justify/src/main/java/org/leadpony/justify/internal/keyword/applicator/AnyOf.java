@@ -23,37 +23,35 @@ import jakarta.json.JsonValue;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * Boolean logic specified with "anyOf" validation keyword.
  *
  * @author leadpony
  */
-@KeywordType("anyOf")
+@KeywordClass("anyOf")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class AnyOf extends NaryBooleanLogic {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromSchemaList mapper = AnyOf::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingSchemaList("anyOf", AnyOf::new);
 
     public AnyOf(JsonValue json, Collection<JsonSchema> subschemas) {
         super(json, subschemas);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

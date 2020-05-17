@@ -23,28 +23,35 @@ import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.IdKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
- * A keyword type representing "$schema" keyword.
+ * A keyword type representing "id" keyword defined by the draft-04.
  *
  * @author leadpony
  */
-@KeywordClass("$schema")
+@KeywordClass("id")
 @Spec(SpecVersion.DRAFT_04)
-@Spec(SpecVersion.DRAFT_06)
-@Spec(SpecVersion.DRAFT_07)
-public class Schema extends AbstractMetadataKeyword<URI> {
+public class LegacyId extends AbstractKeyword implements IdKeyword {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingUri("$schema", Schema::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingUri("id", LegacyId::new);
 
-    public Schema(JsonValue json, URI value) {
-        super(json, value);
+    private final URI value;
+
+    protected LegacyId(JsonValue json, URI value) {
+        super(json);
+        this.value = value;
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    @Override
+    public URI value() {
+        return value;
     }
 }

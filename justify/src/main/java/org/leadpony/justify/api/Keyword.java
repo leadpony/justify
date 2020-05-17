@@ -31,7 +31,9 @@ public interface Keyword {
      *
      * @return the name of this keyword, never be {@code null}.
      */
-    String name();
+    default String name() {
+        return getType().name();
+    }
 
     /**
      * Returns the value of this keyword as an instance of {@code JsonValue}.
@@ -39,6 +41,13 @@ public interface Keyword {
      * @return the value of this keyword, cannot be {@code null}.
      */
     JsonValue getValueAsJson();
+
+    /**
+     * Returns the type of this keyword.
+     *
+     * @return the instance of {@link KeywordType}.
+     */
+    KeywordType getType();
 
     /**
      * Links this keyword with sibling keywords if needed.

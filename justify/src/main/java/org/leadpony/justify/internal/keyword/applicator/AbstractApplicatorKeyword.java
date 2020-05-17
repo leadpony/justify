@@ -36,14 +36,4 @@ abstract class AbstractApplicatorKeyword extends AbstractKeyword implements Appl
     protected AbstractApplicatorKeyword(JsonValue json) {
         super(json);
     }
-
-    /**
-     * Constructs this keyword as an applicator.
-     *
-     * @param name the name of this keyword.
-     * @param json the JSON representation of this keyword.
-     */
-    protected AbstractApplicatorKeyword(String name, JsonValue json) {
-        super(name, json);
-    }
 }

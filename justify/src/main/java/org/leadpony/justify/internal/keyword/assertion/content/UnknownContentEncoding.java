@@ -16,7 +16,7 @@
 package org.leadpony.justify.internal.keyword.assertion.content;
 
 import jakarta.json.JsonValue;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
@@ -24,7 +24,7 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  *
  * @author leadpony
  */
-@KeywordType("contentEncoding")
+@KeywordClass("contentEncoding")
 public class UnknownContentEncoding extends AbstractKeyword {
 
     public UnknownContentEncoding(JsonValue json, String scheme) {

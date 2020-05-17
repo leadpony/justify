@@ -29,16 +29,16 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
@@ -46,39 +46,50 @@ import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
  *
  * @author leadpony
  */
-@KeywordType("required")
+@KeywordClass("required")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Required extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "required";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Required.newInstance(jsonValue, context);
+        }
+    };
+
     private final Set<String> names;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.ARRAY) {
-                Set<String> names = new LinkedHashSet<>();
-                for (JsonValue item : value.asJsonArray()) {
-                    if (item.getValueType() == ValueType.STRING) {
-                        names.add(((JsonString) item).getString());
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.ARRAY) {
+            Set<String> names = new LinkedHashSet<>();
+            for (JsonValue item : jsonValue.asJsonArray()) {
+                if (item.getValueType() == ValueType.STRING) {
+                    names.add(((JsonString) item).getString());
+                } else {
+                    throw new IllegalArgumentException();
                 }
-                return new Required(value, names);
             }
-            throw new IllegalArgumentException();
-        };
+            return new Required(jsonValue, names);
+        }
+        throw new IllegalArgumentException();
     }
 
     public Required(JsonValue json, Set<String> names) {
         super(json);
         this.names = new LinkedHashSet<>(names);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

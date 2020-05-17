@@ -20,34 +20,32 @@ import java.math.BigDecimal;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * Assertion specified with "exclusiveMaximum" validation keyword.
  *
  * @author leadpony
  */
-@KeywordType("exclusiveMaximum")
+@KeywordClass("exclusiveMaximum")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromNumber mapper = ExclusiveMaximum::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingNumber("exclusiveMaximum", ExclusiveMaximum::new);
 
     public ExclusiveMaximum(JsonValue json, BigDecimal limit) {
         super(json, limit);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

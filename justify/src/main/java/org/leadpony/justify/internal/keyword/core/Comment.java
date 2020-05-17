@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,30 @@ package org.leadpony.justify.internal.keyword.core;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * A keyword type representing "$comment" keyword.
  *
  * @author leadpony
  */
-@KeywordType("$comment")
+@KeywordClass("$comment")
 @Spec(SpecVersion.DRAFT_07)
 public class Comment extends AbstractMetadataKeyword<String> {
 
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromString mapper = Comment::new;
-        return mapper;
-    }
+    public static final KeywordType TYPE = KeywordTypes.mappingString("$comment", Comment::new);
 
     public Comment(JsonValue json, String value) {
         super(json, value);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 }

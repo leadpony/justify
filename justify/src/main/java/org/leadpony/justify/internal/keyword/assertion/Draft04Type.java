@@ -24,42 +24,49 @@ import jakarta.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * @author leadpony
  */
-@KeywordType("type")
+@KeywordClass("type")
 @Spec(SpecVersion.DRAFT_04)
 public final class Draft04Type {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            switch (value.getValueType()) {
-            case STRING:
-                return new Single(value, Type.toInstanceType((JsonString) value));
-            case ARRAY:
-                Set<InstanceType> types = new LinkedHashSet<>();
-                for (JsonValue item : value.asJsonArray()) {
-                    if (item.getValueType() == ValueType.STRING) {
-                        types.add(Type.toInstanceType((JsonString) item));
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "type";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Draft04Type.newInstance(jsonValue, context);
+        }
+    };
+
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        switch (jsonValue.getValueType()) {
+        case STRING:
+            return new Single(jsonValue, Type.toInstanceType((JsonString) jsonValue));
+        case ARRAY:
+            Set<InstanceType> types = new LinkedHashSet<>();
+            for (JsonValue item : jsonValue.asJsonArray()) {
+                if (item.getValueType() == ValueType.STRING) {
+                    types.add(Type.toInstanceType((JsonString) item));
+                } else {
+                    throw new IllegalArgumentException();
                 }
-                return new Multiple(value, types);
-            default:
-                throw new IllegalArgumentException();
             }
-        };
+            return new Multiple(jsonValue, types);
+        default:
+            throw new IllegalArgumentException();
+        }
     }
 
     public static Type of(JsonValue json, InstanceType type) {

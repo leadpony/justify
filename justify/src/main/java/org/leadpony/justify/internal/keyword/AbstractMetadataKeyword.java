@@ -33,11 +33,6 @@ public abstract class AbstractMetadataKeyword<T> extends AbstractKeyword {
         this.value = value;
     }
 
-    protected AbstractMetadataKeyword(String name, JsonValue json, T value) {
-        super(name, json);
-        this.value = value;
-    }
-
     public final T value() {
         return value;
     }

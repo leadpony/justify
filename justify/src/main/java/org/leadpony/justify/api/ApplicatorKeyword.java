@@ -40,6 +40,14 @@ public interface ApplicatorKeyword extends Keyword, EvaluatorSource, SchemaConta
 
     /**
      * {@inheritDoc}
+     */
+    @Override
+    default String name() {
+        return Keyword.super.name();
+    }
+
+    /**
+     * {@inheritDoc}
      *
      * An ApplicatorKeyword can evaluate JSON instances by default.
      */

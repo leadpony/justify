@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SchemaContainer;
 
 /**
@@ -29,6 +30,7 @@ import org.leadpony.justify.api.SchemaContainer;
  */
 public class Referenceable extends AbstractKeyword implements SchemaContainer {
 
+    private final String name;
     private final JsonSchema subschema;
 
     /**
@@ -38,8 +40,19 @@ public class Referenceable extends AbstractKeyword implements SchemaContainer {
      * @param subschema the subschema contained by this keyword.
      */
     public Referenceable(String name, JsonSchema subschema) {
-        super(name, subschema.toJson());
+        super(subschema.toJson());
+        this.name = name;
         this.subschema = subschema;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public KeywordType getType() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

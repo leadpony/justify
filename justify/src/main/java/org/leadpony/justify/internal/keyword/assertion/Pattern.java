@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,15 @@ import java.util.regex.PatternSyntaxException;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+
+import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.regex.Ecma262Pattern;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -35,36 +37,47 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-@KeywordType("pattern")
+@KeywordClass("pattern")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Pattern extends AbstractStringAssertion {
 
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "pattern";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Pattern.newInstance(jsonValue, context);
+        }
+    };
+
     private final java.util.regex.Pattern pattern;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.STRING) {
-                String string = ((JsonString) value).getString();
-                try {
-                    return new Pattern(value, Ecma262Pattern.compile(string));
-                } catch (PatternSyntaxException e) {
-                    throw new IllegalArgumentException(e);
-                }
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.STRING) {
+            String string = ((JsonString) jsonValue).getString();
+            try {
+                return new Pattern(jsonValue, Ecma262Pattern.compile(string));
+            } catch (PatternSyntaxException e) {
+                throw new IllegalArgumentException(e);
             }
-            throw new IllegalArgumentException();
-        };
+        }
+        throw new IllegalArgumentException();
     }
 
     public Pattern(JsonValue json, java.util.regex.Pattern pattern) {
         super(json);
         this.pattern = pattern;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

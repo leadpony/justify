@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2002 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,46 +29,57 @@ import jakarta.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 
 /**
  * @author leadpony
  */
-@KeywordType("patternProperties")
+@KeywordClass("patternProperties")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class PatternProperties extends AbstractProperties<Pattern> {
 
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "patternProperties";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return PatternProperties.newInstance(jsonValue, context);
+        }
+    };
+
     private Properties properties;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.OBJECT) {
-                Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
-                try {
-                    for (Map.Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-                        Pattern pattern = Pattern.compile(entry.getKey());
-                        schemas.put(pattern, context.asJsonSchema(entry.getValue()));
-                    }
-                    return new PatternProperties(value, schemas);
-                } catch (PatternSyntaxException e) {
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.OBJECT) {
+            Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
+            try {
+                for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
+                    Pattern pattern = Pattern.compile(entry.getKey());
+                    schemas.put(pattern, context.asJsonSchema(entry.getValue()));
                 }
+                return new PatternProperties(jsonValue, schemas);
+            } catch (PatternSyntaxException e) {
             }
-            throw new IllegalArgumentException();
-        };
+        }
+        throw new IllegalArgumentException();
     }
 
     public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> properties) {
         super(json, properties);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

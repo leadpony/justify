@@ -19,11 +19,13 @@ package org.leadpony.justify.internal.keyword.assertion.format;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+
+import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
@@ -31,35 +33,46 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-@KeywordType("format")
+@KeywordClass("format")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Format extends AbstractAssertionKeyword {
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.STRING) {
-                String name = ((JsonString) value).getString();
-                FormatAttribute attribute = context.getFormateAttribute(name);
-                if (attribute != null) {
-                    return new RecognizedFormat(value, attribute);
-                } else {
-                    return new Format(value, name);
-                }
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "format";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Format.newInstance(jsonValue, context);
+        }
+    };
+
+    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.STRING) {
+            String name = ((JsonString) jsonValue).getString();
+            FormatAttribute attribute = context.getFormateAttribute(name);
+            if (attribute != null) {
+                return new RecognizedFormat(jsonValue, attribute);
             } else {
-                throw new IllegalArgumentException();
+                return new Format(jsonValue, name);
             }
-        };
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public Format(JsonValue json, String attribute) {
         super(json);
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

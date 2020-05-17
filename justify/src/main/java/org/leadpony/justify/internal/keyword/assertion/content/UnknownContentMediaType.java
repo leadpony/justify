@@ -16,7 +16,7 @@
 package org.leadpony.justify.internal.keyword.assertion.content;
 
 import jakarta.json.JsonValue;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**
@@ -24,7 +24,7 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  *
  * @author leadpony
  */
-@KeywordType("contentMediaType")
+@KeywordClass("contentMediaType")
 public class UnknownContentMediaType extends AbstractKeyword {
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package org.leadpony.justify.internal.keyword.assertion;
 import java.math.BigDecimal;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -32,27 +34,24 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-@KeywordType("multipleOf")
+@KeywordClass("multipleOf")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class MultipleOf extends AbstractNumericAssertion {
 
-    private final BigDecimal factor;
+    public static final KeywordType TYPE = KeywordTypes.mappingNumber("multipleOf", MultipleOf::new);
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromNumber mapper = MultipleOf::new;
-        return mapper;
-    }
+    private final BigDecimal factor;
 
     public MultipleOf(JsonValue json, BigDecimal factor) {
         super(json);
         this.factor = factor;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

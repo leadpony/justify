@@ -24,16 +24,17 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
@@ -41,27 +42,24 @@ import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
  *
  * @author leadpony
  */
-@KeywordType("maxProperties")
+@KeywordClass("maxProperties")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class MaxProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
-    private final int limit;
+    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("maxProperties", MaxProperties::new);
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        KeywordMapper.FromNonNegativeInteger mapper = MaxProperties::new;
-        return mapper;
-    }
+    private final int limit;
 
     public MaxProperties(JsonValue json, int limit) {
         super(json);
         this.limit = limit;
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override

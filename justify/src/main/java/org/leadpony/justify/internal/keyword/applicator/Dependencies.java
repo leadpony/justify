@@ -40,17 +40,17 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordType;
+import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -60,44 +60,50 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-@KeywordType("dependencies")
+@KeywordClass("dependencies")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
 public class Dependencies extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
 
+    public static final KeywordType TYPE = new KeywordType() {
+
+        @Override
+        public String name() {
+            return "dependencies";
+        }
+
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return Dependencies.newInstance(jsonValue, context);
+        }
+    };
+
     private final Map<String, Dependency> dependencyMap;
 
-    /**
-     * Returns the mapper which maps a JSON value to this keyword.
-     *
-     * @return the mapper for this keyword.
-     */
-    public static KeywordMapper mapper() {
-        return (value, context) -> {
-            if (value.getValueType() == ValueType.OBJECT) {
-                Map<String, Object> map = new LinkedHashMap<>();
-                for (Map.Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-                    String k = entry.getKey();
-                    JsonValue v = entry.getValue();
-                    if (v.getValueType() == ValueType.ARRAY) {
-                        Set<String> properties = new LinkedHashSet<>();
-                        for (JsonValue item : v.asJsonArray()) {
-                            if (item.getValueType() == ValueType.STRING) {
-                                properties.add(((JsonString) item).getString());
-                            } else {
-                                throw new IllegalArgumentException();
-                            }
+    private static Dependencies newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
+        if (jsonValue.getValueType() == ValueType.OBJECT) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
+                String k = entry.getKey();
+                JsonValue v = entry.getValue();
+                if (v.getValueType() == ValueType.ARRAY) {
+                    Set<String> properties = new LinkedHashSet<>();
+                    for (JsonValue item : v.asJsonArray()) {
+                        if (item.getValueType() == ValueType.STRING) {
+                            properties.add(((JsonString) item).getString());
+                        } else {
+                            throw new IllegalArgumentException();
                         }
-                        map.put(k, properties);
-                    } else {
-                        map.put(k, context.asJsonSchema(v));
                     }
+                    map.put(k, properties);
+                } else {
+                    map.put(k, context.asJsonSchema(v));
                 }
-                return new Dependencies(value, map);
             }
-            throw new IllegalArgumentException();
-        };
+            return new Dependencies(jsonValue, map);
+        }
+        throw new IllegalArgumentException();
     }
 
     public Dependencies(JsonValue json, Map<String, Object> map) {
@@ -112,6 +118,11 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
                 addDependency(property, requiredProperties);
             }
         });
+    }
+
+    @Override
+    public KeywordType getType() {
+        return TYPE;
     }
 
     @Override
