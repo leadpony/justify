@@ -26,13 +26,6 @@ import java.util.Set;
 public interface EvaluatorSource {
 
     /**
-     * Return the name of this source.
-     *
-     * @return the name of this source.
-     */
-    String name();
-
-    /**
      * Checks if the evaluator supports the specified instance type. All instance
      * types are supported by default.
      *
@@ -67,7 +60,7 @@ public interface EvaluatorSource {
      * @throws UnsupportedOperationException if this method is not implemented.
      */
     default Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        throw new UnsupportedOperationException(name() + " does not support evaluation.");
+        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 
     /**
@@ -83,6 +76,6 @@ public interface EvaluatorSource {
      * @throws UnsupportedOperationException if this method is not implemented.
      */
     default Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        throw new UnsupportedOperationException(name() + " does not support evaluation.");
+        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 }
