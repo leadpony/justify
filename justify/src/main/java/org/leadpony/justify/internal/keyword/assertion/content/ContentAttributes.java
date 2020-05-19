@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import jakarta.json.spi.JsonProvider;
-
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 
@@ -30,6 +28,7 @@ import org.leadpony.justify.spi.ContentMimeType;
 public final class ContentAttributes {
 
     static final Base64 BASE64 = new Base64();
+    static final JsonMimeType JSON_MIME_TYPE = new JsonMimeType();
 
     public static Map<String, ContentEncodingScheme> encodingSchemes() {
         Map<String, ContentEncodingScheme> result = new HashMap<>();
@@ -40,9 +39,9 @@ public final class ContentAttributes {
         return result;
     }
 
-    public static Map<String, ContentMimeType> mimeTypes(JsonProvider jsonProvider) {
+    public static Map<String, ContentMimeType> mimeTypes() {
         Map<String, ContentMimeType> result = new HashMap<>();
-        addMimeType(result, new JsonMimeType(jsonProvider));
+        addMimeType(result, JSON_MIME_TYPE);
         for (ContentMimeType mimeType : ServiceLoader.load(ContentMimeType.class)) {
             addMimeType(result, mimeType);
         }

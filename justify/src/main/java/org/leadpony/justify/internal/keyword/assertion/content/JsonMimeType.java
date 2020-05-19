@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import jakarta.json.JsonException;
 import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonParser;
 
+import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.spi.ContentMimeType;
 
 /**
@@ -32,10 +33,7 @@ import org.leadpony.justify.spi.ContentMimeType;
  */
 class JsonMimeType implements ContentMimeType {
 
-    private final JsonProvider jsonProvider;
-
-    JsonMimeType(JsonProvider jsonProvider) {
-        this.jsonProvider = jsonProvider;
+    JsonMimeType() {
     }
 
     @Override
@@ -44,7 +42,8 @@ class JsonMimeType implements ContentMimeType {
     }
 
     @Override
-    public boolean test(String content) {
+    public boolean test(String content, EvaluatorContext context) {
+        JsonProvider jsonProvider = context.getJsonProvider();
         try (JsonParser parser = jsonProvider.createParser(new StringReader(content))) {
             return parseAllWith(parser);
         } catch (JsonException e) {
@@ -53,7 +52,8 @@ class JsonMimeType implements ContentMimeType {
     }
 
     @Override
-    public boolean test(byte[] decodedContent, Map<String, String> parameters) {
+    public boolean test(byte[] decodedContent, Map<String, String> parameters, EvaluatorContext context) {
+        JsonProvider jsonProvider = context.getJsonProvider();
         try (JsonParser parser = jsonProvider.createParser(new ByteArrayInputStream(decodedContent))) {
             return parseAllWith(parser);
         } catch (JsonException e) {

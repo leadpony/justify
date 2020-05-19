@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ abstract class StandardSchemaSpec implements SchemaSpec {
         this.keywordFactory = new StandardKeywordFactory(version);
         this.metaschema = loadMetaschema(version, jsonService);
         this.encodingSchemes.putAll(ContentAttributes.encodingSchemes());
-        this.mimeTypes.putAll(ContentAttributes.mimeTypes(jsonService.getJsonProvider()));
+        this.mimeTypes.putAll(ContentAttributes.mimeTypes());
     }
 
     @Override

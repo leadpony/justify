@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package org.leadpony.justify.spi;
 
 import java.util.Map;
+
+import org.leadpony.justify.api.EvaluatorContext;
 
 /**
  * MIME type of the content of the JSON string.
@@ -44,10 +46,24 @@ public interface ContentMimeType {
      * @param content the content to check, never be {@code null}.
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code content} is
-     *                              {@code null}.
      */
-    boolean test(String content);
+    default boolean test(String content) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Checks whether the specified content is of this MIME type or not with the
+     * help of {@link EvaluatorContext}. By default, this method just calls
+     * {@link #test(String)}.
+     *
+     * @param content the content to check, never be {@code null}.
+     * @param context the context of the evaluators, never be {@code null}.
+     * @return {@code true} if the specified content is of this MIME type,
+     *         {@code false} otherwise.
+     */
+    default boolean test(String content, EvaluatorContext context) {
+        return test(content);
+    }
 
     /**
      * Checks whether the specified content is of this MIME type or not.
@@ -57,8 +73,24 @@ public interface ContentMimeType {
      *                       {@code null}.
      * @return {@code true} if the specified content is of this MIME type,
      *         {@code false} otherwise.
-     * @throws NullPointerException if the specified {@code decodedContent} or
-     *                              {@code parameters} is {@code null}.
      */
-    boolean test(byte[] decodedContent, Map<String, String> parameters);
+    default boolean test(byte[] decodedContent, Map<String, String> parameters) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
+     * Checks whether the specified content is of this MIME type or not with the
+     * help of {@link EvaluatorContext}. By default, this method just calls
+     * {@link #test(byte[], Map)}.
+     *
+     * @param decodedContent the content to check, never be {@code null}.
+     * @param parameters     the parameters attached to this MIME type, never
+     *                       {@code null}.
+     * @param context        the context of the evaluators, never be {@code null}
+     * @return {@code true} if the specified content is of this MIME type,
+     *         {@code false} otherwise.
+     */
+    default boolean test(byte[] decodedContent, Map<String, String> parameters, EvaluatorContext context) {
+        return test(decodedContent, parameters);
+    }
 }

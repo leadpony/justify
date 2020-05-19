@@ -140,10 +140,10 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     @Override
     public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
-        if (testValue(value, true)) {
+        if (testValue(value, context, true)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new ContentMediaTypeEvaluator(context, schema, this) {
+        return new FalseContentEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE).build();
@@ -156,10 +156,10 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         String value = context.getParser().getString();
-        if (!testValue(value, false)) {
+        if (!testValue(value, context, false)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new ContentMediaTypeEvaluator(context, schema, this) {
+        return new FalseContentEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE).build();
@@ -169,16 +169,16 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         };
     }
 
-    private boolean testValue(String value, boolean defaultResult) {
+    private boolean testValue(String value, EvaluatorContext context, boolean defaultResult) {
         if (encodingScheme != null) {
             if (encodingScheme.canDecode(value)) {
                 byte[] decoded = encodingScheme.decode(value);
-                return mimeType.test(decoded, parameters);
+                return mimeType.test(decoded, parameters, context);
             } else {
                 return defaultResult;
             }
         } else {
-            return mimeType.test(value);
+            return mimeType.test(value, context);
         }
     }
 
@@ -195,9 +195,9 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         return builder.toString();
     }
 
-    abstract class ContentMediaTypeEvaluator extends AbstractKeywordAwareEvaluator {
+    abstract class FalseContentEvaluator extends AbstractKeywordAwareEvaluator {
 
-        ContentMediaTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        FalseContentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
             super(context, schema, keyword);
         }
 
