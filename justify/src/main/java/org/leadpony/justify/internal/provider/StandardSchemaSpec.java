@@ -16,23 +16,13 @@
 package org.leadpony.justify.internal.provider;
 
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.json.spi.JsonProvider;
-import jakarta.json.stream.JsonParser;
-
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
-import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.assertion.content.ContentAttributes;
 import org.leadpony.justify.internal.keyword.assertion.format.FormatAttributes;
 import org.leadpony.justify.internal.schema.SchemaSpec;
-import org.leadpony.justify.internal.schema.io.JsonSchemaReaderImpl;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -42,37 +32,23 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-abstract class StandardSchemaSpec implements SchemaSpec {
+enum StandardSchemaSpec implements SchemaSpec {
+    DRAFT_04(SpecVersion.DRAFT_04),
+    DRAFT_06(SpecVersion.DRAFT_06),
+    DRAFT_07(SpecVersion.DRAFT_07);
 
     private final SpecVersion version;
     private final Map<String, FormatAttribute> formatAttributes;
 
     private final KeywordFactory keywordFactory;
 
-    private final JsonSchema metaschema;
-
     private final Map<String, ContentEncodingScheme> encodingSchemes = new HashMap<>();
     private final Map<String, ContentMimeType> mimeTypes = new HashMap<>();
 
-    /**
-     * Returns all of the published standard specifications.
-     *
-     * @param jsonService the JSON service.
-     * @return all of the published standard specifications.
-     */
-    static SchemaSpec[] values(JsonService jsonService) {
-        return new SchemaSpec[] {
-                new Draft04SchemaSpec(jsonService),
-                new Draft06SchemaSpec(jsonService),
-                new Draft07SchemaSpec(jsonService)
-        };
-    }
-
-    protected StandardSchemaSpec(SpecVersion version, JsonService jsonService) {
+    StandardSchemaSpec(SpecVersion version) {
         this.version = version;
         this.formatAttributes = FormatAttributes.getAttributes(version);
         this.keywordFactory = new StandardKeywordFactory(version);
-        this.metaschema = loadMetaschema(version, jsonService);
         this.encodingSchemes.putAll(ContentAttributes.encodingSchemes());
         this.mimeTypes.putAll(ContentAttributes.mimeTypes());
     }
@@ -83,8 +59,9 @@ abstract class StandardSchemaSpec implements SchemaSpec {
     }
 
     @Override
-    public JsonSchema getMetaschema() {
-        return metaschema;
+    public InputStream getMetaschemaAsStream() {
+        String name = getVersion().toString().toLowerCase() + ".json";
+        return getClass().getResourceAsStream(name);
     }
 
     @Override
@@ -105,53 +82,5 @@ abstract class StandardSchemaSpec implements SchemaSpec {
     @Override
     public ContentMimeType getMimeType(String value) {
         return mimeTypes.get(value);
-    }
-
-    private JsonSchema loadMetaschema(SpecVersion version, JsonService jsonService) {
-        String name = version.toString().toLowerCase() + ".json";
-        InputStream in = getClass().getResourceAsStream(name);
-        JsonProvider jsonProvider = jsonService.getJsonProvider();
-        JsonParser realParser = jsonProvider.createParser(in);
-        PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(
-                parser, jsonService, this, Collections.emptyMap())) {
-            return reader.read();
-        }
-    }
-
-    /**
-     * The specification of Draft-04.
-     *
-     * @author leadpony
-     */
-    private static class Draft04SchemaSpec extends StandardSchemaSpec {
-
-        Draft04SchemaSpec(JsonService jsonService) {
-            super(SpecVersion.DRAFT_04, jsonService);
-        }
-    }
-
-    /**
-     * The specification of Draft-06.
-     *
-     * @author leadpony
-     */
-    private static class Draft06SchemaSpec extends StandardSchemaSpec {
-
-        Draft06SchemaSpec(JsonService jsonService) {
-            super(SpecVersion.DRAFT_06, jsonService);
-        }
-    }
-
-    /**
-     * The specification of Draft-07.
-     *
-     * @author leadpony
-     */
-    private static class Draft07SchemaSpec extends StandardSchemaSpec {
-
-        Draft07SchemaSpec(JsonService jsonService) {
-            super(SpecVersion.DRAFT_07, jsonService);
-        }
     }
 }

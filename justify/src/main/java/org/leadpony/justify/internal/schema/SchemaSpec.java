@@ -15,7 +15,8 @@
  */
 package org.leadpony.justify.internal.schema;
 
-import org.leadpony.justify.api.JsonSchema;
+import java.io.InputStream;
+
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -37,11 +38,11 @@ public interface SchemaSpec {
     SpecVersion getVersion();
 
     /**
-     * Returns the metaschema of this specification.
+     * Returns the metaschema of this specification as a stream.
      *
-     * @return the metaschema of this specification, never be {@code null}.
+     * @return the stream of the metaschema, never be {@code null}.
      */
-    JsonSchema getMetaschema();
+    InputStream getMetaschemaAsStream();
 
     /**
      * Returns the factory of keywords available for this specification.

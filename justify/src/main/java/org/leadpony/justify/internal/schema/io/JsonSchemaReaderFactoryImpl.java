@@ -46,6 +46,7 @@ import org.leadpony.justify.internal.base.ResettableReader;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.internal.schema.SchemaCatalog;
 import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.validator.JsonValidator;
@@ -150,7 +151,8 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
         if (this.metaschema != null) {
             return metaschema;
         }
-        return spec.getMetaschema();
+        SchemaCatalog catalog = specRegistry.getMetaschemaCatalog();
+        return catalog.resolveSchema(spec.getVersion().id());
     }
 
     /**

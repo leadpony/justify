@@ -52,12 +52,17 @@ import org.leadpony.justify.api.ValidationConfig;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.JsonService;
+import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
+import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.DefaultJsonSchemaBuilderFactory;
+import org.leadpony.justify.internal.schema.SchemaCatalog;
+import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.JsonSchemaReaderFactoryImpl;
+import org.leadpony.justify.internal.schema.io.JsonSchemaReaderImpl;
 import org.leadpony.justify.internal.validator.DefaultValidationConfig;
 import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.internal.validator.JsonValidatorFactory;
@@ -69,8 +74,9 @@ import org.leadpony.justify.internal.validator.JsonValidatorFactory;
  */
 class DefaultJsonValidationService extends JsonService implements JsonValidationService {
 
-    private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
+    private final SchemaCatalog schemaCatalog;
     private final SchemaSpecRegistry specRegistry;
+    private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
 
     /**
      * Constructs this object.
@@ -81,7 +87,8 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      */
     DefaultJsonValidationService(JsonProvider jsonProvider) {
         super(jsonProvider);
-        this.specRegistry = DefaultSchemaSpecRegistry.load(this);
+        this.schemaCatalog = createSchemaCatalog();
+        this.specRegistry = DefaultSchemaSpecRegistry.load(this.schemaCatalog);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
     }
 
@@ -367,6 +374,26 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     public ProblemPrinterBuilder createProblemPrinterBuilder(Consumer<String> lineConsumer) {
         requireNonNull(lineConsumer, "lineConsumer");
         return new DefaultProblemPrinterBuilder(lineConsumer);
+    }
+
+    /* */
+
+    private SchemaCatalog createSchemaCatalog() {
+        SchemaCatalog catalog = new SchemaCatalog();
+        for (SchemaSpec spec : StandardSchemaSpec.values()) {
+            catalog.addSchema(spec.getVersion().id(), () -> readMetaschema(spec));
+        }
+        return catalog;
+    }
+
+    private JsonSchema readMetaschema(SchemaSpec spec) {
+        JsonProvider jsonProvider = getJsonProvider();
+        InputStream in = spec.getMetaschemaAsStream();
+        JsonParser realParser = jsonProvider.createParser(in);
+        PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
+        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec, Collections.emptyMap())) {
+            return reader.read();
+        }
     }
 
     private DefaultJsonSchemaBuilderFactory createDefaultSchemaBuilderFactory() {

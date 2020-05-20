@@ -15,9 +15,9 @@
  */
 package org.leadpony.justify.internal.provider;
 
+import java.io.InputStream;
 import java.util.Map;
 
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.schema.SchemaSpec;
@@ -52,8 +52,8 @@ class CustomSchemaSpec implements SchemaSpec {
     }
 
     @Override
-    public JsonSchema getMetaschema() {
-        return baseSpec.getMetaschema();
+    public InputStream getMetaschemaAsStream() {
+        return baseSpec.getMetaschemaAsStream();
     }
 
     @Override

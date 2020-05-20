@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
 import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
@@ -34,8 +33,8 @@ import org.leadpony.justify.spi.FormatAttribute;
  */
 final class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
 
+    private final SchemaCatalog catalog;
     private final Map<SpecVersion, SchemaSpec> specs = new HashMap<>();
-    private final SchemaCatalog catalog = new SchemaCatalog();
 
     private static final Map<String, FormatAttribute> CUSTOM_FORMAT_ATTRIBUTES
         = findFormatAttributes();
@@ -43,16 +42,16 @@ final class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
     /**
      * Loads new instance of this class.
      *
-     * @param jsonService the JSON service.
      * @return newly created instance.
      */
-    static SchemaSpecRegistry load(JsonService jsonService) {
-        DefaultSchemaSpecRegistry registry = new DefaultSchemaSpecRegistry();
-        registry.installSpecs(jsonService);
+    static SchemaSpecRegistry load(SchemaCatalog catalog) {
+        DefaultSchemaSpecRegistry registry = new DefaultSchemaSpecRegistry(catalog);
+        registry.installSpecs();
         return registry;
     }
 
-    private DefaultSchemaSpecRegistry() {
+    private DefaultSchemaSpecRegistry(SchemaCatalog catalog) {
+        this.catalog = catalog;
     }
 
     /* As a SchemaSpecRegistry */
@@ -73,10 +72,9 @@ final class DefaultSchemaSpecRegistry implements SchemaSpecRegistry {
 
     /* */
 
-    private void installSpecs(JsonService jsonService) {
-        for (SchemaSpec spec : StandardSchemaSpec.values(jsonService)) {
+    private void installSpecs() {
+        for (SchemaSpec spec : StandardSchemaSpec.values()) {
             specs.put(spec.getVersion(), spec);
-            catalog.addSchema(spec.getMetaschema());
         }
     }
 
