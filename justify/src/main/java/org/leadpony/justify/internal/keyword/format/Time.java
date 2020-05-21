@@ -32,6 +32,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Time extends AbstractFormatAttribute {
 
+    static final Time INSTANCE = new Time();
+
     private static final Pattern LOCAL_TIME_PATTERN = Pattern.compile("(\\d{2})\\:(\\d{2})\\:(\\d{2})(\\.\\d+)?");
     private static final Pattern TIME_OFFSET_PATTERN = Pattern.compile("(\\d{2})\\:(\\d{2})");
 

@@ -24,9 +24,11 @@ package org.leadpony.justify.internal.keyword.format;
  */
 public class Uuid extends AbstractFormatAttribute {
 
+    static final Uuid INSTANCE = new Uuid();
+
     @Override
     public String name() {
-        throw new UnsupportedOperationException();
+        return "uuid";
     }
 
     @Override

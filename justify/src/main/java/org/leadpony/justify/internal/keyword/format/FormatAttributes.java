@@ -28,23 +28,23 @@ import org.leadpony.justify.spi.FormatAttribute;
 public final class FormatAttributes {
 
     private static final FormatAttribute[] ATTRIBUTE_LIST = {
-            new Date(),
-            new DateTime(),
-            new Email(),
-            new Hostname(),
-            new Ipv4(),
-            new Ipv6(),
-            new IdnEmail(),
-            new IdnHostname(),
-            new Iri(),
-            new IriReference(),
-            new JsonPointer(),
-            new Regex(),
-            new RelativeJsonPointer(),
-            new Time(),
-            new Uri(),
-            new UriReference(),
-            new UriTemplate()
+            Date.INSTANCE,
+            DateTime.INSTANCE,
+            Email.INSTANCE,
+            Hostname.INSTANCE,
+            Ipv4.INSTANCE,
+            Ipv6.INSTANCE,
+            IdnEmail.INSTANCE,
+            IdnHostname.INSTANCE,
+            Iri.INSTANCE,
+            IriReference.INSTANCE,
+            JsonPointer.INSTANCE,
+            Regex.INSTANCE,
+            RelativeJsonPointer.INSTANCE,
+            Time.INSTANCE,
+            Uri.INSTANCE,
+            UriReference.INSTANCE,
+            UriTemplate.INSTANCE
     };
 
     private static final Map<SpecVersion, Map<String, FormatAttribute>> ATTRIBUTE_BY_SPEC = groupAttributesBySpec();

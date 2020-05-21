@@ -16,6 +16,7 @@
 package org.leadpony.justify.api;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,9 +35,11 @@ public interface Vocabulary {
     URI getId();
 
     /**
-     * Returns all keywords provided by this vocabulary.
+     * Returns all keywords defined in this vocabulary.
      *
-     * @return all keywords as a map, never be {@code null}.
+     * @param config
+     * @param storage
+     * @return all keywords as a list, never be {@code null}.
      */
-    Map<String, KeywordType> asMap();
+    List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage);
 }

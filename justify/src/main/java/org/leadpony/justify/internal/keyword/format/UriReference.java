@@ -34,6 +34,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class UriReference extends AbstractFormatAttribute {
 
+    static final UriReference INSTANCE = new UriReference();
+
     private final boolean verbose;
 
     UriReference() {

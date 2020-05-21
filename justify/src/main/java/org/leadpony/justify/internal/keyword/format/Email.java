@@ -35,6 +35,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Email extends AbstractFormatAttribute {
 
+    static final Email INSTANCE = new Email();
+
     @Override
     public String name() {
         return "email";

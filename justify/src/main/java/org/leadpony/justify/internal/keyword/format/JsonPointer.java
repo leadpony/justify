@@ -33,6 +33,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class JsonPointer extends AbstractFormatAttribute {
 
+    static final JsonPointer INSTANCE = new JsonPointer();
+
     @Override
     public String name() {
         return "json-pointer";

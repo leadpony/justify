@@ -40,6 +40,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Regex extends AbstractFormatAttribute {
 
+    static final Regex INSTANCE = new Regex();
+
     @Override
     public String name() {
         return "regex";

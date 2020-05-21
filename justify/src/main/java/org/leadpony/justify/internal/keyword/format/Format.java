@@ -20,6 +20,10 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
@@ -39,7 +43,21 @@ import org.leadpony.justify.spi.FormatAttribute;
 @Spec(SpecVersion.DRAFT_07)
 public class Format extends AbstractAssertionKeyword {
 
-    public static final KeywordType TYPE = new KeywordType() {
+    static class FormatType implements KeywordType {
+
+        private final Map<String, FormatAttribute> attributeMap;
+
+        FormatType() {
+            this.attributeMap = Collections.emptyMap();
+        }
+
+        FormatType(FormatAttribute[] attributes) {
+            Map<String, FormatAttribute> attributeMap = new HashMap<>();
+            for (FormatAttribute attribute : attributes) {
+                attributeMap.put(attribute.name(), attribute);
+            }
+            this.attributeMap = attributeMap;
+        }
 
         @Override
         public String name() {
@@ -50,7 +68,9 @@ public class Format extends AbstractAssertionKeyword {
         public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
             return Format.newInstance(jsonValue, context);
         }
-    };
+    }
+
+    public static final KeywordType TYPE = new FormatType();
 
     private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
         if (jsonValue.getValueType() == ValueType.STRING) {

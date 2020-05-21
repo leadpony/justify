@@ -27,12 +27,9 @@ import org.leadpony.justify.spi.ContentMimeType;
  */
 public final class ContentAttributes {
 
-    static final Base64 BASE64 = new Base64();
-    static final JsonMimeType JSON_MIME_TYPE = new JsonMimeType();
-
     public static Map<String, ContentEncodingScheme> encodingSchemes() {
         Map<String, ContentEncodingScheme> result = new HashMap<>();
-        addEncodingScheme(result, BASE64);
+        addEncodingScheme(result, Base64.INSTANCE);
         for (ContentEncodingScheme scheme : ServiceLoader.load(ContentEncodingScheme.class)) {
             addEncodingScheme(result, scheme);
         }
@@ -41,7 +38,7 @@ public final class ContentAttributes {
 
     public static Map<String, ContentMimeType> mimeTypes() {
         Map<String, ContentMimeType> result = new HashMap<>();
-        addMimeType(result, JSON_MIME_TYPE);
+        addMimeType(result, JsonMimeType.INSTANCE);
         for (ContentMimeType mimeType : ServiceLoader.load(ContentMimeType.class)) {
             addMimeType(result, mimeType);
         }

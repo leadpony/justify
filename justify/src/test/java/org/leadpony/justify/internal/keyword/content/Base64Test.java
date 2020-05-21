@@ -65,7 +65,7 @@ public class Base64Test {
     @ParameterizedTest
     @EnumSource(Base64TestCase.class)
     public void canDecodeShouldReturnExpectedResult(Base64TestCase test) {
-        Base64 base64 = new Base64();
+        Base64 base64 = Base64.INSTANCE;
         boolean actual = base64.canDecode(test.src);
 
         assertThat(actual).isEqualTo(test.valid);
@@ -74,7 +74,7 @@ public class Base64Test {
     @ParameterizedTest
     @EnumSource(Base64TestCase.class)
     public void decodeShouldDecodeString(Base64TestCase test) {
-        Base64 base64 = new Base64();
+        Base64 base64 = Base64.INSTANCE;
         if (test.valid) {
             byte[] actual = base64.decode(test.src);
             assertThat(actual).isEqualTo(test.decoded);

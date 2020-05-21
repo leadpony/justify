@@ -16,11 +16,12 @@
 package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Vocabulary;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * The JSON Schema Core Vocabulary.
@@ -37,11 +38,11 @@ public enum CoreVocabulary implements Vocabulary {
     DRAFT_2019_09("https://json-schema.org/draft/2019-09/vocab/core");
 
     private final URI id;
-    private final Map<String, KeywordType> typeMap;
+    private final List<KeywordType> keywordTypes;
 
     CoreVocabulary(String id, KeywordType... types) {
         this.id = URI.create(id);
-        this.typeMap = KeywordTypes.toMap(types);
+        this.keywordTypes = Arrays.asList(types);
     }
 
     @Override
@@ -50,7 +51,7 @@ public enum CoreVocabulary implements Vocabulary {
     }
 
     @Override
-    public Map<String, KeywordType> asMap() {
-        return typeMap;
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage) {
+        return keywordTypes;
     }
 }

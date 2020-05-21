@@ -35,6 +35,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Uri extends AbstractFormatAttribute {
 
+    static final Uri INSTANCE = new Uri();
+
     private final boolean verbose;
 
     Uri() {

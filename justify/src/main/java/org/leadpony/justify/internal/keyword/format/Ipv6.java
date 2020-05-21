@@ -33,6 +33,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Ipv6 extends AbstractFormatAttribute {
 
+    static final Ipv6 INSTANCE = new Ipv6();
+
     @Override
     public String name() {
         return "ipv6";

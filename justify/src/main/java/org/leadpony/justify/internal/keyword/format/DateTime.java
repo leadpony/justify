@@ -31,6 +31,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class DateTime extends AbstractFormatAttribute {
 
+    static final DateTime INSTANCE = new DateTime();
+
     private final Date date = new Date();
     private final Time time = new Time();
 

@@ -27,7 +27,12 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
  *
  * @author leadpony
  */
-class Base64 implements ContentEncodingScheme {
+final class Base64 implements ContentEncodingScheme {
+
+    static final Base64 INSTANCE = new Base64();
+
+    private Base64() {
+    }
 
     @Override
     public String name() {

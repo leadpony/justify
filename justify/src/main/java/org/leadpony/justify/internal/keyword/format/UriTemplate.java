@@ -30,6 +30,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class UriTemplate extends AbstractFormatAttribute {
 
+    static final UriTemplate INSTANCE = new UriTemplate();
+
     @Override
     public String name() {
         return "uri-template";

@@ -31,6 +31,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class IdnEmail extends Email {
 
+    static final IdnEmail INSTANCE = new IdnEmail();
+
     @Override
     public String name() {
         return "idn-email";

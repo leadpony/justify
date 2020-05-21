@@ -32,6 +32,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class IriReference extends AbstractFormatAttribute {
 
+    static final IriReference INSTANCE = new IriReference();
+
     @Override
     public String name() {
         return "iri-reference";

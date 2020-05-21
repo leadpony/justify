@@ -33,6 +33,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class Hostname extends AbstractFormatAttribute {
 
+    static final Hostname INSTANCE = new Hostname();
+
     @Override
     public String name() {
         return "hostname";

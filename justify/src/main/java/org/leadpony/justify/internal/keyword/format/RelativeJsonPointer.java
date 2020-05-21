@@ -31,6 +31,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class RelativeJsonPointer extends AbstractFormatAttribute {
 
+    static final RelativeJsonPointer INSTANCE = new RelativeJsonPointer();
+
     private final JsonPointer jsonPointer = new JsonPointer();
 
     @Override

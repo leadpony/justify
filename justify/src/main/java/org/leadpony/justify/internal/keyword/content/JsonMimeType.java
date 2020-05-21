@@ -31,9 +31,11 @@ import org.leadpony.justify.spi.ContentMimeType;
  *
  * @author leadpony
  */
-class JsonMimeType implements ContentMimeType {
+final class JsonMimeType implements ContentMimeType {
 
-    JsonMimeType() {
+    static final JsonMimeType INSTANCE = new JsonMimeType();
+
+    private JsonMimeType() {
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ package org.leadpony.justify.internal.keyword.format;
  * @see <a href="https://tools.ietf.org/html/rfc3339">RFC 3339</a>
  */
 public class Duration extends AbstractFormatAttribute {
+
+    static final Duration INSTANCE = new Duration();
 
     @Override
     public String name() {

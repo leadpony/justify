@@ -32,6 +32,8 @@ import org.leadpony.justify.internal.base.Message;
 @Spec(SpecVersion.DRAFT_07)
 class IdnHostname extends AbstractFormatAttribute {
 
+    static final IdnHostname INSTANCE = new IdnHostname();
+
     @Override
     public String name() {
         return "idn-hostname";
