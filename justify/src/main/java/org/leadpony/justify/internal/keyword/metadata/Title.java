@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify.internal.keyword.metadata;
 
 import jakarta.json.JsonValue;
 
@@ -22,7 +22,7 @@ import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
@@ -34,16 +34,24 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Title extends AbstractMetadataKeyword<String> implements Annotation<String> {
+public class Title extends AbstractKeyword implements MetadataKeyword<String> {
 
     public static final KeywordType TYPE = KeywordTypes.mappingString("title", Title::new);
 
+    private final String value;
+
     public Title(JsonValue json, String value) {
-        super(json, value);
+        super(json);
+        this.value = value;
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    @Override
+    public String value() {
+        return value;
     }
 }

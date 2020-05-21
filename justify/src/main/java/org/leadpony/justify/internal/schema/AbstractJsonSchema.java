@@ -33,9 +33,9 @@ import org.leadpony.justify.api.ApplicatorKeyword;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
-import org.leadpony.justify.internal.keyword.annotation.Default;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Schema;
+import org.leadpony.justify.internal.keyword.metadata.Default;
 
 /**
  * Skeletal implementation of {@link JsonSchema}.

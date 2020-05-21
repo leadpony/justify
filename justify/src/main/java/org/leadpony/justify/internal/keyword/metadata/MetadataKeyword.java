@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify.internal.keyword.metadata;
 
 import org.leadpony.justify.api.Keyword;
 
 /**
- * A keyword for annotation purpose.
+ * A keyword for describing metadata.
  *
  * @param <T> the type of the value.
  *
  * @author leadpony
  */
-public interface Annotation<T> extends Keyword {
+public interface MetadataKeyword<T> extends Keyword {
 
     T value();
 }

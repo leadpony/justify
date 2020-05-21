@@ -19,4 +19,4 @@
  *
  * @author leadpony
  */
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify.internal.keyword.metadata;

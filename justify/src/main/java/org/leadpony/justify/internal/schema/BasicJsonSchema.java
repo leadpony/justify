@@ -35,8 +35,8 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
-import org.leadpony.justify.internal.keyword.annotation.Description;
-import org.leadpony.justify.internal.keyword.annotation.Title;
+import org.leadpony.justify.internal.keyword.metadata.Description;
+import org.leadpony.justify.internal.keyword.metadata.Title;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 

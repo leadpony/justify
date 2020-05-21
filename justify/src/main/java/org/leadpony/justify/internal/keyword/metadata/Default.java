@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.annotation;
+package org.leadpony.justify.internal.keyword.metadata;
 
 import jakarta.json.JsonValue;
 
@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Default extends AbstractKeyword implements Annotation<JsonValue> {
+public class Default extends AbstractKeyword implements MetadataKeyword<JsonValue> {
 
     public static final KeywordType TYPE = KeywordTypes.mappingJson("default", Default::new);
 
