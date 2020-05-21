@@ -29,20 +29,33 @@ import org.leadpony.justify.api.Vocabulary;
  * @author leadpony
  */
 public enum CoreVocabulary implements Vocabulary {
-    DRAFT_4("https://json-schema.org/draft/4/vocab/core"),
+    DRAFT_4("",
+            Definitions.TYPE,
+            LegacyId.TYPE,
+            Ref.TYPE,
+            Schema.TYPE),
 
-    DRAFT_6("https://json-schema.org/draft/6/vocab/core"),
+    DRAFT_6("",
+            Definitions.TYPE,
+            Id.TYPE,
+            Ref.TYPE,
+            Schema.TYPE),
 
-    DRAFT_7("https://json-schema.org/draft/7/vocab/core"),
+    DRAFT_7("",
+            Comment.TYPE,
+            Definitions.TYPE,
+            Id.TYPE,
+            Ref.TYPE,
+            Schema.TYPE),
 
     DRAFT_2019_09("https://json-schema.org/draft/2019-09/vocab/core");
 
     private final URI id;
     private final List<KeywordType> keywordTypes;
 
-    CoreVocabulary(String id, KeywordType... types) {
+    CoreVocabulary(String id, KeywordType... keywordTypes) {
         this.id = URI.create(id);
-        this.keywordTypes = Arrays.asList(types);
+        this.keywordTypes = Arrays.asList(keywordTypes);
     }
 
     @Override
