@@ -64,15 +64,15 @@ import org.leadpony.justify.internal.keyword.assertion.Pattern;
 import org.leadpony.justify.internal.keyword.assertion.Required;
 import org.leadpony.justify.internal.keyword.assertion.Type;
 import org.leadpony.justify.internal.keyword.assertion.UniqueItems;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentEncoding;
-import org.leadpony.justify.internal.keyword.assertion.content.ContentMediaType;
-import org.leadpony.justify.internal.keyword.assertion.format.Format;
+import org.leadpony.justify.internal.keyword.content.ContentEncoding;
+import org.leadpony.justify.internal.keyword.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Definitions;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.LegacyId;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
+import org.leadpony.justify.internal.keyword.format.Format;
 
 /**
  * A factory of keywords defined by the specification.
