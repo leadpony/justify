@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -32,27 +32,28 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
+import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
- * Assertion specified with "minProperties" validation keyword.
+ * Assertion specified with "maxItems" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("minProperties")
+@KeywordClass("maxItems")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MinProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
+public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minProperties", MinProperties::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("maxItems", MaxItems::new);
 
     private final int limit;
 
-    public MinProperties(JsonValue json, int limit) {
+    public MaxItems(JsonValue json, int limit) {
         super(json);
         this.limit = limit;
     }
@@ -69,11 +70,7 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
 
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        if (limit > 0) {
-            return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
-        } else {
-            return context.createAlwaysFalseEvaluator(schema);
-        }
+        return new MinItems.AssertionEvaluator(context, schema, this, limit + 1);
     }
 
     /**
@@ -83,28 +80,28 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
      */
     static class AssertionEvaluator extends ShallowEvaluator {
 
-        private final int minProperties;
+        private final int maxItems;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int minProperties) {
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxItems) {
             super(context, schema, keyword);
-            this.minProperties = minProperties;
+            this.maxItems = maxItems;
         }
 
         @Override
         public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
-                if (event == Event.KEY_NAME && ++currentCount >= minProperties) {
-                    return Result.TRUE;
+                if (ParserEvents.isValue(event)) {
+                    ++currentCount;
                 }
-            } else if (depth == 0 && event == Event.END_OBJECT) {
-                if (currentCount >= minProperties) {
+            } else if (depth == 0 && event == Event.END_ARRAY) {
+                if (currentCount <= maxItems) {
                     return Result.TRUE;
                 } else {
                     Problem p = newProblemBuilder()
-                            .withMessage(Message.INSTANCE_PROBLEM_MINPROPERTIES)
+                            .withMessage(Message.INSTANCE_PROBLEM_MAXITEMS)
                             .withParameter("actual", currentCount)
-                            .withParameter("limit", minProperties)
+                            .withParameter("limit", maxItems)
                             .build();
                     dispatcher.dispatchProblem(p);
                     return Result.FALSE;

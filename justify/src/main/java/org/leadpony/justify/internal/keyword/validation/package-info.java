@@ -19,4 +19,4 @@
  *
  * @author leadpony
  */
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;

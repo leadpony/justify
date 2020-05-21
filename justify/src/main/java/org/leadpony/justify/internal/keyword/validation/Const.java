@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018-2019 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.math.BigDecimal;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
-
+import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
@@ -30,23 +28,19 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * Assertion specified with "multipleOf" validation keyword.
+ * An assertion specified with "const" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("multipleOf")
-@Spec(SpecVersion.DRAFT_04)
+@KeywordClass("const")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MultipleOf extends AbstractNumericAssertion {
+public class Const extends AbstractEqualityAssertion {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNumber("multipleOf", MultipleOf::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingJson("const", Const::new);
 
-    private final BigDecimal factor;
-
-    public MultipleOf(JsonValue json, BigDecimal factor) {
-        super(json);
-        this.factor = factor;
+    public Const(JsonValue expected) {
+        super(expected);
     }
 
     @Override
@@ -55,22 +49,25 @@ public class MultipleOf extends AbstractNumericAssertion {
     }
 
     @Override
-    protected boolean testValue(BigDecimal value) {
-        BigDecimal remainder = value.remainder(factor);
-        return remainder.compareTo(BigDecimal.ZERO) == 0;
+    protected boolean testValue(JsonValue value) {
+        return value.equals(getValueAsJson());
     }
 
     @Override
     protected Problem createProblem(ProblemBuilder builder) {
-        return builder.withMessage(Message.INSTANCE_PROBLEM_MULTIPLEOF)
-            .withParameter("factor", factor)
+        final JsonValue expected = getValueAsJson();
+        return builder.withMessage(Message.INSTANCE_PROBLEM_CONST)
+            .withParameter("expected", expected)
+            .withParameter("expectedType", InstanceType.of(expected))
             .build();
     }
 
     @Override
     protected Problem createNegatedProblem(ProblemBuilder builder) {
-        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_MULTIPLEOF)
-            .withParameter("factor", factor)
+        final JsonValue expected = getValueAsJson();
+        return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_CONST)
+            .withParameter("expected", expected)
+            .withParameter("expectedType", InstanceType.of(expected))
             .build();
     }
 }

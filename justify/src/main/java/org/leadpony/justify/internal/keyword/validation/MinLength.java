@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.math.BigDecimal;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 
@@ -28,19 +26,20 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
- * Assertion specified with "maximum" validation keyword.
+ * Assertion specified with "minLength" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("maximum")
+@KeywordClass("minLength")
+@Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Maximum extends AbstractNumericBoundAssertion {
+public class MinLength extends AbstractStringLengthAssertion {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNumber("maximum", Maximum::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minLength", MinLength::new);
 
-    public Maximum(JsonValue json, BigDecimal limit) {
-        super(json, limit);
+    public MinLength(JsonValue json, int limit) {
+        super(json, limit, Message.INSTANCE_PROBLEM_MINLENGTH, Message.INSTANCE_PROBLEM_NOT_MINLENGTH);
     }
 
     @Override
@@ -49,17 +48,7 @@ public class Maximum extends AbstractNumericBoundAssertion {
     }
 
     @Override
-    protected boolean testValue(BigDecimal actual, BigDecimal limit) {
-        return actual.compareTo(limit) <= 0;
-    }
-
-    @Override
-    protected Message getMessageForTest() {
-        return Message.INSTANCE_PROBLEM_MAXIMUM;
-    }
-
-    @Override
-    protected Message getMessageForNegatedTest() {
-        return Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM;
+    protected boolean testLength(int actualLength, int limit) {
+        return actualLength >= limit;
     }
 }

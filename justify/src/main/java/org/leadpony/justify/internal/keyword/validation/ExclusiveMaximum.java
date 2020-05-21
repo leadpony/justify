@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;
 
 import java.math.BigDecimal;
 
@@ -28,18 +28,18 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
- * Assertion specified with "exclusiveMinimum" validation keyword.
+ * Assertion specified with "exclusiveMaximum" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("exclusiveMinimum")
+@KeywordClass("exclusiveMaximum")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
+public class ExclusiveMaximum extends AbstractNumericBoundAssertion {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNumber("exclusiveMinimum", ExclusiveMinimum::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingNumber("exclusiveMaximum", ExclusiveMaximum::new);
 
-    public ExclusiveMinimum(JsonValue json, BigDecimal limit) {
+    public ExclusiveMaximum(JsonValue json, BigDecimal limit) {
         super(json, limit);
     }
 
@@ -50,16 +50,16 @@ public class ExclusiveMinimum extends AbstractNumericBoundAssertion {
 
     @Override
     protected boolean testValue(BigDecimal actual, BigDecimal limit) {
-        return actual.compareTo(limit) > 0;
+        return actual.compareTo(limit) < 0;
     }
 
     @Override
     protected Message getMessageForTest() {
-        return Message.INSTANCE_PROBLEM_EXCLUSIVEMINIMUM;
+        return Message.INSTANCE_PROBLEM_EXCLUSIVEMAXIMUM;
     }
 
     @Override
     protected Message getMessageForNegatedTest() {
-        return Message.INSTANCE_PROBLEM_MAXIMUM;
+        return Message.INSTANCE_PROBLEM_MINIMUM;
     }
 }

@@ -45,25 +45,6 @@ import org.leadpony.justify.internal.keyword.applicator.PatternProperties;
 import org.leadpony.justify.internal.keyword.applicator.Properties;
 import org.leadpony.justify.internal.keyword.applicator.PropertyNames;
 import org.leadpony.justify.internal.keyword.applicator.Then;
-import org.leadpony.justify.internal.keyword.assertion.Const;
-import org.leadpony.justify.internal.keyword.assertion.Draft04Maximum;
-import org.leadpony.justify.internal.keyword.assertion.Draft04Minimum;
-import org.leadpony.justify.internal.keyword.assertion.Draft04Type;
-import org.leadpony.justify.internal.keyword.assertion.ExclusiveMaximum;
-import org.leadpony.justify.internal.keyword.assertion.ExclusiveMinimum;
-import org.leadpony.justify.internal.keyword.assertion.MaxItems;
-import org.leadpony.justify.internal.keyword.assertion.MaxLength;
-import org.leadpony.justify.internal.keyword.assertion.MaxProperties;
-import org.leadpony.justify.internal.keyword.assertion.Maximum;
-import org.leadpony.justify.internal.keyword.assertion.MinItems;
-import org.leadpony.justify.internal.keyword.assertion.MinLength;
-import org.leadpony.justify.internal.keyword.assertion.MinProperties;
-import org.leadpony.justify.internal.keyword.assertion.Minimum;
-import org.leadpony.justify.internal.keyword.assertion.MultipleOf;
-import org.leadpony.justify.internal.keyword.assertion.Pattern;
-import org.leadpony.justify.internal.keyword.assertion.Required;
-import org.leadpony.justify.internal.keyword.assertion.Type;
-import org.leadpony.justify.internal.keyword.assertion.UniqueItems;
 import org.leadpony.justify.internal.keyword.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.core.Comment;
@@ -73,6 +54,25 @@ import org.leadpony.justify.internal.keyword.core.LegacyId;
 import org.leadpony.justify.internal.keyword.core.Ref;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.keyword.format.Format;
+import org.leadpony.justify.internal.keyword.validation.Const;
+import org.leadpony.justify.internal.keyword.validation.Draft04Maximum;
+import org.leadpony.justify.internal.keyword.validation.Draft04Minimum;
+import org.leadpony.justify.internal.keyword.validation.Draft04Type;
+import org.leadpony.justify.internal.keyword.validation.ExclusiveMaximum;
+import org.leadpony.justify.internal.keyword.validation.ExclusiveMinimum;
+import org.leadpony.justify.internal.keyword.validation.MaxItems;
+import org.leadpony.justify.internal.keyword.validation.MaxLength;
+import org.leadpony.justify.internal.keyword.validation.MaxProperties;
+import org.leadpony.justify.internal.keyword.validation.Maximum;
+import org.leadpony.justify.internal.keyword.validation.MinItems;
+import org.leadpony.justify.internal.keyword.validation.MinLength;
+import org.leadpony.justify.internal.keyword.validation.MinProperties;
+import org.leadpony.justify.internal.keyword.validation.Minimum;
+import org.leadpony.justify.internal.keyword.validation.MultipleOf;
+import org.leadpony.justify.internal.keyword.validation.Pattern;
+import org.leadpony.justify.internal.keyword.validation.Required;
+import org.leadpony.justify.internal.keyword.validation.Type;
+import org.leadpony.justify.internal.keyword.validation.UniqueItems;
 
 /**
  * A factory of keywords defined by the specification.
@@ -107,7 +107,7 @@ class StandardKeywordFactory implements KeywordFactory {
             Draft04Minimum.ExclusiveMinimum.class,
             Draft04Type.class,
             Else.class,
-            org.leadpony.justify.internal.keyword.assertion.Enum.class,
+            org.leadpony.justify.internal.keyword.validation.Enum.class,
             ExclusiveMaximum.class,
             ExclusiveMinimum.class,
             Format.class,

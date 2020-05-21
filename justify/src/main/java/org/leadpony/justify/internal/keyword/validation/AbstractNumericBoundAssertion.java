@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;
+
+import java.math.BigDecimal;
 
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.Problem;
@@ -24,47 +26,49 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 /**
  * @author leadpony
  */
-abstract class AbstractStringLengthAssertion extends AbstractStringAssertion {
+abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
 
-    private final int limit;
-    private final Message message;
-    private final Message negatedMessage;
+    private final BigDecimal limit;
 
-    protected AbstractStringLengthAssertion(
-            JsonValue json, int limit, Message message, Message negatedMessage) {
+    /**
+     * Constructs this assertion.
+     *
+     * @param limit the lower or upper limit.
+     */
+    protected AbstractNumericBoundAssertion(JsonValue json, BigDecimal limit) {
         super(json);
         this.limit = limit;
-        this.message = message;
-        this.negatedMessage = negatedMessage;
     }
 
     @Override
-    protected boolean testValue(String value) {
-        return testLength(countCharsIn(value), this.limit);
-    }
-
-    @Override
-    protected Object toActualValue(String value) {
-        return countCharsIn(value);
+    protected boolean testValue(BigDecimal value) {
+        return testValue(value, this.limit);
     }
 
     @Override
     protected Problem createProblem(ProblemBuilder builder) {
-        return builder.withMessage(this.message)
-            .withParameter("limit", this.limit)
-            .build();
-    }
-
-    @Override
-    protected Problem createNegatedProblem(ProblemBuilder builder) {
-        return builder.withMessage(this.negatedMessage)
+        return builder.withMessage(getMessageForTest())
                 .withParameter("limit", this.limit)
                 .build();
     }
 
-    private static int countCharsIn(String value) {
-        return value.codePointCount(0, value.length());
+    @Override
+    protected Problem createNegatedProblem(ProblemBuilder builder) {
+        return builder.withMessage(getMessageForNegatedTest())
+                .withParameter("limit", this.limit)
+                .build();
     }
 
-    protected abstract boolean testLength(int actualLength, int limit);
+    /**
+     * Tests a value against the boundary.
+     *
+     * @param actual the value to test.
+     * @param limit the limit of the boundary.
+     * @return {@code true} if the value valid, {@code false} otherwise.
+     */
+    protected abstract boolean testValue(BigDecimal actual, BigDecimal limit);
+
+    protected abstract Message getMessageForTest();
+
+    protected abstract Message getMessageForNegatedTest();
 }

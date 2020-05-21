@@ -14,41 +14,42 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
-
-import java.math.BigDecimal;
-import java.util.EnumSet;
-import java.util.Set;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
- * An assertion on a value of numeric type.
+ * Assertion on values of string type.
  *
  * @author leadpony
  */
-abstract class AbstractNumericAssertion extends AbstractAssertionKeyword {
+abstract class AbstractStringAssertion extends AbstractAssertionKeyword {
 
-    private static final Set<InstanceType> SUPPORTED_TYPES = EnumSet.of(InstanceType.NUMBER, InstanceType.INTEGER);
+    private static final Set<InstanceType> SUPPORTED_TYPES = EnumSet.of(InstanceType.STRING);
 
-    protected AbstractNumericAssertion(JsonValue json) {
+    protected AbstractStringAssertion(JsonValue json) {
         super(json);
     }
 
     @Override
     public boolean supportsType(InstanceType type) {
-        return type.isNumeric();
+        return type == InstanceType.STRING;
     }
 
     @Override
@@ -58,15 +59,15 @@ abstract class AbstractNumericAssertion extends AbstractAssertionKeyword {
 
     @Override
     public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        BigDecimal value = context.getParser().getBigDecimal();
+        String value = context.getParser().getString();
         if (testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
         return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = newProblemBuilder()
-                        .withParameter("actual", value);
+                ProblemBuilder builder = newProblemBuilder();
+                buildProblem(builder, event, value);
                 dispatcher.dispatchProblem(createProblem(builder));
                 return Result.FALSE;
             }
@@ -75,22 +76,38 @@ abstract class AbstractNumericAssertion extends AbstractAssertionKeyword {
 
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        BigDecimal value = context.getParser().getBigDecimal();
+        String value = context.getParser().getString();
         if (!testValue(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
         return new AbstractKeywordAwareEvaluator(context, schema, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                ProblemBuilder builder = newProblemBuilder()
-                        .withParameter("actual", value);
+                ProblemBuilder builder = newProblemBuilder();
+                buildProblem(builder, event, value);
                 dispatcher.dispatchProblem(createNegatedProblem(builder));
                 return Result.FALSE;
             }
         };
     }
 
-    protected abstract boolean testValue(BigDecimal value);
+    public void buildProblem(ProblemBuilder builder, Event event, String actual) {
+        if (event == Event.KEY_NAME) {
+            builder.withParameter("subject", "key")
+                   .withParameter("localizedSubject", Message.STRING_KEY)
+                   .withParameter("actual", toActualValue(actual));
+        } else {
+            builder.withParameter("subject", "value")
+                   .withParameter("localizedSubject", Message.STRING_VALUE);
+        }
+        builder.withParameter("actual", toActualValue(actual));
+    }
+
+    protected abstract boolean testValue(String value);
+
+    protected Object toActualValue(String value) {
+        return value;
+    }
 
     protected abstract Problem createProblem(ProblemBuilder builder);
 

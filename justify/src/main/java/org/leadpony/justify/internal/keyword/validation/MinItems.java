@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -39,21 +39,21 @@ import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
- * Assertion specified with "maxItems" validation keyword.
+ * Assertion specified with "minItems" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("maxItems")
+@KeywordClass("minItems")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
+public class MinItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("maxItems", MaxItems::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minItems", MinItems::new);
 
     private final int limit;
 
-    public MaxItems(JsonValue json, int limit) {
+    public MinItems(JsonValue json, int limit) {
         super(json);
         this.limit = limit;
     }
@@ -70,7 +70,11 @@ public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluator
 
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        return new MinItems.AssertionEvaluator(context, schema, this, limit + 1);
+        if (limit > 0) {
+            return new MaxItems.AssertionEvaluator(context, schema, this, limit - 1);
+        } else {
+            return context.createAlwaysFalseEvaluator(schema);
+        }
     }
 
     /**
@@ -80,28 +84,30 @@ public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluator
      */
     static class AssertionEvaluator extends ShallowEvaluator {
 
-        private final int maxItems;
+        private final int minItems;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxItems) {
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int minItems) {
             super(context, schema, keyword);
-            this.maxItems = maxItems;
+            this.minItems = minItems;
         }
 
         @Override
         public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
                 if (ParserEvents.isValue(event)) {
-                    ++currentCount;
+                    if (++currentCount >= minItems) {
+                        return Result.TRUE;
+                    }
                 }
             } else if (depth == 0 && event == Event.END_ARRAY) {
-                if (currentCount <= maxItems) {
+                if (currentCount >= minItems) {
                     return Result.TRUE;
                 } else {
                     Problem p = newProblemBuilder()
-                            .withMessage(Message.INSTANCE_PROBLEM_MAXITEMS)
+                            .withMessage(Message.INSTANCE_PROBLEM_MINITEMS)
                             .withParameter("actual", currentCount)
-                            .withParameter("limit", maxItems)
+                            .withParameter("limit", minItems)
                             .build();
                     dispatcher.dispatchProblem(p);
                     return Result.FALSE;

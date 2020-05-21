@@ -65,24 +65,6 @@ import org.leadpony.justify.internal.keyword.applicator.PatternProperties;
 import org.leadpony.justify.internal.keyword.applicator.Properties;
 import org.leadpony.justify.internal.keyword.applicator.PropertyNames;
 import org.leadpony.justify.internal.keyword.applicator.Then;
-import org.leadpony.justify.internal.keyword.assertion.Const;
-import org.leadpony.justify.internal.keyword.assertion.Enum;
-import org.leadpony.justify.internal.keyword.assertion.ExclusiveMaximum;
-import org.leadpony.justify.internal.keyword.assertion.ExclusiveMinimum;
-import org.leadpony.justify.internal.keyword.assertion.MaxContains;
-import org.leadpony.justify.internal.keyword.assertion.MaxItems;
-import org.leadpony.justify.internal.keyword.assertion.MaxLength;
-import org.leadpony.justify.internal.keyword.assertion.MaxProperties;
-import org.leadpony.justify.internal.keyword.assertion.Maximum;
-import org.leadpony.justify.internal.keyword.assertion.MinContains;
-import org.leadpony.justify.internal.keyword.assertion.MinItems;
-import org.leadpony.justify.internal.keyword.assertion.MinLength;
-import org.leadpony.justify.internal.keyword.assertion.MinProperties;
-import org.leadpony.justify.internal.keyword.assertion.Minimum;
-import org.leadpony.justify.internal.keyword.assertion.MultipleOf;
-import org.leadpony.justify.internal.keyword.assertion.Required;
-import org.leadpony.justify.internal.keyword.assertion.Type;
-import org.leadpony.justify.internal.keyword.assertion.UniqueItems;
 import org.leadpony.justify.internal.keyword.content.ContentEncoding;
 import org.leadpony.justify.internal.keyword.content.ContentMediaType;
 import org.leadpony.justify.internal.keyword.content.UnknownContentEncoding;
@@ -93,6 +75,24 @@ import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.keyword.format.Format;
 import org.leadpony.justify.internal.keyword.format.RecognizedFormat;
+import org.leadpony.justify.internal.keyword.validation.Const;
+import org.leadpony.justify.internal.keyword.validation.Enum;
+import org.leadpony.justify.internal.keyword.validation.ExclusiveMaximum;
+import org.leadpony.justify.internal.keyword.validation.ExclusiveMinimum;
+import org.leadpony.justify.internal.keyword.validation.MaxContains;
+import org.leadpony.justify.internal.keyword.validation.MaxItems;
+import org.leadpony.justify.internal.keyword.validation.MaxLength;
+import org.leadpony.justify.internal.keyword.validation.MaxProperties;
+import org.leadpony.justify.internal.keyword.validation.Maximum;
+import org.leadpony.justify.internal.keyword.validation.MinContains;
+import org.leadpony.justify.internal.keyword.validation.MinItems;
+import org.leadpony.justify.internal.keyword.validation.MinLength;
+import org.leadpony.justify.internal.keyword.validation.MinProperties;
+import org.leadpony.justify.internal.keyword.validation.Minimum;
+import org.leadpony.justify.internal.keyword.validation.MultipleOf;
+import org.leadpony.justify.internal.keyword.validation.Required;
+import org.leadpony.justify.internal.keyword.validation.Type;
+import org.leadpony.justify.internal.keyword.validation.UniqueItems;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -276,7 +276,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         requireNonNull(pattern, "pattern");
         Pattern compiled = Pattern.compile(pattern);
         addKeyword(
-                new org.leadpony.justify.internal.keyword.assertion.Pattern(
+                new org.leadpony.justify.internal.keyword.validation.Pattern(
                         toJson(pattern), compiled));
         return this;
     }

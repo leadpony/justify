@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion;
+package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -38,21 +38,21 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
- * Assertion specified with "maxProperties" validation keyword.
+ * Assertion specified with "minProperties" validation keyword.
  *
  * @author leadpony
  */
-@KeywordClass("maxProperties")
+@KeywordClass("minProperties")
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MaxProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
+public class MinProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("maxProperties", MaxProperties::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minProperties", MinProperties::new);
 
     private final int limit;
 
-    public MaxProperties(JsonValue json, int limit) {
+    public MinProperties(JsonValue json, int limit) {
         super(json);
         this.limit = limit;
     }
@@ -69,7 +69,11 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectEva
 
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        return new MinProperties.AssertionEvaluator(context, schema, this, limit + 1);
+        if (limit > 0) {
+            return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
+        } else {
+            return context.createAlwaysFalseEvaluator(schema);
+        }
     }
 
     /**
@@ -79,28 +83,28 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectEva
      */
     static class AssertionEvaluator extends ShallowEvaluator {
 
-        private final int maxProperties;
+        private final int minProperties;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxProperties) {
+        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int minProperties) {
             super(context, schema, keyword);
-            this.maxProperties = maxProperties;
+            this.minProperties = minProperties;
         }
 
         @Override
         public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1) {
-                if (event == Event.KEY_NAME) {
-                    ++currentCount;
+                if (event == Event.KEY_NAME && ++currentCount >= minProperties) {
+                    return Result.TRUE;
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                if (currentCount <= maxProperties) {
+                if (currentCount >= minProperties) {
                     return Result.TRUE;
                 } else {
                     Problem p = newProblemBuilder()
-                            .withMessage(Message.INSTANCE_PROBLEM_MAXPROPERTIES)
+                            .withMessage(Message.INSTANCE_PROBLEM_MINPROPERTIES)
                             .withParameter("actual", currentCount)
-                            .withParameter("limit", maxProperties)
+                            .withParameter("limit", minProperties)
                             .build();
                     dispatcher.dispatchProblem(p);
                     return Result.FALSE;
