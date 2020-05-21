@@ -21,7 +21,7 @@ import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
@@ -31,16 +31,23 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
  */
 @KeywordClass("$comment")
 @Spec(SpecVersion.DRAFT_07)
-public class Comment extends AbstractMetadataKeyword<String> {
+public class Comment extends AbstractKeyword {
 
     public static final KeywordType TYPE = KeywordTypes.mappingString("$comment", Comment::new);
 
+    private final String value;
+
     public Comment(JsonValue json, String value) {
-        super(json, value);
+        super(json);
+        this.value = value;
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    public String value() {
+        return value;
     }
 }

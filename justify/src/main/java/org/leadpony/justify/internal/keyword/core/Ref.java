@@ -23,7 +23,7 @@ import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractMetadataKeyword;
+import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
@@ -35,16 +35,23 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Ref extends AbstractMetadataKeyword<URI> {
+public class Ref extends AbstractKeyword {
 
     public static final KeywordType TYPE = KeywordTypes.mappingUri("$ref", Ref::new);
 
+    private final URI value;
+
     public Ref(JsonValue json, URI value) {
-        super(json, value);
+        super(json);
+        this.value = value;
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    public URI value() {
+        return value;
     }
 }
