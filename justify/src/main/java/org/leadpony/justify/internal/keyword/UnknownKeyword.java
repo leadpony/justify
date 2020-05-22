@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,28 @@ package org.leadpony.justify.internal.keyword;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.KeywordType.CreationContext;
-
 /**
- * A factory of keywords.
+ * An unrecognized keyword.
  *
  * @author leadpony
  */
-public interface KeywordFactory {
+public class UnknownKeyword extends AbstractKeyword {
+
+    private final String name;
 
     /**
-     * Creates a keyword.
+     * Constructs this keyword.
      *
-     * @param name the name of the keyword to create never be {@code null}.
-     * @param value the value of the keyword, never be {@code null}.
-     * @param context the creation context never be {@code null}.
-     * @return newly created keyword, or {@code null}.
+     * @param name the name of this keyword.
+     * @param value the value of this keyword.
      */
-    Keyword createKeyword(String name, JsonValue value, CreationContext context);
+    public UnknownKeyword(String name, JsonValue value) {
+        super(value);
+        this.name = name;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
 }

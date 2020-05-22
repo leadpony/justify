@@ -16,8 +16,13 @@
 
 package org.leadpony.justify.internal.schema;
 
+import java.util.Map;
+
 import org.leadpony.justify.api.JsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.base.json.JsonService;
+import org.leadpony.justify.spi.ContentEncodingScheme;
+import org.leadpony.justify.spi.ContentMimeType;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link JsonSchemaBuilderFactory}.
@@ -27,17 +32,27 @@ import org.leadpony.justify.internal.base.json.JsonService;
 public class DefaultJsonSchemaBuilderFactory implements JsonSchemaBuilderFactory {
 
     private final JsonService jsonService;
-    private final SchemaSpec spec;
+    private final Map<String, FormatAttribute> formatAttributes;
+    private final Map<String, ContentEncodingScheme> encodingSchemes;
+    private final Map<String, ContentMimeType> mimeTypes;
+
 
     /**
      * Constructs this factory.
      *
-     * @param jsonService the JSON service.
-     * @param spec        the schema specification.
+     * @param jsonService      the JSON service.
+     * @param formatAttributes the value set for "format" keyword.
+     * @param encodingSchemes  the value set for "contentEncoding" keyword.
+     * @param mimeTypes        the value set for "contentMediaType" keyword.
      */
-    public DefaultJsonSchemaBuilderFactory(JsonService jsonService, SchemaSpec spec) {
+    public DefaultJsonSchemaBuilderFactory(JsonService jsonService,
+            Map<String, FormatAttribute> formatAttributes,
+            Map<String, ContentEncodingScheme> encodingSchemes,
+            Map<String, ContentMimeType> mimeTypes) {
         this.jsonService = jsonService;
-        this.spec = spec;
+        this.formatAttributes = formatAttributes;
+        this.encodingSchemes = encodingSchemes;
+        this.mimeTypes = mimeTypes;
     }
 
     /**
@@ -45,6 +60,9 @@ public class DefaultJsonSchemaBuilderFactory implements JsonSchemaBuilderFactory
      */
     @Override
     public DefaultJsonSchemaBuilder createBuilder() {
-        return new DefaultJsonSchemaBuilder(jsonService, spec);
+        return new DefaultJsonSchemaBuilder(jsonService,
+                formatAttributes,
+                encodingSchemes,
+                mimeTypes);
     }
 }

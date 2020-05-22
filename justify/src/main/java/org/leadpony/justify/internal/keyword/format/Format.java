@@ -19,17 +19,29 @@ package org.leadpony.justify.internal.keyword.format;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import jakarta.json.stream.JsonParser.Event;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
+import org.leadpony.justify.internal.keyword.UnknownKeyword;
+import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
@@ -43,20 +55,23 @@ import org.leadpony.justify.spi.FormatAttribute;
 @Spec(SpecVersion.DRAFT_07)
 public class Format extends AbstractAssertionKeyword {
 
+    /**
+     * A keyword type for "type" keyword.
+     *
+     * @author leadpony
+     */
     static class FormatType implements KeywordType {
 
         private final Map<String, FormatAttribute> attributeMap;
+        private final boolean strict;
 
         FormatType() {
-            this.attributeMap = Collections.emptyMap();
+            this(Collections.emptyMap(), false);
         }
 
-        FormatType(FormatAttribute[] attributes) {
-            Map<String, FormatAttribute> attributeMap = new HashMap<>();
-            for (FormatAttribute attribute : attributes) {
-                attributeMap.put(attribute.name(), attribute);
-            }
+        FormatType(Map<String, FormatAttribute> attributeMap, boolean strict) {
             this.attributeMap = attributeMap;
+            this.strict = strict;
         }
 
         @Override
@@ -66,28 +81,33 @@ public class Format extends AbstractAssertionKeyword {
 
         @Override
         public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Format.newInstance(jsonValue, context);
-        }
-    }
-
-    public static final KeywordType TYPE = new FormatType();
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.STRING) {
-            String name = ((JsonString) jsonValue).getString();
-            FormatAttribute attribute = context.getFormateAttribute(name);
-            if (attribute != null) {
-                return new RecognizedFormat(jsonValue, attribute);
+            if (jsonValue.getValueType() == ValueType.STRING) {
+                String name = ((JsonString) jsonValue).getString();
+                return createFormat(jsonValue, name);
             } else {
-                return new Format(jsonValue, name);
+                throw new IllegalArgumentException();
             }
-        } else {
-            throw new IllegalArgumentException();
+        }
+
+        private Keyword createFormat(JsonValue jsonValue, String name) {
+            FormatAttribute attribute = attributeMap.get(name);
+            if (attribute != null) {
+                return new Format(jsonValue, attribute);
+            } else if (strict) {
+                throw new UnknownFormatAttributeException(name);
+            } else {
+                return new UnknownKeyword(name(), jsonValue);
+            }
         }
     }
 
-    public Format(JsonValue json, String attribute) {
+    static final KeywordType TYPE = new FormatType();
+
+    private final FormatAttribute attribute;
+
+    public Format(JsonValue json, FormatAttribute attribute) {
         super(json);
+        this.attribute = attribute;
     }
 
     @Override
@@ -96,7 +116,69 @@ public class Format extends AbstractAssertionKeyword {
     }
 
     @Override
+    public boolean supportsType(InstanceType type) {
+        return type == attribute.valueType();
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(attribute.valueType());
+    }
+
+    @Override
     public boolean canEvaluate() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        JsonValue value = context.getParser().getValue();
+        if (test(value)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new FormatEvaluator(context, schema, this) {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = newProblemBuilder()
+                        .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
+                dispatcher.dispatchProblem(builder.build());
+                return Result.FALSE;
+            }
+        };
+    }
+
+    @Override
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        JsonValue value = context.getParser().getValue();
+        if (!test(value)) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+        return new FormatEvaluator(context, schema, this) {
+            @Override
+            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                ProblemBuilder builder = newProblemBuilder()
+                        .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
+                dispatcher.dispatchProblem(builder.build());
+                return Result.FALSE;
+            }
+        };
+    }
+
+    private boolean test(JsonValue value) {
+        return attribute.test(value);
+    }
+
+    abstract class FormatEvaluator extends AbstractKeywordAwareEvaluator {
+
+        FormatEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+            super(context, schema, keyword);
+        }
+
+        @Override
+        protected ProblemBuilder newProblemBuilder() {
+            return super.newProblemBuilder()
+                .withParameter("attribute", attribute.name())
+                .withParameter("localizedAttribute", attribute.localizedName());
+        }
     }
 }

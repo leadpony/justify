@@ -16,12 +16,19 @@
 package org.leadpony.justify.internal.keyword.content;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValuesLoader;
+import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.spi.ContentEncodingScheme;
+import org.leadpony.justify.spi.ContentMimeType;
 
 /**
  * @author leadpony
@@ -45,10 +52,33 @@ public enum ContentVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
-        List<KeywordType> types = new ArrayList<>();
-        types.add(ContentEncoding.TYPE);
-        types.add(ContentMediaType.TYPE);
-        return types;
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
+        return Arrays.asList(
+                createContentEncoding(valueSetLoader),
+                createContentMediaType(valueSetLoader));
+    }
+
+    public Map<String, ContentEncodingScheme> getEncodingSchemes(KeywordValueSetLoader valueSetLoader) {
+        return Stream
+                .concat(Stream.of(Base64.INSTANCE),
+                        valueSetLoader.loadKeywordValueSet(ContentEncodingScheme.class).stream())
+                .collect(Collectors.toMap(ContentEncodingScheme::name, Function.identity()));
+    }
+
+    public Map<String, ContentMimeType> getMimeTypes(KeywordValueSetLoader valueSetLoader) {
+        return Stream
+                .concat(Stream.of(JsonMimeType.INSTANCE),
+                        valueSetLoader.loadKeywordValueSet(ContentMimeType.class).stream())
+                .collect(Collectors.toMap(ContentMimeType::toString, Function.identity()));
+    }
+
+    private static KeywordType createContentEncoding(KeywordValueSetLoader valueSetLoader) {
+        Collection<ContentEncodingScheme> additional = valueSetLoader.loadKeywordValueSet(ContentEncodingScheme.class);
+        return ContentEncoding.TYPE.withSchemes(additional);
+    }
+
+    private static KeywordType createContentMediaType(KeywordValueSetLoader valueSetLoader) {
+        Collection<ContentMimeType> additional = valueSetLoader.loadKeywordValueSet(ContentMimeType.class);
+        return ContentMediaType.TYPE.withMimeTypes(additional);
     }
 }

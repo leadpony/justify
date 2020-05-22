@@ -47,6 +47,7 @@ import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
+import org.leadpony.justify.internal.keyword.UnknownKeyword;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalItems;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalProperties;
 import org.leadpony.justify.internal.keyword.applicator.AllOf;
@@ -71,7 +72,6 @@ import org.leadpony.justify.internal.keyword.core.Definitions;
 import org.leadpony.justify.internal.keyword.core.Id;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.keyword.format.Format;
-import org.leadpony.justify.internal.keyword.format.RecognizedFormat;
 import org.leadpony.justify.internal.keyword.metadata.Default;
 import org.leadpony.justify.internal.keyword.metadata.Description;
 import org.leadpony.justify.internal.keyword.metadata.Title;
@@ -110,7 +110,10 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     private final JsonBuilderFactory jsonFactory;
     private final JsonObjectBuilder objectBuilder;
 
-    private final SchemaSpec spec;
+    private final Map<String, FormatAttribute> formatAttributes;
+    private final Map<String, ContentEncodingScheme> encodingSchemes;
+    private final Map<String, ContentMimeType> mimeTypes;
+
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
     private URI id;
 
@@ -119,15 +122,22 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     /**
      * Constructs this builder.
      *
-     * @param jsonService the JSON service.
-     * @param spec        the schema specification.
+     * @param jsonService      the JSON service.
+     * @param formatAttributes the value set for "format" keyword.
+     * @param encodingSchemes  the value set for "contentEncoding" keyword.
+     * @param mimeTypes        the value set for "contentMediaType" keyword.
      */
-    DefaultJsonSchemaBuilder(JsonService jsonService, SchemaSpec spec) {
+    DefaultJsonSchemaBuilder(JsonService jsonService,
+            Map<String, FormatAttribute> formatAttributes,
+            Map<String, ContentEncodingScheme> encodingSchemes,
+            Map<String, ContentMimeType> mimeTypes) {
         this.jsonService = jsonService;
         this.jsonProvider = jsonService.getJsonProvider();
         this.jsonFactory = jsonService.getJsonBuilderFactory();
         this.objectBuilder = this.jsonFactory.createObjectBuilder();
-        this.spec = spec;
+        this.formatAttributes = formatAttributes;
+        this.encodingSchemes = encodingSchemes;
+        this.mimeTypes = mimeTypes;
     }
 
     /* As a JsonSchemaBuilder */
@@ -551,10 +561,9 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withFormat(String attribute) {
         requireNonNull(attribute, "attribute");
-        FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
+        FormatAttribute foundAttribute = formatAttributes.get(attribute);
         if (foundAttribute != null) {
-            Format format = new RecognizedFormat(
-                    toJson(attribute), foundAttribute);
+            Format format = new Format(toJson(attribute), foundAttribute);
             addKeyword(format);
         } else {
             throw new IllegalArgumentException("\"" + attribute + "\" is not recognized as a format attribute.");
@@ -565,13 +574,12 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withLaxFormat(String attribute) {
         requireNonNull(attribute, "attribute");
-        Format format = null;
-        FormatAttribute foundAttribute = spec.getFormatAttribute(attribute);
+        Keyword format = null;
+        FormatAttribute foundAttribute = formatAttributes.get(attribute);
         if (foundAttribute != null) {
-            format = new RecognizedFormat(
-                    toJson(attribute), foundAttribute);
+            format = new Format(toJson(attribute), foundAttribute);
         } else {
-            format = new Format(toJson(attribute), attribute);
+            format = new UnknownKeyword("format", toJson(attribute));
         }
         addKeyword(format);
         return this;
@@ -581,7 +589,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withContentEncoding(String value) {
         requireNonNull(value, "value");
         JsonValue json = toJson(value);
-        ContentEncodingScheme scheme = spec.getEncodingScheme(value);
+        ContentEncodingScheme scheme = encodingSchemes.get(value);
         if (scheme != null) {
             addKeyword(new ContentEncoding(json, scheme));
         } else {
@@ -596,7 +604,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         JsonValue json = toJson(value);
         MediaType mediaType = MediaType.valueOf(value);
         String mimeType = mediaType.mimeType();
-        ContentMimeType foundMimeType = spec.getMimeType(mimeType);
+        ContentMimeType foundMimeType = mimeTypes.get(mimeType);
         if (foundMimeType != null) {
             addKeyword(new ContentMediaType(json, foundMimeType, mediaType.parameters()));
         } else {

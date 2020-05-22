@@ -15,7 +15,10 @@
  */
 package org.leadpony.justify.internal.keyword.content;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,7 +56,26 @@ import org.leadpony.justify.spi.ContentMimeType;
 @Spec(SpecVersion.DRAFT_07)
 public class ContentMediaType extends AbstractAssertionKeyword {
 
-    public static final KeywordType TYPE = new KeywordType() {
+    static class ContentMediaTypeType implements KeywordType {
+
+        private final Map<String, ContentMimeType> mimeTypes;
+
+        ContentMediaTypeType(ContentMimeType... mimeTypes) {
+            this(toMap(new HashMap<>(), Arrays.asList(mimeTypes)));
+        }
+
+        private ContentMediaTypeType(Map<String, ContentMimeType> mimeTypes) {
+            this.mimeTypes = mimeTypes;
+        }
+
+        ContentMediaTypeType withMimeTypes(Collection<ContentMimeType> mimeTypes) {
+            if (mimeTypes.isEmpty()) {
+                return this;
+            } else {
+                Map<String, ContentMimeType> newMap = toMap(new HashMap<>(this.mimeTypes), mimeTypes);
+                return new ContentMediaTypeType(newMap);
+            }
+        }
 
         @Override
         public String name() {
@@ -62,21 +84,18 @@ public class ContentMediaType extends AbstractAssertionKeyword {
 
         @Override
         public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return ContentMediaType.newInstance(jsonValue, context);
+            if (jsonValue.getValueType() == ValueType.STRING) {
+                final String name = ((JsonString) jsonValue).getString();
+                return createKeyword(jsonValue, name);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
-    };
 
-    private final ContentMimeType mimeType;
-    private final Map<String, String> parameters;
-    private ContentEncodingScheme encodingScheme;
-    private boolean unknownEncodingScheme;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.STRING) {
-            final String name = ((JsonString) jsonValue).getString();
+        private Keyword createKeyword(JsonValue jsonValue, String name) {
             try {
                 MediaType mediaType = MediaType.valueOf(name);
-                ContentMimeType mimeType = context.getMimeType(mediaType.mimeType());
+                ContentMimeType mimeType = mimeTypes.get(mediaType.mimeType());
                 if (mimeType != null) {
                     return new ContentMediaType(jsonValue, mimeType, mediaType.parameters());
                 } else {
@@ -85,10 +104,23 @@ public class ContentMediaType extends AbstractAssertionKeyword {
             } catch (IllegalArgumentException e) {
                 return new UnknownContentMediaType(jsonValue, name);
             }
-        } else {
-            throw new IllegalArgumentException();
+        }
+
+        private static Map<String, ContentMimeType> toMap(Map<String, ContentMimeType> map,
+                Collection<ContentMimeType> mimeTypes) {
+            for (ContentMimeType mimeType : mimeTypes) {
+                map.put(mimeType.toString().toLowerCase(), mimeType);
+            }
+            return map;
         }
     }
+
+    static final ContentMediaTypeType TYPE = new ContentMediaTypeType(JsonMimeType.INSTANCE);
+
+    private final ContentMimeType mimeType;
+    private final Map<String, String> parameters;
+    private ContentEncodingScheme encodingScheme;
+    private boolean unknownEncodingScheme;
 
     /**
      * Constructs this media type.

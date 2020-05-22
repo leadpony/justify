@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword;
-
-import jakarta.json.JsonValue;
+package org.leadpony.justify.internal.keyword.format;
 
 /**
- * An unrecognized keyword.
+ * An exception thrown if a format attribute cannot be recognized.
  *
  * @author leadpony
  */
-public class Unknown extends AbstractKeyword {
+public final class UnknownFormatAttributeException extends IllegalArgumentException {
 
-    private final String name;
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructs this keyword.
-     *
-     * @param name the name of this keyword.
-     * @param value the value of this keyword.
-     */
-    public Unknown(String name, JsonValue value) {
-        super(value);
-        this.name = name;
+    private final String attributeName;
+
+    UnknownFormatAttributeException(String attributeName) {
+        this.attributeName = attributeName;
     }
 
-    @Override
-    public String name() {
-        return name;
+    public String getAttributeName() {
+        return attributeName;
     }
 }

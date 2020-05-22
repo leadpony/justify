@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import jakarta.json.JsonException;
 import jakarta.json.stream.JsonParser;
@@ -39,6 +41,8 @@ import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.JsonSchemaReaderFactory;
 import org.leadpony.justify.api.JsonSchemaReaderFactoryBuilder;
 import org.leadpony.justify.api.JsonSchemaResolver;
+import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ResettableInputStream;
@@ -48,7 +52,6 @@ import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
 import org.leadpony.justify.internal.schema.SchemaSpec;
-import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
@@ -60,22 +63,25 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
 
     private final JsonService jsonService;
     protected final JsonParserFactory jsonParserFactory;
+    private final KeywordValueSetLoader keywordValuesLoader;
 
-    private final SchemaSpecRegistry specRegistry;
+    private final SchemaCatalog catalog;
     protected final SpecVersion defaultVersion;
     private final JsonSchema metaschema;
     private final Map<String, Object> config;
 
     public static JsonSchemaReaderFactoryBuilder builder(
             JsonService jsonService,
-            SchemaSpecRegistry specRegistry) {
-        return new Builder(jsonService, specRegistry);
+            KeywordValueSetLoader keywordValuesLoader,
+            SchemaCatalog catalog) {
+        return new Builder(jsonService, keywordValuesLoader, catalog);
     }
 
     protected JsonSchemaReaderFactoryImpl(Builder builder) {
         this.jsonService = builder.jsonService;
         this.jsonParserFactory = this.jsonService.getJsonParserFactory();
-        this.specRegistry = builder.specRegistry;
+        this.keywordValuesLoader = builder.keywordValuesLoader;
+        this.catalog = builder.catalog;
         this.config = builder.getConfigAsMap();
         this.defaultVersion = (SpecVersion) this.config.get(JsonSchemaReader.DEFAULT_SPEC_VERSION);
         this.metaschema = (JsonSchema) this.config.get(JsonSchemaReader.METASCHEMA);
@@ -133,9 +139,7 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
      * @return the instance of {@link SchemaSpec}
      */
     protected SchemaSpec getSpec(SpecVersion version) {
-        return specRegistry.getSpec(
-                version,
-                testOption(JsonSchemaReader.CUSTOM_FORMATS));
+        return SchemaSpec.get(version);
     }
 
     private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
@@ -151,8 +155,13 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
         if (this.metaschema != null) {
             return metaschema;
         }
-        SchemaCatalog catalog = specRegistry.getMetaschemaCatalog();
         return catalog.resolveSchema(spec.getVersion().id());
+    }
+
+    private Map<String, KeywordType> buildKeywordMap(SchemaSpec spec) {
+        return spec.getVocabularies().stream()
+            .flatMap(v -> v.getKeywordTypes(this.config, this.keywordValuesLoader).stream())
+            .collect(Collectors.toMap(KeywordType::name, Function.identity()));
     }
 
     /**
@@ -164,8 +173,7 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
      */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
         PointerAwareJsonParser parser = createParser(realParser, spec);
-        return new JsonSchemaReaderImpl(
-                parser, jsonService, spec, config);
+        return new JsonSchemaReaderImpl(parser, jsonService, buildKeywordMap(spec), config);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
@@ -248,13 +256,16 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
     private static final class Builder implements JsonSchemaReaderFactoryBuilder {
 
         private final JsonService jsonService;
-        private final SchemaSpecRegistry specRegistry;
+        private final KeywordValueSetLoader keywordValuesLoader;
+        private final SchemaCatalog catalog;
 
         private Map<String, Object> properties;
 
-        private Builder(JsonService jsonService, SchemaSpecRegistry specRegistry) {
+        private Builder(JsonService jsonService, KeywordValueSetLoader keywordValuesLoader,
+                SchemaCatalog catalog) {
             this.jsonService = jsonService;
-            this.specRegistry = specRegistry;
+            this.keywordValuesLoader = keywordValuesLoader;
+            this.catalog = catalog;
         }
 
         Map<String, Object> getConfigAsMap() {
@@ -349,7 +360,7 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
             props.put(JsonSchemaReader.SPEC_VERSION_DETECTION, true);
 
             List<JsonSchemaResolver> resolvers = new ArrayList<>();
-            resolvers.add(specRegistry.getMetaschemaCatalog());
+            resolvers.add(this.catalog);
             props.put(JsonSchemaReader.RESOLVERS, resolvers);
 
             return props;

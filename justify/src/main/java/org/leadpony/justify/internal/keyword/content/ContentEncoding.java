@@ -15,9 +15,12 @@
  */
 package org.leadpony.justify.internal.keyword.content;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -50,7 +53,26 @@ import org.leadpony.justify.spi.ContentEncodingScheme;
 @Spec(SpecVersion.DRAFT_07)
 public class ContentEncoding extends AbstractAssertionKeyword {
 
-    public static final KeywordType TYPE = new KeywordType() {
+    static class ContentEncodingType implements KeywordType {
+
+        private final Map<String, ContentEncodingScheme> schemes;
+
+        ContentEncodingType(ContentEncodingScheme... schemes) {
+            this(toMap(new HashMap<>(), Arrays.asList(schemes)));
+        }
+
+        private ContentEncodingType(Map<String, ContentEncodingScheme> schemes) {
+            this.schemes = schemes;
+        }
+
+        ContentEncodingType withSchemes(Collection<ContentEncodingScheme> schemes) {
+            if (schemes.isEmpty()) {
+                return this;
+            } else {
+                Map<String, ContentEncodingScheme> newMap = toMap(new HashMap<>(this.schemes), schemes);
+                return new ContentEncodingType(newMap);
+            }
+        }
 
         @Override
         public String name() {
@@ -59,30 +81,40 @@ public class ContentEncoding extends AbstractAssertionKeyword {
 
         @Override
         public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return ContentEncoding.newInstance(jsonValue, context);
+            if (jsonValue.getValueType() == ValueType.STRING) {
+                final String name = ((JsonString) jsonValue).getString();
+                return createKeyword(jsonValue, name);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
-    };
 
-    private final ContentEncodingScheme scheme;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.STRING) {
-            final String name = ((JsonString) jsonValue).getString();
-            ContentEncodingScheme scheme = context.getEncodingScheme(name);
+        private Keyword createKeyword(JsonValue jsonValue, String name) {
+            ContentEncodingScheme scheme = schemes.get(name);
             if (scheme != null) {
                 return new ContentEncoding(jsonValue, scheme);
             } else {
                 return new UnknownContentEncoding(jsonValue, name);
             }
-        } else {
-            throw new IllegalArgumentException();
+        }
+
+        private static Map<String, ContentEncodingScheme> toMap(Map<String, ContentEncodingScheme> map,
+                Collection<ContentEncodingScheme> schemes) {
+            for (ContentEncodingScheme scheme : schemes) {
+                map.put(scheme.name().toLowerCase(), scheme);
+            }
+            return map;
         }
     }
+
+    static final ContentEncodingType TYPE = new ContentEncodingType(Base64.INSTANCE);
+
+    private final ContentEncodingScheme scheme;
 
     /**
      * Constructs this encoding.
      *
-     * @param json the original JSON value.
+     * @param json   the original JSON value.
      * @param scheme the scheme of this encoding.
      */
     public ContentEncoding(JsonValue json, ContentEncodingScheme scheme) {

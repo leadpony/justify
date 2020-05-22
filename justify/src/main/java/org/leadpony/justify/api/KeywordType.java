@@ -15,10 +15,6 @@
  */
 package org.leadpony.justify.api;
 
-import org.leadpony.justify.spi.ContentEncodingScheme;
-import org.leadpony.justify.spi.ContentMimeType;
-import org.leadpony.justify.spi.FormatAttribute;
-
 import jakarta.json.JsonValue;
 
 /**
@@ -60,29 +56,5 @@ public interface KeywordType {
          *                                  schema.
          */
         JsonSchema asJsonSchema(JsonValue value);
-
-        /**
-         * Returns the format attribute of the specified name.
-         *
-         * @param name the name of the format attribute.
-         * @return the format attribute if found, or {@code null} if not found.
-         */
-        FormatAttribute getFormateAttribute(String name);
-
-        /**
-         * Returns the encoding scheme of the specified name.
-         *
-         * @param name the name of the encoding scheme.
-         * @return the encoding scheme.
-         */
-        ContentEncodingScheme getEncodingScheme(String name);
-
-        /**
-         * Returns the MIME type of the specified value.
-         *
-         * @param value the value of the MIME type.
-         * @return the MIME type.
-         */
-        ContentMimeType getMimeType(String value);
     }
 }

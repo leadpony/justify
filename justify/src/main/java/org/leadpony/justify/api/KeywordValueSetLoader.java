@@ -15,14 +15,32 @@
  */
 package org.leadpony.justify.api;
 
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * A loader of the limited keyword values.
+ * A loader of the limited keyword value set.
  *
  * @author leadpony
  */
-public interface KeywordValuesLoader {
+public interface KeywordValueSetLoader {
 
-    <T> Stream<T> loadKeywordValues(Class<T> type);
+    /**
+     * Loads the value set of the specified type.
+     *
+     * @param <T> the type of the value.
+     * @param type the class of the value.
+     * @return loaded set of values.
+     */
+    <T> Set<T> loadKeywordValueSet(Class<T> type);
+
+    /**
+     * A loader which will loads nothing.
+     */
+    KeywordValueSetLoader NEVER = new KeywordValueSetLoader() {
+        @Override
+        public <T> Set<T> loadKeywordValueSet(Class<T> type) {
+            return Collections.emptySet();
+        }
+    };
 }

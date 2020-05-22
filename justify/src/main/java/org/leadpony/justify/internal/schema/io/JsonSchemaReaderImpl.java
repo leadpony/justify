@@ -17,6 +17,7 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -42,19 +43,16 @@ import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.IdKeyword;
-import org.leadpony.justify.internal.keyword.KeywordFactory;
 import org.leadpony.justify.internal.keyword.Referenceable;
-import org.leadpony.justify.internal.keyword.Unknown;
+import org.leadpony.justify.internal.keyword.UnknownKeyword;
 import org.leadpony.justify.internal.keyword.core.Ref;
+import org.leadpony.justify.internal.keyword.format.UnknownFormatAttributeException;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.BasicJsonSchema;
 import org.leadpony.justify.internal.schema.Resolvable;
 import org.leadpony.justify.internal.schema.SchemaReference;
 import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.validator.JsonValidator;
-import org.leadpony.justify.spi.ContentEncodingScheme;
-import org.leadpony.justify.spi.ContentMimeType;
-import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * @author leadpony
@@ -64,8 +62,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
 
     private final PointerAwareJsonParser parser;
     private final JsonService jsonService;
-    private final SchemaSpec spec;
-    private final KeywordFactory keywordFactory;
+    private final Map<String, KeywordType> keywordTypeMap;
 
     private final Map<JsonObject, Reference> referencingObjects = new IdentityHashMap<>();
     // schemas having $id keyword.
@@ -77,14 +74,20 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
     public JsonSchemaReaderImpl(
             PointerAwareJsonParser parser,
             JsonService jsonService,
-            SchemaSpec spec,
+            SchemaSpec spec) {
+        this(parser, jsonService, spec.getBareKeywordTypes(), Collections.emptyMap());
+    }
+
+    public JsonSchemaReaderImpl(
+            PointerAwareJsonParser parser,
+            JsonService jsonService,
+            Map<String, KeywordType> keywordTypeMap,
             Map<String, Object> config) {
         super(config);
 
         this.parser = parser;
         this.jsonService = jsonService;
-        this.spec = spec;
-        this.keywordFactory = spec.getKeywordFactory();
+        this.keywordTypeMap = keywordTypeMap;
 
         if (parser instanceof JsonValidator) {
             ((JsonValidator) parser).withHandler(this);
@@ -129,38 +132,6 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
             throw new IllegalArgumentException();
         }
         return schema;
-    }
-
-    @Override
-    public FormatAttribute getFormateAttribute(String name) {
-        FormatAttribute attribute = spec.getFormatAttribute(name);
-        if (attribute == null && isStrictWithFormats()) {
-            addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
-                    .withParameter("attribute", name));
-        }
-        return attribute;
-    }
-
-    /**
-     * Returns the encoding scheme of the specified name.
-     *
-     * @param name the name of the encoding scheme.
-     * @return the encoding scheme.
-     */
-    @Override
-    public ContentEncodingScheme getEncodingScheme(String name) {
-        return spec.getEncodingScheme(name);
-    }
-
-    /**
-     * Returns the MIME type of the specified value.
-     *
-     * @param value the value of the MIME type.
-     * @return the MIME type.
-     */
-    @Override
-    public ContentMimeType getMimeType(String value) {
-        return spec.getMimeType(value);
     }
 
     /* */
@@ -275,11 +246,19 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
     }
 
     private Keyword createKeyword(String name, JsonValue value, boolean lax) {
-        Keyword keyword = keywordFactory.createKeyword(name, value, this);
-        if (keyword == null) {
-            keyword = createUnknownKeyword(name, value, lax);
+        KeywordType type = keywordTypeMap.get(name);
+        if (type != null) {
+            try {
+                return type.newInstance(value, this);
+            } catch (UnknownFormatAttributeException e) {
+                addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
+                        .withParameter("attribute", e.getAttributeName()));
+                return createUnknownKeyword(name, value, true);
+            } catch (IllegalArgumentException e) {
+                // Ignores the exception
+            }
         }
-        return keyword;
+        return createUnknownKeyword(name, value, lax);
     }
 
     private Keyword createUnknownKeyword(String name, JsonValue value, boolean lax) {
@@ -295,7 +274,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
         case FALSE:
             return new Referenceable(name, parseSchema(value, true));
         default:
-            return new Unknown(name, value);
+            return new UnknownKeyword(name, value);
         }
     }
 

@@ -37,9 +37,9 @@ public interface Vocabulary {
     /**
      * Returns all keywords defined in this vocabulary.
      *
-     * @param config
-     * @param valuesLoader
+     * @param config the configiration properties given to the schema reader.
+     * @param valueSetLoader the loader of keyword value sets.
      * @return the collection of keywords, never be {@code null}.
      */
-    Collection<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader);
+    Collection<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader);
 }

@@ -17,11 +17,15 @@ package org.leadpony.justify.internal.keyword.format;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValuesLoader;
+import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.api.Vocabulary;
 import org.leadpony.justify.internal.keyword.format.Format.FormatType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -37,8 +41,7 @@ public enum FormatVocabulary implements Vocabulary {
             Ipv4.INSTANCE,
             Ipv6.INSTANCE,
             Regex.INSTANCE,
-            Uri.INSTANCE
-            ),
+            Uri.INSTANCE),
 
     DRAFT_06("",
             DateTime.INSTANCE,
@@ -50,8 +53,7 @@ public enum FormatVocabulary implements Vocabulary {
             Regex.INSTANCE,
             Uri.INSTANCE,
             UriReference.INSTANCE,
-            UriTemplate.INSTANCE
-            ),
+            UriTemplate.INSTANCE),
 
     DRAFT_07("",
             Date.INSTANCE,
@@ -70,15 +72,18 @@ public enum FormatVocabulary implements Vocabulary {
             Time.INSTANCE,
             Uri.INSTANCE,
             UriReference.INSTANCE,
-            UriTemplate.INSTANCE
-            );
+            UriTemplate.INSTANCE);
 
     private final URI id;
-    private final List<KeywordType> defaultTypes;
+    private final Map<String, FormatAttribute> defaultAttributs;
+    private final FormatType defaultFormatType;
+    private final FormatType defaultStrictFormatType;
 
     FormatVocabulary(String id, FormatAttribute... attributes) {
         this.id = URI.create(id);
-        this.defaultTypes = Arrays.asList(new FormatType(attributes));
+        this.defaultAttributs = buildMap(new HashMap<>(), Arrays.asList(attributes));
+        this.defaultFormatType = new FormatType(defaultAttributs, false);
+        this.defaultStrictFormatType = new FormatType(defaultAttributs, true);
     }
 
     @Override
@@ -87,7 +92,39 @@ public enum FormatVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
-        return this.defaultTypes;
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
+        return Arrays.asList(createFormatType(config, valueSetLoader));
+    }
+
+    public Map<String, FormatAttribute> getDefaultFormatAttributes() {
+        return defaultAttributs;
+    }
+
+    private KeywordType createFormatType(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
+        final boolean strict = testStrictFormats(config);
+        if (testCustomFormats(config)) {
+            Collection<FormatAttribute> attributes = valueSetLoader.loadKeywordValueSet(FormatAttribute.class);
+            if (!attributes.isEmpty()) {
+                Map<String, FormatAttribute> map = buildMap(new HashMap<>(defaultAttributs), attributes);
+                return new FormatType(map, strict);
+            }
+        }
+        return strict ? defaultStrictFormatType : defaultFormatType;
+    }
+
+    private static Map<String, FormatAttribute> buildMap(Map<String, FormatAttribute> map,
+            Collection<FormatAttribute> attributes) {
+        for (FormatAttribute attribute : attributes) {
+            map.put(attribute.name(), attribute);
+        }
+        return Collections.unmodifiableMap(map);
+    }
+
+    private static boolean testCustomFormats(Map<String, Object> config) {
+        return config.get(JsonSchemaReader.CUSTOM_FORMATS) == Boolean.TRUE;
+    }
+
+    private static boolean testStrictFormats(Map<String, Object> config) {
+        return config.get(JsonSchemaReader.STRICT_FORMATS) == Boolean.TRUE;
     }
 }

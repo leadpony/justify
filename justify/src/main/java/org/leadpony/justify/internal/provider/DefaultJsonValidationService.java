@@ -25,16 +25,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import jakarta.json.JsonException;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
@@ -51,13 +49,14 @@ import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
-import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.ValidationConfig;
-import org.leadpony.justify.api.KeywordValuesLoader;
+import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.internal.keyword.content.ContentVocabulary;
+import org.leadpony.justify.internal.keyword.format.FormatVocabulary;
 import org.leadpony.justify.internal.base.json.DefaultJsonReader;
 import org.leadpony.justify.internal.base.json.DefaultJsonReaderFactory;
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
@@ -65,23 +64,27 @@ import org.leadpony.justify.internal.problem.DefaultProblemPrinterBuilder;
 import org.leadpony.justify.internal.schema.DefaultJsonSchemaBuilderFactory;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
 import org.leadpony.justify.internal.schema.SchemaSpec;
-import org.leadpony.justify.internal.schema.SchemaSpecRegistry;
 import org.leadpony.justify.internal.schema.io.JsonSchemaReaderFactoryImpl;
 import org.leadpony.justify.internal.schema.io.JsonSchemaReaderImpl;
 import org.leadpony.justify.internal.validator.DefaultValidationConfig;
 import org.leadpony.justify.internal.validator.JsonValidator;
 import org.leadpony.justify.internal.validator.JsonValidatorFactory;
+import org.leadpony.justify.spi.ContentEncodingScheme;
+import org.leadpony.justify.spi.ContentMimeType;
+import org.leadpony.justify.spi.FormatAttribute;
 
 /**
  * The default implementation of {@link JsonValidationService}.
  *
  * @author leadpony
  */
-class DefaultJsonValidationService extends JsonService implements JsonValidationService, KeywordValuesLoader {
+class DefaultJsonValidationService extends JsonService implements JsonValidationService, KeywordValueSetLoader {
 
     private final SchemaCatalog schemaCatalog;
-    private final SchemaSpecRegistry specRegistry;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
+    private final Map<Class<?>, Set<?>> keywordValuesCache = new HashMap<>();
+
+    private JsonSchemaBuilderFactory schemaBuilderFactory;
 
     /**
      * Constructs this object.
@@ -93,7 +96,6 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     DefaultJsonValidationService(JsonProvider jsonProvider) {
         super(jsonProvider);
         this.schemaCatalog = createSchemaCatalog();
-        this.specRegistry = DefaultSchemaSpecRegistry.load(this.schemaCatalog);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
     }
 
@@ -111,7 +113,7 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      * {@inheritDoc}
      */
     public JsonSchemaReaderFactoryBuilder createSchemaReaderFactoryBuilder() {
-        return JsonSchemaReaderFactoryImpl.builder(this, specRegistry);
+        return JsonSchemaReaderFactoryImpl.builder(this, this, this.schemaCatalog);
     }
 
     /**
@@ -159,7 +161,10 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
      */
     @Override
     public JsonSchemaBuilderFactory createSchemaBuilderFactory() {
-        return createDefaultSchemaBuilderFactory();
+        if (schemaBuilderFactory == null) {
+            schemaBuilderFactory = createDefaultSchemaBuilderFactory();
+        }
+        return schemaBuilderFactory;
     }
 
     /**
@@ -195,10 +200,10 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
         requireNonNull(handlerFactory, "handlerFactory");
         return createParserFactory(
                 createValidationConfig()
-                    .withProperties(config)
-                    .withSchema(schema)
-                    .withProblemHandlerFactory(handlerFactory)
-                    .getAsMap());
+                        .withProperties(config)
+                        .withSchema(schema)
+                        .withProblemHandlerFactory(handlerFactory)
+                        .getAsMap());
     }
 
     /**
@@ -293,10 +298,10 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
         requireNonNull(handlerFactory, "handlerFactory");
         return createReaderFactory(
                 createValidationConfig()
-                    .withProperties(config)
-                    .withSchema(schema)
-                    .withProblemHandlerFactory(handlerFactory)
-                    .getAsMap());
+                        .withProperties(config)
+                        .withSchema(schema)
+                        .withProblemHandlerFactory(handlerFactory)
+                        .getAsMap());
     }
 
     /**
@@ -384,20 +389,25 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     /* As a KeywordValuesLoader */
 
     @Override
-    public <T> Stream<T> loadKeywordValues(Class<T> type) {
-        List<T> values = new ArrayList<>();
+    public <T> Set<T> loadKeywordValueSet(Class<T> type) {
+        if (keywordValuesCache.containsKey(type)) {
+            @SuppressWarnings("unchecked")
+            Set<T> values = (Set<T>) keywordValuesCache.get(type);
+            return values;
+        }
+        Set<T> values = new HashSet<>();
         for (T value : ServiceLoader.load(type)) {
             values.add(value);
         }
-        // TODO
-        return values.stream();
+        keywordValuesCache.put(type, values);
+        return values;
     }
 
     /* */
 
     private SchemaCatalog createSchemaCatalog() {
         SchemaCatalog catalog = new SchemaCatalog();
-        for (SchemaSpec spec : StandardSchemaSpec.values()) {
+        for (SchemaSpec spec : SchemaSpec.values()) {
             catalog.addSchema(spec.getVersion().id(), () -> readMetaschema(spec));
         }
         return catalog;
@@ -408,15 +418,20 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
         InputStream in = spec.getMetaschemaAsStream();
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec, Collections.emptyMap())) {
+        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec)) {
             return reader.read();
         }
     }
 
     private DefaultJsonSchemaBuilderFactory createDefaultSchemaBuilderFactory() {
+        Map<String, FormatAttribute> formatAttributes = FormatVocabulary.DRAFT_07.getDefaultFormatAttributes();
+        Map<String, ContentEncodingScheme> encodingSchemes = ContentVocabulary.DRAFT_07.getEncodingSchemes(this);
+        Map<String, ContentMimeType> mimeTypes = ContentVocabulary.DRAFT_07.getMimeTypes(this);
         return new DefaultJsonSchemaBuilderFactory(
                 this,
-                specRegistry.getSpec(SpecVersion.DRAFT_07, true));
+                formatAttributes,
+                encodingSchemes,
+                mimeTypes);
     }
 
     private static JsonException buildJsonException(NoSuchFileException e, Message message, Path path) {
