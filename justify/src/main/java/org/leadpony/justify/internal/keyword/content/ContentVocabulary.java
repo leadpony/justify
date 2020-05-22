@@ -17,14 +17,11 @@ package org.leadpony.justify.internal.keyword.content;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
-
 import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.KeywordValuesLoader;
 import org.leadpony.justify.api.Vocabulary;
-import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**
  * @author leadpony
@@ -33,7 +30,6 @@ public enum ContentVocabulary implements Vocabulary {
     DRAFT_07;
 
     private final URI id;
-    private final String key;
 
     ContentVocabulary() {
         this("");
@@ -41,7 +37,6 @@ public enum ContentVocabulary implements Vocabulary {
 
     ContentVocabulary(String id) {
         this.id = URI.create(id);
-        this.key = getClass().getName() + "." + name();
     }
 
     @Override
@@ -50,24 +45,10 @@ public enum ContentVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage) {
-        if (storage.containsKey(this.key)) {
-            @SuppressWarnings("unchecked")
-            List<KeywordType> cached = (List<KeywordType>) storage.get(this.key);
-            return cached;
-        }
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
         List<KeywordType> types = new ArrayList<>();
         types.add(ContentEncoding.TYPE);
         types.add(ContentMediaType.TYPE);
         return types;
-    }
-
-    private static Map<String, ContentEncodingScheme> loadEncodingSchemes() {
-        Map<String, ContentEncodingScheme> schemes = new HashMap<>();
-        schemes.put(Base64.INSTANCE.name().toLowerCase(), Base64.INSTANCE);
-        for (ContentEncodingScheme scheme : ServiceLoader.load(ContentEncodingScheme.class)) {
-            schemes.put(scheme.name().toLowerCase(), scheme);
-        }
-        return schemes;
     }
 }

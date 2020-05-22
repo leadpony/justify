@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.KeywordValuesLoader;
 import org.leadpony.justify.api.Vocabulary;
 
 /**
@@ -87,7 +88,7 @@ public enum ApplicatorVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage) {
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
         return keywordTypes;
     }
 }

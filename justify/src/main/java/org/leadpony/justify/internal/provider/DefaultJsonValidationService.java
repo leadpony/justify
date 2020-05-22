@@ -25,11 +25,15 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import jakarta.json.JsonException;
 import jakarta.json.JsonReader;
@@ -49,6 +53,7 @@ import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.ValidationConfig;
+import org.leadpony.justify.api.KeywordValuesLoader;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
 import org.leadpony.justify.internal.base.json.JsonService;
@@ -72,7 +77,7 @@ import org.leadpony.justify.internal.validator.JsonValidatorFactory;
  *
  * @author leadpony
  */
-class DefaultJsonValidationService extends JsonService implements JsonValidationService {
+class DefaultJsonValidationService extends JsonService implements JsonValidationService, KeywordValuesLoader {
 
     private final SchemaCatalog schemaCatalog;
     private final SchemaSpecRegistry specRegistry;
@@ -374,6 +379,18 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     public ProblemPrinterBuilder createProblemPrinterBuilder(Consumer<String> lineConsumer) {
         requireNonNull(lineConsumer, "lineConsumer");
         return new DefaultProblemPrinterBuilder(lineConsumer);
+    }
+
+    /* As a KeywordValuesLoader */
+
+    @Override
+    public <T> Stream<T> loadKeywordValues(Class<T> type) {
+        List<T> values = new ArrayList<>();
+        for (T value : ServiceLoader.load(type)) {
+            values.add(value);
+        }
+        // TODO
+        return values.stream();
     }
 
     /* */

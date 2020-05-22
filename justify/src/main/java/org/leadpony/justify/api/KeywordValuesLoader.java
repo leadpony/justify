@@ -15,31 +15,14 @@
  */
 package org.leadpony.justify.api;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
+import java.util.stream.Stream;
 
 /**
- * A schema vocabulary wchich is a set of keywords, their syntax, and their
- * semantics..
+ * A loader of the limited keyword values.
  *
  * @author leadpony
  */
-public interface Vocabulary {
+public interface KeywordValuesLoader {
 
-    /**
-     * Returns the identifier of this vocabulary as a URI.
-     *
-     * @return the identifier of this vocabulary as a URI.
-     */
-    URI getId();
-
-    /**
-     * Returns all keywords defined in this vocabulary.
-     *
-     * @param config
-     * @param valuesLoader
-     * @return the collection of keywords, never be {@code null}.
-     */
-    Collection<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader);
+    <T> Stream<T> loadKeywordValues(Class<T> type);
 }

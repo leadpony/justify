@@ -16,12 +16,23 @@
 package org.leadpony.justify.internal.provider;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.Vocabulary;
 import org.leadpony.justify.internal.keyword.KeywordFactory;
+import org.leadpony.justify.internal.keyword.applicator.ApplicatorVocabulary;
+import org.leadpony.justify.internal.keyword.content.ContentVocabulary;
 import org.leadpony.justify.internal.keyword.content.ContentAttributes;
+import org.leadpony.justify.internal.keyword.core.CoreVocabulary;
 import org.leadpony.justify.internal.keyword.format.FormatAttributes;
+import org.leadpony.justify.internal.keyword.format.FormatVocabulary;
+import org.leadpony.justify.internal.keyword.metadata.MetadataVocabulary;
+import org.leadpony.justify.internal.keyword.validation.ValidationVocabulary;
 import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
@@ -32,12 +43,34 @@ import org.leadpony.justify.spi.FormatAttribute;
  *
  * @author leadpony
  */
-enum StandardSchemaSpec implements SchemaSpec {
-    DRAFT_04(SpecVersion.DRAFT_04),
-    DRAFT_06(SpecVersion.DRAFT_06),
-    DRAFT_07(SpecVersion.DRAFT_07);
+enum StandardSchemaSpec implements SchemaSpec, Iterable<Vocabulary> {
+    DRAFT_04(SpecVersion.DRAFT_04,
+            ApplicatorVocabulary.DRAFT_04,
+            CoreVocabulary.DRAFT_04,
+            FormatVocabulary.DRAFT_04,
+            MetadataVocabulary.DRAFT_04,
+            ValidationVocabulary.DRAFT_04),
+
+    DRAFT_06(SpecVersion.DRAFT_06,
+            ApplicatorVocabulary.DRAFT_06,
+            CoreVocabulary.DRAFT_06,
+            FormatVocabulary.DRAFT_06,
+            MetadataVocabulary.DRAFT_06,
+            ValidationVocabulary.DRAFT_06),
+
+    DRAFT_07(SpecVersion.DRAFT_07,
+            ApplicatorVocabulary.DRAFT_07,
+            ContentVocabulary.DRAFT_07,
+            CoreVocabulary.DRAFT_07,
+            FormatVocabulary.DRAFT_07,
+            MetadataVocabulary.DRAFT_07,
+            ValidationVocabulary.DRAFT_07);
+
+    private static final Map<SpecVersion, StandardSchemaSpec> SPEC_MAP;
 
     private final SpecVersion version;
+    private final List<Vocabulary> vocabularies;
+
     private final Map<String, FormatAttribute> formatAttributes;
 
     private final KeywordFactory keywordFactory;
@@ -45,8 +78,17 @@ enum StandardSchemaSpec implements SchemaSpec {
     private final Map<String, ContentEncodingScheme> encodingSchemes = new HashMap<>();
     private final Map<String, ContentMimeType> mimeTypes = new HashMap<>();
 
-    StandardSchemaSpec(SpecVersion version) {
+
+    static {
+        SPEC_MAP = new EnumMap<>(SpecVersion.class);
+        for (StandardSchemaSpec spec : values()) {
+            SPEC_MAP.put(spec.getVersion(), spec);
+        }
+    }
+
+    StandardSchemaSpec(SpecVersion version, Vocabulary... vocabularies) {
         this.version = version;
+        this.vocabularies = Arrays.asList(vocabularies);
         this.formatAttributes = FormatAttributes.getAttributes(version);
         this.keywordFactory = new StandardKeywordFactory(version);
         this.encodingSchemes.putAll(ContentAttributes.encodingSchemes());
@@ -82,5 +124,14 @@ enum StandardSchemaSpec implements SchemaSpec {
     @Override
     public ContentMimeType getMimeType(String value) {
         return mimeTypes.get(value);
+    }
+
+    @Override
+    public Iterator<Vocabulary> iterator() {
+        return vocabularies.iterator();
+    }
+
+    public static StandardSchemaSpec get(SpecVersion version) {
+        return SPEC_MAP.get(version);
     }
 }

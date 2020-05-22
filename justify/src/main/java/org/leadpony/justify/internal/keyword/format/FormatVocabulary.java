@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.KeywordValuesLoader;
 import org.leadpony.justify.api.Vocabulary;
 import org.leadpony.justify.internal.keyword.format.Format.FormatType;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -86,7 +87,7 @@ public enum FormatVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage) {
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
         return this.defaultTypes;
     }
 }

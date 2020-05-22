@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.KeywordValuesLoader;
 import org.leadpony.justify.api.Vocabulary;
 
 /**
@@ -29,19 +30,19 @@ import org.leadpony.justify.api.Vocabulary;
  * @author leadpony
  */
 public enum CoreVocabulary implements Vocabulary {
-    DRAFT_4("",
+    DRAFT_04("",
             Definitions.TYPE,
             LegacyId.TYPE,
             Ref.TYPE,
             Schema.TYPE),
 
-    DRAFT_6("",
+    DRAFT_06("",
             Definitions.TYPE,
             Id.TYPE,
             Ref.TYPE,
             Schema.TYPE),
 
-    DRAFT_7("",
+    DRAFT_07("",
             Comment.TYPE,
             Definitions.TYPE,
             Id.TYPE,
@@ -64,7 +65,7 @@ public enum CoreVocabulary implements Vocabulary {
     }
 
     @Override
-    public List<KeywordType> getKeywordTypes(Map<String, Object> config, Map<String, Object> storage) {
+    public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValuesLoader valuesLoader) {
         return keywordTypes;
     }
 }
