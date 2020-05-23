@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,11 @@ public enum SpecVersion {
     /**
      * JSON Schema specification of Draft-07.
      */
-    DRAFT_07("http://json-schema.org/draft-07/schema#");
+    DRAFT_07("http://json-schema.org/draft-07/schema#"),
+    /**
+     * JSON Schema specification of Draft-2019-09.
+     */
+    DRAFT_2019_09("https://json-schema.org/draft/2019-09/schema");
 
     private static final Map<URI, SpecVersion> VERSION_MAP = Stream.of(SpecVersion.values())
             .collect(Collectors.toMap(SpecVersion::id, Function.identity()));
