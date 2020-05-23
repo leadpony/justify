@@ -15,7 +15,6 @@
  */
 package org.leadpony.justify.internal.schema;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.MetaschemaSource;
 import org.leadpony.justify.internal.keyword.applicator.ApplicatorVocabulary;
 import org.leadpony.justify.internal.keyword.content.ContentVocabulary;
 import org.leadpony.justify.internal.keyword.core.CoreVocabulary;
@@ -40,7 +40,7 @@ import org.leadpony.justify.internal.keyword.validation.ValidationVocabulary;
  *
  * @author leadpony
  */
-public enum SchemaSpec {
+public enum SchemaSpec implements MetaschemaSource {
     DRAFT_04(SpecVersion.DRAFT_04,
             ApplicatorVocabulary.DRAFT_04,
             CoreVocabulary.DRAFT_04,
@@ -82,6 +82,11 @@ public enum SchemaSpec {
         this.bareKeywordTypes = collectKeywordTypesAsMap(this.vocabularies);
     }
 
+    @Override
+    public String getMetaschemaName() {
+        return "schema";
+    }
+
     /**
      * Return the verison of this specification.
      *
@@ -89,11 +94,6 @@ public enum SchemaSpec {
      */
     public SpecVersion getVersion() {
         return version;
-    }
-
-    public InputStream getMetaschemaAsStream() {
-        String name = getVersion().toString().toLowerCase() + ".json";
-        return getClass().getResourceAsStream(name);
     }
 
     /**
