@@ -33,7 +33,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class Comment extends AbstractKeyword {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingString("$comment", Comment::new);
+    static final KeywordType TYPE = KeywordTypes.mappingString("$comment", Comment::new);
 
     private final String value;
 

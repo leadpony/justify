@@ -61,7 +61,15 @@ public enum SchemaSpec implements MetaschemaSource {
             CoreVocabulary.DRAFT_07,
             FormatVocabulary.DRAFT_07,
             MetadataVocabulary.DRAFT_07,
-            ValidationVocabulary.DRAFT_07);
+            ValidationVocabulary.DRAFT_07),
+
+    DRAFT_2019_09(SpecVersion.DRAFT_2019_09,
+            ApplicatorVocabulary.DRAFT_2019_09,
+            ContentVocabulary.DRAFT_2019_09,
+            CoreVocabulary.DRAFT_2019_09,
+            FormatVocabulary.DRAFT_2019_09,
+            MetadataVocabulary.DRAFT_2019_09,
+            ValidationVocabulary.DRAFT_2019_09);
 
     private static final Map<SpecVersion, SchemaSpec> SPEC_MAP;
 

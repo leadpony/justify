@@ -22,13 +22,15 @@ import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 
 /**
+ * A vocabulary for applying subschemas.
+ *
  * @author leadpony
  */
-public enum ApplicatorVocabulary implements Vocabulary {
-    DRAFT_04("",
+public enum ApplicatorVocabulary implements DefaultVocabulary {
+    DRAFT_04(
             AdditionalItems.TYPE,
             AdditionalProperties.TYPE,
             AllOf.TYPE,
@@ -41,7 +43,7 @@ public enum ApplicatorVocabulary implements Vocabulary {
             Properties.TYPE
             ),
 
-    DRAFT_06("",
+    DRAFT_06(
             AdditionalItems.TYPE,
             AdditionalProperties.TYPE,
             AllOf.TYPE,
@@ -56,7 +58,7 @@ public enum ApplicatorVocabulary implements Vocabulary {
             PropertyNames.TYPE  // new
             ),
 
-    DRAFT_07("",
+    DRAFT_07(
             AdditionalItems.TYPE,
             AdditionalProperties.TYPE,
             AllOf.TYPE,
@@ -72,13 +74,39 @@ public enum ApplicatorVocabulary implements Vocabulary {
             Properties.TYPE,
             PropertyNames.TYPE,
             Then.TYPE  // new
+            ),
+
+    DRAFT_2019_09(
+            "https://json-schema.org/draft/2019-09/vocab/applicator",
+            "https://json-schema.org/draft/2019-09/meta/applicator",
+            AdditionalItems.TYPE,
+            AdditionalProperties.TYPE,
+            AllOf.TYPE,
+            AnyOf.TYPE,
+            Contains.TYPE,
+            Dependencies.TYPE,
+            Else.TYPE,
+            If.TYPE,
+            Items.TYPE,
+            Not.TYPE,
+            OneOf.TYPE,
+            PatternProperties.TYPE,
+            Properties.TYPE,
+            PropertyNames.TYPE,
+            Then.TYPE
             );
 
     private final URI id;
+    private final URI metaschemaId;
     private final List<KeywordType> keywordTypes;
 
-    ApplicatorVocabulary(String id, KeywordType... keywordTypes) {
+    ApplicatorVocabulary(KeywordType... keywordTypes) {
+        this("", "", keywordTypes);
+    }
+
+    ApplicatorVocabulary(String id, String metaschemaId, KeywordType... keywordTypes) {
         this.id = URI.create(id);
+        this.metaschemaId = URI.create(metaschemaId);
         this.keywordTypes = Arrays.asList(keywordTypes);
     }
 
@@ -88,7 +116,17 @@ public enum ApplicatorVocabulary implements Vocabulary {
     }
 
     @Override
+    public URI getMetaschemaId() {
+        return metaschemaId;
+    }
+
+    @Override
     public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
         return keywordTypes;
+    }
+
+    @Override
+    public String getMetaschemaName() {
+        return "applicator";
     }
 }

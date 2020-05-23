@@ -15,6 +15,7 @@
  */
 package org.leadpony.justify.api;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
@@ -35,6 +36,20 @@ public interface Vocabulary {
     URI getId();
 
     /**
+     * Returns the identifier of the metaschema for this vocabulary.
+     *
+     * @return the identifier of the metaschema as a URI.
+     */
+    URI getMetaschemaId();
+
+    /**
+     * Returns whether this vocabulary is public or not.
+     *
+     * @return {@code true} if this vocabulary is public, {@code false} otherwise.
+     */
+    boolean isPublic();
+
+    /**
      * Returns all keywords defined in this vocabulary.
      *
      * @param config the configiration properties given to the schema reader.
@@ -42,4 +57,11 @@ public interface Vocabulary {
      * @return the collection of keywords, never be {@code null}.
      */
     Collection<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader);
+
+    /**
+     * Returns the metaschema of this vocabulary as a stream.
+     *
+     * @return the input stream as a source.
+     */
+    InputStream getMetaschemaAsStream();
 }

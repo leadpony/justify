@@ -37,7 +37,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class Schema extends AbstractKeyword {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingUri("$schema", Schema::new);
+    static final KeywordType TYPE = KeywordTypes.mappingUri("$schema", Schema::new);
 
     private final URI value;
 

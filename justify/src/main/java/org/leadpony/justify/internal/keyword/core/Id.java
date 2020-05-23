@@ -35,7 +35,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class Id extends LegacyId {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingUri("$id", Id::new);
+    static final KeywordType TYPE = KeywordTypes.mappingUri("$id", Id::new);
 
     public Id(JsonValue json, URI value) {
         super(json, value);

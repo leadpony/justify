@@ -22,40 +22,53 @@ import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 
 /**
  * The JSON Schema Core Vocabulary.
  *
  * @author leadpony
  */
-public enum CoreVocabulary implements Vocabulary {
-    DRAFT_04("",
+public enum CoreVocabulary implements DefaultVocabulary {
+    DRAFT_04(
             Definitions.TYPE,
             LegacyId.TYPE,
             Ref.TYPE,
             Schema.TYPE),
 
-    DRAFT_06("",
+    DRAFT_06(
             Definitions.TYPE,
             Id.TYPE,
             Ref.TYPE,
             Schema.TYPE),
 
-    DRAFT_07("",
+    DRAFT_07(
             Comment.TYPE,
             Definitions.TYPE,
             Id.TYPE,
             Ref.TYPE,
             Schema.TYPE),
 
-    DRAFT_2019_09("https://json-schema.org/draft/2019-09/vocab/core");
+    DRAFT_2019_09("https://json-schema.org/draft/2019-09/vocab/core",
+            "https://json-schema.org/draft/2019-09/meta/core",
+            Comment.TYPE,
+            Definitions.TYPE,
+            Defs.TYPE,
+            Id.TYPE,
+            Ref.TYPE,
+            Schema.TYPE);
 
     private final URI id;
+    private final URI metaschemaId;
     private final List<KeywordType> keywordTypes;
 
-    CoreVocabulary(String id, KeywordType... keywordTypes) {
+    CoreVocabulary(KeywordType... keywordTypes) {
+        this("", "", keywordTypes);
+    }
+
+    CoreVocabulary(String id, String metaschemaId, KeywordType... keywordTypes) {
         this.id = URI.create(id);
+        this.metaschemaId = URI.create(metaschemaId);
         this.keywordTypes = Arrays.asList(keywordTypes);
     }
 
@@ -65,7 +78,17 @@ public enum CoreVocabulary implements Vocabulary {
     }
 
     @Override
+    public URI getMetaschemaId() {
+        return metaschemaId;
+    }
+
+    @Override
     public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
         return keywordTypes;
+    }
+
+    @Override
+    public String getMetaschemaName() {
+        return "core";
     }
 }

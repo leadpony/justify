@@ -22,30 +22,49 @@ import java.util.Map;
 
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 
 /**
+ * A vocabulary for basic metadata annotations.
+ *
  * @author leadpony
  */
-public enum MetadataVocabulary implements Vocabulary {
-    DRAFT_04("",
+public enum MetadataVocabulary implements DefaultVocabulary {
+    DRAFT_04(
             Default.TYPE,
             Description.TYPE,
             Title.TYPE),
 
-    DRAFT_06("", DRAFT_04.keywordTypes),
+    DRAFT_06(DRAFT_04),
 
-    DRAFT_07("", DRAFT_04.keywordTypes);
+    DRAFT_07(DRAFT_04),
+
+    DRAFT_2019_09(
+            "https://json-schema.org/draft/2019-09/vocab/meta-data",
+            "https://json-schema.org/draft/2019-09/meta/meta-data",
+            Default.TYPE,
+            Description.TYPE,
+            Title.TYPE);
 
     private final URI id;
+    private final URI metaschemaId;
     private final List<KeywordType> keywordTypes;
 
-    MetadataVocabulary(String id, KeywordType... keywordTypes) {
-        this(id, Arrays.asList(keywordTypes));
+    MetadataVocabulary(MetadataVocabulary base) {
+        this("", "", base.keywordTypes);
     }
 
-    MetadataVocabulary(String id, List<KeywordType> keywordTypes) {
+    MetadataVocabulary(KeywordType... keywordTypes) {
+        this("", "", Arrays.asList(keywordTypes));
+    }
+
+    MetadataVocabulary(String id, String metaschemaId, KeywordType... keywordTypes) {
+        this(id, metaschemaId, Arrays.asList(keywordTypes));
+    }
+
+    MetadataVocabulary(String id, String metaschemaId, List<KeywordType> keywordTypes) {
         this.id = URI.create(id);
+        this.metaschemaId = URI.create(metaschemaId);
         this.keywordTypes = keywordTypes;
     }
 
@@ -55,8 +74,17 @@ public enum MetadataVocabulary implements Vocabulary {
     }
 
     @Override
+    public URI getMetaschemaId() {
+        return metaschemaId;
+    }
+
+    @Override
     public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
         return keywordTypes;
     }
 
+    @Override
+    public String getMetaschemaName() {
+        return "meta-data";
+    }
 }

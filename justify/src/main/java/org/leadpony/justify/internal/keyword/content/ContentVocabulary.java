@@ -26,24 +26,33 @@ import java.util.stream.Stream;
 
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 
 /**
+ * A vocabulary for the contents of string-encoded data.
+ *
  * @author leadpony
  */
-public enum ContentVocabulary implements Vocabulary {
-    DRAFT_07;
+public enum ContentVocabulary implements DefaultVocabulary {
+    DRAFT_07,
+
+    DRAFT_2019_09(
+            "https://json-schema.org/draft/2019-09/vocab/content",
+            "https://json-schema.org/draft/2019-09/meta/content"
+            );
 
     private final URI id;
+    private final URI metaschemaId;
 
     ContentVocabulary() {
-        this("");
+        this("", "");
     }
 
-    ContentVocabulary(String id) {
+    ContentVocabulary(String id, String metaschemaId) {
         this.id = URI.create(id);
+        this.metaschemaId = URI.create(metaschemaId);
     }
 
     @Override
@@ -52,10 +61,20 @@ public enum ContentVocabulary implements Vocabulary {
     }
 
     @Override
+    public URI getMetaschemaId() {
+        return metaschemaId;
+    }
+
+    @Override
     public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
         return Arrays.asList(
                 createContentEncoding(valueSetLoader),
                 createContentMediaType(valueSetLoader));
+    }
+
+    @Override
+    public String getMetaschemaName() {
+        return "content";
     }
 
     public Map<String, ContentEncodingScheme> getEncodingSchemes(KeywordValueSetLoader valueSetLoader) {

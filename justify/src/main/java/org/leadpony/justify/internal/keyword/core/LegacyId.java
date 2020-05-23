@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 public class LegacyId extends AbstractKeyword implements IdKeyword {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingUri("id", LegacyId::new);
+    static final KeywordType TYPE = KeywordTypes.mappingUri("id", LegacyId::new);
 
     private final URI value;
 

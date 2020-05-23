@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,43 +15,27 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import java.net.URI;
+import java.util.Map;
+
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.internal.annotation.KeywordClass;
-import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
-
 /**
- * A keyword type representing "$ref" keyword.
- *
  * @author leadpony
  */
-@KeywordClass("$ref")
-@Spec(SpecVersion.DRAFT_04)
-@Spec(SpecVersion.DRAFT_06)
-@Spec(SpecVersion.DRAFT_07)
-public class Ref extends AbstractKeyword {
+public class Defs extends Definitions {
 
-    static final KeywordType TYPE = KeywordTypes.mappingUri("$ref", Ref::new);
+    static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("$defs", Defs::new);
 
-    private final URI value;
-
-    public Ref(JsonValue json, URI value) {
-        super(json);
-        this.value = value;
+    public Defs(JsonValue json, Map<String, JsonSchema> definitionMap) {
+        super(json, definitionMap);
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
-    }
-
-    public URI value() {
-        return value;
     }
 }

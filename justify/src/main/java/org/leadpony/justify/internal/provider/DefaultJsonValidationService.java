@@ -50,6 +50,7 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.api.ProblemHandlerFactory;
 import org.leadpony.justify.api.ProblemPrinterBuilder;
 import org.leadpony.justify.api.ValidationConfig;
+import org.leadpony.justify.api.Vocabulary;
 import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonProviderDecorator;
@@ -408,14 +409,20 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     private SchemaCatalog createSchemaCatalog() {
         SchemaCatalog catalog = new SchemaCatalog();
         for (SchemaSpec spec : SchemaSpec.values()) {
-            catalog.addSchema(spec.getVersion().id(), () -> readMetaschema(spec));
+            for (Vocabulary vocabulary : spec.getVocabularies()) {
+                if (vocabulary.isPublic()) {
+                    catalog.addSchema(vocabulary.getMetaschemaId(),
+                            () -> readMetaschema(spec, vocabulary.getMetaschemaAsStream()));
+                }
+            }
+            catalog.addSchema(spec.getVersion().id(),
+                    () -> readMetaschema(spec, spec.getMetaschemaAsStream()));
         }
         return catalog;
     }
 
-    private JsonSchema readMetaschema(SchemaSpec spec) {
+    private JsonSchema readMetaschema(SchemaSpec spec, InputStream in) {
         JsonProvider jsonProvider = getJsonProvider();
-        InputStream in = spec.getMetaschemaAsStream();
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
         try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec)) {

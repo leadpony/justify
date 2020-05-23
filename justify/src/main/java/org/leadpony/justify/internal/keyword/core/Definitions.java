@@ -39,7 +39,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class Definitions extends AbstractKeyword implements SchemaContainer {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("definitions", Definitions::new);
+    static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("definitions", Definitions::new);
 
     private final Map<String, JsonSchema> definitionMap;
 

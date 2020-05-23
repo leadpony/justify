@@ -26,15 +26,17 @@ import java.util.Map;
 import org.leadpony.justify.api.JsonSchemaReader;
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.KeywordValueSetLoader;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 import org.leadpony.justify.internal.keyword.format.Format.FormatType;
 import org.leadpony.justify.spi.FormatAttribute;
 
 /**
+ * A vocabulary for semantic content With "format".
+ *
  * @author leadpony
  */
-public enum FormatVocabulary implements Vocabulary {
-    DRAFT_04("",
+public enum FormatVocabulary implements DefaultVocabulary {
+    DRAFT_04(
             DateTime.INSTANCE,
             Email.INSTANCE,
             Hostname.INSTANCE,
@@ -43,7 +45,7 @@ public enum FormatVocabulary implements Vocabulary {
             Regex.INSTANCE,
             Uri.INSTANCE),
 
-    DRAFT_06("",
+    DRAFT_06(
             DateTime.INSTANCE,
             Email.INSTANCE,
             Hostname.INSTANCE,
@@ -55,7 +57,28 @@ public enum FormatVocabulary implements Vocabulary {
             UriReference.INSTANCE,
             UriTemplate.INSTANCE),
 
-    DRAFT_07("",
+    DRAFT_07(
+            Date.INSTANCE,
+            DateTime.INSTANCE,
+            Email.INSTANCE,
+            Hostname.INSTANCE,
+            Ipv4.INSTANCE,
+            Ipv6.INSTANCE,
+            IdnEmail.INSTANCE,
+            IdnHostname.INSTANCE,
+            Iri.INSTANCE,
+            IriReference.INSTANCE,
+            JsonPointer.INSTANCE,
+            Regex.INSTANCE,
+            RelativeJsonPointer.INSTANCE,
+            Time.INSTANCE,
+            Uri.INSTANCE,
+            UriReference.INSTANCE,
+            UriTemplate.INSTANCE),
+
+    DRAFT_2019_09(
+            "https://json-schema.org/draft/2019-09/vocab/format",
+            "https://json-schema.org/draft/2019-09/meta/format",
             Date.INSTANCE,
             DateTime.INSTANCE,
             Email.INSTANCE,
@@ -75,12 +98,19 @@ public enum FormatVocabulary implements Vocabulary {
             UriTemplate.INSTANCE);
 
     private final URI id;
+    private final URI metaschemaId;
+
     private final Map<String, FormatAttribute> defaultAttributs;
     private final FormatType defaultFormatType;
     private final FormatType defaultStrictFormatType;
 
-    FormatVocabulary(String id, FormatAttribute... attributes) {
+    FormatVocabulary(FormatAttribute... attributes) {
+        this("", "", attributes);
+    }
+
+    FormatVocabulary(String id, String metaschemaId, FormatAttribute... attributes) {
         this.id = URI.create(id);
+        this.metaschemaId = URI.create(metaschemaId);
         this.defaultAttributs = buildMap(new HashMap<>(), Arrays.asList(attributes));
         this.defaultFormatType = new FormatType(defaultAttributs, false);
         this.defaultStrictFormatType = new FormatType(defaultAttributs, true);
@@ -92,8 +122,18 @@ public enum FormatVocabulary implements Vocabulary {
     }
 
     @Override
+    public URI getMetaschemaId() {
+        return metaschemaId;
+    }
+
+    @Override
     public List<KeywordType> getKeywordTypes(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
         return Arrays.asList(createFormatType(config, valueSetLoader));
+    }
+
+    @Override
+    public String getMetaschemaName() {
+        return "format";
     }
 
     public Map<String, FormatAttribute> getDefaultFormatAttributes() {
