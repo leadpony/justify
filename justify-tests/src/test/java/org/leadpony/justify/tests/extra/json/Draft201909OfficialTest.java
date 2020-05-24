@@ -39,7 +39,7 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
             "contains.json",
             "default.json",
             //"defs.json",
-            //"dependentRequired.json",
+            "dependentRequired.json",
             //"dependentSchemas.json",
             "enum.json",
             "exclusiveMaximum.json",

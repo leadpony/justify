@@ -73,6 +73,7 @@ public enum ValidationVocabulary implements DefaultVocabulary {
             "https://json-schema.org/draft/2019-09/meta/validation",
             Const.TYPE,
             Enum.TYPE,
+            DependentRequired.TYPE,
             ExclusiveMaximum.TYPE,
             ExclusiveMinimum.TYPE,
             Maximum.TYPE,
