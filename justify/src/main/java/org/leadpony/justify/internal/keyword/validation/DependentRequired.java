@@ -140,7 +140,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema) {
-            return new NegatedEmptyDependantEvaluator(context, schema, DependentRequired.this, propertyName);
+            return new NegatedEmptyDependentEvaluator(context, schema, DependentRequired.this, propertyName);
         }
     }
 
@@ -175,7 +175,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
             this.propertyName = propertyName;
         }
 
-        protected Evaluator.Result dispatchMissingDependentProblem(ProblemDispatcher dispatcher) {
+        protected Evaluator.Result dispatchMissingPropertyProblem(ProblemDispatcher dispatcher) {
             Problem p = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                     .withParameter("required", propertyName)
@@ -210,7 +210,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                 if (active) {
                     return test(dispatcher);
                 } else {
-                    return testMissingDependent(dispatcher);
+                    return testMissingProperty(dispatcher);
                 }
             }
             return Result.PENDING;
@@ -218,7 +218,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
 
         protected abstract Result test(ProblemDispatcher dispatcher);
 
-        protected abstract Result testMissingDependent(ProblemDispatcher dispatcher);
+        protected abstract Result testMissingProperty(ProblemDispatcher dispatcher);
     }
 
     static class DependentEvaluator extends RequiredPropertiesEvaluator {
@@ -246,7 +246,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        protected Result testMissingDependent(ProblemDispatcher dispatcher) {
+        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
     }
@@ -285,14 +285,14 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        protected Result testMissingDependent(ProblemDispatcher dispatcher) {
-            return dispatchMissingDependentProblem(dispatcher);
+        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
+            return dispatchMissingPropertyProblem(dispatcher);
         }
     }
 
-    static class NegatedEmptyDependantEvaluator extends AbstractDependentEvaluator {
+    static class NegatedEmptyDependentEvaluator extends AbstractDependentEvaluator {
 
-        NegatedEmptyDependantEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        NegatedEmptyDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
                 String propertyName) {
             super(context, schema, keyword, propertyName);
         }
@@ -305,7 +305,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                     return dispatchProblem(dispatcher);
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return dispatchMissingDependentProblem(dispatcher);
+                return dispatchMissingPropertyProblem(dispatcher);
             }
             return Result.PENDING;
         }
