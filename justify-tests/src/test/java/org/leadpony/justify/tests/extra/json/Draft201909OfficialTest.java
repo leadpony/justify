@@ -23,6 +23,8 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 
 /**
+ * The official test suite tests for Draft-2019-09.
+ *
  * @author leadpony
  */
 @Spec(SpecVersion.DRAFT_2019_09)
