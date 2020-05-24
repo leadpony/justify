@@ -39,7 +39,7 @@ class CustomFormatAttributeTest extends AbstractOfficialTest {
     };
 
     static Stream<TestCase> testCases() {
-        return generateFixtures(FILES);
+        return generateTestCases(FILES);
     }
 
     @ParameterizedTest

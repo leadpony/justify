@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,27 +23,36 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 
 /**
- * The official test suite tests for Draft-04.
- *
  * @author leadpony
  */
-@Spec(SpecVersion.DRAFT_04)
-public class Draft04OfficialTest extends AbstractOfficialTest {
+@Spec(SpecVersion.DRAFT_2019_09)
+public class Draft201909OfficialTest extends AbstractOfficialTest {
 
     private static final String[] MANDATORY = {
             "additionalItems.json",
             "additionalProperties.json",
             "allOf.json",
+            //"anchor.json",
             "anyOf.json",
+            "boolean_schema.json",
+            "const.json",
+            "contains.json",
             "default.json",
-            "definitions.json",
-            "dependencies.json",
+            //"defs.json",
+            //"dependentRequired.json",
+            //"dependentSchemas.json",
             "enum.json",
+            "exclusiveMaximum.json",
+            "exclusiveMinimum.json",
+            "format.json",
+            "if-then-else.json",
             "items.json",
+            //"maxContains.json",
             "maximum.json",
             "maxItems.json",
             "maxLength.json",
             "maxProperties.json",
+            //"minContains.json",
             "minimum.json",
             "minItems.json",
             "minLength.json",
@@ -54,39 +63,23 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "pattern.json",
             "patternProperties.json",
             "properties.json",
-            "ref.json",
-            "refRemote.json",
+            "propertyNames.json",
+            //"ref.json",
+            //"refRemote.json",
             "required.json",
             "type.json",
-            "uniqueItems.json",
+            //"unevaluatedItems.json",
+            //"unevaluatedProperties.json",
+            "uniqueItems.json"
     };
 
     public static Stream<TestCase> mandatory() {
         return generateTestCases(MANDATORY);
     }
 
-    private static final String[] OPTIONAL = {
-            "optional/bignum.json",
-            // Draft-04 does not have the "regex" format.
-            "optional/ecmascript-regex.json",
-            "optional/format.json",
-            "optional/zeroTerminatedFloats.json",
-            "optional/non-bmp-regex.json",
-    };
-
-    public static Stream<TestCase> optional() {
-        return generateTestCases(OPTIONAL);
-    }
-
     @ParameterizedTest
     @MethodSource("mandatory")
     public void testMandatory(TestCase test) {
-        test(test);
-    }
-
-    @ParameterizedTest
-    @MethodSource("optional")
-    public void testOptional(TestCase test) {
         test(test);
     }
 }

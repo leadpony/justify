@@ -144,6 +144,7 @@ public abstract class AbstractOfficialTest implements Loggable {
             put(SpecVersion.DRAFT_04, "draft4");
             put(SpecVersion.DRAFT_06, "draft6");
             put(SpecVersion.DRAFT_07, "draft7");
+            put(SpecVersion.DRAFT_2019_09, "draft2019-09");
         }
     };
 
@@ -163,11 +164,11 @@ public abstract class AbstractOfficialTest implements Loggable {
         schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
-                .withSchemaValidation(true)
+                .withSchemaValidation(false)
                 .build();
     }
 
-    public static Stream<TestCase> generateFixtures(String... files) {
+    public static Stream<TestCase> generateTestCases(String... files) {
         return Stream.of(files).flatMap(AbstractOfficialTest::readTestCases);
     }
 

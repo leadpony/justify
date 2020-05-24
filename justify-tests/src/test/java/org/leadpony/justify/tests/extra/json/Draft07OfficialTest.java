@@ -69,7 +69,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
     };
 
     public static Stream<TestCase> mandatory() {
-        return generateFixtures(MANDATORY);
+        return generateTestCases(MANDATORY);
     }
 
     private static final String[] OPTIONAL = {
@@ -98,7 +98,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
     };
 
     public static Stream<TestCase> optional() {
-        return generateFixtures(OPTIONAL);
+        return generateTestCases(OPTIONAL);
     }
 
     @ParameterizedTest

@@ -35,7 +35,7 @@ public class Draft07UnofficialTest extends AbstractOfficialTest {
     };
 
     public static Stream<TestCase> mandatory() {
-        return generateFixtures(MANDATORY);
+        return generateTestCases(MANDATORY);
     }
 
     @ParameterizedTest
