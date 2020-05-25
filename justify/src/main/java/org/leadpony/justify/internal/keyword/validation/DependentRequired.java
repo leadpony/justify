@@ -31,7 +31,7 @@ import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractPropertyDependentEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
@@ -165,33 +165,13 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
     }
 
-    abstract static class AbstractDependentEvaluator extends AbstractKeywordAwareEvaluator {
-
-        protected final String propertyName;
-
-        protected AbstractDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
-                String propertyName) {
-            super(context, schema, keyword);
-            this.propertyName = propertyName;
-        }
-
-        protected Evaluator.Result dispatchMissingPropertyProblem(ProblemDispatcher dispatcher) {
-            Problem p = newProblemBuilder()
-                    .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
-                    .withParameter("required", propertyName)
-                    .build();
-            dispatcher.dispatchProblem(p);
-            return Evaluator.Result.FALSE;
-        }
-    }
-
-    abstract static class RequiredPropertiesEvaluator extends AbstractDependentEvaluator {
+    private abstract static class AbstractDependentEvaluator extends AbstractPropertyDependentEvaluator {
 
         protected final Set<String> required;
         protected final Set<String> missing;
         protected boolean active;
 
-        protected RequiredPropertiesEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        protected AbstractDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
                 String propertyName, Set<String> required) {
             super(context, schema, keyword, propertyName);
             this.required = required;
@@ -202,7 +182,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = getParser().getString();
-                if (keyName.equals(propertyName)) {
+                if (keyName.equals(getPropertyName())) {
                     active = true;
                 }
                 missing.remove(keyName);
@@ -221,9 +201,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         protected abstract Result testMissingProperty(ProblemDispatcher dispatcher);
     }
 
-    static class DependentEvaluator extends RequiredPropertiesEvaluator {
+    public static class DependentEvaluator extends AbstractDependentEvaluator {
 
-        DependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String propertyName,
+        public DependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String propertyName,
                 Set<String> required) {
             super(context, schema, keyword, propertyName, required);
         }
@@ -237,7 +217,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                     Problem p = newProblemBuilder()
                             .withMessage(Message.INSTANCE_PROBLEM_DEPENDENCIES)
                             .withParameter("required", entry)
-                            .withParameter("dependant", propertyName)
+                            .withParameter("dependant", getPropertyName())
                             .build();
                     dispatcher.dispatchProblem(p);
                 }
@@ -251,9 +231,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
     }
 
-    static class NegatedDependentEvaluator extends RequiredPropertiesEvaluator {
+    public static class NegatedDependentEvaluator extends AbstractDependentEvaluator {
 
-        NegatedDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public NegatedDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
                 String propertyName, Set<String> required) {
             super(context, schema, keyword, propertyName, required);
         }
@@ -263,13 +243,13 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
             if (required.isEmpty()) {
                 Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
-                        .withParameter("required", propertyName)
+                        .withParameter("required", getPropertyName())
                         .build();
                 dispatcher.dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
                 ProblemBuilder b = newProblemBuilder()
-                        .withParameter("dependant", propertyName);
+                        .withParameter("dependant", getPropertyName());
                 if (required.size() == 1) {
                     b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES)
                             .withParameter("required", required.iterator().next());
@@ -290,9 +270,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
     }
 
-    static class NegatedEmptyDependentEvaluator extends AbstractDependentEvaluator {
+    public static class NegatedEmptyDependentEvaluator extends AbstractPropertyDependentEvaluator {
 
-        NegatedEmptyDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public NegatedEmptyDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
                 String propertyName) {
             super(context, schema, keyword, propertyName);
         }
@@ -301,7 +281,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = getParser().getString();
-                if (keyName.equals(propertyName)) {
+                if (keyName.equals(getPropertyName())) {
                     return dispatchProblem(dispatcher);
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
@@ -313,7 +293,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         private Result dispatchProblem(ProblemDispatcher dispatcher) {
             Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
-                    .withParameter("required", this.propertyName)
+                    .withParameter("required", getPropertyName())
                     .build();
             dispatcher.dispatchProblem(problem);
             return Result.FALSE;

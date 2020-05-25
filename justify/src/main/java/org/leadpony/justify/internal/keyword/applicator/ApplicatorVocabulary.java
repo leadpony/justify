@@ -85,6 +85,7 @@ public enum ApplicatorVocabulary implements DefaultVocabulary {
             AnyOf.TYPE,
             Contains.TYPE,
             Dependencies.TYPE,
+            DependentSchemas.TYPE,
             Else.TYPE,
             If.TYPE,
             Items.TYPE,
