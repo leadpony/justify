@@ -70,12 +70,11 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         super.link(siblings);
         if (siblings.containsKey("patternProperties")) {
             this.patternProperties = (PatternProperties) siblings.get("patternProperties");
         }
-        return this;
     }
 
     @Override

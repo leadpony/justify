@@ -72,9 +72,8 @@ public class AdditionalProperties extends UnaryApplicator {
      * </p>
      */
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         alone = !siblings.containsKey("properties") && !siblings.containsKey("patternProperties");
-        return this;
     }
 
     @Override

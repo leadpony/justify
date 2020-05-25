@@ -57,7 +57,7 @@ public class If extends Conditional {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("then")) {
             Keyword thenKeyword = siblings.get("then");
             if (thenKeyword instanceof UnaryApplicator) {
@@ -70,7 +70,6 @@ public class If extends Conditional {
                 elseSchema = ((UnaryApplicator) elseKeyword).getSubschema();
             }
         }
-        return this;
     }
 
     @Override

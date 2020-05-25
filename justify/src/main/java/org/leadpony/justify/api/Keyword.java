@@ -53,10 +53,8 @@ public interface Keyword {
      * Links this keyword with sibling keywords if needed.
      *
      * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
-     * @return this keyword.
      */
-    default Keyword link(Map<String, Keyword> siblings) {
-        return this;
+    default void link(Map<String, Keyword> siblings) {
     }
 
     /**

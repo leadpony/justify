@@ -52,12 +52,11 @@ public class Draft04Minimum extends Minimum {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("exclusiveMinimum")) {
             ExclusiveMinimum keyword = (ExclusiveMinimum) siblings.get("exclusiveMinimum");
             exclusive = keyword.value;
         }
-        return this;
     }
 
     @Override

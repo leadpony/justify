@@ -228,12 +228,11 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Keyword link(Map<String, Keyword> siblings) {
+        public void link(Map<String, Keyword> siblings) {
             if (siblings.containsKey("additionalItems")) {
                 AdditionalItems additionalItems = (AdditionalItems) siblings.get("additionalItems");
                 this.defaultSchema = additionalItems.getSubschema();
             }
-            return this;
         }
 
         @Override

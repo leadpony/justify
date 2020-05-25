@@ -83,10 +83,9 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         super.link(siblings);
         this.properties = (Properties) siblings.get("properties");
-        return this;
     }
 
     @Override

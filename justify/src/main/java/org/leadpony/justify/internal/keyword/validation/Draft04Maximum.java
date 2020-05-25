@@ -52,12 +52,11 @@ public class Draft04Maximum extends Maximum {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("exclusiveMaximum")) {
             ExclusiveMaximum keyword = (ExclusiveMaximum) siblings.get("exclusiveMaximum");
             exclusive = keyword.value;
         }
-        return this;
     }
 
     @Override

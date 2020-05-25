@@ -141,7 +141,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("contentEncoding")) {
             Keyword keyword = siblings.get("contentEncoding");
             if (keyword instanceof ContentEncoding) {
@@ -151,7 +151,6 @@ public class ContentMediaType extends AbstractAssertionKeyword {
                 unknownEncodingScheme = true;
             }
         }
-        return this;
     }
 
     @Override

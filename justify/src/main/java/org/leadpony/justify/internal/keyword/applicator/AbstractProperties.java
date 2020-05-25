@@ -54,12 +54,11 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public Keyword link(Map<String, Keyword> siblings) {
+    public void link(Map<String, Keyword> siblings) {
         if (siblings.containsKey("additionalProperties")) {
             AdditionalProperties additionalProperties = (AdditionalProperties) siblings.get("additionalProperties");
             this.defaultSchema = additionalProperties.getSubschema();
         }
-        return this;
     }
 
     @Override
