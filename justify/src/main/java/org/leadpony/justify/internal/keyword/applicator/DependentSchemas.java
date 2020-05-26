@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.Evaluator;
@@ -48,15 +49,15 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("dependentSchemas", DependentSchemas::new);
 
-    private final Map<String, Dependent> map;
+    private final Map<String, Dependent> dependentMap;
 
     public DependentSchemas(JsonValue json, Map<String, JsonSchema> map) {
         super(json);
-        Map<String, Dependent> newMap = new HashMap<>();
+        Map<String, Dependent> dependentMap = new HashMap<>();
         map.forEach((key, value) -> {
-            newMap.put(key, createDependent(key, value));
+            dependentMap.put(key, createDependent(key, value));
         });
-        this.map = newMap;
+        this.dependentMap = dependentMap;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
     @Override
     public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator combined = Evaluators.conjunctive(type);
-        map.values().stream()
+        dependentMap.values().stream()
                 .map(d -> d.createEvaluator(context, schema))
                 .forEach(combined::append);
         return combined;
@@ -76,7 +77,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator combined = Evaluators.disjunctive(context, schema, this, type);
-        map.values().stream()
+        dependentMap.values().stream()
                 .map(d -> d.createNegatedEvaluator(context, schema))
                 .forEach(combined::append);
         return combined;
@@ -89,12 +90,20 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     @Override
     public boolean containsSchemas() {
-        return !map.isEmpty();
+        return !dependentMap.isEmpty();
     }
 
     @Override
     public Stream<JsonSchema> getSchemas() {
-        return map.values().stream().map(Dependent::getSubschema);
+        return dependentMap.values().stream().map(Dependent::getSubschema);
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String token) {
+        if (dependentMap.containsKey(token)) {
+            return Optional.of(dependentMap.get(token).getSubschema());
+        }
+        return Optional.empty();
     }
 
     private Dependent createDependent(String propertyName, JsonSchema schema) {

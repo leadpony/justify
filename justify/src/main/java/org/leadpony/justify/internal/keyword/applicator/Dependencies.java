@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -66,7 +67,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
     };
 
-    private final Map<String, Dependency> dependencyMap;
+    private final Map<String, Dependent> dependentMap;
 
     private static Dependencies newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
         if (jsonValue.getValueType() == ValueType.OBJECT) {
@@ -95,16 +96,17 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
 
     public Dependencies(JsonValue json, Map<String, Object> map) {
         super(json);
-        dependencyMap = new HashMap<>();
+        Map<String, Dependent> dependentMap = new HashMap<>();
         map.forEach((property, value) -> {
             if (value instanceof JsonSchema) {
-                addDependency(property, (JsonSchema) value);
+                dependentMap.put(property, createDependent(property, (JsonSchema) value));
             } else if (value instanceof Set) {
                 @SuppressWarnings("unchecked")
                 Set<String> requiredProperties = (Set<String>) value;
-                addDependency(property, requiredProperties);
+                dependentMap.put(property, createDependent(property, requiredProperties));
             }
         });
+        this.dependentMap = dependentMap;
     }
 
     @Override
@@ -115,7 +117,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     @Override
     public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-        dependencyMap.values().stream()
+        dependentMap.values().stream()
                 .map(d -> d.createEvaluator(context, schema))
                 .forEach(evaluator::append);
         return evaluator;
@@ -124,7 +126,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     @Override
     public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
-        dependencyMap.values().stream()
+        dependentMap.values().stream()
                 .map(d -> d.createNegatedEvaluator(context, schema))
                 .forEach(evaluator::append);
         return evaluator;
@@ -132,70 +134,64 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
 
     @Override
     public ApplicableLocation getApplicableLocation() {
-        return ApplicableLocation.CHILD;
+        return ApplicableLocation.CURRENT;
     }
 
     @Override
     public boolean containsSchemas() {
-        return dependencyMap.values().stream().anyMatch(Dependency::hasSubschema);
+        return dependentMap.values()
+                .stream()
+                .anyMatch(d -> d instanceof SchemaDependent);
     }
 
     @Override
     public Stream<JsonSchema> getSchemas() {
-        return dependencyMap.values().stream()
-                .filter(Dependency::hasSubschema)
-                .map(d -> (SchemaDependency) d)
-                .map(SchemaDependency::getSubschema);
+        return dependentMap.values().stream()
+                .filter(d -> d instanceof SchemaDependent)
+                .map(d -> (SchemaDependent) d)
+                .map(SchemaDependent::getSubschema);
     }
 
-    /**
-     * Adds a dependency whose value is a JSON schema.
-     *
-     * @param property  the key of the dependency.
-     * @param subschema the value of the dependency.
-     */
-    public void addDependency(String property, JsonSchema subschema) {
-        dependencyMap.put(property, newDependency(property, subschema));
+    @Override
+    public Optional<JsonSchema> findSchema(String token) {
+        if (dependentMap.containsKey(token)) {
+            Dependent dependent = dependentMap.get(token);
+            if (dependent instanceof SchemaDependent) {
+                SchemaDependent schemaDependent = (SchemaDependent) dependent;
+                return Optional.of(schemaDependent.getSubschema());
+            }
+        }
+        return Optional.empty();
     }
 
-    /**
-     * Adds a dependency whose value is a set of property names.
-     *
-     * @param property           the key of the dependency.
-     * @param requiredProperties the names of the required properties.
-     */
-    public void addDependency(String property, Set<String> requiredProperties) {
-        dependencyMap.put(property, newDependency(property, requiredProperties));
-    }
-
-    private Dependency newDependency(String property, JsonSchema subschema) {
+    private Dependent createDependent(String property, JsonSchema subschema) {
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return new TrueSchemaDependency(property, subschema);
+            return new TrueDependent(property, subschema);
         } else if (subschema == JsonSchema.FALSE) {
-            return new FalseSchemaDependency(property);
+            return new FalseDependent(property);
         } else {
-            return new SchemaDependency(property, subschema);
+            return new SchemaDependent(property, subschema);
         }
     }
 
-    private Dependency newDependency(String property, Set<String> requiredProperties) {
+    private Dependent createDependent(String property, Set<String> requiredProperties) {
         if (requiredProperties.isEmpty()) {
-            return new EmptyPropertyDependency(property);
+            return new EmptyPropertyDependent(property);
         } else {
-            return new PropertyDependency(property, requiredProperties);
+            return new PropertyDependent(property, requiredProperties);
         }
     }
 
     /**
-     * Super type of dependencies.
+     * The super type of all dependents.
      *
      * @author leadpony
      */
-    private abstract static class Dependency {
+    private abstract static class Dependent {
 
         private final String property;
 
-        protected Dependency(String property) {
+        protected Dependent(String property) {
             this.property = property;
         }
 
@@ -203,19 +199,15 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
             return property;
         }
 
-        boolean hasSubschema() {
-            return false;
-        }
-
         /**
-         * Creates a new evaluator for this dependency.
+         * Creates a new evaluator for this dependent.
          *
          * @return newly created evaluator.
          */
         abstract Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema);
 
         /**
-         * Creates a new evaluator for the negation of this dependency.
+         * Creates a new negated version of evaluator for this dependent.
          *
          * @return newly created evaluator.
          */
@@ -223,18 +215,15 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     }
 
     /**
-     * A dependency whose value is a JSON schema.
+     * A dependent whose value is a JSON schema.
      *
      * @author leadpony
      */
-    private class SchemaDependency extends Dependency {
+    private class SchemaDependent extends Dependent {
 
-        /*
-         * The subschema to be evaluated.
-         */
         private final JsonSchema subschema;
 
-        protected SchemaDependency(String property, JsonSchema subschema) {
+        protected SchemaDependent(String property, JsonSchema subschema) {
             super(property);
             this.subschema = subschema;
         }
@@ -251,11 +240,6 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
             return new DependentSchemas.NegatedDependentEvaluator(context, schema, keyword, getProperty(), subschema);
         }
 
-        @Override
-        boolean hasSubschema() {
-            return true;
-        }
-
         JsonSchema getSubschema() {
             return subschema;
         }
@@ -264,9 +248,9 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     /**
      * @author leadpony
      */
-    private final class TrueSchemaDependency extends SchemaDependency {
+    private final class TrueDependent extends SchemaDependent {
 
-        private TrueSchemaDependency(String property, JsonSchema subschema) {
+        private TrueDependent(String property, JsonSchema subschema) {
             super(property, subschema);
         }
 
@@ -284,9 +268,9 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     /**
      * @author leadpony
      */
-    private final class FalseSchemaDependency extends SchemaDependency {
+    private final class FalseDependent extends SchemaDependent {
 
-        private FalseSchemaDependency(String property) {
+        private FalseDependent(String property) {
             super(property, JsonSchema.FALSE);
         }
 
@@ -298,15 +282,15 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     }
 
     /**
-     * A dependency whose value is an array of property names.
+     * A dependent whose value is an array of property names.
      *
      * @author leadpony
      */
-    private class PropertyDependency extends Dependency {
+    private class PropertyDependent extends Dependent {
 
         private final Set<String> requiredProperties;
 
-        PropertyDependency(String property, Set<String> requiredProperties) {
+        PropertyDependent(String property, Set<String> requiredProperties) {
             super(property);
             this.requiredProperties = requiredProperties;
         }
@@ -329,9 +313,9 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     /**
      * @author leadpony
      */
-    private class EmptyPropertyDependency extends PropertyDependency {
+    private class EmptyPropertyDependent extends PropertyDependent {
 
-        EmptyPropertyDependency(String property) {
+        EmptyPropertyDependent(String property) {
             super(property, Collections.emptySet());
         }
 
