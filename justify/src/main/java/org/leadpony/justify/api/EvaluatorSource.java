@@ -26,6 +26,13 @@ import java.util.Set;
 public interface EvaluatorSource {
 
     /**
+     * Returns the keyword that provides the evaluators.
+     *
+     * @return the keyword that provides the evaluators.
+     */
+    Keyword getSourceKeyword();
+
+    /**
      * Checks if the evaluator supports the specified instance type. All instance
      * types are supported by default.
      *

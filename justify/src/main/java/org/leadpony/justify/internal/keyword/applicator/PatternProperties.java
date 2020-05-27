@@ -27,6 +27,7 @@ import java.util.regex.PatternSyntaxException;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.KeywordType;
@@ -83,14 +84,19 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        super.link(siblings);
-        this.properties = (Properties) siblings.get("properties");
+    public boolean canEvaluate() {
+        return true;
     }
 
     @Override
-    public boolean canEvaluate() {
-        return this.properties == null;
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        super.getEvaluatorSource(siblings);
+        this.properties = (Properties) siblings.get("properties");
+        if (this.properties == null) {
+            return Optional.of(this);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

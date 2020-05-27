@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -26,6 +27,7 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -54,11 +56,12 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
         if (siblings.containsKey("additionalProperties")) {
             AdditionalProperties additionalProperties = (AdditionalProperties) siblings.get("additionalProperties");
             this.defaultSchema = additionalProperties.getSubschema();
         }
+        return Optional.of(this);
     }
 
     @Override

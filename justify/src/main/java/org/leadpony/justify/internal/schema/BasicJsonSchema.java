@@ -96,10 +96,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     private static List<EvaluatorSource> collectEvaluatorSources(Map<String, Keyword> keywords) {
         List<EvaluatorSource> sources = new ArrayList<>();
         for (Keyword keyword : keywords.values()) {
-            keyword.link(keywords);
-            if (keyword.canEvaluate()) {
-                sources.add((EvaluatorSource) keyword);
-            }
+            keyword.getEvaluatorSource(keywords).ifPresent(sources::add);
         }
         return sources;
     }
@@ -125,8 +122,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     private Evaluator createUnsupportedTypeEvaluator(EvaluatorSource source, EvaluatorContext context,
             InstanceType type) {
         Set<InstanceType> supported = source.getSupportedTypes();
-        // We know that the source came from a keyword.
-        Keyword keyword = (Keyword) source;
+        Keyword keyword = source.getSourceKeyword();
         return new UnsupportedTypeEvaluator(context, this, keyword, supported, type);
     }
 

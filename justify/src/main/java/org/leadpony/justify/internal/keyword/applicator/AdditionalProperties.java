@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.json.JsonValue;
@@ -26,6 +27,7 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -50,10 +52,8 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class AdditionalProperties extends UnaryApplicator {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingSchema("additionalProperties",
+    static final KeywordType TYPE = KeywordTypes.mappingSchema("additionalProperties",
             AdditionalProperties::new);
-
-    private boolean alone;
 
     public AdditionalProperties(JsonValue json, JsonSchema subschema) {
         super(subschema);
@@ -72,13 +72,17 @@ public class AdditionalProperties extends UnaryApplicator {
      * </p>
      */
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        alone = !siblings.containsKey("properties") && !siblings.containsKey("patternProperties");
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        if (!siblings.containsKey("properties") && !siblings.containsKey("patternProperties")) {
+            return Optional.of(this);
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public boolean canEvaluate() {
-        return alone;
+        return true;
     }
 
     @Override

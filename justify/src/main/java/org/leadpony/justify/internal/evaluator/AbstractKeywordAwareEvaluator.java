@@ -36,11 +36,16 @@ public abstract class AbstractKeywordAwareEvaluator extends AbstractContextAware
         this.keyword = keyword;
     }
 
+    protected final Keyword getKeyword() {
+        return keyword;
+    }
+
     @Override
     protected ProblemBuilder newProblemBuilder() {
         ProblemBuilder builder = super.newProblemBuilder();
-        if (this.keyword != null) {
-            builder.withKeyword(this.keyword.name());
+        Keyword keyword = getKeyword();
+        if (keyword != null) {
+            builder.withKeyword(keyword.name());
         }
         return builder;
     }

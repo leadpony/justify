@@ -18,7 +18,9 @@ package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * The type representing "minContains" keyword.
@@ -27,6 +29,8 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  */
 public class MinContains extends AbstractKeyword {
 
+    static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minContains", MinContains::new);
+
     private final int limit;
 
     public MinContains(JsonValue json, int limit) {
@@ -34,12 +38,17 @@ public class MinContains extends AbstractKeyword {
         this.limit = limit;
     }
 
+    @Override
+    public KeywordType getType() {
+        return TYPE;
+    }
+
     /**
      * Returns the value of this keyword.
      *
      * @return the value of this keyword.
      */
-    public int value() {
+    public final int value() {
         return limit;
     }
 }

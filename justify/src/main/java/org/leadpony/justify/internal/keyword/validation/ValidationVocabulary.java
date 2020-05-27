@@ -77,9 +77,11 @@ public enum ValidationVocabulary implements DefaultVocabulary {
             ExclusiveMaximum.TYPE,
             ExclusiveMinimum.TYPE,
             Maximum.TYPE,
+            MaxContains.TYPE, // added
             MaxItems.TYPE,
             MaxLength.TYPE,
             MaxProperties.TYPE,
+            MinContains.TYPE, // added
             Minimum.TYPE,
             MinItems.TYPE,
             MinLength.TYPE,

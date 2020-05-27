@@ -26,6 +26,7 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -70,11 +71,12 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
-        super.link(siblings);
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        super.getEvaluatorSource(siblings);
         if (siblings.containsKey("patternProperties")) {
             this.patternProperties = (PatternProperties) siblings.get("patternProperties");
         }
+        return Optional.of(this);
     }
 
     @Override

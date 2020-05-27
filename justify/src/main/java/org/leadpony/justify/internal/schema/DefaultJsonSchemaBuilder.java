@@ -52,7 +52,7 @@ import org.leadpony.justify.internal.keyword.applicator.AdditionalItems;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalProperties;
 import org.leadpony.justify.internal.keyword.applicator.AllOf;
 import org.leadpony.justify.internal.keyword.applicator.AnyOf;
-import org.leadpony.justify.internal.keyword.applicator.Contains;
+import org.leadpony.justify.internal.keyword.applicator.SimpleContains;
 import org.leadpony.justify.internal.keyword.applicator.Dependencies;
 import org.leadpony.justify.internal.keyword.applicator.Else;
 import org.leadpony.justify.internal.keyword.applicator.If;
@@ -344,7 +344,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Contains(toJson(subschema), subschema));
+        addKeyword(new SimpleContains(toJson(subschema), subschema));
         return this;
     }
 

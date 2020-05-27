@@ -17,7 +17,10 @@
 package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * The type representing "maxContains" keyword.
@@ -26,6 +29,8 @@ import org.leadpony.justify.internal.keyword.AbstractKeyword;
  */
 public class MaxContains extends AbstractKeyword {
 
+    static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("maxContains", MaxContains::new);
+
     private final int limit;
 
     public MaxContains(JsonValue json, int limit) {
@@ -33,12 +38,17 @@ public class MaxContains extends AbstractKeyword {
         this.limit = limit;
     }
 
+    @Override
+    public KeywordType getType() {
+        return TYPE;
+    }
+
     /**
      * Return the value of this keyword.
      *
      * @return the value of this keyword.
      */
-    public int value() {
+    public final int value() {
         return limit;
     }
 }

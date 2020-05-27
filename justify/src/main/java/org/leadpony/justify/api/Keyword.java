@@ -16,6 +16,7 @@
 package org.leadpony.justify.api;
 
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.json.JsonValue;
 
@@ -50,19 +51,21 @@ public interface Keyword {
     KeywordType getType();
 
     /**
-     * Links this keyword with sibling keywords if needed.
-     *
-     * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
-     */
-    default void link(Map<String, Keyword> siblings) {
-    }
-
-    /**
      * Checks if this keyword can evaluate a JSON instance.
      *
      * @return {@code true} if this keyword can evaluate, {@code false} it cannot.
      */
     default boolean canEvaluate() {
         return false;
+    }
+
+    /**
+     * Retunrs the evaluator source if available.
+     *
+     * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
+     * @return the evaluator source.
+     */
+    default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        return Optional.empty();
     }
 }

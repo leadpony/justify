@@ -20,7 +20,7 @@ package org.leadpony.justify.api;
  *
  * @author leadpony
  */
-public interface ApplicatorKeyword extends Keyword, EvaluatorSource, SchemaContainer {
+public interface ApplicatorKeyword extends EvaluationKeyword, SchemaContainer {
 
     /**
      * The location where applicator applies schemas.

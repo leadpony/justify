@@ -56,11 +56,6 @@ public class Referenceable extends AbstractKeyword implements SchemaContainer {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return false;
-    }
-
-    @Override
     public boolean containsSchemas() {
         return true;
     }

@@ -48,14 +48,14 @@ public enum ApplicatorVocabulary implements DefaultVocabulary {
             AdditionalProperties.TYPE,
             AllOf.TYPE,
             AnyOf.TYPE,
-            Contains.TYPE,  // new
+            SimpleContains.TYPE,  // added
             Dependencies.TYPE,
             Items.TYPE,
             Not.TYPE,
             OneOf.TYPE,
             PatternProperties.TYPE,
             Properties.TYPE,
-            PropertyNames.TYPE  // new
+            PropertyNames.TYPE  // added
             ),
 
     DRAFT_07(
@@ -63,17 +63,17 @@ public enum ApplicatorVocabulary implements DefaultVocabulary {
             AdditionalProperties.TYPE,
             AllOf.TYPE,
             AnyOf.TYPE,
-            Contains.TYPE,
+            SimpleContains.TYPE,
             Dependencies.TYPE,
-            Else.TYPE,  // new
-            If.TYPE,  // new
+            Else.TYPE,  // added
+            If.TYPE,  // added
             Items.TYPE,
             Not.TYPE,
             OneOf.TYPE,
             PatternProperties.TYPE,
             Properties.TYPE,
             PropertyNames.TYPE,
-            Then.TYPE  // new
+            Then.TYPE  // added
             ),
 
     DRAFT_2019_09(
@@ -83,7 +83,7 @@ public enum ApplicatorVocabulary implements DefaultVocabulary {
             AdditionalProperties.TYPE,
             AllOf.TYPE,
             AnyOf.TYPE,
-            Contains.TYPE,
+            Contains.TYPE,  // replaced
             Dependencies.TYPE,
             DependentSchemas.TYPE,
             Else.TYPE,

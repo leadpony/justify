@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.json.JsonString;
@@ -28,6 +29,7 @@ import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -120,7 +122,6 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     private final ContentMimeType mimeType;
     private final Map<String, String> parameters;
     private ContentEncodingScheme encodingScheme;
-    private boolean unknownEncodingScheme;
 
     /**
      * Constructs this media type.
@@ -141,21 +142,22 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
         if (siblings.containsKey("contentEncoding")) {
             Keyword keyword = siblings.get("contentEncoding");
             if (keyword instanceof ContentEncoding) {
                 this.encodingScheme = ((ContentEncoding) keyword).scheme();
             } else {
                 // Unknown encoding scheme
-                unknownEncodingScheme = true;
+                return Optional.empty();
             }
         }
+        return Optional.of(this);
     }
 
     @Override
     public boolean canEvaluate() {
-        return !unknownEncodingScheme;
+        return true;
     }
 
     @Override

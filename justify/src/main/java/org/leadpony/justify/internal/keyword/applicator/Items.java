@@ -28,6 +28,7 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -228,11 +229,12 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public void link(Map<String, Keyword> siblings) {
+        public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
             if (siblings.containsKey("additionalItems")) {
                 AdditionalItems additionalItems = (AdditionalItems) siblings.get("additionalItems");
                 this.defaultSchema = additionalItems.getSubschema();
             }
+            return Optional.of(this);
         }
 
         @Override

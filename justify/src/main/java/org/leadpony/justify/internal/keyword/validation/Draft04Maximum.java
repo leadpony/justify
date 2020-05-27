@@ -17,9 +17,11 @@ package org.leadpony.justify.internal.keyword.validation;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
@@ -52,11 +54,12 @@ public class Draft04Maximum extends Maximum {
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
         if (siblings.containsKey("exclusiveMaximum")) {
             ExclusiveMaximum keyword = (ExclusiveMaximum) siblings.get("exclusiveMaximum");
             exclusive = keyword.value;
         }
+        return Optional.of(this);
     }
 
     @Override

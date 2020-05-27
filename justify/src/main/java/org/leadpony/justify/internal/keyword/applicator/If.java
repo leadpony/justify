@@ -17,11 +17,13 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
@@ -42,10 +44,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class If extends Conditional {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingSchema("if", If::new);
-
-    private JsonSchema thenSchema;
-    private JsonSchema elseSchema;
+    static final KeywordType TYPE = KeywordTypes.mappingSchema("if", If::new);
 
     public If(JsonValue json, JsonSchema schema) {
         super(schema);
@@ -57,7 +56,15 @@ public class If extends Conditional {
     }
 
     @Override
-    public void link(Map<String, Keyword> siblings) {
+    public boolean canEvaluate() {
+        return true;
+    }
+
+    @Override
+    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        JsonSchema thenSchema = null;
+        JsonSchema elseSchema = null;
+
         if (siblings.containsKey("then")) {
             Keyword thenKeyword = siblings.get("then");
             if (thenKeyword instanceof UnaryApplicator) {
@@ -70,30 +77,43 @@ public class If extends Conditional {
                 elseSchema = ((UnaryApplicator) elseKeyword).getSubschema();
             }
         }
+
+        if (thenSchema != null || elseSchema != null) {
+            return Optional.of(createEvaluatorSource(thenSchema, elseSchema));
+        } else {
+            return Optional.empty();
+        }
     }
 
-    @Override
-    public boolean canEvaluate() {
-        return thenSchema != null || elseSchema != null;
-    }
+    private EvaluatorSource createEvaluatorSource(JsonSchema thenSchema, JsonSchema elseSchema) {
+        final Keyword keyword = this;
+        return new EvaluatorSource() {
 
-    @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
-        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
-                : Evaluator.ALWAYS_TRUE;
-        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(context, type)
-                : Evaluator.ALWAYS_TRUE;
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
-    }
+            @Override
+            public Keyword getSourceKeyword() {
+                return keyword;
+            }
 
-    @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
-        Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
-        Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
-                : getSubschema().createNegatedEvaluator(context, type);
-        Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
-                : getSubschema().createEvaluator(context, type);
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+            @Override
+            public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+                Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
+                Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
+                        : Evaluator.ALWAYS_TRUE;
+                Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(context, type)
+                        : Evaluator.ALWAYS_TRUE;
+                return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+            }
+
+            @Override
+            public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
+                    InstanceType type) {
+                Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
+                Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
+                        : getSubschema().createNegatedEvaluator(context, type);
+                Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
+                        : getSubschema().createEvaluator(context, type);
+                return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+            }
+        };
     }
 }
