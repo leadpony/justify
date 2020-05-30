@@ -29,7 +29,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
  * Evaluator for "oneOf" boolean logic.
@@ -40,8 +40,8 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
 
     private final List<DeferredEvaluator> operands;
     private final List<DeferredEvaluator> negated;
-    private List<ProblemList> problemLists;
-    private List<ProblemList> negatedProblemLists;
+    private List<ProblemBranch> problemBranches;
+    private List<ProblemBranch> negatedProblemBranches;
     private long evaluationsAsTrue;
     private final Event closingEvent;
 
@@ -62,10 +62,10 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         evaluateAllNegated(event, depth, dispatcher);
         if (depth == 0 && event == closingEvent) {
             if (evaluationsAsTrue == 0) {
-                dispatchProblems(dispatcher, problemLists);
+                dispatchProblems(dispatcher, problemBranches);
                 return Result.FALSE;
             } else if (evaluationsAsTrue > 1) {
-                dispatchNegatedProblems(dispatcher, negatedProblemLists);
+                dispatchNegatedProblems(dispatcher, negatedProblemBranches);
                 return Result.FALSE;
             }
             return Result.TRUE;
@@ -104,17 +104,17 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     }
 
     private void addBadEvaluator(DeferredEvaluator evaluator) {
-        if (this.problemLists == null) {
-            this.problemLists = new ArrayList<>();
+        if (this.problemBranches == null) {
+            this.problemBranches = new ArrayList<>();
         }
-        this.problemLists.add(evaluator.problems());
+        this.problemBranches.add(evaluator.problems());
     }
 
     private void addBadNegatedEvaluator(DeferredEvaluator evaluator) {
-        if (this.negatedProblemLists == null) {
-            this.negatedProblemLists = new ArrayList<>();
+        if (this.negatedProblemBranches == null) {
+            this.negatedProblemBranches = new ArrayList<>();
         }
-        this.negatedProblemLists.add(evaluator.problems());
+        this.negatedProblemBranches.add(evaluator.problems());
     }
 
     private List<DeferredEvaluator> createEvaluators(Stream<Evaluator> stream) {

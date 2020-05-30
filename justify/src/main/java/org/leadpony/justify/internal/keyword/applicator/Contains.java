@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.evaluator.CountingItemsEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.keyword.validation.MaxContains;
 import org.leadpony.justify.internal.keyword.validation.MinContains;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 import jakarta.json.JsonValue;
 
@@ -186,7 +186,7 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result finish(int validItems, List<List<Problem>> problems, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
             return reportTooFewValidItems(dispatcher);
         }
 
@@ -224,7 +224,7 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result finish(int validItems, List<List<Problem>> problems, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
             return Result.TRUE;
         }
 
@@ -286,7 +286,7 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result finish(int validItems, List<List<Problem>> problems, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
             Result result = Result.TRUE;
 
             if (validItems < lowerBound) {
@@ -336,7 +336,7 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result finish(int validItems, List<List<Problem>> problems, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
             if (validItems < lowerBound || validItems > upperBound) {
                 return Result.TRUE;
             }
@@ -345,19 +345,19 @@ public class Contains extends SimpleContains {
         }
 
         private Problem buildProblem() {
-            ProblemList first = ProblemList.newList();
-            first.add(newProblemBuilder()
-                    .withKeyword(getMinKeyword().name())
-                    .withMessage(Message.INSTANCE_PROBLEM_MAXCONTAINS)
-                    .withParameter("limit", lowerBound - 1)
-                    .build());
+            ProblemBranch first = ProblemBranch.of(
+                    newProblemBuilder()
+                        .withKeyword(getMinKeyword().name())
+                        .withMessage(Message.INSTANCE_PROBLEM_MAXCONTAINS)
+                        .withParameter("limit", lowerBound - 1)
+                        .build());
 
-            ProblemList second = ProblemList.newList();
-            second.add(newProblemBuilder()
-                    .withKeyword(getMaxKeyword().name())
-                    .withMessage(Message.INSTANCE_PROBLEM_MINCONTAINS)
-                    .withParameter("limit", upperBound + 1)
-                    .build());
+            ProblemBranch second = ProblemBranch.of(
+                    newProblemBuilder()
+                        .withKeyword(getMaxKeyword().name())
+                        .withMessage(Message.INSTANCE_PROBLEM_MINCONTAINS)
+                        .withParameter("limit", upperBound + 1)
+                        .build());
 
             return newProblemBuilder()
                     .withBranch(first)

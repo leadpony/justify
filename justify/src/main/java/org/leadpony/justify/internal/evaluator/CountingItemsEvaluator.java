@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 import jakarta.json.stream.JsonParser.Event;
 
@@ -39,8 +40,8 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordAwareEvaluat
     private int validItems;
 
     private Evaluator itemEvaluator;
-    private List<Problem> problems;
-    private List<List<Problem>> problemBranches;
+    private ProblemBranch problems;
+    private List<ProblemBranch> problemBranches;
 
     protected CountingItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
             JsonSchema subschema) {
@@ -68,12 +69,12 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordAwareEvaluat
         return Result.PENDING;
     }
 
-    protected abstract Result finish(int validItems, List<List<Problem>> problems, ProblemDispatcher dispatcher);
+    protected abstract Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher);
 
     @Override
     public final void dispatchProblem(Problem problem) {
         if (this.problems == null) {
-            this.problems = new ArrayList<>();
+            this.problems = new ProblemBranch();
         }
         this.problems.add(problem);
     }

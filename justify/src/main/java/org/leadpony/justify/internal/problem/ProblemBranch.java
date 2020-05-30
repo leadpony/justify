@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,35 @@
 package org.leadpony.justify.internal.problem;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.leadpony.justify.api.Problem;
 
 /**
- * List specialized for {@link Problem}.
+ * A branch of problems.
  *
  * @author leadpony
  */
-public interface ProblemList extends List<Problem> {
+@SuppressWarnings("serial")
+public class ProblemBranch extends ArrayList<Problem> {
 
-    default boolean isResolvable() {
+    public static ProblemBranch of(Problem problem) {
+        ProblemBranch branch = new ProblemBranch(1);
+        branch.add(problem);
+        return branch;
+    }
+
+    public ProblemBranch() {
+    }
+
+    public ProblemBranch(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public boolean isResolvable() {
         for (Problem problem : this) {
             if (!problem.isResolvable()) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * Creates a new instance of this type.
-     *
-     * @return newly created list.
-     */
-    static ProblemList newList() {
-        /**
-         * An array list of problems.
-         *
-         * @author leadpony
-         */
-        @SuppressWarnings("serial")
-        class ArrayProblemList extends ArrayList<Problem> implements ProblemList {
-        }
-        return new ArrayProblemList();
     }
 }

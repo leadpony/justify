@@ -28,7 +28,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
  * @author leadpony
@@ -62,7 +62,7 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
     }
 
     private int evaluateAll(Event event, int depth, ProblemDispatcher dispatcher) {
-        List<ProblemList> problemLists = new ArrayList<>();
+        List<ProblemBranch> problemBranches = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(operands);
         int evaluationsAsTrue = 0;
         while (it.hasNext()) {
@@ -71,27 +71,27 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
             if (result == Result.TRUE) {
                 ++evaluationsAsTrue;
             } else if (result == Result.FALSE) {
-                problemLists.add(current.problems());
+                problemBranches.add(current.problems());
             } else {
                 assert false;
             }
         }
         if (evaluationsAsTrue == 0) {
-            dispatchProblems(dispatcher, problemLists);
+            dispatchProblems(dispatcher, problemBranches);
         }
         return evaluationsAsTrue;
     }
 
     private void evaluateAllNegated(Event event, int depth, ProblemDispatcher dispatcher) {
-        List<ProblemList> problemLists = new ArrayList<>();
+        List<ProblemBranch> problemBranches = new ArrayList<>();
         Iterator<DeferredEvaluator> it = iterator(negated);
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
             Result result = current.evaluate(event, depth, dispatcher);
             if (result == Result.FALSE) {
-                problemLists.add(current.problems());
+                problemBranches.add(current.problems());
             }
         }
-        dispatchNegatedProblems(dispatcher, problemLists);
+        dispatchNegatedProblems(dispatcher, problemBranches);
     }
 }

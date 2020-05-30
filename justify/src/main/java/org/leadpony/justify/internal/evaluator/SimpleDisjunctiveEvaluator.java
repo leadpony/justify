@@ -30,7 +30,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
  * Evaluator for "anyOf" boolean logic.
@@ -41,7 +41,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     implements Iterable<DeferredEvaluator> {
 
     private final List<DeferredEvaluator> operands = new ArrayList<>();
-    private List<ProblemList> problemLists;
+    private List<ProblemBranch> problemBranches;
 
     SimpleDisjunctiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
         super(context, schema, keyword);
@@ -71,32 +71,32 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     protected void addBadEvaluator(DeferredEvaluator evaluator) {
-        if (this.problemLists == null) {
-            this.problemLists = new ArrayList<>();
+        if (this.problemBranches == null) {
+            this.problemBranches = new ArrayList<>();
         }
-        problemLists.add(evaluator.problems());
+        problemBranches.add(evaluator.problems());
     }
 
     protected Result dispatchProblems(ProblemDispatcher dispatcher) {
-        if (problemLists == null) {
+        if (problemBranches == null) {
             dispatchDefaultProblem(dispatcher);
         } else {
-            assert !problemLists.isEmpty();
+            assert !problemBranches.isEmpty();
             dispatchProblemBranches(dispatcher);
         }
         return Result.FALSE;
     }
 
     private void dispatchProblemBranches(ProblemDispatcher dispatcher) {
-        List<ProblemList> filterdLists = this.problemLists.stream()
-            .filter(ProblemList::isResolvable)
+        List<ProblemBranch> filteredBranches = this.problemBranches.stream()
+            .filter(ProblemBranch::isResolvable)
             .collect(Collectors.toList());
-        if (filterdLists.isEmpty()) {
-            filterdLists = this.problemLists;
+        if (filteredBranches.isEmpty()) {
+            filteredBranches = this.problemBranches;
         }
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(getMessage())
-                .withBranches(filterdLists);
+                .withBranches(filteredBranches);
         dispatcher.dispatchProblem(builder.build());
     }
 

@@ -24,7 +24,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
  * Evaluator which retains the found problems and dispatches them later.
@@ -34,7 +34,7 @@ import org.leadpony.justify.internal.problem.ProblemList;
 class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     private final Evaluator evaluator;
-    private ProblemList problems;
+    private ProblemBranch problemBranch;
 
     /**
      * Constructs this evaluator.
@@ -53,10 +53,10 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
     @Override
     public void dispatchProblem(Problem problem) {
         requireNonNull(problem, "problem");
-        if (this.problems == null) {
-            this.problems = ProblemList.newList();
+        if (this.problemBranch == null) {
+            this.problemBranch = new ProblemBranch();
         }
-        this.problems.add(problem);
+        this.problemBranch.add(problem);
     }
 
     /**
@@ -73,7 +73,7 @@ class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
      *
      * @return the problems found by this evaluator.
      */
-    ProblemList problems() {
-        return this.problems;
+    ProblemBranch problems() {
+        return this.problemBranch;
     }
 }

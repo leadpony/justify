@@ -25,7 +25,7 @@ import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemList;
+import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
  * Skeletal implementation for {@link ExclusiveEvaluator} and {@link SimpleExclusiveEvaluator}.
@@ -37,23 +37,23 @@ abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
         super(context, schema, keyword);
     }
 
-    protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
-        List<ProblemList> filteredLists = problemLists.stream()
-                .filter(ProblemList::isResolvable)
+    protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemBranch> problemBranches) {
+        List<ProblemBranch> filteredBranches = problemBranches.stream()
+                .filter(ProblemBranch::isResolvable)
                 .collect(Collectors.toList());
-        if (filteredLists.isEmpty()) {
-            filteredLists = problemLists;
+        if (filteredBranches.isEmpty()) {
+            filteredBranches = problemBranches;
         }
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
-                .withBranches(filteredLists);
+                .withBranches(filteredBranches);
         dispatcher.dispatchProblem(builder.build());
     }
 
-    protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemList> problemLists) {
+    protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemBranch> problemBranches) {
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_MANY)
-                .withBranches(problemLists);
+                .withBranches(problemBranches);
         dispatcher.dispatchProblem(builder.build());
     }
 }

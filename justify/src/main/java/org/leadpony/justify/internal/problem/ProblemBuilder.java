@@ -134,7 +134,7 @@ public class ProblemBuilder {
      *               built.
      * @return this builder.
      */
-    public ProblemBuilder withBranch(ProblemList branch) {
+    public ProblemBuilder withBranch(ProblemBranch branch) {
         if (this.branches == null) {
             this.branches = new ArrayList<>();
         }
@@ -148,8 +148,8 @@ public class ProblemBuilder {
      * @param branches the branches of problems.
      * @return this builder.
      */
-    public ProblemBuilder withBranches(List<ProblemList> branches) {
-        for (ProblemList branch : branches) {
+    public ProblemBuilder withBranches(List<ProblemBranch> branches) {
+        for (ProblemBranch branch : branches) {
             withBranch(branch);
         }
         return this;
