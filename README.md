@@ -25,6 +25,10 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JS
 _For Justify version 2.x users:_
 Please refer to [old README](./README-v2.md) instead of this one for more appropriate instructions.
 
+The difference between Justify version 2.x and 3.x is:
+* Justify 2.x uses JSON-P API version 1.x, which is defined in the old package `javax.json`.
+* Justify 3.x uses JSON-P API version 2.x, which is defined in the new package `jakarta.json`.
+
 ### Minimum Setup
 
 This software is available in the [Maven Central Repository] and the following dependency should be added to your build.

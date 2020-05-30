@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## 3.0.0-RC2 - 2020-05-12
+_This is a pre-release because the Jakarta JSON Processing API is also a pre-release._
+
 ### Added
 - A new API `JsonValidationService.newInstance(JsonProvider)`.
 
@@ -12,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A bug that was causing `uniqueItems` keyword with `false` value to produce wrong validation result.
 
 ## 3.0.0-RC1 - 2020-04-27
+_This is a pre-release because the Jakarta JSON Processing API is also a pre-release._
+
 ### Changed
 - Updated Jakarta JSON Processing API to 2.0.0, which causes the API package `javax.json` to be migrated to `jakarta.json`.
 
