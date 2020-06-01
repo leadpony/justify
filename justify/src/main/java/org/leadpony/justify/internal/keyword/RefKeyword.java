@@ -20,16 +20,9 @@ import java.net.URI;
 import org.leadpony.justify.api.Keyword;
 
 /**
- * A special keyword which provides an identifier of the schema.
- *
  * @author leadpony
  */
-public interface IdKeyword extends Keyword {
+public interface RefKeyword extends Keyword {
 
-    /**
-     * Returns the identifier as a URI.
-     *
-     * @return the identifier as a URI.
-     */
     URI value();
 }

@@ -17,7 +17,6 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +42,7 @@ import org.leadpony.justify.internal.base.URIs;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.IdKeyword;
+import org.leadpony.justify.internal.keyword.RefKeyword;
 import org.leadpony.justify.internal.keyword.Referenceable;
 import org.leadpony.justify.internal.keyword.UnknownKeyword;
 import org.leadpony.justify.internal.keyword.core.Ref;
@@ -74,8 +74,9 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
     public JsonSchemaReaderImpl(
             PointerAwareJsonParser parser,
             JsonService jsonService,
-            SchemaSpec spec) {
-        this(parser, jsonService, spec.getBareKeywordTypes(), Collections.emptyMap());
+            SchemaSpec spec,
+            Map<String, Object> config) {
+        this(parser, jsonService, spec.getBareKeywordTypes(), config);
     }
 
     public JsonSchemaReaderImpl(
@@ -197,7 +198,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
             final String name = parser.getString();
             if (parser.hasNext()) {
                 builder.add(name, parseValue(parser.next()));
-                if (name.equals("$ref")) {
+                if (name.equals("$ref") || name.equals("$recursiveRef")) {
                     reference = createReference();
                 }
             } else {
@@ -385,13 +386,13 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
     class SchemaBuilder extends LinkedHashMap<String, Keyword> {
 
         private URI id;
-        private boolean referencing;
+        private URI refId;
 
         void add(String name, Keyword keyword) {
             if (keyword instanceof IdKeyword) {
                 this.id = ((IdKeyword) keyword).value();
             } else if (keyword instanceof Ref) {
-                referencing = true;
+                refId = ((RefKeyword) keyword).value();
             }
             super.put(name, keyword);
         }
@@ -400,8 +401,8 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
             if (isEmpty()) {
                 return JsonSchema.EMPTY;
             }
-            if (referencing) {
-                return new SchemaReference(this.id, json, this);
+            if (refId != null) {
+                return new SchemaReference(this.id, json, this, this.refId);
             } else {
                 return BasicJsonSchema.of(this.id, json, this);
             }

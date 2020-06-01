@@ -46,22 +46,36 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 public class SchemaReference extends AbstractJsonSchema {
 
     private URI targetId;
+    private URI refId;
     private JsonSchema referencedSchema;
 
     /**
      * Constructs this schema reference.
      *
-     * @param id          the identifier of this schema, may be {@code null}.
-     * @param json        the JSON representation of this schema.
-     * @param keywords    all keywords.
+     * @param id       the identifier of this schema, may be {@code null}.
+     * @param json     the JSON representation of this schema.
+     * @param keywords all keywords.
      */
     public SchemaReference(URI id, JsonObject json, Map<String, Keyword> keywords) {
+        this(id, json, keywords, ((Ref) keywords.get("$ref")).value());
+    }
+
+    /**
+     * Constructs this schema reference.
+     *
+     * @param id       the identifier of this schema, may be {@code null}.
+     * @param json     the JSON representation of this schema.
+     * @param keywords all keywords.
+     * @param refId    the identifier of the referenced schema.
+     */
+    public SchemaReference(URI id, JsonObject json, Map<String, Keyword> keywords, URI refId) {
         super(id, json, keywords);
+        this.refId = refId;
         this.referencedSchema = new NonexistentSchema();
         if (hasAbsoluteId()) {
-            this.targetId = id().resolve(ref());
+            this.targetId = id().resolve(refId);
         } else {
-            this.targetId = ref();
+            this.targetId = refId;
         }
     }
 
@@ -71,8 +85,7 @@ public class SchemaReference extends AbstractJsonSchema {
      * @return the value of the keyword "$ref".
      */
     public URI ref() {
-        Ref ref = getKeyword("$ref");
-        return ref.value();
+        return refId;
     }
 
     /**

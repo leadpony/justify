@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,6 +83,7 @@ import org.leadpony.justify.spi.FormatAttribute;
 class DefaultJsonValidationService extends JsonService implements JsonValidationService, KeywordValueSetLoader {
 
     private final SchemaCatalog schemaCatalog;
+    private final Map<String, Object> metaschemaConfig;
     private final JsonSchemaReaderFactory defaultSchemaReaderFactory;
     private final Map<Class<?>, Set<?>> keywordValuesCache = new HashMap<>();
 
@@ -97,6 +99,7 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
     DefaultJsonValidationService(JsonProvider jsonProvider) {
         super(jsonProvider);
         this.schemaCatalog = createSchemaCatalog();
+        this.metaschemaConfig = createMetaschemaConfig(this.schemaCatalog);
         this.defaultSchemaReaderFactory = createSchemaReaderFactoryBuilder().build();
     }
 
@@ -421,11 +424,17 @@ class DefaultJsonValidationService extends JsonService implements JsonValidation
         return catalog;
     }
 
+    private static Map<String, Object> createMetaschemaConfig(SchemaCatalog catalog) {
+        Map<String, Object> config = new HashMap<>();
+        config.put(JsonSchemaReader.RESOLVERS, Arrays.asList(catalog));
+        return config;
+    }
+
     private JsonSchema readMetaschema(SchemaSpec spec, InputStream in) {
         JsonProvider jsonProvider = getJsonProvider();
         JsonParser realParser = jsonProvider.createParser(in);
         PointerAwareJsonParser parser = new DefaultPointerAwareJsonParser(realParser, jsonProvider);
-        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec)) {
+        try (JsonSchemaReader reader = new JsonSchemaReaderImpl(parser, this, spec, this.metaschemaConfig)) {
             return reader.read();
         }
     }
