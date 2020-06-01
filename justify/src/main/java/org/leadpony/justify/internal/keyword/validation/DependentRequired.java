@@ -110,7 +110,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         LogicalEvaluator combined = Evaluators.conjunctive(type);
         map.values().stream()
                 .map(d -> d.createEvaluator(context, schema))
@@ -119,7 +119,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         LogicalEvaluator combined = Evaluators.disjunctive(context, schema, this, type);
         map.values().stream()
                 .map(d -> d.createNegatedEvaluator(context, schema))

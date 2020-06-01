@@ -93,7 +93,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (names.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         } else {
@@ -102,7 +102,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (names.isEmpty()) {
             return context.createAlwaysFalseEvaluator(schema);
         } else {

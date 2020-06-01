@@ -22,6 +22,7 @@ import java.util.Set;
  * A source of instance evaluators.
  *
  * @author leadpony
+ * @since 4.0
  */
 public interface EvaluatorSource {
 
@@ -59,14 +60,14 @@ public interface EvaluatorSource {
      *
      * @param context the context shared by all evaluators in the current
      *                validation, never be {@code null}.
-     * @param schema  the owning schema of this keyword, never be {@code null}.
      * @param type    the type of the target JSON instance to validate, never be
      *                {@code null}.
+     * @param schema  the owning schema of this keyword, never be {@code null}.
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
      */
-    default Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    default Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 
@@ -75,14 +76,14 @@ public interface EvaluatorSource {
      *
      * @param context the context shared by all evaluators in the current
      *                validation, never be {@code null}.
-     * @param schema  the owning schema of this keyword, cannot be {@code null}.
      * @param type    the type of the target JSON instance to validate, cannot be
      *                {@code null}.
+     * @param schema  the owning schema of this keyword, cannot be {@code null}.
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
      */
-    default Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    default Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 }

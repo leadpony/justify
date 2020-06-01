@@ -72,7 +72,7 @@ public class PropertyNames extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema, subschema);
@@ -82,7 +82,7 @@ public class PropertyNames extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return context.createAlwaysFalseEvaluator(subschema);

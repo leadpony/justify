@@ -58,12 +58,12 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return createSimpleItemsEvaluator(context, schema);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return createSimpleNegatedItemsEvaluator(context, schema);
     }
 

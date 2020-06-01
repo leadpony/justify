@@ -43,7 +43,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
         return new AbstractKeywordAwareEvaluator(context, schema, this) {
@@ -65,7 +65,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
         return new AbstractKeywordAwareEvaluator(context, schema, this) {

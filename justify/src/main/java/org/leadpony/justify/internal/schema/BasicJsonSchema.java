@@ -104,7 +104,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     protected final Evaluator createEvaluatorFromKeyword(EvaluatorSource source, EvaluatorContext context,
             InstanceType type) {
         if (source.supportsType(type)) {
-            return source.createEvaluator(context, this, type);
+            return source.createEvaluator(context, type, this);
         } else {
             return Evaluator.ALWAYS_TRUE;
         }
@@ -113,7 +113,7 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     protected final Evaluator createNegatedEvaluatorFromKeyword(EvaluatorSource source, EvaluatorContext context,
             InstanceType type) {
         if (source.supportsType(type)) {
-            return source.createNegatedEvaluator(context, this, type);
+            return source.createNegatedEvaluator(context, type, this);
         } else {
             return createUnsupportedTypeEvaluator(source, context, type);
         }

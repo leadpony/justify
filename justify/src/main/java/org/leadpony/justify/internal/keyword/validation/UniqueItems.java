@@ -68,7 +68,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (unique) {
             return new AssertionEvaluator(context, schema, this);
         } else {
@@ -77,7 +77,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (unique) {
             return new NegatedAssertionEvaluator(context, schema, this);
         } else {

@@ -64,12 +64,12 @@ public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluator
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return new MinItems.AssertionEvaluator(context, schema, this, limit + 1);
     }
 

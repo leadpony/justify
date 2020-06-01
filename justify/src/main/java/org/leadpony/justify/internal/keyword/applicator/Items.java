@@ -122,7 +122,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             if (subschema == JsonSchema.FALSE) {
                 return createForbiddenItemsEvaluator(context, schema);
             } else {
@@ -131,7 +131,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 return createNegatedForbiddenItemsEvaluator(context, schema);
             } else {
@@ -238,12 +238,12 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             return decorateEvaluator(createItemsEvaluator(context, schema), context);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
         }
 

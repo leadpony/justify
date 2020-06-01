@@ -89,14 +89,14 @@ public class Contains extends SimpleContains {
                 }
 
                 @Override
-                public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                        InstanceType type) {
+                public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
+                        ObjectJsonSchema schema) {
                     return new BoundedItemsEvaluator(context, schema, maxContains, minContains);
                 }
 
                 @Override
-                public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                        InstanceType type) {
+                public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
+                        ObjectJsonSchema schema) {
                     return new OutOfBoundsItemsEvaluator(context, schema, maxContains, minContains);
                 }
             };
@@ -111,14 +111,14 @@ public class Contains extends SimpleContains {
                     }
 
                     @Override
-                    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                            InstanceType type) {
+                    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
+                            ObjectJsonSchema schema) {
                         return new LowerBoundedItemsEvaluator(context, schema, minContains, bound);
                     }
 
                     @Override
-                    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                            InstanceType type) {
+                    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
+                            ObjectJsonSchema schema) {
                         return new UpperBoundedItemsEvaluator(context, schema, minContains,
                                 bound - 1 // At most bound - 1
                                 );
@@ -135,14 +135,14 @@ public class Contains extends SimpleContains {
                     }
 
                     @Override
-                    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                            InstanceType type) {
+                    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
+                            ObjectJsonSchema schema) {
                         return Evaluator.ALWAYS_TRUE;
                     }
 
                     @Override
-                    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                            InstanceType type) {
+                    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
+                            ObjectJsonSchema schema) {
                         return context.createAlwaysFalseEvaluator(schema);
                     }
                 };

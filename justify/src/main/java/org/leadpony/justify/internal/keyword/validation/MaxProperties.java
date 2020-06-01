@@ -63,12 +63,12 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return new MinProperties.AssertionEvaluator(context, schema, this, limit + 1);
     }
 

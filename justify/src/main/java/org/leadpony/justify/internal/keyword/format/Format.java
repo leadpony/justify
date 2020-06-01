@@ -131,7 +131,7 @@ public class Format extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         JsonValue value = context.getParser().getValue();
         if (test(value)) {
             return Evaluator.ALWAYS_TRUE;
@@ -148,7 +148,7 @@ public class Format extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         JsonValue value = context.getParser().getValue();
         if (!test(value)) {
             return Evaluator.ALWAYS_TRUE;

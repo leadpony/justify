@@ -63,12 +63,12 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         return new AssertionEvaluator(context, schema, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (limit > 0) {
             return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
         } else {

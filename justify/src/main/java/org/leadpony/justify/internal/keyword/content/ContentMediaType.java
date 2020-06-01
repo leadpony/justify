@@ -171,7 +171,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         String value = context.getParser().getString();
         if (testValue(value, context, true)) {
             return Evaluator.ALWAYS_TRUE;
@@ -187,7 +187,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         String value = context.getParser().getString();
         if (!testValue(value, context, false)) {
             return Evaluator.ALWAYS_TRUE;

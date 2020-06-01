@@ -96,7 +96,7 @@ public class AdditionalProperties extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         if (getSubschema() == JsonSchema.FALSE) {
             return createForbiddenPropertiesEvaluator(context, schema);
         } else {
@@ -105,7 +105,7 @@ public class AdditionalProperties extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
             return createNegatedForbiddenPropertiesEvaluator(context, schema);

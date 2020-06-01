@@ -95,7 +95,7 @@ public class If extends Conditional {
             }
 
             @Override
-            public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+            public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
                 Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
                 Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
                         : Evaluator.ALWAYS_TRUE;
@@ -105,8 +105,8 @@ public class If extends Conditional {
             }
 
             @Override
-            public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
-                    InstanceType type) {
+            public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
+                    ObjectJsonSchema schema) {
                 Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
                 Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
                         : getSubschema().createNegatedEvaluator(context, type);

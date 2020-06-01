@@ -152,7 +152,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -172,7 +172,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -216,7 +216,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
@@ -236,7 +236,7 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
             InstanceType narrowerType = toNarrowType(type, context);
             if (!testType(narrowerType)) {
                 return Evaluator.ALWAYS_TRUE;
