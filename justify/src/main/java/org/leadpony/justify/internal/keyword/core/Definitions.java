@@ -59,7 +59,7 @@ public class Definitions extends AbstractKeyword implements SchemaContainer {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return this.definitionMap.values().stream();
     }
 

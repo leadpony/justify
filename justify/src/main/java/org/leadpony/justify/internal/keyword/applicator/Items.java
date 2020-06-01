@@ -145,7 +145,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Stream<JsonSchema> getSchemas() {
+        public Stream<JsonSchema> getSchemasAsStream() {
             return Stream.of(subschema);
         }
 
@@ -253,7 +253,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Stream<JsonSchema> getSchemas() {
+        public Stream<JsonSchema> getSchemasAsStream() {
             return this.subschemas.stream();
         }
 

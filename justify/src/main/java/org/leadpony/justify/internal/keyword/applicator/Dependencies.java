@@ -145,7 +145,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return dependentMap.values().stream()
                 .filter(d -> d instanceof SchemaDependent)
                 .map(d -> (SchemaDependent) d)

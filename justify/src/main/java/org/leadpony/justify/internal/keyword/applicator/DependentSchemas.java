@@ -94,7 +94,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return dependentMap.values().stream().map(Dependent::getSubschema);
     }
 

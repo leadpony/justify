@@ -47,6 +47,7 @@ public interface Keyword {
      * Returns the type of this keyword.
      *
      * @return the instance of {@link KeywordType}.
+     * @since 4.0
      */
     KeywordType getType();
 
@@ -54,6 +55,7 @@ public interface Keyword {
      * Checks if this keyword can evaluate a JSON instance.
      *
      * @return {@code true} if this keyword can evaluate, {@code false} it cannot.
+     * @since 4.0
      */
     default boolean canEvaluate() {
         return false;
@@ -64,6 +66,7 @@ public interface Keyword {
      *
      * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
      * @return the evaluator source.
+     * @since 4.0
      */
     default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
         return Optional.empty();

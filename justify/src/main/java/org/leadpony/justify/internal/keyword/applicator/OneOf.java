@@ -57,15 +57,15 @@ public class OneOf extends NaryBooleanLogic {
     @Override
     public LogicalEvaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema, InstanceType type) {
         return Evaluators.exclusive(context, schema, this, type,
-                getSchemas().map(s -> s.createEvaluator(context, type)),
-                getSchemas().map(s -> s.createNegatedEvaluator(context, type)));
+                getSchemasAsStream().map(s -> s.createEvaluator(context, type)),
+                getSchemasAsStream().map(s -> s.createNegatedEvaluator(context, type)));
     }
 
     @Override
     public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema,
             InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.notExclusive(context, schema, this, type);
-        getSchemas()
+        getSchemasAsStream()
                 .map(s -> s.createNegatedEvaluator(context, type))
                 .forEach(evaluator::append);
         return evaluator;

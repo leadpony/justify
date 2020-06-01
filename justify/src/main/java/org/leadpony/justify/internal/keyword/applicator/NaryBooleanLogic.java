@@ -51,7 +51,7 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return this.subschemas.stream();
     }
 

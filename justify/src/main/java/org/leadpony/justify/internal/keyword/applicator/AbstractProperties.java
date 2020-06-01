@@ -85,7 +85,7 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return propertyMap.values().stream();
     }
 

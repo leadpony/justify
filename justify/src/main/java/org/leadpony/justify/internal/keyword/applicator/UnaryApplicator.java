@@ -45,7 +45,7 @@ abstract class UnaryApplicator extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return Stream.of(subschema);
     }
 

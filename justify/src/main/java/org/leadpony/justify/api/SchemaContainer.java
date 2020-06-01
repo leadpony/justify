@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  * A container of JSON schemas.
  *
  * @author leadpony
+ * @since 4.0
  */
 public interface SchemaContainer {
 
@@ -40,7 +41,7 @@ public interface SchemaContainer {
      *
      * @return the stream of schemas.
      */
-    default Stream<JsonSchema> getSchemas() {
+    default Stream<JsonSchema> getSchemasAsStream() {
         return Stream.empty();
     }
 

@@ -61,7 +61,7 @@ public class Referenceable extends AbstractKeyword implements SchemaContainer {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemas() {
+    public Stream<JsonSchema> getSchemasAsStream() {
         return Stream.of(subschema);
     }
 

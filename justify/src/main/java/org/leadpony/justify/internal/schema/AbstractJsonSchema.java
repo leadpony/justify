@@ -130,7 +130,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     public Stream<JsonSchema> getSubschemas() {
         return getContainerKeywordsAsStream()
                 .filter(SchemaContainer::containsSchemas)
-                .flatMap(SchemaContainer::getSchemas);
+                .flatMap(SchemaContainer::getSchemasAsStream);
     }
 
     @Override
@@ -138,7 +138,7 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         return getApplicatorKeywordsAsStream()
                 .filter(ApplicatorKeyword::containsSchemas)
                 .filter(keyword -> keyword.getApplicableLocation() == ApplicatorKeyword.ApplicableLocation.CURRENT)
-                .flatMap(ApplicatorKeyword::getSchemas);
+                .flatMap(ApplicatorKeyword::getSchemasAsStream);
     }
 
     @Override
