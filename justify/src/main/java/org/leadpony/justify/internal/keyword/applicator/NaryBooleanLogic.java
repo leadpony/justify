@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
@@ -34,10 +35,14 @@ import org.leadpony.justify.api.JsonSchema;
 abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
 
     private final List<JsonSchema> subschemas;
+    private final List<JsonSchema> distinctSubschemas;
 
     protected NaryBooleanLogic(JsonValue json, Collection<JsonSchema> subschemas) {
         super(json);
         this.subschemas = new ArrayList<>(subschemas);
+        this.distinctSubschemas = subschemas.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -65,5 +70,13 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
         } catch (NumberFormatException e) {
         }
         return Optional.empty();
+    }
+
+    protected final Iterable<JsonSchema> getSubschemas() {
+        return subschemas;
+    }
+
+    protected final Iterable<JsonSchema> getDistinctSubschemas() {
+        return distinctSubschemas;
     }
 }
