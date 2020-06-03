@@ -40,7 +40,6 @@ import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * An assertion specified with "uniqueItems" validation keyword.
@@ -53,13 +52,55 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingBoolean("uniqueItems", UniqueItems::new);
+    public static final KeywordType TYPE = new KeywordType() {
 
-    private final boolean unique;
+        @Override
+        public String name() {
+            return "uniqueItems";
+        }
 
-    public UniqueItems(JsonValue json, boolean unique) {
+        @Override
+        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            return of(jsonValue);
+        }
+    };
+
+    private static final UniqueItems TRUE = new UniqueItems(JsonValue.TRUE) {
+
+        @Override
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+            return new UniqueItemsEvaluator(context, schema, this);
+        }
+
+        @Override
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+            return new NegatedUniqueItemsEvaluator(context, schema, this);
+        }
+    };
+
+    private static final UniqueItems FALSE = new UniqueItems(JsonValue.FALSE) {
+
+        @Override
+        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+            return Evaluator.ALWAYS_TRUE;
+        }
+
+        @Override
+        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+            return context.createAlwaysFalseEvaluator(schema);
+        }
+    };
+
+    public static Keyword of(JsonValue value) {
+        return (value == JsonValue.TRUE) ? TRUE : FALSE;
+    }
+
+    public static Keyword of(boolean value) {
+        return value ? TRUE : FALSE;
+    }
+
+    protected UniqueItems(JsonValue json) {
         super(json);
-        this.unique = unique;
     }
 
     @Override
@@ -67,30 +108,12 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
         return TYPE;
     }
 
-    @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        if (unique) {
-            return new AssertionEvaluator(context, schema, this);
-        } else {
-            return Evaluator.ALWAYS_TRUE;
-        }
-    }
-
-    @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        if (unique) {
-            return new NegatedAssertionEvaluator(context, schema, this);
-        } else {
-            return context.createAlwaysFalseEvaluator(schema);
-        }
-    }
-
     /**
-     * An evaluator which evaluates the uniqueItems assertion.
+     * An evaluator which evaluates the items.
      *
      * @author leadpony
      */
-    private class AssertionEvaluator extends AbstractKeywordAwareEvaluator {
+    private class UniqueItemsEvaluator extends AbstractKeywordAwareEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
@@ -99,7 +122,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
         private int index;
         private JsonInstanceBuilder builder;
 
-        protected AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        protected UniqueItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
             super(context, schema, keyword);
             this.builderFactory = context.getJsonBuilderFactory();
         }
@@ -159,13 +182,13 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
     }
 
     /**
-     * An evaluator which evaluates the negated version of the assertion.
+     * A negated version of {@link UniqueItemsEvaluator}.
      *
      * @author leadpony
      */
-    private final class NegatedAssertionEvaluator extends AssertionEvaluator {
+    private final class NegatedUniqueItemsEvaluator extends UniqueItemsEvaluator {
 
-        private NegatedAssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
+        private NegatedUniqueItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
             super(context, schema, keyword);
         }
 

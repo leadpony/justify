@@ -337,7 +337,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     @Override
     public JsonSchemaBuilder withUniqueItems(boolean unique) {
-        addKeyword(new UniqueItems(toJson(unique), unique));
+        addKeyword(UniqueItems.of(unique));
         return this;
     }
 
@@ -701,10 +701,6 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
 
     private JsonValue toJson(BigDecimal value) {
         return jsonProvider.createValue(value);
-    }
-
-    private static JsonValue toJson(boolean value) {
-        return value ? JsonValue.TRUE : JsonValue.FALSE;
     }
 
     private JsonValue toJson(URI value) {
