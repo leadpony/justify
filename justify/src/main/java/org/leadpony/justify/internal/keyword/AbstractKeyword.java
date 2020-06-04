@@ -16,10 +16,10 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import jakarta.json.JsonValue;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.KeywordType;
+import jakarta.json.JsonValue;
 
 /**
  * A skeletal implementation of {@link Keyword}.

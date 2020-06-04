@@ -22,10 +22,10 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;

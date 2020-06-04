@@ -17,7 +17,7 @@ package org.leadpony.justify.internal.keyword;
 
 import java.net.URI;
 
-import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.keyword.Keyword;
 
 /**
  * A special keyword which provides an identifier of the schema.

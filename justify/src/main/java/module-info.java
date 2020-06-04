@@ -19,6 +19,7 @@
  */
 module org.leadpony.justify {
     exports org.leadpony.justify.api;
+    exports org.leadpony.justify.api.keyword;
     exports org.leadpony.justify.spi;
 
     requires com.ibm.icu;

@@ -16,7 +16,8 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import org.leadpony.justify.api.AssertionKeyword;
+import org.leadpony.justify.api.keyword.AssertionKeyword;
+
 import jakarta.json.JsonValue;
 
 /**

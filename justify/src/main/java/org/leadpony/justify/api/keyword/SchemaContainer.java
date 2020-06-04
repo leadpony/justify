@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api;
+package org.leadpony.justify.api.keyword;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.leadpony.justify.api.JsonSchema;
 
 /**
  * A container of JSON schemas.

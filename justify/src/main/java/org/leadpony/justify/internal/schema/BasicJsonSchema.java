@@ -27,11 +27,11 @@ import java.util.Set;
 import jakarta.json.JsonObject;
 
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.keyword.EvaluatorSource;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;

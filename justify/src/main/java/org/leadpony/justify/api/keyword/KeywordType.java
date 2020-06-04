@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api;
+package org.leadpony.justify.api.keyword;
+
+import org.leadpony.justify.api.JsonSchema;
 
 import jakarta.json.JsonValue;
 

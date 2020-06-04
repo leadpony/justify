@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.keyword;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.leadpony.justify.api.EvaluatorSource;
 import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.keyword.EvaluatorSource;
 
 /**
  * A evaluator source targetting only JSON arrays.

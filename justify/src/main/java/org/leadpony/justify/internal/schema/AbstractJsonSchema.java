@@ -28,10 +28,10 @@ import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.ObjectJsonSchema;
-import org.leadpony.justify.api.SchemaContainer;
-import org.leadpony.justify.api.ApplicatorKeyword;
+import org.leadpony.justify.api.keyword.ApplicatorKeyword;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.SchemaContainer;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Schema;

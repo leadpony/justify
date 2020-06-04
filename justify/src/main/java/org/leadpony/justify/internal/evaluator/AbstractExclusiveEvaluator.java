@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.problem.ProblemBranch;

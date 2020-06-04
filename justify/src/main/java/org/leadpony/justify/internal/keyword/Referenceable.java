@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.SchemaContainer;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SchemaContainer;
 
 /**
  * A keyword containing referenceable subschema.

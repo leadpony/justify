@@ -17,6 +17,8 @@ package org.leadpony.justify.api;
 
 import java.util.Map;
 
+import org.leadpony.justify.api.keyword.Keyword;
+
 import jakarta.json.JsonValue.ValueType;
 
 /**

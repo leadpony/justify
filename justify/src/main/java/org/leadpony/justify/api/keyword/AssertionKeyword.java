@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api;
 
-import java.util.Map;
-import java.util.Optional;
+package org.leadpony.justify.api.keyword;
 
 /**
- * A keyword which is also an {@link EvaluatorSource}.
+ * A keyword which asserts constraints on JSON instances.
  *
  * @author leadpony
  */
-public interface EvaluationKeyword extends Keyword, EvaluatorSource {
+public interface AssertionKeyword extends EvaluationKeyword {
 
+    /**
+     * {@inheritDoc}
+     *
+     * An AssertinKeyword can evaluate JSON instances by default.
+     */
     @Override
-    default Keyword getSourceKeyword() {
-        return this;
-    }
-
-    @Override
-    default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        if (canEvaluate()) {
-            return Optional.of(this);
-        } else {
-            return Optional.empty();
-        }
+    default boolean canEvaluate() {
+        return true;
     }
 }

@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.validation;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 

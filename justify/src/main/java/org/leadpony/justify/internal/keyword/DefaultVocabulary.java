@@ -17,7 +17,7 @@ package org.leadpony.justify.internal.keyword;
 
 import java.io.InputStream;
 
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.api.keyword.Vocabulary;
 
 /**
  * A vocabulary with default methods.

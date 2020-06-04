@@ -24,9 +24,9 @@ import jakarta.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.KeywordType;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 

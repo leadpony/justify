@@ -13,16 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword;
+package org.leadpony.justify.api.keyword;
 
-import java.net.URI;
-
-import org.leadpony.justify.api.keyword.Keyword;
+import java.util.Map;
+import java.util.Optional;
 
 /**
+ * A keyword which is also an {@link EvaluatorSource}.
+ *
  * @author leadpony
  */
-public interface RefKeyword extends Keyword {
+public interface EvaluationKeyword extends Keyword, EvaluatorSource {
 
-    URI value();
+    @Override
+    default Keyword getSourceKeyword() {
+        return this;
+    }
+
+    @Override
+    default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        if (canEvaluate()) {
+            return Optional.of(this);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.keyword.Keyword;
 
 /**
  * Skeletal implementation of {@link LogicalEvaluator}.

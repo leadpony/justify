@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValueSetLoader;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.Vocabulary;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordValueSetLoader;
+import org.leadpony.justify.api.keyword.Vocabulary;
 import org.leadpony.justify.internal.keyword.MetaschemaSource;
 import org.leadpony.justify.internal.keyword.applicator.ApplicatorVocabulary;
 import org.leadpony.justify.internal.keyword.content.ContentVocabulary;

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.metadata;
 
-import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.keyword.Keyword;
 
 /**
  * A keyword for describing metadata.

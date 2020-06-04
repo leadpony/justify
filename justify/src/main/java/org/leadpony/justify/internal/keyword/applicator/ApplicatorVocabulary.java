@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValueSetLoader;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordValueSetLoader;
 import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 
 /**

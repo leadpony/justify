@@ -20,9 +20,9 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.keyword.Keyword;
 
 /**
  * A skeletal implementation of {@link ChildrenEvaluator}

@@ -44,7 +44,7 @@ import jakarta.json.spi.JsonProvider;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
-import org.leadpony.justify.api.Keyword;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.keyword.UnknownKeyword;

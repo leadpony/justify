@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchemaReader;
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValueSetLoader;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordValueSetLoader;
 import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 import org.leadpony.justify.internal.keyword.format.Format.FormatType;
 import org.leadpony.justify.spi.FormatAttribute;

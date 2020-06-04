@@ -24,8 +24,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.leadpony.justify.api.KeywordType;
-import org.leadpony.justify.api.KeywordValueSetLoader;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordValueSetLoader;
 import org.leadpony.justify.internal.keyword.DefaultVocabulary;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;

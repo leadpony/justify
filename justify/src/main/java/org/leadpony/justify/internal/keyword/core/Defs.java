@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.core;
 import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 import jakarta.json.JsonValue;

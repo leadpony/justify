@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.ApplicatorKeyword;
+import org.leadpony.justify.api.keyword.ApplicatorKeyword;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
 /**

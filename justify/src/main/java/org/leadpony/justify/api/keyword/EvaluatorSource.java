@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api;
+package org.leadpony.justify.api.keyword;
 
 import java.util.EnumSet;
 import java.util.Set;
+
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.ObjectJsonSchema;
 
 /**
  * A source of instance evaluators.

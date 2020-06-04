@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.Keyword;
-import org.leadpony.justify.api.KeywordType;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonString;
