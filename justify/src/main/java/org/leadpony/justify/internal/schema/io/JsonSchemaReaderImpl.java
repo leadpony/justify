@@ -29,6 +29,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonLocation;
+import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaResolver;
@@ -39,6 +40,7 @@ import org.leadpony.justify.api.ProblemHandler;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.Sets;
 import org.leadpony.justify.internal.base.URIs;
+import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.keyword.IdKeyword;
@@ -58,7 +60,7 @@ import org.leadpony.justify.internal.validator.JsonValidator;
  * @author leadpony
  */
 public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
-    implements ProblemHandler, KeywordType.CreationContext {
+        implements ProblemHandler, KeywordType.CreationContext {
 
     private final PointerAwareJsonParser parser;
     private final JsonService jsonService;
@@ -72,21 +74,31 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
     private URI initialBaseUri = DEFAULT_INITIAL_BASE_URI;
 
     public JsonSchemaReaderImpl(
-            PointerAwareJsonParser parser,
+            JsonParser parser,
             JsonService jsonService,
             SchemaSpec spec,
             Map<String, Object> config) {
-        this(parser, jsonService, spec.getBareKeywordTypes(), config);
+        this(parser, jsonService, spec.getBareKeywordTypes(), config, null);
     }
 
+    /**
+     * Constructs this reader.
+     *
+     * @param parser
+     * @param jsonService
+     * @param keywordTypeMap
+     * @param config
+     * @param metaschema the metaschema of the schema to read. This can be {@code null}.
+     */
     public JsonSchemaReaderImpl(
-            PointerAwareJsonParser parser,
+            JsonParser parser,
             JsonService jsonService,
             Map<String, KeywordType> keywordTypeMap,
-            Map<String, Object> config) {
+            Map<String, Object> config,
+            JsonSchema metaschema) {
         super(config);
 
-        this.parser = parser;
+        this.parser = wrapJsonParser(parser, jsonService, metaschema);
         this.jsonService = jsonService;
         this.keywordTypeMap = keywordTypeMap;
 
@@ -374,6 +386,15 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader
                 addProblem(createProblemBuilder(context.location, context.pointer)
                         .withMessage(Message.SCHEMA_PROBLEM_REFERENCE_LOOP));
             }
+        }
+    }
+
+    private static PointerAwareJsonParser wrapJsonParser(JsonParser realParser, JsonService jsonService,
+            JsonSchema metaschema) {
+        if (metaschema != null) {
+            return new JsonValidator(realParser, metaschema, jsonService.getJsonProvider());
+        } else {
+            return new DefaultPointerAwareJsonParser(realParser, jsonService.getJsonProvider());
         }
     }
 

@@ -47,12 +47,9 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.ResettableInputStream;
 import org.leadpony.justify.internal.base.ResettableReader;
-import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
 import org.leadpony.justify.internal.schema.SchemaCatalog;
 import org.leadpony.justify.internal.schema.SchemaSpec;
-import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
  * The default implementation of {@link JsonSchemaResolver}.
@@ -142,15 +139,6 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
         return SchemaSpec.get(version);
     }
 
-    private PointerAwareJsonParser createParser(JsonParser realParser, SchemaSpec spec) {
-        if (testOption(JsonSchemaReader.SCHEMA_VALIDATION)) {
-            JsonSchema metascheam = getMetaschema(spec);
-            return new JsonValidator(realParser, metascheam, jsonService.getJsonProvider());
-        } else {
-            return new DefaultPointerAwareJsonParser(realParser, jsonService.getJsonProvider());
-        }
-    }
-
     private JsonSchema getMetaschema(SchemaSpec spec) {
         if (this.metaschema != null) {
             return metaschema;
@@ -172,8 +160,11 @@ public class JsonSchemaReaderFactoryImpl implements JsonSchemaReaderFactory {
      * @return newly created schema reader.
      */
     protected JsonSchemaReader createSpecificSchemaReader(JsonParser realParser, SchemaSpec spec) {
-        PointerAwareJsonParser parser = createParser(realParser, spec);
-        return new JsonSchemaReaderImpl(parser, jsonService, buildKeywordMap(spec), config);
+        JsonSchema metaschema = null;
+        if (testOption(JsonSchemaReader.SCHEMA_VALIDATION)) {
+            metaschema = getMetaschema(spec);
+        }
+        return new JsonSchemaReaderImpl(realParser, jsonService, buildKeywordMap(spec), config, metaschema);
     }
 
     private static JsonException newJsonException(NoSuchFileException e, Message message, Path path) {
