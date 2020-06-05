@@ -40,6 +40,7 @@ import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
  * An assertion specified with "uniqueItems" validation keyword.
@@ -52,18 +53,7 @@ import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 @Spec(SpecVersion.DRAFT_07)
 public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
 
-    public static final KeywordType TYPE = new KeywordType() {
-
-        @Override
-        public String name() {
-            return "uniqueItems";
-        }
-
-        @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return of(jsonValue);
-        }
-    };
+    public static final KeywordType TYPE = KeywordTypes.mappingJson("uniqueItems", UniqueItems::of);
 
     private static final UniqueItems TRUE = new UniqueItems(JsonValue.TRUE) {
 
@@ -92,7 +82,13 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
     };
 
     public static Keyword of(JsonValue value) {
-        return (value == JsonValue.TRUE) ? TRUE : FALSE;
+        if (value == JsonValue.TRUE) {
+            return TRUE;
+        } else if (value == JsonValue.FALSE) {
+            return FALSE;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public static Keyword of(boolean value) {

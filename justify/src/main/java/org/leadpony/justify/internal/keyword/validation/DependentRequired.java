@@ -58,7 +58,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+        public Keyword parse(JsonValue jsonValue) {
             if (jsonValue.getValueType() == ValueType.OBJECT) {
                 Map<String, Set<String>> map = new LinkedHashMap<>();
                 for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {

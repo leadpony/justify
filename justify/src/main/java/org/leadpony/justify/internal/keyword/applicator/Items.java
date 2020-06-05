@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
@@ -35,6 +37,7 @@ import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -63,27 +66,29 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Items.newInstance(jsonValue, context);
+        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+            switch (parser.next()) {
+            case START_ARRAY:
+                JsonArrayBuilder builder = factory.createArrayBuilder();
+                List<JsonSchema> schemas = new ArrayList<>();
+                while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
+                    JsonSchema schema = parser.getSchema();
+                    if (schema != null) {
+                        schemas.add(schema);
+                        builder.add(schema.toJson());
+                    }
+                }
+                return Items.of(builder.build(), schemas);
+            case START_OBJECT:
+            case VALUE_TRUE:
+            case VALUE_FALSE:
+                JsonSchema schema = parser.getSchema();
+                return Items.of(schema.toJson(), schema);
+            default:
+                throw new IllegalStateException();
+            }
         }
     };
-
-    private static Items newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        switch (jsonValue.getValueType()) {
-        case ARRAY:
-            List<JsonSchema> schemas = new ArrayList<>();
-            for (JsonValue item : jsonValue.asJsonArray()) {
-                schemas.add(context.asJsonSchema(item));
-            }
-            return of(jsonValue, schemas);
-        case OBJECT:
-        case TRUE:
-        case FALSE:
-            return of(jsonValue, context.asJsonSchema(jsonValue));
-        default:
-            throw new IllegalArgumentException();
-        }
-    }
 
     public static Items of(JsonValue json, JsonSchema subschema) {
         return new BroadcastItems(json, subschema);

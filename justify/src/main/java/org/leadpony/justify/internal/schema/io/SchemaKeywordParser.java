@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.internal.schema.io;
+
+import org.leadpony.justify.api.keyword.KeywordParser;
+import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+
 /**
- * Provides schema keyword types.
- *
  * @author leadpony
- * @since 4.0
  */
-package org.leadpony.justify.api.keyword;
+interface SchemaKeywordParser extends PointerAwareJsonParser, KeywordParser {
+
+    Event getCurrentEvent();
+}

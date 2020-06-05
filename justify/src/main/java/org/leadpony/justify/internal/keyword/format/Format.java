@@ -80,7 +80,7 @@ public class Format extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+        public Keyword parse(JsonValue jsonValue) {
             if (jsonValue.getValueType() == ValueType.STRING) {
                 String name = ((JsonString) jsonValue).getString();
                 return createFormat(jsonValue, name);

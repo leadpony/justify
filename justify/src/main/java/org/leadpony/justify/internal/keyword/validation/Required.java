@@ -19,9 +19,7 @@ package org.leadpony.justify.internal.keyword.validation;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.EvaluatorContext;
@@ -39,6 +37,7 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
@@ -52,35 +51,9 @@ import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 @Spec(SpecVersion.DRAFT_07)
 public class Required extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
 
-    public static final KeywordType TYPE = new KeywordType() {
-
-        @Override
-        public String name() {
-            return "required";
-        }
-
-        @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Required.newInstance(jsonValue, context);
-        }
-    };
+    public static final KeywordType TYPE = KeywordTypes.mappingStringSet("required", Required::new);
 
     private final Set<String> names;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.ARRAY) {
-            Set<String> names = new LinkedHashSet<>();
-            for (JsonValue item : jsonValue.asJsonArray()) {
-                if (item.getValueType() == ValueType.STRING) {
-                    names.add(((JsonString) item).getString());
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            }
-            return new Required(jsonValue, names);
-        }
-        throw new IllegalArgumentException();
-    }
 
     public Required(JsonValue json, Set<String> names) {
         super(json);

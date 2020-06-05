@@ -22,15 +22,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
+import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -52,27 +53,25 @@ public class PatternProperties extends AbstractProperties<Pattern> {
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return PatternProperties.newInstance(jsonValue, context);
+        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+            if (parser.next() == Event.START_OBJECT) {
+                JsonObjectBuilder builder = factory.createObjectBuilder();
+                Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
+                while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
+                    String name = parser.getString();
+                    Pattern pattern = Pattern.compile(name);
+                    parser.next();
+                    JsonSchema schema = parser.getSchema();
+                    schemas.put(pattern, schema);
+                    builder.add(name, schema.toJson());
+                }
+                return new PatternProperties(builder.build(), schemas);
+            }
+            throw new IllegalStateException();
         }
     };
 
     private Properties properties;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.OBJECT) {
-            Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
-            try {
-                for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
-                    Pattern pattern = Pattern.compile(entry.getKey());
-                    schemas.put(pattern, context.asJsonSchema(entry.getValue()));
-                }
-                return new PatternProperties(jsonValue, schemas);
-            } catch (PatternSyntaxException e) {
-            }
-        }
-        throw new IllegalArgumentException();
-    }
 
     public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> properties) {
         super(json, properties);

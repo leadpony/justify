@@ -25,9 +25,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import jakarta.json.stream.JsonParser.Event;
+
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
@@ -35,6 +39,7 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -62,37 +67,37 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Dependencies.newInstance(jsonValue, context);
+        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+            if (parser.next() == Event.START_OBJECT) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                JsonObjectBuilder builder = factory.createObjectBuilder();
+                while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
+                    String name = parser.getString();
+                    if (parser.next() == Event.START_ARRAY) {
+                        JsonValue array = parser.getValue();
+                        Set<String> properties = new LinkedHashSet<>();
+                        for (JsonValue item : array.asJsonArray()) {
+                            if (item.getValueType() == ValueType.STRING) {
+                                properties.add(((JsonString) item).getString());
+                            } else {
+                                throw new IllegalArgumentException();
+                            }
+                        }
+                        map.put(name, properties);
+                        builder.add(name, array);
+                    } else {
+                        JsonSchema schema = parser.getSchema();
+                        map.put(name, schema);
+                        builder.add(name, schema.toJson());
+                    }
+                }
+                return new Dependencies(builder.build(), map);
+            }
+            throw new IllegalArgumentException();
         }
     };
 
     private final Map<String, Dependent> dependentMap;
-
-    private static Dependencies newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.OBJECT) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
-                String k = entry.getKey();
-                JsonValue v = entry.getValue();
-                if (v.getValueType() == ValueType.ARRAY) {
-                    Set<String> properties = new LinkedHashSet<>();
-                    for (JsonValue item : v.asJsonArray()) {
-                        if (item.getValueType() == ValueType.STRING) {
-                            properties.add(((JsonString) item).getString());
-                        } else {
-                            throw new IllegalArgumentException();
-                        }
-                    }
-                    map.put(k, properties);
-                } else {
-                    map.put(k, context.asJsonSchema(v));
-                }
-            }
-            return new Dependencies(jsonValue, map);
-        }
-        throw new IllegalArgumentException();
-    }
 
     public Dependencies(JsonValue json, Map<String, Object> map) {
         super(json);

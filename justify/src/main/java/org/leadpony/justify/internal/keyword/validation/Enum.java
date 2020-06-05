@@ -16,19 +16,16 @@
 
 package org.leadpony.justify.internal.keyword.validation;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
-
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 /**
@@ -42,31 +39,9 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_07)
 public class Enum extends AbstractEqualityAssertion {
 
-    public static final KeywordType TYPE = new KeywordType() {
-
-        @Override
-        public String name() {
-            return "enum";
-        }
-
-        @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Enum.newInstance(jsonValue, context);
-        }
-    };
+    static final KeywordType TYPE = KeywordTypes.mappingJsonValueSet("enum", Enum::new);
 
     private final Set<JsonValue> expected;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.ARRAY) {
-            Set<JsonValue> values = new LinkedHashSet<>();
-            for (JsonValue item : jsonValue.asJsonArray()) {
-                values.add(item);
-            }
-            return new Enum(jsonValue, values);
-        }
-        throw new IllegalArgumentException();
-    }
 
     public Enum(JsonValue json, Set<JsonValue> expected) {
         super(json);

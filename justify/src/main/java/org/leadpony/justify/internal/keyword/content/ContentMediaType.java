@@ -85,7 +85,7 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+        public Keyword parse(JsonValue jsonValue) {
             if (jsonValue.getValueType() == ValueType.STRING) {
                 final String name = ((JsonString) jsonValue).getString();
                 return createKeyword(jsonValue, name);

@@ -51,24 +51,20 @@ public class Pattern extends AbstractStringAssertion {
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Pattern.newInstance(jsonValue, context);
+        public Keyword parse(JsonValue jsonValue) {
+            if (jsonValue.getValueType() == ValueType.STRING) {
+                String string = ((JsonString) jsonValue).getString();
+                try {
+                    return new Pattern(jsonValue, Ecma262Pattern.compile(string));
+                } catch (PatternSyntaxException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+            throw new IllegalArgumentException();
         }
     };
 
     private final java.util.regex.Pattern pattern;
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        if (jsonValue.getValueType() == ValueType.STRING) {
-            String string = ((JsonString) jsonValue).getString();
-            try {
-                return new Pattern(jsonValue, Ecma262Pattern.compile(string));
-            } catch (PatternSyntaxException e) {
-                throw new IllegalArgumentException(e);
-            }
-        }
-        throw new IllegalArgumentException();
-    }
 
     public Pattern(JsonValue json, java.util.regex.Pattern pattern) {
         super(json);

@@ -45,29 +45,25 @@ public final class Draft04Type {
         }
 
         @Override
-        public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-            return Draft04Type.newInstance(jsonValue, context);
+        public Keyword parse(JsonValue jsonValue) {
+            switch (jsonValue.getValueType()) {
+            case STRING:
+                return new Single(jsonValue, Type.toInstanceType((JsonString) jsonValue));
+            case ARRAY:
+                Set<InstanceType> types = new LinkedHashSet<>();
+                for (JsonValue item : jsonValue.asJsonArray()) {
+                    if (item.getValueType() == ValueType.STRING) {
+                        types.add(Type.toInstanceType((JsonString) item));
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                }
+                return new Multiple(jsonValue, types);
+            default:
+                throw new IllegalArgumentException();
+            }
         }
     };
-
-    private static Keyword newInstance(JsonValue jsonValue, KeywordType.CreationContext context) {
-        switch (jsonValue.getValueType()) {
-        case STRING:
-            return new Single(jsonValue, Type.toInstanceType((JsonString) jsonValue));
-        case ARRAY:
-            Set<InstanceType> types = new LinkedHashSet<>();
-            for (JsonValue item : jsonValue.asJsonArray()) {
-                if (item.getValueType() == ValueType.STRING) {
-                    types.add(Type.toInstanceType((JsonString) item));
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            }
-            return new Multiple(jsonValue, types);
-        default:
-            throw new IllegalArgumentException();
-        }
-    }
 
     public static Type of(JsonValue json, InstanceType type) {
         return new Single(json, type);

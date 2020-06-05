@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.justify.api.keyword;
+
+import org.leadpony.justify.api.JsonSchema;
+
+import jakarta.json.stream.JsonParser;
+
 /**
- * Provides schema keyword types.
- *
  * @author leadpony
  * @since 4.0
  */
-package org.leadpony.justify.api.keyword;
+public interface KeywordParser extends JsonParser {
+
+    /**
+     * Returns a {@link JsonSchema} at the current parser position.
+     *
+     * @return the {@code JsonSchema} at the current parser position.
+     */
+    JsonSchema getSchema();
+}

@@ -22,17 +22,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import jakarta.json.stream.JsonParser.Event;
 
 /**
  * A utility class for {@link KeywordType}.
@@ -86,8 +93,24 @@ public final class KeywordTypes {
     public static KeywordType mappingJson(String name, Function<JsonValue, Keyword> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 return mapper.apply(jsonValue);
+            }
+        };
+    }
+
+    public static KeywordType mappingJsonValueSet(String name, Mapper<Set<JsonValue>> mapper) {
+        return new AbstractKeywordType(name) {
+            @Override
+            public Keyword parse(JsonValue jsonValue) {
+                if (jsonValue.getValueType() == ValueType.ARRAY) {
+                    Set<JsonValue> valueSet = new LinkedHashSet<>();
+                    for (JsonValue item : jsonValue.asJsonArray()) {
+                        valueSet.add(item);
+                    }
+                    return mapper.map(jsonValue,  valueSet);
+                }
+                throw new IllegalArgumentException();
             }
         };
     }
@@ -102,10 +125,30 @@ public final class KeywordTypes {
     public static KeywordType mappingString(String name, Mapper<String> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 if (jsonValue.getValueType() == ValueType.STRING) {
                     JsonString string = (JsonString) jsonValue;
-                    return mapper.map(string, string.getString());
+                    return mapper.map(jsonValue, string.getString());
+                }
+                throw new IllegalArgumentException();
+            }
+        };
+    }
+
+    public static KeywordType mappingStringSet(String name, Mapper<Set<String>> mapper) {
+        return new AbstractKeywordType(name) {
+            @Override
+            public Keyword parse(JsonValue jsonValue) {
+                if (jsonValue.getValueType() == ValueType.ARRAY) {
+                    Set<String> valueSet = new LinkedHashSet<>();
+                    for (JsonValue item : jsonValue.asJsonArray()) {
+                        if (item.getValueType() == ValueType.STRING) {
+                            valueSet.add(((JsonString) item).getString());
+                        } else {
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                    return mapper.map(jsonValue, valueSet);
                 }
                 throw new IllegalArgumentException();
             }
@@ -122,10 +165,10 @@ public final class KeywordTypes {
     public static KeywordType mappingNumber(String name, Mapper<BigDecimal> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 if (jsonValue.getValueType() == ValueType.NUMBER) {
                     JsonNumber number = (JsonNumber) jsonValue;
-                    return mapper.map(number, number.bigDecimalValue());
+                    return mapper.map(jsonValue, number.bigDecimalValue());
                 }
                 throw new IllegalArgumentException();
             }
@@ -142,7 +185,7 @@ public final class KeywordTypes {
     public static KeywordType mappingNonNegativeInteger(String name, IntMapper mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 if (jsonValue.getValueType() == ValueType.NUMBER) {
                     try {
                         int intValue = ((JsonNumber) jsonValue).intValueExact();
@@ -167,7 +210,7 @@ public final class KeywordTypes {
     public static KeywordType mappingBoolean(String name, BooleanMapper mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 switch (jsonValue.getValueType()) {
                 case TRUE:
                     return mapper.map(jsonValue, true);
@@ -190,11 +233,11 @@ public final class KeywordTypes {
     public static KeywordType mappingUri(String name, Mapper<URI> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
+            public Keyword parse(JsonValue jsonValue) {
                 if (jsonValue.getValueType() == ValueType.STRING) {
                     JsonString string = (JsonString) jsonValue;
                     URI uri = URI.create(string.getString());
-                    return mapper.map(string, uri);
+                    return mapper.map(jsonValue, uri);
                 }
                 throw new IllegalArgumentException();
             }
@@ -211,8 +254,14 @@ public final class KeywordTypes {
     public static KeywordType mappingSchema(String name, Mapper<JsonSchema> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue value, CreationContext context) {
-                return mapper.map(value, context.asJsonSchema(value));
+            public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+                parser.next();
+                JsonSchema schema = parser.getSchema();
+                if (schema != null) {
+                    return mapper.map(schema.toJson(), schema);
+                }  else {
+                    return null;
+                }
             }
         };
     }
@@ -226,16 +275,21 @@ public final class KeywordTypes {
      */
     public static KeywordType mappingSchemaList(String name, Mapper<Collection<JsonSchema>> mapper) {
         return new AbstractKeywordType(name) {
-            @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-                if (jsonValue.getValueType() == ValueType.ARRAY) {
+            public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+                Event event = parser.next();
+                if (event == Event.START_ARRAY) {
+                    JsonArrayBuilder builder = factory.createArrayBuilder();
                     Collection<JsonSchema> schemas = new ArrayList<>();
-                    for (JsonValue item : jsonValue.asJsonArray()) {
-                        schemas.add(context.asJsonSchema(item));
+                    while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
+                        JsonSchema schema = parser.getSchema();
+                        if (schema != null) {
+                            schemas.add(schema);
+                            builder.add(schema.toJson());
+                        }
                     }
-                    return mapper.map(jsonValue, schemas);
+                    return mapper.map(builder.build(), schemas);
                 }
-                throw new IllegalArgumentException();
+                return null;
             }
         };
     }
@@ -250,17 +304,23 @@ public final class KeywordTypes {
     public static KeywordType mappingSchemaMap(String name, Mapper<Map<String, JsonSchema>> mapper) {
         return new AbstractKeywordType(name) {
             @Override
-            public Keyword newInstance(JsonValue jsonValue, CreationContext context) {
-                if (jsonValue.getValueType() == ValueType.OBJECT) {
+            public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+                Event event = parser.next();
+                if (event == Event.START_OBJECT) {
+                    JsonObjectBuilder builder = factory.createObjectBuilder();
                     Map<String, JsonSchema> schemas = new LinkedHashMap<>();
-                    for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
-                        schemas.put(entry.getKey(),
-                                context.asJsonSchema(entry.getValue()));
+                    while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
+                        String key = parser.getString();
+                        parser.next();
+                        JsonSchema schema = parser.getSchema();
+                        if (schema != null) {
+                            schemas.put(key, schema);
+                            builder.add(key, schema.toJson());
+                        }
                     }
-                    return mapper.map(jsonValue, schemas);
-                } else {
-                    throw new IllegalArgumentException();
+                    return mapper.map(builder.build(), schemas);
                 }
+                return null;
             }
         };
     }

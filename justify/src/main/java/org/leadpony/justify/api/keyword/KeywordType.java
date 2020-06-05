@@ -15,14 +15,14 @@
  */
 package org.leadpony.justify.api.keyword;
 
-import org.leadpony.justify.api.JsonSchema;
-
+import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
 
 /**
  * A definition of a keyword.
  *
  * @author leadpony
+ * @since 4.0
  */
 public interface KeywordType {
 
@@ -33,30 +33,12 @@ public interface KeywordType {
      */
     String name();
 
-    /**
-     * Creates an instance of this keyword.
-     *
-     * @param jsonValue the original JSON value given for this keyword.
-     * @param context   the creation context.
-     * @return newly created instance of this keyword.
-     */
-    Keyword newInstance(JsonValue jsonValue, CreationContext context);
+    default Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
+        parser.next();
+        return parse(parser.getValue());
+    }
 
-    /**
-     * A context of keyword creation.
-     *
-     * @author leadpony
-     */
-    interface CreationContext {
-
-        /**
-         * Returns the JSON schema generated from the specified JSON value.
-         *
-         * @param value the JSON value from which a JSON schema was generated.
-         * @return the JSON schema.
-         * @throws IllegalArgumentException if the specified {@code value} is not a JSON
-         *                                  schema.
-         */
-        JsonSchema asJsonSchema(JsonValue value);
+    default Keyword parse(JsonValue jsonValue) {
+        throw new IllegalStateException();
     }
 }
