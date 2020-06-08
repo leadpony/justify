@@ -110,7 +110,7 @@ public final class KeywordTypes {
                     }
                     return mapper.map(jsonValue,  valueSet);
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -130,7 +130,7 @@ public final class KeywordTypes {
                     JsonString string = (JsonString) jsonValue;
                     return mapper.map(jsonValue, string.getString());
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -145,12 +145,12 @@ public final class KeywordTypes {
                         if (item.getValueType() == ValueType.STRING) {
                             valueSet.add(((JsonString) item).getString());
                         } else {
-                            throw new IllegalArgumentException();
+                            return failed(jsonValue);
                         }
                     }
                     return mapper.map(jsonValue, valueSet);
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -170,7 +170,7 @@ public final class KeywordTypes {
                     JsonNumber number = (JsonNumber) jsonValue;
                     return mapper.map(jsonValue, number.bigDecimalValue());
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -195,7 +195,7 @@ public final class KeywordTypes {
                     } catch (ArithmeticException e) {
                     }
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -217,7 +217,7 @@ public final class KeywordTypes {
                 case FALSE:
                     return mapper.map(jsonValue, false);
                 default:
-                    throw new IllegalArgumentException();
+                    return failed(jsonValue);
                 }
             }
         };
@@ -236,10 +236,13 @@ public final class KeywordTypes {
             public Keyword parse(JsonValue jsonValue) {
                 if (jsonValue.getValueType() == ValueType.STRING) {
                     JsonString string = (JsonString) jsonValue;
-                    URI uri = URI.create(string.getString());
-                    return mapper.map(jsonValue, uri);
+                    try {
+                        URI uri = URI.create(string.getString());
+                        return mapper.map(jsonValue, uri);
+                    } catch (IllegalArgumentException e) {
+                    }
                 }
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         };
     }
@@ -256,12 +259,11 @@ public final class KeywordTypes {
             @Override
             public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
                 parser.next();
-                JsonSchema schema = parser.getSchema();
-                if (schema != null) {
+                if (parser.canGetSchema()) {
+                    JsonSchema schema = parser.getSchema();
                     return mapper.map(schema.toJson(), schema);
-                }  else {
-                    return null;
                 }
+                return failed(parser);
             }
         };
     }
@@ -281,15 +283,17 @@ public final class KeywordTypes {
                     JsonArrayBuilder builder = factory.createArrayBuilder();
                     Collection<JsonSchema> schemas = new ArrayList<>();
                     while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
-                        JsonSchema schema = parser.getSchema();
-                        if (schema != null) {
+                        if (parser.canGetSchema()) {
+                            JsonSchema schema = parser.getSchema();
                             schemas.add(schema);
                             builder.add(schema.toJson());
+                        } else {
+                            return failed(parser, builder);
                         }
                     }
                     return mapper.map(builder.build(), schemas);
                 }
-                return null;
+                return failed(parser);
             }
         };
     }
@@ -310,17 +314,19 @@ public final class KeywordTypes {
                     JsonObjectBuilder builder = factory.createObjectBuilder();
                     Map<String, JsonSchema> schemas = new LinkedHashMap<>();
                     while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
-                        String key = parser.getString();
+                        String name = parser.getString();
                         parser.next();
-                        JsonSchema schema = parser.getSchema();
-                        if (schema != null) {
-                            schemas.put(key, schema);
-                            builder.add(key, schema.toJson());
+                        if (parser.canGetSchema()) {
+                            JsonSchema schema = parser.getSchema();
+                            schemas.put(name, schema);
+                            builder.add(name, schema.toJson());
+                        } else {
+                            return failed(parser, builder, name);
                         }
                     }
                     return mapper.map(builder.build(), schemas);
                 }
-                return null;
+                return failed(parser);
             }
         };
     }

@@ -69,12 +69,12 @@ public abstract class Type extends AbstractAssertionKeyword {
                     if (item.getValueType() == ValueType.STRING) {
                         types.add(toInstanceType((JsonString) item));
                     } else {
-                        throw new IllegalArgumentException();
+                        return failed(jsonValue);
                     }
                 }
                 return new Multiple(jsonValue, types);
             default:
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         }
     };

@@ -37,6 +37,15 @@ public interface Keyword {
     }
 
     /**
+     * Checks whether this keyword is recognized or not.
+     *
+     * @return {@code true} if the keyword is recognized, {@code false} otherwise.
+     */
+    default boolean isRecognized() {
+        return true;
+    }
+
+    /**
      * Returns the value of this keyword as an instance of {@code JsonValue}.
      *
      * @return the value of this keyword, cannot be {@code null}.
@@ -64,11 +73,23 @@ public interface Keyword {
     /**
      * Retunrs the evaluator source if available.
      *
-     * @param siblings the sibling keywords owned by the same schema, never be {@code null}.
+     * @param siblings the sibling keywords owned by the same schema, never be
+     *                 {@code null}.
      * @return the evaluator source.
      * @since 4.0
      */
     default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
         return Optional.empty();
+    }
+
+    /**
+     * Creates an unrecognized keyword.
+     *
+     * @param name      the keyword name.
+     * @param jsonValue the value given for the keyword.
+     * @return newly created keyword.
+     */
+    static Keyword unrecognized(String name, JsonValue jsonValue) {
+        return new UnrecognizedKeyword(name, jsonValue);
     }
 }

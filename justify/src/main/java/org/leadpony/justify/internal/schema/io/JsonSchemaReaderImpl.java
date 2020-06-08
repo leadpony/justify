@@ -34,6 +34,8 @@ import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
+
+import org.leadpony.justify.api.BaseJsonSchemaBuilder;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaResolver;
 import org.leadpony.justify.api.Problem;
@@ -48,8 +50,7 @@ import org.leadpony.justify.internal.base.json.JsonService;
 import org.leadpony.justify.internal.base.json.JsonValueParser;
 import org.leadpony.justify.internal.keyword.IdKeyword;
 import org.leadpony.justify.internal.keyword.RefKeyword;
-import org.leadpony.justify.internal.keyword.UnknownKeyword;
-import org.leadpony.justify.internal.keyword.format.UnknownFormatAttributeException;
+import org.leadpony.justify.internal.keyword.format.FormatKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.internal.schema.BasicJsonSchema;
 import org.leadpony.justify.internal.schema.Resolvable;
@@ -313,11 +314,8 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
             return JsonSchema.FALSE;
         case START_OBJECT:
             return parseObjectSchema();
-        case START_ARRAY:
-            parser.skipArray();
-            return null;
         default:
-            return null;
+            throw new IllegalStateException();
         }
     }
 
@@ -326,7 +324,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
     }
 
     private JsonSchema parseObjectSchema(SchemaKeywordParser parser) {
-        return new JsonSchemaParser(parser, isStrictWithKeywords()).parse();
+        return new SingleJsonSchemaParser(parser, isStrictWithKeywords()).parse();
     }
 
     class BasicKeywordParser extends DefaultPointerAwareJsonParser implements SchemaKeywordParser {
@@ -353,7 +351,12 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
         }
     }
 
-    class JsonSchemaParser {
+    /**
+     * A parser of a schema.
+     *
+     * @author leadpony
+     */
+    class SingleJsonSchemaParser implements BaseJsonSchemaBuilder {
 
         private final SchemaKeywordParser parser;
         private final boolean strict;
@@ -367,7 +370,7 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
         // pointer of ref value
         private String pointer;
 
-        JsonSchemaParser(SchemaKeywordParser parser, boolean strict) {
+        SingleJsonSchemaParser(SchemaKeywordParser parser, boolean strict) {
             this.parser = parser;
             this.strict = strict;
             this.objectBuilder = jsonService.createObjectBuilder();
@@ -384,16 +387,10 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
                 String name = parser.getString();
                 if (parser.hasNext()) {
                     KeywordType type = findKeywordType(name);
-
-                    Keyword keyword;
                     if (type != null) {
-                        keyword = parseKeyword(type);
+                        parseKeyword(type);
                     } else {
-                        keyword = parseUnknownKeyword(name);
-                    }
-
-                    if (keyword != null) {
-                        addKeyword(name, keyword);
+                        parseUnrecognizedKeyword(name);
                     }
                 }
             }
@@ -401,30 +398,47 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
             return build();
         }
 
+        /* As a BaseJsonSchemaBuilder */
+
+        @Override
+        public void addKeyword(Keyword keyword) {
+            if (keyword.isRecognized()) {
+                if (keyword instanceof IdKeyword) {
+                    this.id = ((IdKeyword) keyword).value();
+                }
+
+                if (keyword instanceof RefKeyword) {
+                    this.ref = ((RefKeyword) keyword).value();
+                    this.location = parser.getLocation();
+                    this.pointer = parser.getPointer();
+                }
+            } else {
+                if (keyword instanceof FormatKeyword && isStrictWithFormats()) {
+                    reportUnknownFormat((FormatKeyword) keyword);
+                }
+            }
+            addKeyword(keyword.name(), keyword);
+        }
+
+        private void addKeyword(String name, Keyword keyword) {
+            this.keywords.put(name, keyword);
+            this.objectBuilder.add(name, keyword.getValueAsJson());
+        }
+
         private KeywordType findKeywordType(String name) {
             return keywordTypeMap.get(name);
         }
 
-        private Keyword parseKeyword(KeywordType type) {
-            try {
-                return type.parse(parser, jsonService.getJsonBuilderFactory());
-            } catch (JsonException e) {
-                throw e;
-            } catch (UnknownFormatAttributeException e) {
-                addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
-                        .withParameter("attribute", e.getAttributeName()));
-            } catch (Exception e) {
-                // Ignores other type of exception
-            }
-            return null;
+        private void parseKeyword(KeywordType type) {
+            type.parse(parser, jsonService.getJsonBuilderFactory(), this);
         }
 
-        private Keyword parseUnknownKeyword(String name) {
+        private void parseUnrecognizedKeyword(String name) {
             if (strict) {
                 reportUnknownKeyword(name);
             }
             parser.next();
-            return new UnknownKeyword(name, parser.getValue());
+            addKeyword(name, Keyword.unrecognized(name, parser.getValue()));
         }
 
         private void reportUnknownKeyword(String name) {
@@ -433,18 +447,9 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
             addProblem(builder);
         }
 
-        private void addKeyword(String name, Keyword keyword) {
-            this.keywords.put(name, keyword);
-            this.objectBuilder.add(name, keyword.getValueAsJson());
-
-            if (keyword instanceof IdKeyword) {
-                this.id = ((IdKeyword) keyword).value();
-            }
-            if (keyword instanceof RefKeyword) {
-                this.ref = ((RefKeyword) keyword).value();
-                this.location = parser.getLocation();
-                this.pointer = parser.getPointer();
-            }
+        private void reportUnknownFormat(FormatKeyword keyword) {
+            addProblem(createProblemBuilder(Message.SCHEMA_PROBLEM_FORMAT_UNKNOWN)
+                    .withParameter("attribute", keyword.getAttributeName()));
         }
 
         private JsonSchema build() {

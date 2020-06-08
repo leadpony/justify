@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ import jakarta.json.JsonValue;
  * @author leadpony
  * @see <a href="http://json-schema.org/">JSON Schema Specification</a>
  */
-public interface JsonSchemaBuilder {
+public interface JsonSchemaBuilder extends BaseJsonSchemaBuilder {
 
     /**
      * Builds a new instance of {@link JsonSchema}.

@@ -47,7 +47,6 @@ import org.leadpony.justify.api.JsonSchemaBuilder;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
-import org.leadpony.justify.internal.keyword.UnknownKeyword;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalItems;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalProperties;
 import org.leadpony.justify.internal.keyword.applicator.AllOf;
@@ -579,7 +578,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         if (foundAttribute != null) {
             format = new Format(toJson(attribute), foundAttribute);
         } else {
-            format = new UnknownKeyword("format", toJson(attribute));
+            format = Keyword.unrecognized("format", toJson(attribute));
         }
         addKeyword(format);
         return this;
@@ -651,7 +650,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         return this;
     }
 
-    private void addKeyword(Keyword keyword) {
+    /* As a BaseJsonSchemaBuilder */
+
+    @Override
+    public void addKeyword(Keyword keyword) {
+        requireNonNull(keyword, "keyword");
         this.keywords.put(keyword.name(), keyword);
         this.objectBuilder.add(keyword.name(), keyword.getValueAsJson());
     }

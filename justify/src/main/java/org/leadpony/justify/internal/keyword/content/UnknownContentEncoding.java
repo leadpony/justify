@@ -16,6 +16,8 @@
 package org.leadpony.justify.internal.keyword.content;
 
 import jakarta.json.JsonValue;
+
+import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 
@@ -30,4 +32,10 @@ public class UnknownContentEncoding extends AbstractKeyword {
     public UnknownContentEncoding(JsonValue json, String scheme) {
         super(json);
     }
+
+    @Override
+    public KeywordType getType() {
+        return ContentEncoding.TYPE;
+    }
 }
+

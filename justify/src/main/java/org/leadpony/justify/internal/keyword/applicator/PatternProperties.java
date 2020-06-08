@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -59,15 +61,23 @@ public class PatternProperties extends AbstractProperties<Pattern> {
                 Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
                 while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
                     String name = parser.getString();
-                    Pattern pattern = Pattern.compile(name);
-                    parser.next();
-                    JsonSchema schema = parser.getSchema();
-                    schemas.put(pattern, schema);
-                    builder.add(name, schema.toJson());
+                    try {
+                        Pattern pattern = Pattern.compile(name);
+                        parser.next();
+                        if (parser.canGetSchema()) {
+                            JsonSchema schema = parser.getSchema();
+                            schemas.put(pattern, schema);
+                            builder.add(name, schema.toJson());
+                        } else {
+                            return failed(parser, builder, name);
+                        }
+                    } catch (PatternSyntaxException e) {
+                        return failed(parser, builder, name);
+                    }
                 }
                 return new PatternProperties(builder.build(), schemas);
             }
-            throw new IllegalStateException();
+            return failed(parser);
         }
     };
 

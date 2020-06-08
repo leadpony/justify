@@ -102,7 +102,6 @@ public enum FormatVocabulary implements DefaultVocabulary {
 
     private final Map<String, FormatAttribute> defaultAttributs;
     private final FormatType defaultFormatType;
-    private final FormatType defaultStrictFormatType;
 
     FormatVocabulary(FormatAttribute... attributes) {
         this("", "", attributes);
@@ -112,8 +111,7 @@ public enum FormatVocabulary implements DefaultVocabulary {
         this.id = URI.create(id);
         this.metaschemaId = URI.create(metaschemaId);
         this.defaultAttributs = buildMap(new HashMap<>(), Arrays.asList(attributes));
-        this.defaultFormatType = new FormatType(defaultAttributs, false);
-        this.defaultStrictFormatType = new FormatType(defaultAttributs, true);
+        this.defaultFormatType = new FormatType(defaultAttributs);
     }
 
     @Override
@@ -141,15 +139,14 @@ public enum FormatVocabulary implements DefaultVocabulary {
     }
 
     private KeywordType createFormatType(Map<String, Object> config, KeywordValueSetLoader valueSetLoader) {
-        final boolean strict = testStrictFormats(config);
         if (testCustomFormats(config)) {
             Collection<FormatAttribute> attributes = valueSetLoader.loadKeywordValueSet(FormatAttribute.class);
             if (!attributes.isEmpty()) {
                 Map<String, FormatAttribute> map = buildMap(new HashMap<>(defaultAttributs), attributes);
-                return new FormatType(map, strict);
+                return new FormatType(map);
             }
         }
-        return strict ? defaultStrictFormatType : defaultFormatType;
+        return defaultFormatType;
     }
 
     private static Map<String, FormatAttribute> buildMap(Map<String, FormatAttribute> map,
@@ -162,9 +159,5 @@ public enum FormatVocabulary implements DefaultVocabulary {
 
     private static boolean testCustomFormats(Map<String, Object> config) {
         return config.get(JsonSchemaReader.CUSTOM_FORMATS) == Boolean.TRUE;
-    }
-
-    private static boolean testStrictFormats(Map<String, Object> config) {
-        return config.get(JsonSchemaReader.STRICT_FORMATS) == Boolean.TRUE;
     }
 }

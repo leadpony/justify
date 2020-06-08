@@ -80,20 +80,24 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
                             if (item.getValueType() == ValueType.STRING) {
                                 properties.add(((JsonString) item).getString());
                             } else {
-                                throw new IllegalArgumentException();
+                                return failed(parser, builder, name);
                             }
                         }
                         map.put(name, properties);
                         builder.add(name, array);
                     } else {
-                        JsonSchema schema = parser.getSchema();
-                        map.put(name, schema);
-                        builder.add(name, schema.toJson());
+                        if (parser.canGetSchema()) {
+                            JsonSchema schema = parser.getSchema();
+                            map.put(name, schema);
+                            builder.add(name, schema.toJson());
+                        } else {
+                            return failed(parser, builder, name);
+                        }
                     }
                 }
                 return new Dependencies(builder.build(), map);
             }
-            throw new IllegalArgumentException();
+            return failed(parser);
         }
     };
 

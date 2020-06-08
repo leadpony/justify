@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,6 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.UnknownKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
 
@@ -53,7 +52,7 @@ import org.leadpony.justify.spi.FormatAttribute;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Format extends AbstractAssertionKeyword {
+public class Format extends AbstractAssertionKeyword implements FormatKeyword {
 
     /**
      * A keyword type for "type" keyword.
@@ -63,15 +62,13 @@ public class Format extends AbstractAssertionKeyword {
     static class FormatType implements KeywordType {
 
         private final Map<String, FormatAttribute> attributeMap;
-        private final boolean strict;
 
         FormatType() {
-            this(Collections.emptyMap(), false);
+            this(Collections.emptyMap());
         }
 
-        FormatType(Map<String, FormatAttribute> attributeMap, boolean strict) {
+        FormatType(Map<String, FormatAttribute> attributeMap) {
             this.attributeMap = attributeMap;
-            this.strict = strict;
         }
 
         @Override
@@ -85,7 +82,7 @@ public class Format extends AbstractAssertionKeyword {
                 String name = ((JsonString) jsonValue).getString();
                 return createFormat(jsonValue, name);
             } else {
-                throw new IllegalArgumentException();
+                return failed(jsonValue);
             }
         }
 
@@ -93,10 +90,8 @@ public class Format extends AbstractAssertionKeyword {
             FormatAttribute attribute = attributeMap.get(name);
             if (attribute != null) {
                 return new Format(jsonValue, attribute);
-            } else if (strict) {
-                throw new UnknownFormatAttributeException(name);
             } else {
-                return new UnknownKeyword(name(), jsonValue);
+                return new UnrecognizedFormat(jsonValue, name);
             }
         }
     }
@@ -164,6 +159,11 @@ public class Format extends AbstractAssertionKeyword {
         };
     }
 
+    @Override
+    public String getAttributeName() {
+        return attribute.name();
+    }
+
     private boolean test(JsonValue value) {
         return attribute.test(value);
     }
@@ -179,6 +179,37 @@ public class Format extends AbstractAssertionKeyword {
             return super.newProblemBuilder()
                 .withParameter("attribute", attribute.name())
                 .withParameter("localizedAttribute", attribute.localizedName());
+        }
+    }
+
+    private static class UnrecognizedFormat implements FormatKeyword {
+
+        private final JsonValue jsonValue;
+        private final String attributeName;
+
+        UnrecognizedFormat(JsonValue jsonValue, String attributeName) {
+            this.jsonValue = jsonValue;
+            this.attributeName = attributeName;
+        }
+
+        @Override
+        public boolean isRecognized() {
+            return false;
+        }
+
+        @Override
+        public JsonValue getValueAsJson() {
+            return jsonValue;
+        }
+
+        @Override
+        public KeywordType getType() {
+            return TYPE;
+        }
+
+        @Override
+        public String getAttributeName() {
+            return attributeName;
         }
     }
 }

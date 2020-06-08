@@ -57,10 +57,9 @@ public class Pattern extends AbstractStringAssertion {
                 try {
                     return new Pattern(jsonValue, Ecma262Pattern.compile(string));
                 } catch (PatternSyntaxException e) {
-                    throw new IllegalArgumentException(e);
                 }
             }
-            throw new IllegalArgumentException();
+            return failed(jsonValue);
         }
     };
 

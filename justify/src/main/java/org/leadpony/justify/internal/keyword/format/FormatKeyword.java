@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.internal.keyword.format;
 
-import org.leadpony.justify.api.keyword.KeywordParser;
-import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import org.leadpony.justify.api.keyword.Keyword;
 
 /**
  * @author leadpony
  */
-interface SchemaKeywordParser extends PointerAwareJsonParser, KeywordParser {
+public interface FormatKeyword extends Keyword {
 
-    Event getCurrentEvent();
-
-    default boolean canGetSchema() {
-        Event event = getCurrentEvent();
-        return event == Event.START_OBJECT || event == Event.VALUE_TRUE || event == Event.VALUE_FALSE;
-    }
+    /**
+     * Returns the attribute name given to this format keyword.
+     *
+     * @return the attribute name.
+     */
+    String getAttributeName();
 }

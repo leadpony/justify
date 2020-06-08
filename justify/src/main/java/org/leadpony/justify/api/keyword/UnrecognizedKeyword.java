@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword;
+package org.leadpony.justify.api.keyword;
 
 import jakarta.json.JsonValue;
 
@@ -22,9 +22,10 @@ import jakarta.json.JsonValue;
  *
  * @author leadpony
  */
-public class UnknownKeyword extends AbstractKeyword {
+class UnrecognizedKeyword implements Keyword {
 
     private final String name;
+    private final JsonValue value;
 
     /**
      * Constructs this keyword.
@@ -32,13 +33,28 @@ public class UnknownKeyword extends AbstractKeyword {
      * @param name the name of this keyword.
      * @param value the value of this keyword.
      */
-    public UnknownKeyword(String name, JsonValue value) {
-        super(value);
+    UnrecognizedKeyword(String name, JsonValue value) {
         this.name = name;
+        this.value = value;
     }
 
     @Override
     public String name() {
         return name;
+    }
+
+    @Override
+    public boolean isRecognized() {
+        return false;
+    }
+
+    @Override
+    public JsonValue getValueAsJson() {
+        return value;
+    }
+
+    @Override
+    public KeywordType getType() {
+        throw new UnsupportedOperationException("Not supported");
     }
 }

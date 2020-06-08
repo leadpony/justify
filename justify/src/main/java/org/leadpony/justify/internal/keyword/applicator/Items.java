@@ -72,10 +72,12 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 JsonArrayBuilder builder = factory.createArrayBuilder();
                 List<JsonSchema> schemas = new ArrayList<>();
                 while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
-                    JsonSchema schema = parser.getSchema();
-                    if (schema != null) {
+                    if (parser.canGetSchema()) {
+                        JsonSchema schema = parser.getSchema();
                         schemas.add(schema);
                         builder.add(schema.toJson());
+                    } else {
+                        failed(parser, builder);
                     }
                 }
                 return Items.of(builder.build(), schemas);
@@ -85,7 +87,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 JsonSchema schema = parser.getSchema();
                 return Items.of(schema.toJson(), schema);
             default:
-                throw new IllegalStateException();
+                return failed(parser);
             }
         }
     };
