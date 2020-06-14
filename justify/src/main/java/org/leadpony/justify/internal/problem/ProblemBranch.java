@@ -36,6 +36,10 @@ public class ProblemBranch extends ArrayList<Problem> {
     public ProblemBranch() {
     }
 
+    public ProblemBranch(ProblemBranch other) {
+        addAll(other);
+    }
+
     public ProblemBranch(int initialCapacity) {
         super(initialCapacity);
     }

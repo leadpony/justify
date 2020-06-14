@@ -21,6 +21,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -36,6 +37,11 @@ public final class UnsupportedTypeEvaluator extends AbstractKeywordAwareEvaluato
 
     private final Set<InstanceType> expected;
     private final InstanceType actual;
+
+    public UnsupportedTypeEvaluator(EvaluatorContext context, JsonSchema schema, EvaluatorSource source,
+            InstanceType actual) {
+        this(context, schema, source.getSourceKeyword(), source.getSupportedTypes(), actual);
+    }
 
     public UnsupportedTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
             Set<InstanceType> expected, InstanceType actual) {
