@@ -19,11 +19,8 @@ package org.leadpony.justify.internal.keyword.validation;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -63,13 +60,13 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new AssertionEvaluator(context, schema, this, limit);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return new PropertiesEvaluator(parent, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new MinProperties.AssertionEvaluator(context, schema, this, limit + 1);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return new MinProperties.PropertiesEvaluator(parent, this, limit + 1);
     }
 
     /**
@@ -77,13 +74,13 @@ public class MaxProperties extends AbstractAssertionKeyword implements ObjectEva
      *
      * @author leadpony
      */
-    static class AssertionEvaluator extends ShallowEvaluator {
+    static class PropertiesEvaluator extends ShallowEvaluator {
 
         private final int maxProperties;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxProperties) {
-            super(context, schema, keyword);
+        PropertiesEvaluator(Evaluator parent, Keyword keyword, int maxProperties) {
+            super(parent, keyword);
             this.maxProperties = maxProperties;
         }
 

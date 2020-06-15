@@ -31,8 +31,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -43,7 +41,7 @@ import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -171,12 +169,13 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
         String value = context.getParser().getString();
         if (testValue(value, context, true)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new FalseContentEvaluator(context, schema, this) {
+        return new FalseContentEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE).build();
@@ -187,12 +186,13 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
         String value = context.getParser().getString();
         if (!testValue(value, context, false)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new FalseContentEvaluator(context, schema, this) {
+        return new FalseContentEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE).build();
@@ -228,10 +228,10 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         return builder.toString();
     }
 
-    abstract class FalseContentEvaluator extends AbstractKeywordAwareEvaluator {
+    abstract class FalseContentEvaluator extends AbstractKeywordBasedEvaluator {
 
-        FalseContentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword);
+        FalseContentEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword);
         }
 
         @Override

@@ -22,8 +22,6 @@ import java.util.List;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -41,8 +39,8 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     private Evaluator firstChildEvaluator;
     private List<Evaluator> additionalChildEvaluators;
 
-    protected AbstractConjunctivePropertiesEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    protected AbstractConjunctivePropertiesEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     @Override

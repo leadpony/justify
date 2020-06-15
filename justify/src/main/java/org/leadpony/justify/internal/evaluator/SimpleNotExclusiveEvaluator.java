@@ -22,8 +22,6 @@ import java.util.List;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -39,8 +37,8 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
     private List<Problem> problemList;
     private int evaluationsAsFalse;
 
-    SimpleNotExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    SimpleNotExclusiveEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     @Override

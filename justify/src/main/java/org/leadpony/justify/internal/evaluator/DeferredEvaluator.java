@@ -35,6 +35,7 @@ import org.leadpony.justify.internal.problem.ProblemBranch;
  */
 public class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
+    private final Evaluator parent;
     private final Evaluator evaluator;
     private ProblemBranch problemBranch;
 
@@ -44,16 +45,23 @@ public class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
      * @param evaluator the actual evaluator, cannot be {@code null}.
      */
     public DeferredEvaluator(Evaluator evaluator) {
+        this.parent = null;
         this.evaluator = evaluator;
     }
 
-    public DeferredEvaluator(Function<Evaluator, Evaluator> mapper) {
+    public DeferredEvaluator(Evaluator parent, Function<Evaluator, Evaluator> mapper) {
+        this.parent = parent;
         this.evaluator = mapper.apply(this);
     }
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         return evaluator.evaluate(event, depth, this);
+    }
+
+    @Override
+    public Evaluator getParent() {
+        return parent;
     }
 
     @Override

@@ -254,14 +254,13 @@ public final class KeywordTypes {
      * @param mapper the mapper object.
      * @return the instance of keyword type.
      */
-    public static KeywordType mappingSchema(String name, Mapper<JsonSchema> mapper) {
+    public static KeywordType mappingSchema(String name, Function<JsonSchema, Keyword> mapper) {
         return new AbstractKeywordType(name) {
             @Override
             public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
                 parser.next();
                 if (parser.canGetSchema()) {
-                    JsonSchema schema = parser.getSchema();
-                    return mapper.map(schema.toJson(), schema);
+                    return mapper.apply(parser.getSchema());
                 }
                 return failed(parser);
             }

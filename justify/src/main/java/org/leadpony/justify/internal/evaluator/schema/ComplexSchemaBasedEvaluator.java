@@ -111,7 +111,7 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
     protected void addChild(EvaluatorSource source, InstanceType type) {
         if (source.supportsType(type)) {
-            Evaluator child = source.createEvaluator(getContext(), type, getSchema());
+            Evaluator child = source.createEvaluator(this, type);
             if (child != Evaluator.ALWAYS_TRUE) {
                 this.children.add(child);
             }
@@ -246,9 +246,9 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         protected void addChild(EvaluatorSource source, InstanceType type) {
             Evaluator child;
             if (source.supportsType(type)) {
-                child = source.createNegatedEvaluator(getContext(), type, getSchema());
+                child = source.createNegatedEvaluator(this, type);
             } else {
-                child = new UnsupportedTypeEvaluator(getContext(), getSchema(), source, type);
+                child = new UnsupportedTypeEvaluator(this, source, type);
             }
             this.children.add(child);
         }
@@ -288,11 +288,11 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
         @Override
         protected void addChild(EvaluatorSource source, InstanceType type) {
-            Evaluator deferred = new DeferredEvaluator(evaluator -> {
+            Evaluator deferred = new DeferredEvaluator(this, evaluator -> {
                 if (source.supportsType(type)) {
-                    return source.createNegatedEvaluator(getContext(), type, getSchema());
+                    return source.createNegatedEvaluator(evaluator, type);
                 } else {
-                    return new UnsupportedTypeEvaluator(getContext(), getSchema(), source, type);
+                    return new UnsupportedTypeEvaluator(this, source, type);
                 }
             });
             this.children.add(deferred);

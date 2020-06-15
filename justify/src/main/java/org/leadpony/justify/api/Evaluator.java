@@ -66,6 +66,18 @@ public interface Evaluator {
         return false;
     }
 
+    default Evaluator getParent() {
+        throw new UnsupportedOperationException();
+    }
+
+    default EvaluatorContext getContext() {
+        return getParent().getContext();
+    }
+
+    default JsonSchema getSchema() {
+        return getParent().getSchema();
+    }
+
     /**
      * The evaluator which evaluates anything as true.
      */

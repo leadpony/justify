@@ -35,7 +35,7 @@ public final class SimpleSchemaBasedEvaluator extends AbstractSchemaBasedEvaluat
             ObjectJsonSchema schema) {
         if (source.supportsType(type)) {
             SimpleSchemaBasedEvaluator evaluator = new SimpleSchemaBasedEvaluator(parent, schema, context);
-            evaluator.child = source.createEvaluator(context, type, schema);
+            evaluator.child = source.createEvaluator(evaluator, type);
             return evaluator;
         } else {
             return Evaluator.ALWAYS_TRUE;
@@ -47,9 +47,9 @@ public final class SimpleSchemaBasedEvaluator extends AbstractSchemaBasedEvaluat
             ObjectJsonSchema schema) {
         SimpleSchemaBasedEvaluator evaluator = new SimpleSchemaBasedEvaluator(parent, schema, context);
         if (source.supportsType(type)) {
-            evaluator.child = source.createNegatedEvaluator(context, type, schema);
+            evaluator.child = source.createNegatedEvaluator(evaluator, type);
         } else {
-            evaluator.child = new UnsupportedTypeEvaluator(context, schema, source, type);
+            evaluator.child = new UnsupportedTypeEvaluator(evaluator, source, type);
         }
         return evaluator;
     }

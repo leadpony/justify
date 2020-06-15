@@ -32,7 +32,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
@@ -129,20 +128,20 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return createForbiddenItemsEvaluator(context, schema);
+                return createForbiddenItemsEvaluator(parent);
             } else {
-                return createItemsEvaluator(context, schema);
+                return createItemsEvaluator(parent);
             }
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return createNegatedForbiddenItemsEvaluator(context, schema);
+                return createNegatedForbiddenItemsEvaluator(parent);
             } else {
-                return createNegatedItemsEvaluator(context, schema);
+                return createNegatedItemsEvaluator(parent);
             }
         }
 
@@ -165,9 +164,9 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             }
         }
 
-        private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+        private Evaluator createItemsEvaluator(Evaluator parent) {
             JsonSchema subschema = this.subschema;
-            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
+            return new AbstractConjunctiveItemsEvaluator(parent, this) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
@@ -178,40 +177,40 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             };
         }
 
-        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+        private Evaluator createNegatedItemsEvaluator(Evaluator parent) {
             JsonSchema subschema = this.subschema;
-            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
+            return new AbstractDisjunctiveItemsEvaluator(parent, this) {
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
-                        append(subschema.createNegatedEvaluator(context, type));
+                        append(subschema.createNegatedEvaluator(getContext(), type));
                     }
                 }
             };
         }
 
-        private Evaluator createForbiddenItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
+        private Evaluator createForbiddenItemsEvaluator(Evaluator parent) {
+            return new AbstractConjunctiveItemsEvaluator(parent, this) {
                 private int itemIndex;
 
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(context, subschema, itemIndex++));
+                        append(new RedundantItemEvaluator(this, subschema, itemIndex++));
                     }
                 }
             };
         }
 
-        private Evaluator createNegatedForbiddenItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
+        private Evaluator createNegatedForbiddenItemsEvaluator(Evaluator parent) {
+            return new AbstractDisjunctiveItemsEvaluator(parent, this) {
                 private int itemIndex;
 
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(context, subschema, itemIndex++));
+                        append(new RedundantItemEvaluator(this, subschema, itemIndex++));
                     }
                 }
             };
@@ -245,13 +244,13 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-            return decorateEvaluator(createItemsEvaluator(context, schema), context);
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+            return decorateEvaluator(createItemsEvaluator(parent));
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-            return decorateEvaluator(createNegatedItemsEvaluator(context, schema), context);
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+            return decorateEvaluator(createNegatedItemsEvaluator(parent));
         }
 
         @Override
@@ -284,26 +283,26 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             }
         }
 
-        private Evaluator createSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
+        private Evaluator createItemEvaluator(Evaluator parent, int itemIndex, JsonSchema subschema,
                 InstanceType type) {
             if (subschema == JsonSchema.FALSE) {
-                return new RedundantItemEvaluator(context, subschema, itemIndex);
+                return new RedundantItemEvaluator(parent, subschema, itemIndex);
             } else {
-                return subschema.createEvaluator(context, type);
+                return subschema.createEvaluator(parent.getContext(), type);
             }
         }
 
-        private Evaluator createNegatedSubschemaEvaluator(EvaluatorContext context, int itemIndex, JsonSchema subschema,
+        private Evaluator createNegatedItemEvaluator(Evaluator parent, int itemIndex, JsonSchema subschema,
                 InstanceType type) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                return new RedundantItemEvaluator(context, subschema, itemIndex);
+                return new RedundantItemEvaluator(parent, subschema, itemIndex);
             } else {
-                return subschema.createNegatedEvaluator(context, type);
+                return subschema.createNegatedEvaluator(parent.getContext(), type);
             }
         }
 
-        private Evaluator createItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
+        private Evaluator createItemsEvaluator(Evaluator parent) {
+            return new AbstractConjunctiveItemsEvaluator(parent, this) {
                 private int itemIndex;
 
                 @Override
@@ -311,15 +310,15 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
-                        append(createSubschemaEvaluator(context, itemIndex, subschema, type));
+                        append(createItemEvaluator(this, itemIndex, subschema, type));
                         ++itemIndex;
                     }
                 }
             };
         }
 
-        private Evaluator createNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
+        private Evaluator createNegatedItemsEvaluator(Evaluator parent) {
+            return new AbstractDisjunctiveItemsEvaluator(parent, this) {
                 private int itemIndex;
 
                 @Override
@@ -327,7 +326,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
-                        append(createNegatedSubschemaEvaluator(context, itemIndex, subschema, type));
+                        append(createNegatedItemEvaluator(this, itemIndex, subschema, type));
                         ++itemIndex;
                     }
                 }
@@ -347,9 +346,10 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             return null;
         }
 
-        private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
+        private Evaluator decorateEvaluator(Evaluator evaluator) {
+            EvaluatorContext context = evaluator.getContext();
             if (context.acceptsDefaultValues() && defaultValues != null) {
-                evaluator = new ItemsDefaultEvaluator(evaluator, context, defaultValues);
+                evaluator = new ItemsDefaultEvaluator(evaluator, defaultValues);
             }
             return evaluator;
         }
@@ -365,8 +365,8 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
         private final List<JsonValue> defaultValues;
         private int size;
 
-        ItemsDefaultEvaluator(Evaluator evaluator, EvaluatorContext context, List<JsonValue> defaultValues) {
-            super(evaluator, context);
+        ItemsDefaultEvaluator(Evaluator evaluator, List<JsonValue> defaultValues) {
+            super(evaluator);
             this.defaultValues = defaultValues;
         }
 

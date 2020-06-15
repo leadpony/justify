@@ -23,11 +23,8 @@ import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -37,7 +34,7 @@ import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
@@ -58,26 +55,26 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
     private static final UniqueItems TRUE = new UniqueItems(JsonValue.TRUE) {
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-            return new UniqueItemsEvaluator(context, schema, this);
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+            return new UniqueItemsEvaluator(parent, this);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-            return new NegatedUniqueItemsEvaluator(context, schema, this);
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+            return new NegatedUniqueItemsEvaluator(parent, this);
         }
     };
 
     private static final UniqueItems FALSE = new UniqueItems(JsonValue.FALSE) {
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-            return context.createAlwaysFalseEvaluator(schema);
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
         }
     };
 
@@ -109,7 +106,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
      *
      * @author leadpony
      */
-    private class UniqueItemsEvaluator extends AbstractKeywordAwareEvaluator {
+    private class UniqueItemsEvaluator extends AbstractKeywordBasedEvaluator {
 
         private final JsonBuilderFactory builderFactory;
         private final Map<JsonValue, Integer> values = new HashMap<>();
@@ -118,9 +115,9 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
         private int index;
         private JsonInstanceBuilder builder;
 
-        protected UniqueItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword);
-            this.builderFactory = context.getJsonBuilderFactory();
+        protected UniqueItemsEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword);
+            this.builderFactory = getContext().getJsonBuilderFactory();
         }
 
         @Override
@@ -184,8 +181,8 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
      */
     private final class NegatedUniqueItemsEvaluator extends UniqueItemsEvaluator {
 
-        private NegatedUniqueItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword);
+        private NegatedUniqueItemsEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword);
         }
 
         @Override

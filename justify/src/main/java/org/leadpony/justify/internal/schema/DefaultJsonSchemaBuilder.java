@@ -316,7 +316,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withAdditionalItems(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new AdditionalItems(toJson(subschema), subschema));
+        addKeyword(AdditionalItems.of(subschema));
         return this;
     }
 
@@ -343,7 +343,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withContains(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new SimpleContains(toJson(subschema), subschema));
+        addKeyword(new SimpleContains(subschema));
         return this;
     }
 
@@ -433,7 +433,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withAdditionalProperties(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new AdditionalProperties(toJson(subschema), subschema));
+        addKeyword(AdditionalProperties.of(subschema));
         return this;
     }
 
@@ -478,7 +478,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withPropertyNames(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new PropertyNames(toJson(subschema), subschema));
+        addKeyword(new PropertyNames(subschema));
         return this;
     }
 
@@ -487,21 +487,21 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withIf(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new If(toJson(subschema), subschema));
+        addKeyword(new If(subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withThen(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Then(toJson(subschema), subschema));
+        addKeyword(new Then(subschema));
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withElse(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Else(toJson(subschema), subschema));
+        addKeyword(new Else(subschema));
         return this;
     }
 
@@ -553,7 +553,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withNot(JsonSchema subschema) {
         requireNonNull(subschema, "subschema");
-        addKeyword(new Not(toJson(subschema), subschema));
+        addKeyword(new Not(subschema));
         return this;
     }
 

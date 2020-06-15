@@ -16,8 +16,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -29,13 +27,13 @@ import org.leadpony.justify.internal.base.Message;
  *
  * @author leadpony
  */
-public abstract class AbstractPropertyDependentEvaluator extends AbstractKeywordAwareEvaluator {
+public abstract class AbstractPropertyDependentEvaluator extends AbstractKeywordBasedEvaluator {
 
     private final String propertyName;
 
-    protected AbstractPropertyDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+    protected AbstractPropertyDependentEvaluator(Evaluator parent, Keyword keyword,
             String propertyName) {
-        super(context, schema, keyword);
+        super(parent, keyword);
         this.propertyName = propertyName;
     }
 

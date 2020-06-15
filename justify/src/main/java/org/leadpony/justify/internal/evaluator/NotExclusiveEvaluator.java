@@ -20,8 +20,7 @@ import java.util.Iterator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
@@ -32,8 +31,8 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
 
     private final Event closingEvent;
 
-    NotExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, Event closingEvent) {
-        super(context, schema, keyword);
+    NotExclusiveEvaluator(Evaluator parent, Keyword keyword, Event closingEvent) {
+        super(parent, keyword);
         this.closingEvent = closingEvent;
     }
 

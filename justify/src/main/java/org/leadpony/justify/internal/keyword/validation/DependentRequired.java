@@ -22,10 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -110,19 +107,19 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator combined = Evaluators.conjunctive(type);
         map.values().stream()
-                .map(d -> d.createEvaluator(context, schema))
+                .map(d -> d.createEvaluator(parent))
                 .forEach(combined::append);
         return combined;
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        LogicalEvaluator combined = Evaluators.disjunctive(context, schema, this, type);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        LogicalEvaluator combined = Evaluators.disjunctive(parent, this, type);
         map.values().stream()
-                .map(d -> d.createNegatedEvaluator(context, schema))
+                .map(d -> d.createNegatedEvaluator(parent))
                 .forEach(combined::append);
         return combined;
     }
@@ -135,12 +132,12 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
             this.propertyName = propertyName;
         }
 
-        Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             return Evaluator.ALWAYS_TRUE;
         }
 
-        Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema) {
-            return new NegatedEmptyDependentEvaluator(context, schema, DependentRequired.this, propertyName);
+        Evaluator createNegatedEvaluator(Evaluator parent) {
+            return new NegatedEmptyDependentEvaluator(parent, DependentRequired.this, propertyName);
         }
     }
 
@@ -155,13 +152,13 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, ObjectJsonSchema schema) {
-            return new DependentEvaluator(context, schema, DependentRequired.this, propertyName, required);
+        Evaluator createEvaluator(Evaluator parent) {
+            return new DependentEvaluator(parent, DependentRequired.this, propertyName, required);
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, ObjectJsonSchema schema) {
-            return new NegatedDependentEvaluator(context, schema, DependentRequired.this, propertyName, required);
+        Evaluator createNegatedEvaluator(Evaluator parent) {
+            return new NegatedDependentEvaluator(parent, DependentRequired.this, propertyName, required);
         }
     }
 
@@ -171,9 +168,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         protected final Set<String> missing;
         protected boolean active;
 
-        protected AbstractDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        protected AbstractDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName, Set<String> required) {
-            super(context, schema, keyword, propertyName);
+            super(parent, keyword, propertyName);
             this.required = required;
             this.missing = new LinkedHashSet<>(required);
         }
@@ -203,9 +200,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
 
     public static class DependentEvaluator extends AbstractDependentEvaluator {
 
-        public DependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String propertyName,
+        public DependentEvaluator(Evaluator parent, Keyword keyword, String propertyName,
                 Set<String> required) {
-            super(context, schema, keyword, propertyName, required);
+            super(parent, keyword, propertyName, required);
         }
 
         @Override
@@ -233,9 +230,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
 
     public static class NegatedDependentEvaluator extends AbstractDependentEvaluator {
 
-        public NegatedDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public NegatedDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName, Set<String> required) {
-            super(context, schema, keyword, propertyName, required);
+            super(parent, keyword, propertyName, required);
         }
 
         @Override
@@ -272,9 +269,9 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
 
     public static class NegatedEmptyDependentEvaluator extends AbstractPropertyDependentEvaluator {
 
-        public NegatedEmptyDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public NegatedEmptyDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName) {
-            super(context, schema, keyword, propertyName);
+            super(parent, keyword, propertyName);
         }
 
         @Override

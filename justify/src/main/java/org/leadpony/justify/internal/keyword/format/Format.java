@@ -27,10 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -38,7 +35,7 @@ import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.FormatAttribute;
@@ -126,12 +123,12 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        JsonValue value = context.getParser().getValue();
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        JsonValue value = parent.getContext().getParser().getValue();
         if (test(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new FormatEvaluator(context, schema, this) {
+        return new FormatEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder()
@@ -143,12 +140,12 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        JsonValue value = context.getParser().getValue();
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        JsonValue value = parent.getContext().getParser().getValue();
         if (!test(value)) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new FormatEvaluator(context, schema, this) {
+        return new FormatEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 ProblemBuilder builder = newProblemBuilder()
@@ -168,10 +165,10 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
         return attribute.test(value);
     }
 
-    abstract class FormatEvaluator extends AbstractKeywordAwareEvaluator {
+    abstract class FormatEvaluator extends AbstractKeywordBasedEvaluator {
 
-        FormatEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword);
+        FormatEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword);
         }
 
         @Override

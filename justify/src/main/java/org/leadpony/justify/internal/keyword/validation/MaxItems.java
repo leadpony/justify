@@ -19,11 +19,8 @@ package org.leadpony.justify.internal.keyword.validation;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -64,13 +61,13 @@ public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluator
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new AssertionEvaluator(context, schema, this, limit);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return new ItemsEvaluator(parent, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new MinItems.AssertionEvaluator(context, schema, this, limit + 1);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return new MinItems.ItemsEvaluator(parent, this, limit + 1);
     }
 
     /**
@@ -78,13 +75,13 @@ public class MaxItems extends AbstractAssertionKeyword implements ArrayEvaluator
      *
      * @author leadpony
      */
-    static class AssertionEvaluator extends ShallowEvaluator {
+    static class ItemsEvaluator extends ShallowEvaluator {
 
         private final int maxItems;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int maxItems) {
-            super(context, schema, keyword);
+        ItemsEvaluator(Evaluator parent, Keyword keyword, int maxItems) {
+            super(parent, keyword);
             this.maxItems = maxItems;
         }
 

@@ -20,10 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -38,8 +36,6 @@ import org.leadpony.justify.internal.keyword.validation.MaxContains;
 import org.leadpony.justify.internal.keyword.validation.MinContains;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 
-import jakarta.json.JsonValue;
-
 /**
  * @author leadpony
  */
@@ -48,8 +44,8 @@ public class Contains extends SimpleContains {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("contains", Contains::new);
 
-    public Contains(JsonValue json, JsonSchema subschema) {
-        super(json, subschema);
+    public Contains(JsonSchema subschema) {
+        super(subschema);
     }
 
     @Override
@@ -89,15 +85,13 @@ public class Contains extends SimpleContains {
                 }
 
                 @Override
-                public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
-                        ObjectJsonSchema schema) {
-                    return new BoundedItemsEvaluator(context, schema, maxContains, minContains);
+                public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+                    return new BoundedItemsEvaluator(parent, maxContains, minContains);
                 }
 
                 @Override
-                public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
-                        ObjectJsonSchema schema) {
-                    return new OutOfBoundsItemsEvaluator(context, schema, maxContains, minContains);
+                public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+                    return new OutOfBoundsItemsEvaluator(parent, maxContains, minContains);
                 }
             };
         } else if (minContains != null) {
@@ -111,15 +105,13 @@ public class Contains extends SimpleContains {
                     }
 
                     @Override
-                    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
-                            ObjectJsonSchema schema) {
-                        return new LowerBoundedItemsEvaluator(context, schema, minContains, bound);
+                    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+                        return new LowerBoundedItemsEvaluator(parent, minContains, bound);
                     }
 
                     @Override
-                    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
-                            ObjectJsonSchema schema) {
-                        return new UpperBoundedItemsEvaluator(context, schema, minContains,
+                    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+                        return new UpperBoundedItemsEvaluator(parent, minContains,
                                 bound - 1 // At most bound - 1
                                 );
                     }
@@ -135,15 +127,13 @@ public class Contains extends SimpleContains {
                     }
 
                     @Override
-                    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type,
-                            ObjectJsonSchema schema) {
+                    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
                         return Evaluator.ALWAYS_TRUE;
                     }
 
                     @Override
-                    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
-                            ObjectJsonSchema schema) {
-                        return context.createAlwaysFalseEvaluator(schema);
+                    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+                        return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
                     }
                 };
             }
@@ -153,12 +143,12 @@ public class Contains extends SimpleContains {
 
     private abstract class AbstractBoundedItemsEvaluator extends CountingItemsEvaluator {
 
-        protected AbstractBoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
-            this(context, schema, Contains.this);
+        protected AbstractBoundedItemsEvaluator(Evaluator parent) {
+            this(parent, Contains.this);
         }
 
-        protected AbstractBoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword, getSubschema());
+        protected AbstractBoundedItemsEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword, getSubschema());
         }
     }
 
@@ -171,9 +161,8 @@ public class Contains extends SimpleContains {
 
         private final int bound;
 
-        LowerBoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyowrd,
-                int bound) {
-            super(context, schema, keyowrd);
+        LowerBoundedItemsEvaluator(Evaluator parent, Keyword keyowrd, int bound) {
+            super(parent, keyowrd);
             this.bound = bound;
         }
 
@@ -209,9 +198,8 @@ public class Contains extends SimpleContains {
 
         private final int bound;
 
-        UpperBoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
-                int bound) {
-            super(context, schema, keyword);
+        UpperBoundedItemsEvaluator(Evaluator parent, Keyword keyword, int bound) {
+            super(parent, keyword);
             this.bound = bound;
         }
 
@@ -246,10 +234,10 @@ public class Contains extends SimpleContains {
         protected final int upperBound;
         protected final int lowerBound;
 
-        protected AbstractBothBoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema,
+        protected AbstractBothBoundedItemsEvaluator(Evaluator parent,
                 MaxContains maxContains,
                 MinContains minContains) {
-            super(context, schema);
+            super(parent);
             this.maxContains = maxContains;
             this.upperBound = maxContains.value();
             this.minContains = minContains;
@@ -272,9 +260,9 @@ public class Contains extends SimpleContains {
      */
     private class BoundedItemsEvaluator extends AbstractBothBoundedItemsEvaluator {
 
-        BoundedItemsEvaluator(EvaluatorContext context, JsonSchema schema, MaxContains maxContains,
+        BoundedItemsEvaluator(Evaluator parent, MaxContains maxContains,
                 MinContains minContains) {
-            super(context, schema, maxContains, minContains);
+            super(parent, maxContains, minContains);
         }
 
         @Override
@@ -325,9 +313,9 @@ public class Contains extends SimpleContains {
 
     private class OutOfBoundsItemsEvaluator extends AbstractBothBoundedItemsEvaluator {
 
-        OutOfBoundsItemsEvaluator(EvaluatorContext context, JsonSchema schema, MaxContains maxContains,
+        OutOfBoundsItemsEvaluator(Evaluator parent, MaxContains maxContains,
                 MinContains minContains) {
-            super(context, schema, maxContains, minContains);
+            super(parent, maxContains, minContains);
         }
 
         @Override

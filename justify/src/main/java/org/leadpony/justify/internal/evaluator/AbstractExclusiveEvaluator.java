@@ -19,8 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
@@ -33,8 +32,8 @@ import org.leadpony.justify.internal.problem.ProblemBranch;
  */
 abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
 
-    protected AbstractExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    protected AbstractExclusiveEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemBranch> problemBranches) {

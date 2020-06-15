@@ -19,11 +19,8 @@ package org.leadpony.justify.internal.keyword.validation;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -63,16 +60,16 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new AssertionEvaluator(context, schema, this, limit);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return new PropertiesEvaluator(parent, this, limit);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         if (limit > 0) {
-            return new MaxProperties.AssertionEvaluator(context, schema, this, limit - 1);
+            return new MaxProperties.PropertiesEvaluator(parent, this, limit - 1);
         } else {
-            return context.createAlwaysFalseEvaluator(schema);
+            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
         }
     }
 
@@ -81,13 +78,13 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
      *
      * @author leadpony
      */
-    static class AssertionEvaluator extends ShallowEvaluator {
+    static class PropertiesEvaluator extends ShallowEvaluator {
 
         private final int minProperties;
         private int currentCount;
 
-        AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, int minProperties) {
-            super(context, schema, keyword);
+        PropertiesEvaluator(Evaluator parent, Keyword keyword, int minProperties) {
+            super(parent, keyword);
             this.minProperties = minProperties;
         }
 

@@ -16,13 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import jakarta.json.JsonValue;
-
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -42,7 +38,7 @@ public class Not extends UnaryApplicator {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("not", Not::new);
 
-    public Not(JsonValue json, JsonSchema subschema) {
+    public Not(JsonSchema subschema) {
         super(subschema);
     }
 
@@ -57,12 +53,12 @@ public class Not extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return getSubschema().createNegatedEvaluator(context, type);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return getSubschema().createNegatedEvaluator(parent.getContext(), type);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return getSubschema().createEvaluator(context, type);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return getSubschema().createEvaluator(parent.getContext(), type);
     }
 }

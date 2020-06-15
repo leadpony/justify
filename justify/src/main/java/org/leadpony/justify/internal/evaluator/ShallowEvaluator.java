@@ -18,8 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
@@ -28,10 +27,10 @@ import org.leadpony.justify.api.keyword.Keyword;
  *
  * @author leadpony
  */
-public abstract class ShallowEvaluator extends AbstractKeywordAwareEvaluator {
+public abstract class ShallowEvaluator extends AbstractKeywordBasedEvaluator {
 
-    protected ShallowEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    protected ShallowEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     @Override

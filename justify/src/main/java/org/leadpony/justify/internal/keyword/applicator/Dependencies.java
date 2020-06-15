@@ -32,11 +32,9 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordParser;
@@ -124,19 +122,19 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.conjunctive(type);
         dependentMap.values().stream()
-                .map(d -> d.createEvaluator(context, schema))
+                .map(d -> d.createEvaluator(parent))
                 .forEach(evaluator::append);
         return evaluator;
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        LogicalEvaluator evaluator = Evaluators.disjunctive(context, schema, this, type);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        LogicalEvaluator evaluator = Evaluators.disjunctive(parent, this, type);
         dependentMap.values().stream()
-                .map(d -> d.createNegatedEvaluator(context, schema))
+                .map(d -> d.createNegatedEvaluator(parent))
                 .forEach(evaluator::append);
         return evaluator;
     }
@@ -213,14 +211,14 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
          *
          * @return newly created evaluator.
          */
-        abstract Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema);
+        abstract Evaluator createEvaluator(Evaluator parent);
 
         /**
          * Creates a new negated version of evaluator for this dependent.
          *
          * @return newly created evaluator.
          */
-        abstract Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema);
+        abstract Evaluator createNegatedEvaluator(Evaluator parent);
     }
 
     /**
@@ -238,15 +236,15 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentSchemas.DependentEvaluator(context, schema, keyword, getProperty(), subschema);
+            return new DependentSchemas.DependentEvaluator(parent, keyword, getProperty(), subschema);
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createNegatedEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentSchemas.NegatedDependentEvaluator(context, schema, keyword, getProperty(), subschema);
+            return new DependentSchemas.NegatedDependentEvaluator(parent, keyword, getProperty(), subschema);
         }
 
         JsonSchema getSubschema() {
@@ -264,13 +262,13 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return context.createAlwaysFalseEvaluator(getSubschema());
+        Evaluator createNegatedEvaluator(Evaluator parent) {
+            return parent.getContext().createAlwaysFalseEvaluator(getSubschema());
         }
     }
 
@@ -284,9 +282,9 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentSchemas.ForbiddenPropertyEvaluator(context, schema, keyword, getProperty());
+            return new DependentSchemas.ForbiddenPropertyEvaluator(parent, keyword, getProperty());
         }
     }
 
@@ -305,16 +303,16 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentRequired.DependentEvaluator(context, schema, keyword, getProperty(),
+            return new DependentRequired.DependentEvaluator(parent, keyword, getProperty(),
                     requiredProperties);
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createNegatedEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentRequired.NegatedDependentEvaluator(context, schema, keyword, getProperty(),
+            return new DependentRequired.NegatedDependentEvaluator(parent, keyword, getProperty(),
                     requiredProperties);
         }
     }
@@ -329,14 +327,14 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createNegatedEvaluator(Evaluator parent) {
             Keyword keyword = Dependencies.this;
-            return new DependentRequired.NegatedEmptyDependentEvaluator(context, schema, keyword, getProperty());
+            return new DependentRequired.NegatedEmptyDependentEvaluator(parent, keyword, getProperty());
         }
     }
 }

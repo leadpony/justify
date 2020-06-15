@@ -23,10 +23,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -66,19 +64,19 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator combined = Evaluators.conjunctive(type);
         dependentMap.values().stream()
-                .map(d -> d.createEvaluator(context, schema))
+                .map(d -> d.createEvaluator(parent))
                 .forEach(combined::append);
         return combined;
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        LogicalEvaluator combined = Evaluators.disjunctive(context, schema, this, type);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        LogicalEvaluator combined = Evaluators.disjunctive(parent, this, type);
         dependentMap.values().stream()
-                .map(d -> d.createNegatedEvaluator(context, schema))
+                .map(d -> d.createNegatedEvaluator(parent))
                 .forEach(combined::append);
         return combined;
     }
@@ -133,14 +131,14 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
             return subschema;
         }
 
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             Keyword keyword = DependentSchemas.this;
-            return new DependentEvaluator(context, schema, keyword, this.propertyName, subschema);
+            return new DependentEvaluator(parent, keyword, this.propertyName, subschema);
         }
 
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createNegatedEvaluator(Evaluator parent) {
             Keyword keyword = DependentSchemas.this;
-            return new NegatedDependentEvaluator(context, schema, keyword, this.propertyName, subschema);
+            return new NegatedDependentEvaluator(parent, keyword, this.propertyName, subschema);
         }
     }
 
@@ -151,13 +149,13 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        Evaluator createNegatedEvaluator(EvaluatorContext context, JsonSchema schema) {
-            return context.createAlwaysFalseEvaluator(getSubschema());
+        Evaluator createNegatedEvaluator(Evaluator parent) {
+            return parent.getContext().createAlwaysFalseEvaluator(getSubschema());
         }
     }
 
@@ -168,9 +166,9 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        Evaluator createEvaluator(EvaluatorContext context, JsonSchema schema) {
+        Evaluator createEvaluator(Evaluator parent) {
             Keyword keyword = DependentSchemas.this;
-            return new ForbiddenPropertyEvaluator(context, schema, keyword, getPropertyName());
+            return new ForbiddenPropertyEvaluator(parent, keyword, getPropertyName());
         }
     }
 
@@ -182,9 +180,9 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         private Result result;
         private List<Problem> problems;
 
-        protected AbstractDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        protected AbstractDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName, Evaluator internalEvaluator) {
-            super(context, schema, keyword, propertyName);
+            super(parent, keyword, propertyName);
             this.internalEvaluator = internalEvaluator;
         }
 
@@ -244,9 +242,10 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     public static class DependentEvaluator extends AbstractDependentEvaluator {
 
-        public DependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, String propertyName,
+        public DependentEvaluator(Evaluator parent, Keyword keyword, String propertyName,
                 JsonSchema subschema) {
-            super(context, schema, keyword, propertyName, subschema.createEvaluator(context, InstanceType.OBJECT));
+            super(parent, keyword, propertyName,
+                    subschema.createEvaluator(parent.getContext(), InstanceType.OBJECT));
         }
 
         @Override
@@ -257,11 +256,11 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     public static class NegatedDependentEvaluator extends AbstractDependentEvaluator {
 
-        public NegatedDependentEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public NegatedDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName,
                 JsonSchema subschema) {
-            super(context, schema, keyword, propertyName,
-                    subschema.createNegatedEvaluator(context, InstanceType.OBJECT));
+            super(parent, keyword, propertyName,
+                    subschema.createNegatedEvaluator(parent.getContext(), InstanceType.OBJECT));
         }
 
         @Override
@@ -272,9 +271,9 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     public static class ForbiddenPropertyEvaluator extends AbstractPropertyDependentEvaluator {
 
-        public ForbiddenPropertyEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        public ForbiddenPropertyEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName) {
-            super(context, schema, keyword, propertyName);
+            super(parent, keyword, propertyName);
         }
 
         @Override

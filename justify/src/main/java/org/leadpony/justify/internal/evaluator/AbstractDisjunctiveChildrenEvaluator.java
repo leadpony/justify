@@ -18,8 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
@@ -28,9 +27,9 @@ import org.leadpony.justify.api.keyword.Keyword;
  */
 abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator implements ChildrenEvaluator {
 
-    protected AbstractDisjunctiveChildrenEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+    protected AbstractDisjunctiveChildrenEvaluator(Evaluator parent, Keyword keyword,
             Event closingEvent) {
-        super(context, schema, keyword, closingEvent);
+        super(parent, keyword, closingEvent);
     }
 
     @Override

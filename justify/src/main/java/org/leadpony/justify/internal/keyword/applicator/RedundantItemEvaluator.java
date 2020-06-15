@@ -18,22 +18,22 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractContextAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.RedundantElementEvaluator;
 
 /**
  * @author leadpony
  */
-class RedundantItemEvaluator extends AbstractContextAwareEvaluator {
+class RedundantItemEvaluator extends RedundantElementEvaluator {
 
     private final int itemIndex;
 
-    RedundantItemEvaluator(EvaluatorContext context, JsonSchema schema, int itemIndex) {
-        super(context, schema);
+    RedundantItemEvaluator(Evaluator parent, JsonSchema schema, int itemIndex) {
+        super(parent, schema);
         assert schema.isBoolean() || schema == JsonSchema.EMPTY;
         this.itemIndex = itemIndex;
     }

@@ -21,12 +21,8 @@ import java.util.Set;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
-
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -66,20 +62,20 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         if (names.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         } else {
-            return new AssertionEvaluator(context, schema, this, names);
+            return new ValueTypeEvaluator(parent, this, names);
         }
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         if (names.isEmpty()) {
-            return context.createAlwaysFalseEvaluator(schema);
+            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
         } else {
-            return new NegatedAssertionEvaluator(context, schema, this, names);
+            return new NegatedValueTypeEvaluator(parent, this, names);
         }
     }
 
@@ -88,12 +84,12 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
      *
      * @author leadpony
      */
-    private final class AssertionEvaluator extends ShallowEvaluator {
+    private final class ValueTypeEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 
-        private AssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, Set<String> required) {
-            super(context, schema, keyword);
+        private ValueTypeEvaluator(Evaluator parent, Keyword keyword, Set<String> required) {
+            super(parent, keyword);
             this.missing = new LinkedHashSet<>(required);
         }
 
@@ -131,13 +127,13 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
      *
      * @author leadpony
      */
-    private final class NegatedAssertionEvaluator extends ShallowEvaluator {
+    private final class NegatedValueTypeEvaluator extends ShallowEvaluator {
 
         private final Set<String> missing;
 
-        private NegatedAssertionEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        private NegatedValueTypeEvaluator(Evaluator parent, Keyword keyword,
                 Set<String> names) {
-            super(context, schema, keyword);
+            super(parent, keyword);
             this.missing = new LinkedHashSet<>(names);
         }
 

@@ -18,6 +18,7 @@ package org.leadpony.justify.internal.evaluator;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.evaluator.schema.AlwaysFalseEvaluator;
 
 /**
  * An {@link EvaluatorContext} with default method implementation.
@@ -28,6 +29,6 @@ public interface DefaultEvaluatorContext extends EvaluatorContext {
 
     @Override
     default Evaluator createAlwaysFalseEvaluator(JsonSchema schema) {
-        return new AlwaysFalseEvaluator(this, schema);
+        return new AlwaysFalseEvaluator(null, schema, this);
     }
 }

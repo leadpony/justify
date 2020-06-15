@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import jakarta.json.JsonValue;
-
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -36,7 +34,7 @@ public class Then extends Conditional {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("then", Then::new);
 
-    public Then(JsonValue json, JsonSchema schema) {
+    public Then(JsonSchema schema) {
         super(schema);
     }
 

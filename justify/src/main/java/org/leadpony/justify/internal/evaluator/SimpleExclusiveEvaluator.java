@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -38,10 +36,10 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private final Stream<Evaluator> operands;
     private final Stream<Evaluator> negated;
 
-    SimpleExclusiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+    SimpleExclusiveEvaluator(Evaluator parent, Keyword keyword,
             Stream<Evaluator> operands,
             Stream<Evaluator> negated) {
-        super(context, schema, keyword);
+        super(parent, keyword);
         this.operands = operands;
         this.negated = negated;
     }

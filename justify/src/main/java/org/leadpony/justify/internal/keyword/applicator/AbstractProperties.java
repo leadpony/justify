@@ -26,10 +26,8 @@ import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
@@ -65,13 +63,13 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new PropertiesEvaluator(context, schema, this, defaultSchema);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType typep) {
+        return new PropertiesEvaluator(parent, this, defaultSchema);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return new NegatedPropertiesEvaluator(context, schema, this, defaultSchema);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return new NegatedPropertiesEvaluator(parent, this, defaultSchema);
     }
 
     @Override
@@ -102,8 +100,8 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         private String currentKeyName;
         private InstanceType currentType;
 
-        PropertiesEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword, JsonSchema defaultSchema) {
-            super(context, schema, keyword);
+        PropertiesEvaluator(Evaluator parent, Keyword keyword, JsonSchema defaultSchema) {
+            super(parent, keyword);
             this.defaultSchema = defaultSchema;
         }
 
@@ -124,7 +122,7 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         @Override
         public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.FALSE) {
-                append(new RedundantPropertyEvaluator(getContext(), JsonSchema.FALSE, currentKeyName));
+                append(new RedundantPropertyEvaluator(this, subschema, currentKeyName));
             } else {
                 append(subschema.createEvaluator(getContext(), currentType));
             }
@@ -143,9 +141,9 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         private String currentKeyName;
         private InstanceType currentType;
 
-        NegatedPropertiesEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+        NegatedPropertiesEvaluator(Evaluator parent, Keyword keyword,
                 JsonSchema defaultSchema) {
-            super(context, schema, keyword);
+            super(parent, keyword);
             this.defaultSchema = defaultSchema;
         }
 
@@ -166,7 +164,7 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         @Override
         public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                append(new RedundantPropertyEvaluator(getContext(), subschema, currentKeyName));
+                append(new RedundantPropertyEvaluator(this, subschema, currentKeyName));
             } else {
                 append(subschema.createNegatedEvaluator(getContext(), currentType));
             }

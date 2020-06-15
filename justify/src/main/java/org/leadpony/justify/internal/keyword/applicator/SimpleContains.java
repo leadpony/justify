@@ -16,15 +16,12 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -48,7 +45,7 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("contains", SimpleContains::new);
 
-    public SimpleContains(JsonValue json, JsonSchema subschema) {
+    public SimpleContains(JsonSchema subschema) {
         super(subschema);
     }
 
@@ -58,13 +55,13 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return createSimpleItemsEvaluator(context, schema);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return createSimpleItemsEvaluator(parent);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return createSimpleNegatedItemsEvaluator(context, schema);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return createSimpleNegatedItemsEvaluator(parent);
     }
 
     @Override
@@ -72,14 +69,14 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
         return ApplicableLocation.CHILD;
     }
 
-    protected final Evaluator createSimpleItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+    protected final Evaluator createSimpleItemsEvaluator(Evaluator parent) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractDisjunctiveItemsEvaluator(context, schema, this) {
+        return new AbstractDisjunctiveItemsEvaluator(parent, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createEvaluator(context, type));
+                    append(subschema.createEvaluator(parent.getContext(), type));
                 }
             }
 
@@ -90,14 +87,14 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
         };
     }
 
-    protected final Evaluator createSimpleNegatedItemsEvaluator(EvaluatorContext context, JsonSchema schema) {
+    protected final Evaluator createSimpleNegatedItemsEvaluator(Evaluator parent) {
         final JsonSchema subschema = getSubschema();
-        return new AbstractConjunctiveItemsEvaluator(context, schema, this) {
+        return new AbstractConjunctiveItemsEvaluator(parent, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createNegatedEvaluator(context, type));
+                    append(subschema.createNegatedEvaluator(parent.getContext(), type));
                 }
             }
         };

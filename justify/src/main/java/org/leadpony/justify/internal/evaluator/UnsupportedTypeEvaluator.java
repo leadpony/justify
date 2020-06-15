@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@ package org.leadpony.justify.internal.evaluator;
 
 import java.util.Set;
 
-import org.leadpony.justify.api.EvaluatorContext;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -33,19 +32,18 @@ import jakarta.json.stream.JsonParser.Event;
  *
  * @author leadpony
  */
-public final class UnsupportedTypeEvaluator extends AbstractKeywordAwareEvaluator {
+public final class UnsupportedTypeEvaluator extends AbstractKeywordBasedEvaluator {
 
     private final Set<InstanceType> expected;
     private final InstanceType actual;
 
-    public UnsupportedTypeEvaluator(EvaluatorContext context, JsonSchema schema, EvaluatorSource source,
-            InstanceType actual) {
-        this(context, schema, source.getSourceKeyword(), source.getSupportedTypes(), actual);
+    public UnsupportedTypeEvaluator(Evaluator parent, EvaluatorSource source, InstanceType actual) {
+        this(parent, source.getSourceKeyword(), source.getSupportedTypes(), actual);
     }
 
-    public UnsupportedTypeEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
+    public UnsupportedTypeEvaluator(Evaluator parent, Keyword keyword,
             Set<InstanceType> expected, InstanceType actual) {
-        super(context, schema, keyword);
+        super(parent, keyword);
         this.expected = expected;
         this.actual = actual;
     }

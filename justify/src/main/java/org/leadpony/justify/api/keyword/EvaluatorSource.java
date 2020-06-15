@@ -19,9 +19,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ObjectJsonSchema;
 
 /**
  * A source of instance evaluators.
@@ -63,32 +61,28 @@ public interface EvaluatorSource {
     /**
      * Creates an evaluator of the JSON instance.
      *
-     * @param context the context shared by all evaluators in the current
-     *                validation, never be {@code null}.
-     * @param type    the type of the target JSON instance to validate, never be
-     *                {@code null}.
-     * @param schema  the owning schema of this keyword, never be {@code null}.
+     * @param parent the parent evaluator, never be {@code null}.
+     * @param type   the type of the target JSON instance to validate, never be
+     *               {@code null}.
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
      */
-    default Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    default Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 
     /**
      * Creates a negated evaluator of the JSON instance.
      *
-     * @param context the context shared by all evaluators in the current
-     *                validation, never be {@code null}.
-     * @param type    the type of the target JSON instance to validate, cannot be
-     *                {@code null}.
-     * @param schema  the owning schema of this keyword, cannot be {@code null}.
+     * @param parent the parent evaluator, never be {@code null}.
+     * @param type   the type of the target JSON instance to validate, cannot be
+     *               {@code null}.
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
      */
-    default Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    default Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 }

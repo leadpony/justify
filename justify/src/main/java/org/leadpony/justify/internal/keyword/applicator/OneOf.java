@@ -20,10 +20,10 @@ import java.util.Collection;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -55,16 +55,17 @@ public class OneOf extends NaryBooleanLogic {
     }
 
     @Override
-    public LogicalEvaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return Evaluators.exclusive(context, schema, this, type,
+    public LogicalEvaluator createEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
+        return Evaluators.exclusive(parent, this, type,
                 getSchemasAsStream().map(s -> s.createEvaluator(context, type)),
                 getSchemasAsStream().map(s -> s.createNegatedEvaluator(context, type)));
     }
 
     @Override
-    public LogicalEvaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
-            ObjectJsonSchema schema) {
-        LogicalEvaluator evaluator = Evaluators.notExclusive(context, schema, this, type);
+    public LogicalEvaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
+        LogicalEvaluator evaluator = Evaluators.notExclusive(parent, this, type);
         for (JsonSchema subschema : getSubschemas()) {
             evaluator.append(subschema.createNegatedEvaluator(context, type));
         }

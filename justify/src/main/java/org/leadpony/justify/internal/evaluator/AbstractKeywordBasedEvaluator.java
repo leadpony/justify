@@ -17,36 +17,55 @@ package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
+
+import jakarta.json.stream.JsonLocation;
+import jakarta.json.stream.JsonParser;
 
 /**
  * An implementation of {@link Evaluator} which is provided by a keyword.
  *
  * @author leadpony
  */
-public abstract class AbstractKeywordAwareEvaluator extends AbstractContextAwareEvaluator {
+public abstract class AbstractKeywordBasedEvaluator implements Evaluator {
 
-    // this can be null.
+    private final Evaluator parent;
+    private final EvaluatorContext context;
     private final Keyword keyword;
 
-    protected AbstractKeywordAwareEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema);
+    protected AbstractKeywordBasedEvaluator(Evaluator parent, Keyword keyword) {
+        this.parent = parent;
+        this.context = parent.getContext();
         this.keyword = keyword;
     }
 
-    protected final Keyword getKeyword() {
-        return keyword;
+    @Override
+    public final Evaluator getParent() {
+        return parent;
     }
 
     @Override
+    public final EvaluatorContext getContext() {
+        return context;
+    }
+
+    public final JsonParser getParser() {
+        return getContext().getParser();
+    }
+
+    public final Keyword getKeyword() {
+        return keyword;
+    }
+
     protected ProblemBuilder newProblemBuilder() {
-        ProblemBuilder builder = super.newProblemBuilder();
-        Keyword keyword = getKeyword();
-        if (keyword != null) {
-            builder.withKeyword(keyword.name());
-        }
+        EvaluatorContext context = getContext();
+        JsonLocation location = getParser().getLocation();
+        String pointer = context.getPointer();
+        ProblemBuilder builder = new ProblemBuilder(SimpleJsonLocation.before(location), pointer)
+            .withSchema(getSchema())
+            .withKeyword(getKeyword().name());
         return builder;
     }
 }

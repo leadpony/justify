@@ -21,15 +21,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -50,12 +47,22 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class AdditionalProperties extends UnaryApplicator {
+public final class AdditionalProperties extends UnaryApplicator {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchema("additionalProperties",
-            AdditionalProperties::new);
+            AdditionalProperties::of);
 
-    public AdditionalProperties(JsonValue json, JsonSchema subschema) {
+    private static final AdditionalProperties FALSE = new AdditionalProperties(JsonSchema.FALSE);
+
+    public static AdditionalProperties of(JsonSchema schema) {
+        if (schema == JsonSchema.FALSE) {
+            return FALSE;
+        } else {
+            return new AdditionalProperties(schema);
+        }
+    }
+
+    private AdditionalProperties(JsonSchema subschema) {
         super(subschema);
     }
 
@@ -96,21 +103,21 @@ public class AdditionalProperties extends UnaryApplicator {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         if (getSubschema() == JsonSchema.FALSE) {
-            return createForbiddenPropertiesEvaluator(context, schema);
+            return createForbiddenPropertiesEvaluator(parent);
         } else {
-            return createPropertiesEvaluator(context, schema);
+            return createPropertiesEvaluator(parent);
         }
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return createNegatedForbiddenPropertiesEvaluator(context, schema);
+            return createNegatedForbiddenPropertiesEvaluator(parent);
         } else {
-            return createNegatedPropertiesEvaluator(context, schema);
+            return createNegatedPropertiesEvaluator(parent);
         }
     }
 
@@ -125,9 +132,9 @@ public class AdditionalProperties extends UnaryApplicator {
      *
      * @return newly created evaluator.
      */
-    private Evaluator createPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
+    private Evaluator createPropertiesEvaluator(Evaluator parent) {
         JsonSchema subschema = getSubschema();
-        return new AbstractConjunctivePropertiesEvaluator(context, schema, this) {
+        return new AbstractConjunctivePropertiesEvaluator(parent, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -144,9 +151,9 @@ public class AdditionalProperties extends UnaryApplicator {
      *
      * @return newly created evaluator.
      */
-    private Evaluator createNegatedPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
+    private Evaluator createNegatedPropertiesEvaluator(Evaluator parent) {
         JsonSchema subschema = getSubschema();
-        return new AbstractDisjunctivePropertiesEvaluator(context, schema, this) {
+        return new AbstractDisjunctivePropertiesEvaluator(parent, this) {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
@@ -157,8 +164,8 @@ public class AdditionalProperties extends UnaryApplicator {
         };
     }
 
-    private Evaluator createForbiddenPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
-        return new AbstractConjunctivePropertiesEvaluator(context, schema, this) {
+    private Evaluator createForbiddenPropertiesEvaluator(Evaluator parent) {
+        return new AbstractConjunctivePropertiesEvaluator(parent, this) {
             private String keyName;
 
             @Override
@@ -166,14 +173,14 @@ public class AdditionalProperties extends UnaryApplicator {
                 if (event == Event.KEY_NAME) {
                     keyName = parser.getString();
                 } else if (ParserEvents.isValue(event)) {
-                    append(createRedundantPropertyEvaluator(context, keyName));
+                    append(createRedundantPropertyEvaluator(this, keyName));
                 }
             }
         };
     }
 
-    private Evaluator createNegatedForbiddenPropertiesEvaluator(EvaluatorContext context, JsonSchema schema) {
-        return new AbstractDisjunctivePropertiesEvaluator(context, schema, this) {
+    private Evaluator createNegatedForbiddenPropertiesEvaluator(Evaluator parent) {
+        return new AbstractDisjunctivePropertiesEvaluator(parent, this) {
             private String keyName;
 
             @Override
@@ -181,13 +188,13 @@ public class AdditionalProperties extends UnaryApplicator {
                 if (event == Event.KEY_NAME) {
                     keyName = parser.getString();
                 } else if (ParserEvents.isValue(event)) {
-                    append(createRedundantPropertyEvaluator(context, keyName));
+                    append(createRedundantPropertyEvaluator(this, keyName));
                 }
             }
         };
     }
 
-    private Evaluator createRedundantPropertyEvaluator(EvaluatorContext context, String keyName) {
-        return new RedundantPropertyEvaluator(context, getSubschema(), keyName);
+    private Evaluator createRedundantPropertyEvaluator(Evaluator parent, String keyName) {
+        return new RedundantPropertyEvaluator(parent, getSubschema(), keyName);
     }
 }

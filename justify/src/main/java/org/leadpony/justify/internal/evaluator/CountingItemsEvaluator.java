@@ -34,7 +34,7 @@ import jakarta.json.stream.JsonParser.Event;
 /**
  * @author leadpony
  */
-public abstract class CountingItemsEvaluator extends AbstractKeywordAwareEvaluator implements DefaultProblemDispatcher {
+public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluator implements DefaultProblemDispatcher {
 
     private final JsonSchema subschema;
     private int validItems;
@@ -43,9 +43,8 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordAwareEvaluat
     private ProblemBranch problems;
     private List<ProblemBranch> problemBranches;
 
-    protected CountingItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword,
-            JsonSchema subschema) {
-        super(context, schema, keyword);
+    protected CountingItemsEvaluator(Evaluator parent, Keyword keyword, JsonSchema subschema) {
+        super(parent, keyword);
         this.subschema = subschema;
     }
 

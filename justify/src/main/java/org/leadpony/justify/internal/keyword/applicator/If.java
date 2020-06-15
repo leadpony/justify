@@ -19,13 +19,10 @@ package org.leadpony.justify.internal.keyword.applicator;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.json.JsonValue;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -46,7 +43,7 @@ public class If extends Conditional {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchema("if", If::new);
 
-    public If(JsonValue json, JsonSchema schema) {
+    public If(JsonSchema schema) {
         super(schema);
     }
 
@@ -95,7 +92,8 @@ public class If extends Conditional {
             }
 
             @Override
-            public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+            public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+                EvaluatorContext context = parent.getContext();
                 Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
                 Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
                         : Evaluator.ALWAYS_TRUE;
@@ -105,8 +103,8 @@ public class If extends Conditional {
             }
 
             @Override
-            public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type,
-                    ObjectJsonSchema schema) {
+            public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+                EvaluatorContext context = parent.getContext();
                 Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
                 Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
                         : getSubschema().createNegatedEvaluator(context, type);

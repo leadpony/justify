@@ -26,11 +26,8 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
@@ -39,7 +36,7 @@ import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 import org.leadpony.justify.spi.ContentEncodingScheme;
@@ -139,11 +136,11 @@ public class ContentEncoding extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        if (test(context.getParser().getString())) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        if (test(parent.getContext().getParser().getString())) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new ContentEncodingEvaluator(context, schema, this) {
+        return new ContentEncodingEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTENCODING).build();
@@ -154,11 +151,11 @@ public class ContentEncoding extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        if (!test(context.getParser().getString())) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        if (!test(parent.getContext().getParser().getString())) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return new ContentEncodingEvaluator(context, schema, this) {
+        return new ContentEncodingEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING).build();
@@ -181,10 +178,10 @@ public class ContentEncoding extends AbstractAssertionKeyword {
         return scheme;
     }
 
-    abstract class ContentEncodingEvaluator extends AbstractKeywordAwareEvaluator {
+    abstract class ContentEncodingEvaluator extends AbstractKeywordBasedEvaluator {
 
-        ContentEncodingEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-            super(context, schema, keyword);
+        ContentEncodingEvaluator(Evaluator parent, Keyword keyword) {
+            super(parent, keyword);
         }
 
         @Override

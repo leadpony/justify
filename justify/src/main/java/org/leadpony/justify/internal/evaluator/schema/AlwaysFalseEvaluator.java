@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.evaluator.schema;
 
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -23,10 +24,10 @@ import jakarta.json.stream.JsonParser.Event;
 /**
  * @author leadpony
  */
-final class AlwaysFalseEvaluator extends AbstractContextAwareEvaluator {
+public final class AlwaysFalseEvaluator extends AbstractSchemaBasedEvaluator {
 
-    AlwaysFalseEvaluator(EvaluatorContext context, JsonSchema schema) {
-        super(context, schema);
+    public AlwaysFalseEvaluator(Evaluator parent, JsonSchema schema, EvaluatorContext context) {
+        super(parent, schema, context);
     }
 
     @Override

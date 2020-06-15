@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import jakarta.json.JsonValue;
-
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -34,11 +32,21 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class AdditionalItems extends UnaryApplicator {
+public final class AdditionalItems extends UnaryApplicator {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingSchema("additionalItems", AdditionalItems::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingSchema("additionalItems", AdditionalItems::of);
 
-    public AdditionalItems(JsonValue json, JsonSchema subschema) {
+    private static final AdditionalItems FALSE = new AdditionalItems(JsonSchema.FALSE);
+
+    public static AdditionalItems of(JsonSchema schema) {
+        if (schema == JsonSchema.FALSE) {
+            return FALSE;
+        } else {
+            return new AdditionalItems(schema);
+        }
+    }
+
+    private AdditionalItems(JsonSchema subschema) {
         super(subschema);
     }
 

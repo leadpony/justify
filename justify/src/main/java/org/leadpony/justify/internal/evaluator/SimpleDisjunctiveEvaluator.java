@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -43,8 +41,8 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     private final List<DeferredEvaluator> operands = new ArrayList<>();
     private List<ProblemBranch> problemBranches;
 
-    SimpleDisjunctiveEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    SimpleDisjunctiveEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     @Override

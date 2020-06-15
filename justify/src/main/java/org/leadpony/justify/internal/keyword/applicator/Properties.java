@@ -28,7 +28,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
@@ -89,13 +88,13 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return decorateEvaluator(super.createEvaluator(context, type, schema), context);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return decorateEvaluator(super.createEvaluator(parent, type));
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
-        return decorateEvaluator(super.createNegatedEvaluator(context, type, schema), context);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return decorateEvaluator(super.createNegatedEvaluator(parent, type));
     }
 
     @Override
@@ -120,9 +119,10 @@ public class Properties extends AbstractProperties<String> {
         defaultValues.put(key, defaultValue);
     }
 
-    private Evaluator decorateEvaluator(Evaluator evaluator, EvaluatorContext context) {
+    private Evaluator decorateEvaluator(Evaluator evaluator) {
+        EvaluatorContext context = evaluator.getContext();
         if (context.acceptsDefaultValues() && defaultValues != null) {
-            return new PropertiesDefaultEvaluator(evaluator, context, defaultValues);
+            return new PropertiesDefaultEvaluator(evaluator, defaultValues);
         }
         return evaluator;
     }
@@ -136,9 +136,8 @@ public class Properties extends AbstractProperties<String> {
 
         private final Map<String, JsonValue> defaultValues;
 
-        private PropertiesDefaultEvaluator(Evaluator evaluator, EvaluatorContext context,
-                Map<String, JsonValue> defaultValues) {
-            super(evaluator, context);
+        private PropertiesDefaultEvaluator(Evaluator evaluator, Map<String, JsonValue> defaultValues) {
+            super(evaluator);
             this.defaultValues = new LinkedHashMap<>(defaultValues);
         }
 

@@ -18,8 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -35,8 +33,8 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     private Result finalResult = Result.TRUE;
     private Evaluator childEvaluator;
 
-    protected AbstractConjunctiveItemsEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    protected AbstractConjunctiveItemsEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 
     @Override

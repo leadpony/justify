@@ -16,8 +16,7 @@
 
 package org.leadpony.justify.internal.evaluator;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -25,9 +24,9 @@ import org.leadpony.justify.api.keyword.Keyword;
  *
  * @author leadpony
  */
-abstract class AbstractLogicalEvaluator extends AbstractKeywordAwareEvaluator implements LogicalEvaluator {
+abstract class AbstractLogicalEvaluator extends AbstractKeywordBasedEvaluator implements LogicalEvaluator {
 
-    protected AbstractLogicalEvaluator(EvaluatorContext context, JsonSchema schema, Keyword keyword) {
-        super(context, schema, keyword);
+    protected AbstractLogicalEvaluator(Evaluator parent, Keyword keyword) {
+        super(parent, keyword);
     }
 }

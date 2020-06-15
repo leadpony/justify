@@ -23,11 +23,10 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
-import org.leadpony.justify.internal.evaluator.AbstractKeywordAwareEvaluator;
+import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -43,10 +42,11 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return new AbstractKeywordAwareEvaluator(context, schema, this) {
+        return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 if (builder.append(event, context.getParser())) {
@@ -65,10 +65,11 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type, ObjectJsonSchema schema) {
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        EvaluatorContext context = parent.getContext();
         JsonBuilderFactory jsonBuilderFactory = context.getJsonBuilderFactory();
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
-        return new AbstractKeywordAwareEvaluator(context, schema, this) {
+        return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
             public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
                 if (builder.append(event, context.getParser())) {

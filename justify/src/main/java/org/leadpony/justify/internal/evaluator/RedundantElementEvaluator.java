@@ -16,8 +16,6 @@
 package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonLocation;
-import jakarta.json.stream.JsonParser;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
@@ -29,32 +27,31 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
  *
  * @author leadpony
  */
-public abstract class AbstractContextAwareEvaluator implements Evaluator {
+public abstract class RedundantElementEvaluator implements Evaluator {
 
-    private final EvaluatorContext context;
+    private final Evaluator parent;
     private final JsonSchema schema;
 
-    protected AbstractContextAwareEvaluator(EvaluatorContext context, JsonSchema schema) {
-        this.context = context;
+    protected RedundantElementEvaluator(Evaluator parent, JsonSchema schema) {
+        this.parent = parent;
         this.schema = schema;
     }
 
-    protected final EvaluatorContext getContext() {
-        return context;
+    @Override
+    public final Evaluator getParent() {
+        return parent;
     }
 
-    protected final JsonParser getParser() {
-        return context.getParser();
-    }
-
-    protected final JsonSchema getSchema() {
+    @Override
+    public final JsonSchema getSchema() {
         return schema;
     }
 
     protected ProblemBuilder newProblemBuilder() {
+        EvaluatorContext context = getContext();
         JsonLocation location = context.getParser().getLocation();
         String pointer = context.getPointer();
         return new ProblemBuilder(SimpleJsonLocation.before(location), pointer)
-            .withSchema(this.schema);
+            .withSchema(getSchema());
     }
 }
