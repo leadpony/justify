@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
@@ -44,59 +43,55 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
     public static Evaluator of(Collection<EvaluatorSource> sources,
             Evaluator parent,
-            EvaluatorContext context,
-            InstanceType type,
-            ObjectJsonSchema schema) {
+            JsonSchema schema,
+            InstanceType type) {
 
-        ComplexSchemaBasedEvaluator evaluator = createEvaluator(parent, schema, type, context);
-        evaluator.addChildren(sources, type);
-        if (evaluator.isEmpty()) {
+        ComplexSchemaBasedEvaluator self = createEvaluator(parent, schema, type);
+        self.addChildren(sources, type);
+        if (self.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         }
-        return evaluator;
+        return self;
     }
 
     public static Evaluator ofNegated(Collection<EvaluatorSource> sources,
             Evaluator parent,
-            EvaluatorContext context,
-            InstanceType type,
-            ObjectJsonSchema schema) {
+            JsonSchema schema,
+            InstanceType type) {
 
-        ComplexSchemaBasedEvaluator evaluator = createNegatedEvaluator(parent, schema, type, context);
-        evaluator.addChildren(sources, type);
-        return evaluator;
+        ComplexSchemaBasedEvaluator self = createNegatedEvaluator(parent, schema, type);
+        self.addChildren(sources, type);
+        return self;
     }
 
-    private static ComplexSchemaBasedEvaluator createEvaluator(Evaluator parent, ObjectJsonSchema schema,
-            InstanceType type,
-            EvaluatorContext context) {
+    private static ComplexSchemaBasedEvaluator createEvaluator(Evaluator parent, JsonSchema schema,
+            InstanceType type) {
         switch (type) {
         case ARRAY:
-            return new CollectionTypeEvaluator(parent, schema, context, Event.END_ARRAY);
+            return new CollectionTypeEvaluator(parent, schema, Event.END_ARRAY);
         case OBJECT:
-            return new CollectionTypeEvaluator(parent, schema, context, Event.END_OBJECT);
+            return new CollectionTypeEvaluator(parent, schema, Event.END_OBJECT);
         default:
-            return new SimpleTypeEvaluator(parent, schema, context);
+            return new SimpleTypeEvaluator(parent, schema);
         }
     }
 
-    private static ComplexSchemaBasedEvaluator createNegatedEvaluator(Evaluator parent, ObjectJsonSchema schema,
-            InstanceType type,
-            EvaluatorContext context) {
+    private static ComplexSchemaBasedEvaluator createNegatedEvaluator(Evaluator parent, JsonSchema schema,
+            InstanceType type) {
         switch (type) {
         case ARRAY:
-            return new NegatedCollectionTypeEvaluator(parent, schema, context, Event.END_ARRAY);
+            return new NegatedCollectionTypeEvaluator(parent, schema, Event.END_ARRAY);
         case OBJECT:
-            return new NegatedCollectionTypeEvaluator(parent, schema, context, Event.END_OBJECT);
+            return new NegatedCollectionTypeEvaluator(parent, schema, Event.END_OBJECT);
         default:
-            return new NegatedSimpleTypeEvaluator(parent, schema, context);
+            return new NegatedSimpleTypeEvaluator(parent, schema);
         }
     }
 
     protected final Collection<Evaluator> children = new ArrayList<>();
 
-    protected ComplexSchemaBasedEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context) {
-        super(parent, schema, context);
+    protected ComplexSchemaBasedEvaluator(Evaluator parent, JsonSchema schema) {
+        super(parent, schema);
     }
 
     private boolean isEmpty() {
@@ -120,8 +115,8 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
     private static final class SimpleTypeEvaluator extends ComplexSchemaBasedEvaluator {
 
-        private SimpleTypeEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context) {
-            super(parent, schema, context);
+        private SimpleTypeEvaluator(Evaluator parent, JsonSchema schema) {
+            super(parent, schema);
         }
 
         @Override
@@ -141,9 +136,8 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         private final Event closingEvent;
         private Result result = Result.TRUE;
 
-        private CollectionTypeEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context,
-                Event closingEvent) {
-            super(parent, schema, context);
+        private CollectionTypeEvaluator(Evaluator parent, JsonSchema schema, Event closingEvent) {
+            super(parent, schema);
             this.closingEvent = closingEvent;
         }
 
@@ -181,9 +175,8 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
         private final List<ProblemBranch> branches = new ArrayList<>();
 
-        protected NegatedComplexSchemaBasedEvaluator(Evaluator parent, ObjectJsonSchema schema,
-                EvaluatorContext context) {
-            super(parent, schema, context);
+        protected NegatedComplexSchemaBasedEvaluator(Evaluator parent, JsonSchema schema) {
+            super(parent, schema);
         }
 
         protected void addProblemBranch(ProblemBranch branch) {
@@ -215,8 +208,8 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
         private ProblemBranch branch;
 
-        private NegatedSimpleTypeEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context) {
-            super(parent, schema, context);
+        private NegatedSimpleTypeEvaluator(Evaluator parent, JsonSchema schema) {
+            super(parent, schema);
         }
 
         @Override
@@ -258,9 +251,8 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
         private final Event closingEvent;
 
-        NegatedCollectionTypeEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context,
-                Event closingEvent) {
-            super(parent, schema, context);
+        NegatedCollectionTypeEvaluator(Evaluator parent, JsonSchema schema, Event closingEvent) {
+            super(parent, schema);
             this.closingEvent = closingEvent;
         }
 
@@ -288,13 +280,14 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
 
         @Override
         protected void addChild(EvaluatorSource source, InstanceType type) {
-            Evaluator deferred = new DeferredEvaluator(this, evaluator -> {
-                if (source.supportsType(type)) {
-                    return source.createNegatedEvaluator(evaluator, type);
-                } else {
-                    return new UnsupportedTypeEvaluator(this, source, type);
-                }
-            });
+            DeferredEvaluator deferred = new DeferredEvaluator(this);
+            Evaluator evaluator;
+            if (source.supportsType(type)) {
+                evaluator = source.createNegatedEvaluator(deferred, type);
+            } else {
+                evaluator = new UnsupportedTypeEvaluator(deferred, source, type);
+            }
+            deferred.setEvaluator(evaluator);
             this.children.add(deferred);
         }
     }

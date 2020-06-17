@@ -76,7 +76,7 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createEvaluator(parent.getContext(), type));
+                    append(p -> subschema.createEvaluator(p, type));
                 }
             }
 
@@ -94,7 +94,7 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createNegatedEvaluator(parent.getContext(), type));
+                    append(p -> subschema.createNegatedEvaluator(p, type));
                 }
             }
         };

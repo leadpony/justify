@@ -74,7 +74,7 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
 
         @Override
         public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
+            return Evaluator.alwaysFalse(parent, parent.getSchema());
         }
     };
 

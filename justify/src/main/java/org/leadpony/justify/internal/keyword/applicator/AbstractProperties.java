@@ -122,9 +122,9 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         @Override
         public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.FALSE) {
-                append(new RedundantPropertyEvaluator(this, subschema, currentKeyName));
+                append(parent -> new RedundantPropertyEvaluator(parent, subschema, currentKeyName));
             } else {
-                append(subschema.createEvaluator(getContext(), currentType));
+                append(parent -> subschema.createEvaluator(parent, currentType));
             }
         }
     }
@@ -164,9 +164,9 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
         @Override
         public void accept(JsonSchema subschema) {
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-                append(new RedundantPropertyEvaluator(this, subschema, currentKeyName));
+                append(parent -> new RedundantPropertyEvaluator(parent, subschema, currentKeyName));
             } else {
-                append(subschema.createNegatedEvaluator(getContext(), currentType));
+                append(parent -> subschema.createNegatedEvaluator(parent, currentType));
             }
         }
     }

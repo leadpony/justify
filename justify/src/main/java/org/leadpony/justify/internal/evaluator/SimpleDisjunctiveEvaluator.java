@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.json.stream.JsonParser.Event;
@@ -59,8 +60,11 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     @Override
-    public void append(Evaluator evaluator) {
-        this.operands.add(new DeferredEvaluator(evaluator));
+    public void append(Function<Evaluator, Evaluator> mapper) {
+        DeferredEvaluator deferred = new DeferredEvaluator(this);
+        Evaluator child = mapper.apply(deferred);
+        deferred.setEvaluator(child);
+        this.operands.add(deferred);
     }
 
     @Override

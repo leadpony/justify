@@ -70,7 +70,7 @@ public class MinItems extends AbstractAssertionKeyword implements ArrayEvaluator
         if (limit > 0) {
             return new MaxItems.ItemsEvaluator(parent, this, limit - 1);
         } else {
-            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
+            return Evaluator.alwaysFalse(parent, parent.getSchema());
         }
     }
 

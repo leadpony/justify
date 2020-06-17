@@ -82,7 +82,7 @@ public class PropertyNames extends UnaryApplicator {
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         final JsonSchema subschema = getSubschema();
         if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
-            return parent.getContext().createAlwaysFalseEvaluator(subschema);
+            return Evaluator.alwaysFalse(parent, subschema);
         } else {
             return createNegatedPropertiesEvaluator(parent, subschema);
         }
@@ -110,7 +110,7 @@ public class PropertyNames extends UnaryApplicator {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
-                    append(createForbiddenPropertyEvaluator(parent, subschema));
+                    append(p -> createForbiddenPropertyEvaluator(p, subschema));
                 }
             }
         };
@@ -121,7 +121,7 @@ public class PropertyNames extends UnaryApplicator {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
-                    append(subschema.createEvaluator(getContext(), InstanceType.STRING));
+                    append(p -> subschema.createEvaluator(p, InstanceType.STRING));
                 }
             }
         };
@@ -132,7 +132,7 @@ public class PropertyNames extends UnaryApplicator {
             @Override
             public void updateChildren(Event event, JsonParser parser) {
                 if (event == Event.KEY_NAME) {
-                    append(subschema.createNegatedEvaluator(getContext(), InstanceType.STRING));
+                    append(p -> subschema.createNegatedEvaluator(p, InstanceType.STRING));
                 }
             }
         };

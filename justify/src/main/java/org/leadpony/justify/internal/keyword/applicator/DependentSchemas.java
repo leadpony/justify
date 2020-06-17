@@ -65,19 +65,19 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        LogicalEvaluator combined = Evaluators.conjunctive(type);
-        dependentMap.values().stream()
-                .map(d -> d.createEvaluator(parent))
-                .forEach(combined::append);
+        LogicalEvaluator combined = Evaluators.conjunctive(parent, type);
+        for (Dependent dependent : dependentMap.values()) {
+            combined.append(p -> dependent.createEvaluator(p));
+        }
         return combined;
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator combined = Evaluators.disjunctive(parent, this, type);
-        dependentMap.values().stream()
-                .map(d -> d.createNegatedEvaluator(parent))
-                .forEach(combined::append);
+        for (Dependent dependent : dependentMap.values()) {
+            combined.append(p -> dependent.createNegatedEvaluator(p));
+        }
         return combined;
     }
 
@@ -155,7 +155,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
 
         @Override
         Evaluator createNegatedEvaluator(Evaluator parent) {
-            return parent.getContext().createAlwaysFalseEvaluator(getSubschema());
+            return Evaluator.alwaysFalse(parent, getSubschema());
         }
     }
 
@@ -245,7 +245,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         public DependentEvaluator(Evaluator parent, Keyword keyword, String propertyName,
                 JsonSchema subschema) {
             super(parent, keyword, propertyName,
-                    subschema.createEvaluator(parent.getContext(), InstanceType.OBJECT));
+                    subschema.createEvaluator(parent, InstanceType.OBJECT));
         }
 
         @Override
@@ -260,7 +260,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
                 String propertyName,
                 JsonSchema subschema) {
             super(parent, keyword, propertyName,
-                    subschema.createNegatedEvaluator(parent.getContext(), InstanceType.OBJECT));
+                    subschema.createNegatedEvaluator(parent, InstanceType.OBJECT));
         }
 
         @Override

@@ -69,7 +69,7 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
         if (limit > 0) {
             return new MaxProperties.PropertiesEvaluator(parent, this, limit - 1);
         } else {
-            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
+            return Evaluator.alwaysFalse(parent, parent.getSchema());
         }
     }
 

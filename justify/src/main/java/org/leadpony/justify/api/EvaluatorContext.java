@@ -91,5 +91,5 @@ public interface EvaluatorContext {
      * @param schema the schema against which the instance will be evaluated, cannot be {@code null}.
      * @return newly created evaluator. It must not be {@code null}.
      */
-    Evaluator createAlwaysFalseEvaluator(JsonSchema schema);
+    Evaluator createAlwaysFalseEvaluator(Evaluator parent, JsonSchema schema);
 }

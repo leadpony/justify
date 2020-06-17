@@ -108,19 +108,19 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        LogicalEvaluator combined = Evaluators.conjunctive(type);
-        map.values().stream()
-                .map(d -> d.createEvaluator(parent))
-                .forEach(combined::append);
+        LogicalEvaluator combined = Evaluators.conjunctive(parent, type);
+        for (Dependent dependent : map.values()) {
+            combined.append(p -> dependent.createEvaluator(p));
+        }
         return combined;
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator combined = Evaluators.disjunctive(parent, this, type);
-        map.values().stream()
-                .map(d -> d.createNegatedEvaluator(parent))
-                .forEach(combined::append);
+        for (Dependent dependent : map.values()) {
+            combined.append(p -> dependent.createNegatedEvaluator(p));
+        }
         return combined;
     }
 

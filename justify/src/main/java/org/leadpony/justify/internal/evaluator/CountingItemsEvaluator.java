@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
@@ -52,7 +51,7 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluat
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
         if (depth == 1 && ParserEvents.isValue(event)) {
             InstanceType type = ParserEvents.toBroadInstanceType(event);
-            this.itemEvaluator = createItemEvaluator(getContext(), type);
+            this.itemEvaluator = createItemEvaluator(type);
         } else if (depth == 0 && event == Event.END_ARRAY) {
             return finish(this.validItems, this.problemBranches, dispatcher);
         }
@@ -78,8 +77,8 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluat
         this.problems.add(problem);
     }
 
-    protected Evaluator createItemEvaluator(EvaluatorContext context, InstanceType type) {
-        return this.subschema.createEvaluator(context, type);
+    protected Evaluator createItemEvaluator(InstanceType type) {
+        return this.subschema.createEvaluator(this, type);
     }
 
     private Result evaluateCurrentItem(Event event, int depth, ProblemDispatcher dispatcher) {

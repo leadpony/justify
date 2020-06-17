@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.problem.ProblemBranch;
@@ -44,11 +43,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     private final Event closingEvent;
 
     ExclusiveEvaluator(Evaluator parent, Keyword keyword, Event closingEvent,
-            Stream<Evaluator> operands,
-            Stream<Evaluator> negated) {
+            Iterable<JsonSchema> schemas,
+            InstanceType type) {
         super(parent, keyword);
-        this.operands = createEvaluators(operands);
-        this.negated = createEvaluators(negated);
+        this.operands = createEvaluators(schemas, type);
+        this.negated = createNegatedEvaluators(schemas, type);
         this.closingEvent = closingEvent;
     }
 
@@ -115,7 +114,23 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         this.negatedProblemBranches.add(evaluator.problems());
     }
 
-    private List<DeferredEvaluator> createEvaluators(Stream<Evaluator> stream) {
-        return stream.map(DeferredEvaluator::new).collect(Collectors.toList());
+    private List<DeferredEvaluator> createEvaluators(Iterable<JsonSchema> schemas, InstanceType type) {
+        List<DeferredEvaluator> result = new ArrayList<>();
+        for (JsonSchema schema : schemas) {
+            DeferredEvaluator deferred = new DeferredEvaluator(this);
+            deferred.setEvaluator(schema.createEvaluator(deferred, type));
+            result.add(deferred);
+        }
+        return result;
+    }
+
+    private List<DeferredEvaluator> createNegatedEvaluators(Iterable<JsonSchema> schemas, InstanceType type) {
+        List<DeferredEvaluator> result = new ArrayList<>();
+        for (JsonSchema schema : schemas) {
+            DeferredEvaluator deferred = new DeferredEvaluator(this);
+            deferred.setEvaluator(schema.createNegatedEvaluator(deferred, type));
+            result.add(deferred);
+        }
+        return result;
     }
 }

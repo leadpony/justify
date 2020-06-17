@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
 
@@ -27,7 +29,7 @@ import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
  *
  * @author leadpony
  */
-public class ConditionalEvaluator implements Evaluator {
+public final class ConditionalEvaluator implements Evaluator {
 
     private final Evaluator ifEvaluator;
     private final DeferredEvaluator thenEvaluator;
@@ -37,13 +39,52 @@ public class ConditionalEvaluator implements Evaluator {
     private Result thenResult;
     private Result elseResult;
 
-    public ConditionalEvaluator(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
-        assert ifEvaluator != null;
-        assert thenEvaluator != null;
-        assert elseEvaluator != null;
+    public static Evaluator of(JsonSchema ifSchema, JsonSchema thenSchema, JsonSchema elseSchema,
+            Evaluator parent, InstanceType type) {
+
+        Evaluator ifEvaluator = ifSchema.createEvaluator(parent, type);
+
+        DeferredEvaluator thenEvaluator = new DeferredEvaluator(parent);
+        thenEvaluator.setEvaluator(thenSchema != null
+                ? thenSchema.createEvaluator(thenEvaluator, type)
+                : Evaluator.ALWAYS_TRUE
+                );
+
+        DeferredEvaluator elseEvaluator = new DeferredEvaluator(parent);
+        elseEvaluator.setEvaluator(elseSchema != null
+                ? elseSchema.createEvaluator(elseEvaluator, type)
+                : Evaluator.ALWAYS_TRUE
+                );
+
+        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+    }
+
+    public static Evaluator ofNegated(JsonSchema ifSchema, JsonSchema thenSchema, JsonSchema elseSchema,
+            Evaluator parent, InstanceType type) {
+
+        Evaluator ifEvaluator = ifSchema.createEvaluator(parent, type);
+
+        DeferredEvaluator thenEvaluator = new DeferredEvaluator(parent);
+        thenEvaluator.setEvaluator(thenSchema != null
+                ? thenSchema.createNegatedEvaluator(thenEvaluator, type)
+                : ifSchema.createNegatedEvaluator(thenEvaluator, type)
+                );
+
+        DeferredEvaluator elseEvaluator = new DeferredEvaluator(parent);
+        elseEvaluator.setEvaluator(elseSchema != null
+                ? elseSchema.createNegatedEvaluator(elseEvaluator, type)
+                : ifSchema.createEvaluator(elseEvaluator, type)
+                );
+
+        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+    }
+
+    private ConditionalEvaluator(Evaluator ifEvaluator,
+            DeferredEvaluator thenEvaluator,
+            DeferredEvaluator elseEvaluator) {
         this.ifEvaluator = ifEvaluator;
-        this.thenEvaluator = new DeferredEvaluator(thenEvaluator);
-        this.elseEvaluator = new DeferredEvaluator(elseEvaluator);
+        this.thenEvaluator = thenEvaluator;
+        this.elseEvaluator = elseEvaluator;
         this.ifResult = Result.PENDING;
         this.thenResult = Result.PENDING;
         this.elseResult = Result.PENDING;

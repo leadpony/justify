@@ -13,22 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.evaluator;
+package org.leadpony.justify.internal.validator;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.evaluator.schema.AlwaysFalseEvaluator;
 
+import jakarta.json.stream.JsonParser;
+
 /**
- * An {@link EvaluatorContext} with default method implementation.
- *
  * @author leadpony
  */
-public interface DefaultEvaluatorContext extends EvaluatorContext {
+public interface RootEvaluator extends Evaluator, EvaluatorContext {
+
+    /* As an Evaluator */
 
     @Override
-    default Evaluator createAlwaysFalseEvaluator(JsonSchema schema) {
-        return new AlwaysFalseEvaluator(null, schema, this);
+    default Result evaluate(JsonParser.Event event, int depth, ProblemDispatcher dispatcher) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    default Evaluator getParent() {
+        return null;
+    }
+
+    @Override
+    default EvaluatorContext getContext() {
+        return this;
+    }
+
+    @Override
+    default JsonSchema getSchema() {
+        return null;
+    }
+
+    /* As a EvaluatorContext */
+
+    @Override
+    default Evaluator createAlwaysFalseEvaluator(Evaluator parent, JsonSchema schema) {
+        return new AlwaysFalseEvaluator(parent, schema, this);
     }
 }

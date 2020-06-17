@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
@@ -93,24 +92,12 @@ public class If extends Conditional {
 
             @Override
             public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-                EvaluatorContext context = parent.getContext();
-                Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
-                Evaluator thenEvaluator = thenSchema != null ? thenSchema.createEvaluator(context, type)
-                        : Evaluator.ALWAYS_TRUE;
-                Evaluator elseEvaluator = elseSchema != null ? elseSchema.createEvaluator(context, type)
-                        : Evaluator.ALWAYS_TRUE;
-                return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+                return ConditionalEvaluator.of(getSubschema(), thenSchema, elseSchema, parent, type);
             }
 
             @Override
             public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-                EvaluatorContext context = parent.getContext();
-                Evaluator ifEvaluator = getSubschema().createEvaluator(context, type);
-                Evaluator thenEvaluator = thenSchema != null ? thenSchema.createNegatedEvaluator(context, type)
-                        : getSubschema().createNegatedEvaluator(context, type);
-                Evaluator elseEvaluator = elseSchema != null ? elseSchema.createNegatedEvaluator(context, type)
-                        : getSubschema().createEvaluator(context, type);
-                return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+                return ConditionalEvaluator.ofNegated(getSubschema(), thenSchema, elseSchema, parent, type);
             }
         };
     }

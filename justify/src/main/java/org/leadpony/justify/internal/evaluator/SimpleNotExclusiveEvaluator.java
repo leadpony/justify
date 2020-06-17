@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.List;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -30,15 +32,18 @@ import org.leadpony.justify.api.keyword.Keyword;
 /**
  * @author leadpony
  */
-class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
+class SimpleNotExclusiveEvaluator extends AbstractKeywordBasedEvaluator
     implements Iterable<DeferredEvaluator> {
 
-    private final List<DeferredEvaluator> operands = new ArrayList<>();
+    private final List<DeferredEvaluator> operands;
     private List<Problem> problemList;
     private int evaluationsAsFalse;
 
-    SimpleNotExclusiveEvaluator(Evaluator parent, Keyword keyword) {
+    SimpleNotExclusiveEvaluator(Evaluator parent, Keyword keyword,
+            Iterable<JsonSchema> schemas,
+            InstanceType type) {
         super(parent, keyword);
+        this.operands = createEvaluators(schemas, type);
     }
 
     @Override
@@ -51,14 +56,6 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
             }
         }
         return finalizeResult(dispatcher);
-    }
-
-    @Override
-    public void append(Evaluator evaluator) {
-        if (evaluator == Evaluator.ALWAYS_TRUE) {
-            return;
-        }
-        operands.add(new DeferredEvaluator(evaluator));
     }
 
     @Override
@@ -80,5 +77,18 @@ class SimpleNotExclusiveEvaluator extends AbstractLogicalEvaluator
         } else {
             return Result.TRUE;
         }
+    }
+
+    private List<DeferredEvaluator> createEvaluators(Iterable<JsonSchema> schemas, InstanceType type) {
+        List<DeferredEvaluator> result = new ArrayList<>();
+        for (JsonSchema schema : schemas) {
+            DeferredEvaluator deferred = new DeferredEvaluator(this);
+            Evaluator evaluator = schema.createNegatedEvaluator(deferred, type);
+            if (evaluator != Evaluator.ALWAYS_TRUE) {
+                deferred.setEvaluator(evaluator);
+                result.add(deferred);
+            }
+        }
+        return result;
     }
 }

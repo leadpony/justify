@@ -108,15 +108,15 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return context.createAlwaysFalseEvaluator(this);
+            return Evaluator.alwaysFalse(parent, this);
         }
     }
 
@@ -134,15 +134,15 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return SimpleSchemaBasedEvaluator.of(source, null, context, type, this);
+            return SimpleSchemaBasedEvaluator.of(source, parent, this, type);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return SimpleSchemaBasedEvaluator.ofNegated(source, null, context, type, this);
+            return SimpleSchemaBasedEvaluator.ofNegated(source, parent, this, type);
         }
     }
 
@@ -160,17 +160,15 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
         }
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createEvaluator(Evaluator parenet, InstanceType type) {
             requireNonNull(type, "type");
-            return ComplexSchemaBasedEvaluator.of(
-                    sources, null, context, type, this);
+            return ComplexSchemaBasedEvaluator.of(sources, parenet, this, type);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return ComplexSchemaBasedEvaluator.ofNegated(
-                    sources, null, context, type, this);
+            return ComplexSchemaBasedEvaluator.ofNegated(sources, parent, this, type);
         }
     }
 }

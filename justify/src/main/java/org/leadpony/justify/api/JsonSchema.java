@@ -246,15 +246,15 @@ public interface JsonSchema {
      * Note that this method is not intended to be used directly by end users.
      * </p>
      *
-     * @param context the context where the evaluator will reside.
-     * @param type    the type of the JSON instance against which this schema will
-     *                be evaluated. For integers, {@link InstanceType#NUMBER} will
-     *                be passed instead of {@link InstanceType#INTEGER}.
+     * @param parent the parent of the evaluator to create.
+     * @param type   the type of the JSON instance against which this schema will be
+     *               evaluated. For integers, {@link InstanceType#NUMBER} will be
+     *               passed instead of {@link InstanceType#INTEGER}.
      *
      * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} is {@code null}.
      */
-    Evaluator createEvaluator(EvaluatorContext context, InstanceType type);
+    Evaluator createEvaluator(Evaluator parent, InstanceType type);
 
     /**
      * Creates an evaluator of the negated version of this schema.
@@ -262,15 +262,15 @@ public interface JsonSchema {
      * Note that this method is not intended to be used directly by end users.
      * </p>
      *
-     * @param context the context where the evaluator will reside.
-     * @param type    the type of the JSON instance against which this schema will
-     *                be evaluated. For integers, {@link InstanceType#NUMBER} will
-     *                be passed instead of {@link InstanceType#INTEGER}.
+     * @param parent the parent of the evaluator to create.
+     * @param type   the type of the JSON instance against which this schema will be
+     *               evaluated. For integers, {@link InstanceType#NUMBER} will be
+     *               passed instead of {@link InstanceType#INTEGER}.
      *
      * @return newly created evaluator. It must not be {@code null}.
      * @throws NullPointerException if the specified {@code type} is {@code null}.
      */
-    Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type);
+    Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type);
 
     /**
      * Returns the value type of JSON representing this schema.

@@ -73,7 +73,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         if (names.isEmpty()) {
-            return parent.getContext().createAlwaysFalseEvaluator(parent.getSchema());
+            return Evaluator.alwaysFalse(parent, parent.getSchema());
         } else {
             return new NegatedValueTypeEvaluator(parent, this, names);
         }

@@ -30,7 +30,7 @@ import org.leadpony.justify.internal.problem.ProblemBranch;
  * Skeletal implementation for {@link ExclusiveEvaluator} and {@link SimpleExclusiveEvaluator}.
  * @author leadpony
  */
-abstract class AbstractExclusiveEvaluator extends AbstractLogicalEvaluator {
+abstract class AbstractExclusiveEvaluator extends AbstractKeywordBasedEvaluator {
 
     protected AbstractExclusiveEvaluator(Evaluator parent, Keyword keyword) {
         super(parent, keyword);

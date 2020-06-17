@@ -29,16 +29,16 @@ import jakarta.json.JsonValue;
  *
  * @author leadpony
  */
-class EmptyJsonSchema extends SpecialJsonSchema implements ObjectJsonSchema {
+class EmptyJsonSchema implements ObjectJsonSchema {
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         return Evaluator.ALWAYS_TRUE;
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return alwaysFalse(context);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return Evaluator.alwaysFalse(parent, this);
     }
 
     @Override

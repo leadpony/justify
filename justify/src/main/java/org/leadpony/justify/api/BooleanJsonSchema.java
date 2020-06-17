@@ -23,7 +23,7 @@ import jakarta.json.JsonValue.ValueType;
  *
  * @author leadpony
  */
-abstract class BooleanJsonSchema extends SpecialJsonSchema {
+abstract class BooleanJsonSchema implements JsonSchema {
 
     @Override
     public boolean isBoolean() {
@@ -43,13 +43,13 @@ abstract class BooleanJsonSchema extends SpecialJsonSchema {
     static class True extends BooleanJsonSchema {
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             return Evaluator.ALWAYS_TRUE;
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return alwaysFalse(context);
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+            return Evaluator.alwaysFalse(parent, this);
         }
 
         @Override
@@ -71,12 +71,12 @@ abstract class BooleanJsonSchema extends SpecialJsonSchema {
     static class False extends BooleanJsonSchema {
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
-            return alwaysFalse(context);
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+            return Evaluator.alwaysFalse(parent, this);
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             return Evaluator.ALWAYS_TRUE;
         }
 

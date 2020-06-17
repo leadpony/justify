@@ -79,6 +79,18 @@ public interface Evaluator {
     }
 
     /**
+     * Creates an evaluator which evaluates any value as false.
+     *
+     * @param parent the parent evaluator of the evaluator to create.
+     * @param schema the current schema.
+     * @return the newly created evaluator.
+     */
+    static Evaluator alwaysFalse(Evaluator parent, JsonSchema schema) {
+        EvaluatorContext context = parent.getContext();
+        return context.createAlwaysFalseEvaluator(parent, schema);
+    }
+
+    /**
      * The evaluator which evaluates anything as true.
      */
     Evaluator ALWAYS_TRUE = new Evaluator() {

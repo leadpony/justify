@@ -171,7 +171,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
-                        append(subschema.createEvaluator(getContext(), type));
+                        append(p -> subschema.createEvaluator(p, type));
                     }
                 }
             };
@@ -184,7 +184,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
-                        append(subschema.createNegatedEvaluator(getContext(), type));
+                        append(p -> subschema.createNegatedEvaluator(p, type));
                     }
                 }
             };
@@ -197,7 +197,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(this, subschema, itemIndex++));
+                        append(p -> new RedundantItemEvaluator(p, subschema, itemIndex++));
                     }
                 }
             };
@@ -210,7 +210,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                 @Override
                 public void updateChildren(Event event, JsonParser parser) {
                     if (ParserEvents.isValue(event)) {
-                        append(new RedundantItemEvaluator(this, subschema, itemIndex++));
+                        append(p -> new RedundantItemEvaluator(p, subschema, itemIndex++));
                     }
                 }
             };
@@ -288,7 +288,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             if (subschema == JsonSchema.FALSE) {
                 return new RedundantItemEvaluator(parent, subschema, itemIndex);
             } else {
-                return subschema.createEvaluator(parent.getContext(), type);
+                return subschema.createEvaluator(parent, type);
             }
         }
 
@@ -297,7 +297,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
             if (subschema == JsonSchema.TRUE || subschema == JsonSchema.EMPTY) {
                 return new RedundantItemEvaluator(parent, subschema, itemIndex);
             } else {
-                return subschema.createNegatedEvaluator(parent.getContext(), type);
+                return subschema.createNegatedEvaluator(parent, type);
             }
         }
 
@@ -310,7 +310,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
-                        append(createItemEvaluator(this, itemIndex, subschema, type));
+                        append(p -> createItemEvaluator(p, itemIndex, subschema, type));
                         ++itemIndex;
                     }
                 }
@@ -326,7 +326,7 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
                     if (ParserEvents.isValue(event)) {
                         InstanceType type = ParserEvents.toBroadInstanceType(event);
                         JsonSchema subschema = findSubschemaAt(itemIndex);
-                        append(createNegatedItemEvaluator(this, itemIndex, subschema, type));
+                        append(p -> createNegatedItemEvaluator(p, itemIndex, subschema, type));
                         ++itemIndex;
                     }
                 }

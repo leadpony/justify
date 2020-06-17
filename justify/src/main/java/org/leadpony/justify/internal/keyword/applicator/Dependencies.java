@@ -123,19 +123,19 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
-        dependentMap.values().stream()
-                .map(d -> d.createEvaluator(parent))
-                .forEach(evaluator::append);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(parent, type);
+        for (Dependent dependent : dependentMap.values()) {
+            evaluator.append(p -> dependent.createEvaluator(p));
+        }
         return evaluator;
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(parent, this, type);
-        dependentMap.values().stream()
-                .map(d -> d.createNegatedEvaluator(parent))
-                .forEach(evaluator::append);
+        for (Dependent dependent : dependentMap.values()) {
+            evaluator.append(p -> dependent.createNegatedEvaluator(p));
+        }
         return evaluator;
     }
 
@@ -268,7 +268,7 @@ public class Dependencies extends AbstractApplicatorKeyword implements ObjectEva
 
         @Override
         Evaluator createNegatedEvaluator(Evaluator parent) {
-            return parent.getContext().createAlwaysFalseEvaluator(getSubschema());
+            return Evaluator.alwaysFalse(parent, getSubschema());
         }
     }
 

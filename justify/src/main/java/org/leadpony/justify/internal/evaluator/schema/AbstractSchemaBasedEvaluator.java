@@ -32,6 +32,10 @@ abstract class AbstractSchemaBasedEvaluator implements Evaluator {
     private final EvaluatorContext context;
     private final JsonSchema schema;
 
+    protected AbstractSchemaBasedEvaluator(Evaluator parent, JsonSchema schema) {
+        this(parent, schema, parent.getContext());
+    }
+
     protected AbstractSchemaBasedEvaluator(Evaluator parent, JsonSchema schema, EvaluatorContext context) {
         this.parent = parent;
         this.context = context;

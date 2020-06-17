@@ -54,11 +54,11 @@ public class Not extends UnaryApplicator {
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        return getSubschema().createNegatedEvaluator(parent.getContext(), type);
+        return getSubschema().createNegatedEvaluator(parent, type);
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-        return getSubschema().createEvaluator(parent.getContext(), type);
+        return getSubschema().createEvaluator(parent, type);
     }
 }

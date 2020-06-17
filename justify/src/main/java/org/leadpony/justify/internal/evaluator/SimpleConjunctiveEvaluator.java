@@ -17,6 +17,7 @@
 package org.leadpony.justify.internal.evaluator;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import jakarta.json.stream.JsonParser.Event;
 
@@ -32,7 +33,15 @@ class SimpleConjunctiveEvaluator extends ArrayList<Evaluator> implements Logical
 
     private static final long serialVersionUID = 1L;
 
-    SimpleConjunctiveEvaluator() {
+    private final Evaluator parent;
+
+    SimpleConjunctiveEvaluator(Evaluator parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public Evaluator getParent() {
+        return parent;
     }
 
     @Override
@@ -47,10 +56,10 @@ class SimpleConjunctiveEvaluator extends ArrayList<Evaluator> implements Logical
     }
 
     @Override
-    public void append(Evaluator evaluator) {
-        if (evaluator == Evaluator.ALWAYS_TRUE) {
-            return;
+    public void append(Function<Evaluator, Evaluator> mapper) {
+        Evaluator child = mapper.apply(this);
+        if (child != Evaluator.ALWAYS_TRUE) {
+            add(child);
         }
-        add(evaluator);
     }
 }

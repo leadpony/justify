@@ -19,6 +19,7 @@ package org.leadpony.justify.internal.evaluator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import jakarta.json.stream.JsonParser.Event;
 
@@ -77,7 +78,8 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     }
 
     @Override
-    public void append(Evaluator evaluator) {
+    public void append(Function<Evaluator, Evaluator> mapper) {
+        Evaluator evaluator = mapper.apply(this);
         if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }
@@ -87,6 +89,7 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
             getAdditionalChildEvaluators().add(evaluator);
         }
     }
+
 
     private boolean invokeChildEvaluator(Evaluator evalutor, Event event, int depth, ProblemDispatcher dispatcher) {
         Result result = evalutor.evaluate(event, depth, dispatcher);

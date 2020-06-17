@@ -25,7 +25,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ObjectJsonSchema;
@@ -129,13 +128,13 @@ public class SchemaReference extends AbstractJsonSchema {
     /* JsonSchema interface */
 
     @Override
-    public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
-        return referencedSchema.createEvaluator(context, type);
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return referencedSchema.createEvaluator(parent, type);
     }
 
     @Override
-    public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-        return referencedSchema.createNegatedEvaluator(context, type);
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return referencedSchema.createNegatedEvaluator(parent, type);
     }
 
     /* Resolvable interface */
@@ -159,11 +158,11 @@ public class SchemaReference extends AbstractJsonSchema {
     private class NonexistentSchema extends AbstractEmptyMap<String, Keyword> implements ObjectJsonSchema {
 
         @Override
-        public Evaluator createEvaluator(EvaluatorContext context, InstanceType type) {
+        public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             return new Evaluator() {
                 @Override
                 public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-                    Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(context)
+                    Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parent.getContext())
                             .withKeyword("$ref")
                             .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
                             .withParameter("ref", ref())
@@ -176,8 +175,8 @@ public class SchemaReference extends AbstractJsonSchema {
         }
 
         @Override
-        public Evaluator createNegatedEvaluator(EvaluatorContext context, InstanceType type) {
-            return createEvaluator(context, type);
+        public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+            return createEvaluator(parent, type);
         }
 
         @Override

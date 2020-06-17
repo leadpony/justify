@@ -16,6 +16,8 @@
 
 package org.leadpony.justify.internal.evaluator;
 
+import java.util.function.Function;
+
 import org.leadpony.justify.api.Evaluator;
 
 /**
@@ -25,12 +27,7 @@ import org.leadpony.justify.api.Evaluator;
  */
 public interface LogicalEvaluator extends Evaluator {
 
-    /**
-     * Appends an evaluator.
-     *
-     * @param evaluator the evaluator to append, cannot be {@code null}.
-     */
-    default void append(Evaluator evaluator) {
+    default void append(Function<Evaluator, Evaluator> mapper) {
         throw new UnsupportedOperationException();
     }
 }

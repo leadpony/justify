@@ -18,8 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
-import java.util.function.Function;
-
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
@@ -36,22 +34,25 @@ import org.leadpony.justify.internal.problem.ProblemBranch;
 public class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
 
     private final Evaluator parent;
-    private final Evaluator evaluator;
+    private Evaluator evaluator;
     private ProblemBranch problemBranch;
 
-    /**
-     * Constructs this evaluator.
-     *
-     * @param evaluator the actual evaluator, cannot be {@code null}.
-     */
-    public DeferredEvaluator(Evaluator evaluator) {
-        this.parent = null;
-        this.evaluator = evaluator;
+    public DeferredEvaluator(Evaluator parent) {
+        this.parent = parent;
     }
 
-    public DeferredEvaluator(Evaluator parent, Function<Evaluator, Evaluator> mapper) {
-        this.parent = parent;
-        this.evaluator = mapper.apply(this);
+    /**
+     * Returns the internal evaluator.
+     *
+     * @return the internal evaluator.
+     */
+    public Evaluator getEvaluator() {
+        return evaluator;
+    }
+
+    public void setEvaluator(Evaluator evaluator) {
+        assert evaluator != null;
+        this.evaluator = evaluator;
     }
 
     @Override
@@ -71,15 +72,6 @@ public class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
             this.problemBranch = new ProblemBranch();
         }
         this.problemBranch.add(problem);
-    }
-
-    /**
-     * Returns the internal evaluator.
-     *
-     * @return the internal evaluator.
-     */
-    Evaluator internalEvaluator() {
-        return evaluator;
     }
 
     /**

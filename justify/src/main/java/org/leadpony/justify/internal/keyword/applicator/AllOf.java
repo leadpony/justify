@@ -55,9 +55,9 @@ public class AllOf extends NaryBooleanLogic {
 
     @Override
     public LogicalEvaluator createEvaluator(Evaluator parent, InstanceType type) {
-        LogicalEvaluator evaluator = Evaluators.conjunctive(type);
+        LogicalEvaluator evaluator = Evaluators.conjunctive(parent, type);
         for (JsonSchema subschema : getDistinctSubschemas()) {
-            evaluator.append(subschema.createEvaluator(parent.getContext(), type));
+            evaluator.append(p -> subschema.createEvaluator(p, type));
         }
         return evaluator;
     }
@@ -66,7 +66,7 @@ public class AllOf extends NaryBooleanLogic {
     public LogicalEvaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
         LogicalEvaluator evaluator = Evaluators.disjunctive(parent, this, type);
         for (JsonSchema subschema : getDistinctSubschemas()) {
-            evaluator.append(subschema.createNegatedEvaluator(parent.getContext(), type));
+            evaluator.append(p -> subschema.createNegatedEvaluator(p, type));
         }
         return evaluator;
     }

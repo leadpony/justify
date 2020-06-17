@@ -139,7 +139,7 @@ public final class AdditionalProperties extends UnaryApplicator {
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createEvaluator(getContext(), type));
+                    append(parent -> subschema.createEvaluator(parent, type));
                 }
             }
         };
@@ -158,7 +158,7 @@ public final class AdditionalProperties extends UnaryApplicator {
             public void updateChildren(Event event, JsonParser parser) {
                 if (ParserEvents.isValue(event)) {
                     InstanceType type = ParserEvents.toBroadInstanceType(event);
-                    append(subschema.createNegatedEvaluator(getContext(), type));
+                    append(parent -> subschema.createNegatedEvaluator(parent, type));
                 }
             }
         };
@@ -173,7 +173,7 @@ public final class AdditionalProperties extends UnaryApplicator {
                 if (event == Event.KEY_NAME) {
                     keyName = parser.getString();
                 } else if (ParserEvents.isValue(event)) {
-                    append(createRedundantPropertyEvaluator(this, keyName));
+                    append(parent -> createRedundantPropertyEvaluator(parent, keyName));
                 }
             }
         };
@@ -188,7 +188,7 @@ public final class AdditionalProperties extends UnaryApplicator {
                 if (event == Event.KEY_NAME) {
                     keyName = parser.getString();
                 } else if (ParserEvents.isValue(event)) {
-                    append(createRedundantPropertyEvaluator(this, keyName));
+                    append(parent -> createRedundantPropertyEvaluator(parent, keyName));
                 }
             }
         };

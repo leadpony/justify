@@ -18,6 +18,8 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
+import java.util.function.Function;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -61,7 +63,8 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     }
 
     @Override
-    public void append(Evaluator evaluator) {
+    public void append(Function<Evaluator, Evaluator> mapper) {
+        Evaluator evaluator = mapper.apply(this);
         if (evaluator == Evaluator.ALWAYS_TRUE) {
             return;
         }

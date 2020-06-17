@@ -16,9 +16,8 @@
 package org.leadpony.justify.internal.evaluator.schema;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
@@ -30,34 +29,34 @@ import jakarta.json.stream.JsonParser.Event;
  */
 public final class SimpleSchemaBasedEvaluator extends AbstractSchemaBasedEvaluator {
 
-    public static Evaluator of(EvaluatorSource source, Evaluator parent, EvaluatorContext context,
-            InstanceType type,
-            ObjectJsonSchema schema) {
+    public static Evaluator of(EvaluatorSource source, Evaluator parent,
+            JsonSchema schema,
+            InstanceType type) {
         if (source.supportsType(type)) {
-            SimpleSchemaBasedEvaluator evaluator = new SimpleSchemaBasedEvaluator(parent, schema, context);
-            evaluator.child = source.createEvaluator(evaluator, type);
-            return evaluator;
+            SimpleSchemaBasedEvaluator self = new SimpleSchemaBasedEvaluator(parent, schema);
+            self.child = source.createEvaluator(self, type);
+            return self;
         } else {
             return Evaluator.ALWAYS_TRUE;
         }
     }
 
-    public static Evaluator ofNegated(EvaluatorSource source, Evaluator parent, EvaluatorContext context,
-            InstanceType type,
-            ObjectJsonSchema schema) {
-        SimpleSchemaBasedEvaluator evaluator = new SimpleSchemaBasedEvaluator(parent, schema, context);
+    public static Evaluator ofNegated(EvaluatorSource source, Evaluator parent,
+            JsonSchema schema,
+            InstanceType type) {
+        SimpleSchemaBasedEvaluator self = new SimpleSchemaBasedEvaluator(parent, schema);
         if (source.supportsType(type)) {
-            evaluator.child = source.createNegatedEvaluator(evaluator, type);
+            self.child = source.createNegatedEvaluator(self, type);
         } else {
-            evaluator.child = new UnsupportedTypeEvaluator(evaluator, source, type);
+            self.child = new UnsupportedTypeEvaluator(self, source, type);
         }
-        return evaluator;
+        return self;
     }
 
     private Evaluator child;
 
-    private SimpleSchemaBasedEvaluator(Evaluator parent, ObjectJsonSchema schema, EvaluatorContext context) {
-        super(parent, schema, context);
+    private SimpleSchemaBasedEvaluator(Evaluator parent, JsonSchema schema) {
+        super(parent, schema);
     }
 
     @Override

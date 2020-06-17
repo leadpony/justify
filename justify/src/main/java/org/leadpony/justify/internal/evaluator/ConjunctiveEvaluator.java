@@ -33,7 +33,8 @@ class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
     private final Event closingEvent;
     private Result finalResult = Result.TRUE;
 
-    ConjunctiveEvaluator(Event closingEvent) {
+    ConjunctiveEvaluator(Evaluator parent, Event closingEvent) {
+        super(parent);
         this.closingEvent = closingEvent;
     }
 

@@ -28,14 +28,12 @@ import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
-import org.leadpony.justify.internal.evaluator.DefaultEvaluatorContext;
 import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemHandler;
-import org.leadpony.justify.api.Evaluator.Result;
 
 /**
  * A JSON parser type with validation functionality.
@@ -43,7 +41,9 @@ import org.leadpony.justify.api.Evaluator.Result;
  * @author leadpony
  */
 public class JsonValidator extends DefaultPointerAwareJsonParser
-    implements DefaultEvaluatorContext, DefaultProblemDispatcher, ParserEventHandler {
+    implements DefaultProblemDispatcher,
+               RootEvaluator,
+               ParserEventHandler {
 
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;
@@ -93,7 +93,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
         }
     }
 
-    /* Evaluator.Context */
+    /* DefaultEvaluatorContext */
 
     @Override
     public JsonParser getParser() {
@@ -123,9 +123,13 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
         this.currentProblems.add(problem);
     }
 
+    private Evaluator getRootEvaluator() {
+        return this;
+    }
+
     private void handleFirstEvent(Event event, JsonParser parser) {
         InstanceType type = ParserEvents.toBroadInstanceType(event);
-        this.evaluator = rootSchema.createEvaluator(this, type);
+        this.evaluator = rootSchema.createEvaluator(getRootEvaluator(), type);
         if (this.evaluator != null) {
             handleParserEvent(event, parser);
         }
