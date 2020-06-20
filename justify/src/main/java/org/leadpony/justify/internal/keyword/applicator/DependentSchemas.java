@@ -181,9 +181,9 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         private List<Problem> problems;
 
         protected AbstractDependentEvaluator(Evaluator parent, Keyword keyword,
-                String propertyName, Evaluator internalEvaluator) {
+                String propertyName, JsonSchema subschema) {
             super(parent, keyword, propertyName);
-            this.internalEvaluator = internalEvaluator;
+            this.internalEvaluator = createInternalEvaluator(subschema);
         }
 
         @Override
@@ -193,7 +193,6 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
                     String keyName = getParser().getString();
                     if (keyName.equals(getPropertyName())) {
                         active = true;
-                        dispatchAllProblems(dispatcher);
                     }
                 }
             }
@@ -201,7 +200,13 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
                 invokeInternalEvaluator(event, depth, dispatcher);
             }
             if (active) {
-                return (result != null) ? result : Result.PENDING;
+                if (result != null) {
+                    if (result == Result.FALSE) {
+                        dispatchAllProblems(dispatcher);
+                    }
+                    return result;
+                }
+                return Result.PENDING;
             } else {
                 if (depth == 0 && event == Event.END_OBJECT) {
                     return testMissingProperty(dispatcher);
@@ -220,7 +225,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         private void invokeInternalEvaluator(Event event, int depth, ProblemDispatcher dispatcher) {
-            Result result = internalEvaluator.evaluate(event, depth, active ? dispatcher : this);
+            Result result = internalEvaluator.evaluate(event, depth, this);
             if (result != Result.PENDING) {
                 this.result = result;
             }
@@ -235,22 +240,26 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
             }
         }
 
-        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
-            return Result.TRUE;
-        }
+        protected abstract Result testMissingProperty(ProblemDispatcher dispatcher);
+
+        protected abstract Evaluator createInternalEvaluator(JsonSchema schema);
     }
 
     public static class DependentEvaluator extends AbstractDependentEvaluator {
 
         public DependentEvaluator(Evaluator parent, Keyword keyword, String propertyName,
                 JsonSchema subschema) {
-            super(parent, keyword, propertyName,
-                    subschema.createEvaluator(parent, InstanceType.OBJECT));
+            super(parent, keyword, propertyName, subschema);
         }
 
         @Override
         protected Result testMissingProperty(ProblemDispatcher dispatcher) {
             return Result.TRUE;
+        }
+
+        @Override
+        protected Evaluator createInternalEvaluator(JsonSchema schema) {
+            return schema.createEvaluator(this, InstanceType.OBJECT);
         }
     }
 
@@ -259,13 +268,17 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         public NegatedDependentEvaluator(Evaluator parent, Keyword keyword,
                 String propertyName,
                 JsonSchema subschema) {
-            super(parent, keyword, propertyName,
-                    subschema.createNegatedEvaluator(parent, InstanceType.OBJECT));
+            super(parent, keyword, propertyName, subschema);
         }
 
         @Override
         protected Result testMissingProperty(ProblemDispatcher dispatcher) {
             return dispatchMissingPropertyProblem(dispatcher);
+        }
+
+        @Override
+        protected Evaluator createInternalEvaluator(JsonSchema schema) {
+            return schema.createNegatedEvaluator(this, InstanceType.OBJECT);
         }
     }
 
