@@ -24,22 +24,24 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 import jakarta.json.stream.JsonLocation;
 
 /**
+ * A skeletal implementation of evaluators produced by JSON schemas.
+ *
  * @author leadpony
  */
 abstract class AbstractSchemaBasedEvaluator implements Evaluator {
 
     private final Evaluator parent;
-    private final EvaluatorContext context;
     private final JsonSchema schema;
+    private EvaluatorContext context;
 
     protected AbstractSchemaBasedEvaluator(Evaluator parent, JsonSchema schema) {
-        this(parent, schema, parent.getContext());
+        this.parent = parent;
+        this.schema = schema;
     }
 
     protected AbstractSchemaBasedEvaluator(Evaluator parent, JsonSchema schema, EvaluatorContext context) {
-        this.parent = parent;
+        this(parent, schema);
         this.context = context;
-        this.schema = schema;
     }
 
     @Override
@@ -48,13 +50,17 @@ abstract class AbstractSchemaBasedEvaluator implements Evaluator {
     }
 
     @Override
-    public final EvaluatorContext getContext() {
-        return context;
+    public final JsonSchema getSchema() {
+        return schema;
     }
 
     @Override
-    public final JsonSchema getSchema() {
-        return schema;
+    public final EvaluatorContext getContext() {
+        if (context != null) {
+            return context;
+        }
+        context = getParent().getContext();
+        return context;
     }
 
     protected final ProblemBuilder createProblemBuilder() {
