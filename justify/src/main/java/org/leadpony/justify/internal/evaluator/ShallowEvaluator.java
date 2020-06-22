@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -34,12 +33,12 @@ public abstract class ShallowEvaluator extends AbstractKeywordBasedEvaluator {
     }
 
     @Override
-    public final Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public final Result evaluate(Event event, int depth) {
         if (depth > 1) {
             return Result.PENDING;
         }
-        return evaluateShallow(event, depth, dispatcher);
+        return evaluateShallow(event, depth);
     }
 
-    public abstract Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher);
+    public abstract Result evaluateShallow(Event event, int depth);
 }

@@ -24,7 +24,6 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.json.JsonInstanceBuilder;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
@@ -48,7 +47,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
         return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 if (builder.append(event, context.getParser())) {
                     return Result.PENDING;
                 }
@@ -58,7 +57,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
                 }
                 ProblemBuilder problemBuilder = newProblemBuilder()
                         .withParameter("actual", value);
-                dispatcher.dispatchProblem(createProblem(problemBuilder));
+                getDispatcher().dispatchProblem(createProblem(problemBuilder));
                 return Result.FALSE;
             }
         };
@@ -71,7 +70,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
         JsonInstanceBuilder builder = new JsonInstanceBuilder(jsonBuilderFactory);
         return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 if (builder.append(event, context.getParser())) {
                     return Result.PENDING;
                 }
@@ -81,7 +80,7 @@ abstract class AbstractEqualityAssertion extends AbstractAssertionKeyword {
                 }
                 ProblemBuilder problemBuilder = newProblemBuilder()
                         .withParameter("actual", value);
-                dispatcher.dispatchProblem(createNegatedProblem(problemBuilder));
+                getDispatcher().dispatchProblem(createNegatedProblem(problemBuilder));
                 return Result.FALSE;
             }
         };

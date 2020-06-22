@@ -61,11 +61,11 @@ abstract class AbstractSchemaBasedEvaluator extends AbstractEvaluator {
     }
 
     @Override
-    public ProblemDispatcher getDispatcher(Evaluator evaluator) {
+    public ProblemDispatcher getDispatcher() {
         if (dispatcher != null) {
             return dispatcher;
         }
-        dispatcher = getParent().getDispatcher(this);
+        dispatcher = super.getDispatcher();
         return dispatcher;
     }
 

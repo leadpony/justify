@@ -24,7 +24,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -94,7 +93,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
         }
 
         @Override
-        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth) {
             if (event == Event.KEY_NAME) {
                 missing.remove(getParser().getString());
                 if (missing.isEmpty()) {
@@ -104,19 +103,19 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
                 if (missing.isEmpty()) {
                     return Result.TRUE;
                 } else {
-                    return dispatchProblems(dispatcher);
+                    return dispatchProblems();
                 }
             }
             return Result.PENDING;
         }
 
-        private Result dispatchProblems(ProblemDispatcher dispatcher) {
+        private Result dispatchProblems() {
             for (String property : missing) {
                 Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                         .withParameter("required", property)
                         .build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
             }
             return Result.FALSE;
         }
@@ -138,15 +137,15 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
         }
 
         @Override
-        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth) {
             if (event == Event.KEY_NAME) {
                 missing.remove(getParser().getString());
                 if (missing.isEmpty()) {
-                    return dispatchProblem(dispatcher);
+                    return dispatchProblem();
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (missing.isEmpty()) {
-                    return dispatchProblem(dispatcher);
+                    return dispatchProblem();
                 } else {
                     return Result.TRUE;
                 }
@@ -154,7 +153,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
             return Result.PENDING;
         }
 
-        private Result dispatchProblem(ProblemDispatcher dispatcher) {
+        private Result dispatchProblem() {
             Problem p = null;
             if (names.size() == 1) {
                 String name = names.iterator().next();
@@ -168,7 +167,7 @@ public class Required extends AbstractAssertionKeyword implements ObjectEvaluato
                         .withParameter("required", names)
                         .build();
             }
-            dispatcher.dispatchProblem(p);
+            getDispatcher().dispatchProblem(p);
             return Result.FALSE;
         }
     }

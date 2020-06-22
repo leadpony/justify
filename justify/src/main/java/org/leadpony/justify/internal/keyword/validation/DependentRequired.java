@@ -24,7 +24,6 @@ import java.util.Set;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.base.Message;
@@ -176,7 +175,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = getParser().getString();
                 if (keyName.equals(getPropertyName())) {
@@ -185,17 +184,17 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                 missing.remove(keyName);
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 if (active) {
-                    return test(dispatcher);
+                    return test();
                 } else {
-                    return testMissingProperty(dispatcher);
+                    return testMissingProperty();
                 }
             }
             return Result.PENDING;
         }
 
-        protected abstract Result test(ProblemDispatcher dispatcher);
+        protected abstract Result test();
 
-        protected abstract Result testMissingProperty(ProblemDispatcher dispatcher);
+        protected abstract Result testMissingProperty();
     }
 
     public static class DependentEvaluator extends AbstractDependentEvaluator {
@@ -206,7 +205,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        protected Result test(ProblemDispatcher dispatcher) {
+        protected Result test() {
             if (missing.isEmpty()) {
                 return Result.TRUE;
             } else {
@@ -216,14 +215,14 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                             .withParameter("required", entry)
                             .withParameter("dependant", getPropertyName())
                             .build();
-                    dispatcher.dispatchProblem(p);
+                    getDispatcher().dispatchProblem(p);
                 }
                 return Result.FALSE;
             }
         }
 
         @Override
-        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
+        protected Result testMissingProperty() {
             return Result.TRUE;
         }
     }
@@ -236,13 +235,13 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        protected Result test(ProblemDispatcher dispatcher) {
+        protected Result test() {
             if (required.isEmpty()) {
                 Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                         .withParameter("required", getPropertyName())
                         .build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             } else if (missing.isEmpty()) {
                 ProblemBuilder b = newProblemBuilder()
@@ -254,7 +253,7 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
                     b.withMessage(Message.INSTANCE_PROBLEM_NOT_DEPENDENCIES_PLURAL)
                             .withParameter("required", required);
                 }
-                dispatcher.dispatchProblem(b.build());
+                getDispatcher().dispatchProblem(b.build());
                 return Result.FALSE;
             } else {
                 return Result.TRUE;
@@ -262,8 +261,8 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
-            return dispatchMissingPropertyProblem(dispatcher);
+        protected Result testMissingProperty() {
+            return dispatchMissingPropertyProblem();
         }
     }
 
@@ -275,24 +274,24 @@ public class DependentRequired extends AbstractAssertionKeyword implements Objec
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 String keyName = getParser().getString();
                 if (keyName.equals(getPropertyName())) {
-                    return dispatchProblem(dispatcher);
+                    return dispatchProblem();
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
-                return dispatchMissingPropertyProblem(dispatcher);
+                return dispatchMissingPropertyProblem();
             }
             return Result.PENDING;
         }
 
-        private Result dispatchProblem(ProblemDispatcher dispatcher) {
+        private Result dispatchProblem() {
             Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                     .withParameter("required", getPropertyName())
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
     }

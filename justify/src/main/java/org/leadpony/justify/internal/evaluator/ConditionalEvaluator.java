@@ -96,17 +96,17 @@ public final class ConditionalEvaluator extends AbstractEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         ifResult = updateEvaluation(ifResult, ifEvaluator, event, depth);
         if (ifResult == Result.TRUE) {
             thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth);
             if (thenResult != Result.PENDING) {
-                return finalizeEvaluation(thenResult, thenEvaluator, dispatcher);
+                return finalizeEvaluation(thenResult, thenEvaluator);
             }
         } else if (ifResult == Result.FALSE) {
             elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth);
             if (elseResult != Result.PENDING) {
-                return finalizeEvaluation(elseResult, elseEvaluator, dispatcher);
+                return finalizeEvaluation(elseResult, elseEvaluator);
             }
         } else {
             thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth);
@@ -116,7 +116,7 @@ public final class ConditionalEvaluator extends AbstractEvaluator {
     }
 
     @Override
-    public ProblemDispatcher getDispatcher(Evaluator evaluator) {
+    public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
         if (dispatchers == null) {
             dispatchers = new HashMap<>();
         }
@@ -135,16 +135,16 @@ public final class ConditionalEvaluator extends AbstractEvaluator {
 
     private Result updateEvaluation(Result result, Evaluator evaluator, Event event, int depth) {
         if (result == Result.PENDING) {
-            return evaluator.evaluate(event, depth, getDispatcher(evaluator));
+            return evaluator.evaluate(event, depth);
         } else {
             return result;
         }
     }
 
-    private Result finalizeEvaluation(Result result, Evaluator evaluator, ProblemDispatcher dispatcher) {
+    private Result finalizeEvaluation(Result result, Evaluator evaluator) {
         if (result == Result.FALSE) {
             DeferredProblemDispatcher deferred = (DeferredProblemDispatcher) dispatchers.get(evaluator);
-            dispatcher.dispatchAllProblems(deferred);
+            getDispatcher().dispatchAllProblems(deferred);
         }
         return result;
     }

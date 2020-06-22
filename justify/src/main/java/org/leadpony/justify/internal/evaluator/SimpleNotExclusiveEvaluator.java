@@ -26,7 +26,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -47,15 +46,15 @@ class SimpleNotExclusiveEvaluator extends AbstractKeywordBasedEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            if (current.evaluate(event, depth, dispatcher) == Result.FALSE) {
+            if (current.evaluate(event, depth) == Result.FALSE) {
                 addBadEvaluator(current);
             }
         }
-        return finalizeResult(dispatcher);
+        return finalizeResult();
     }
 
     @Override
@@ -70,9 +69,9 @@ class SimpleNotExclusiveEvaluator extends AbstractKeywordBasedEvaluator
         ++evaluationsAsFalse;
     }
 
-    protected Result finalizeResult(ProblemDispatcher dispatcher) {
+    protected Result finalizeResult() {
         if (evaluationsAsFalse == 1) {
-            problemList.forEach(dispatcher::dispatchProblem);
+            getDispatcher().dispatchAllProblems(problemList);
             return Result.FALSE;
         } else {
             return Result.TRUE;

@@ -19,7 +19,6 @@ import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
@@ -49,7 +48,7 @@ public final class UnsupportedTypeEvaluator extends AbstractKeywordBasedEvaluato
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         ProblemBuilder builder = newProblemBuilder()
                 .withParameter("actual", actual);
         if (expected.size() > 1) {
@@ -60,7 +59,7 @@ public final class UnsupportedTypeEvaluator extends AbstractKeywordBasedEvaluato
             builder.withMessage(Message.INSTANCE_PROBLEM_TYPE)
                     .withParameter("expected", first);
         }
-        dispatcher.dispatchProblem(builder.build());
+        getDispatcher().dispatchProblem(builder.build());
         return Result.FALSE;
     }
 }

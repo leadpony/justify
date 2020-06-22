@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -36,7 +35,7 @@ abstract class AbstractExclusiveEvaluator extends AbstractKeywordBasedEvaluator 
         super(parent, keyword);
     }
 
-    protected void dispatchProblems(ProblemDispatcher dispatcher, List<ProblemBranch> problemBranches) {
+    protected void dispatchProblems(List<ProblemBranch> problemBranches) {
         List<ProblemBranch> filteredBranches = problemBranches.stream()
                 .filter(ProblemBranch::isResolvable)
                 .collect(Collectors.toList());
@@ -46,13 +45,13 @@ abstract class AbstractExclusiveEvaluator extends AbstractKeywordBasedEvaluator 
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_FEW)
                 .withBranches(filteredBranches);
-        dispatcher.dispatchProblem(builder.build());
+        getDispatcher().dispatchProblem(builder.build());
     }
 
-    protected void dispatchNegatedProblems(ProblemDispatcher dispatcher, List<ProblemBranch> problemBranches) {
+    protected void dispatchNegatedProblems(List<ProblemBranch> problemBranches) {
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_ONEOF_MANY)
                 .withBranches(problemBranches);
-        dispatcher.dispatchProblem(builder.build());
+        getDispatcher().dispatchProblem(builder.build());
     }
 }

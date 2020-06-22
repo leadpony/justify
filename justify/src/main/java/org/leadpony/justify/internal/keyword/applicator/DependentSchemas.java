@@ -185,7 +185,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (!active) {
                 if (depth == 1 && event == Event.KEY_NAME) {
                     String keyName = getParser().getString();
@@ -195,23 +195,28 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
                 }
             }
             if (this.result == null) {
-                invokeInternalEvaluator(event, depth, dispatcher);
+                invokeInternalEvaluator(event, depth);
             }
             if (active) {
                 if (result != null) {
                     if (result == Result.FALSE) {
-                        dispatchAllProblems(dispatcher);
+                        dispatchAllProblems();
                     }
                     return result;
                 }
                 return Result.PENDING;
             } else {
                 if (depth == 0 && event == Event.END_OBJECT) {
-                    return testMissingProperty(dispatcher);
+                    return testMissingProperty();
                 } else {
                     return Result.PENDING;
                 }
             }
+        }
+
+        @Override
+        public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+            return this;
         }
 
         @Override
@@ -222,23 +227,20 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
             problems.add(problem);
         }
 
-        private void invokeInternalEvaluator(Event event, int depth, ProblemDispatcher dispatcher) {
-            Result result = internalEvaluator.evaluate(event, depth, this);
+        private void invokeInternalEvaluator(Event event, int depth) {
+            Result result = internalEvaluator.evaluate(event, depth);
             if (result != Result.PENDING) {
                 this.result = result;
             }
         }
 
-        private void dispatchAllProblems(ProblemDispatcher dispatcher) {
-            if (problems == null) {
-                return;
-            }
-            for (Problem problem : problems) {
-                dispatcher.dispatchProblem(problem);
+        private void dispatchAllProblems() {
+            if (problems != null) {
+                getDispatcher().dispatchAllProblems(problems);
             }
         }
 
-        protected abstract Result testMissingProperty(ProblemDispatcher dispatcher);
+        protected abstract Result testMissingProperty();
 
         protected abstract Evaluator createInternalEvaluator(JsonSchema schema);
     }
@@ -251,7 +253,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
+        protected Result testMissingProperty() {
             return Result.TRUE;
         }
 
@@ -270,8 +272,8 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        protected Result testMissingProperty(ProblemDispatcher dispatcher) {
-            return dispatchMissingPropertyProblem(dispatcher);
+        protected Result testMissingProperty() {
+            return dispatchMissingPropertyProblem();
         }
 
         @Override
@@ -288,10 +290,10 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (depth == 1 && event == Event.KEY_NAME) {
                 if (getParser().getString().equals(getPropertyName())) {
-                    return dispatchProblem(dispatcher);
+                    return dispatchProblem();
                 }
             } else if (depth == 0 && event == Event.END_OBJECT) {
                 return Result.TRUE;
@@ -299,12 +301,12 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
             return Result.PENDING;
         }
 
-        private Result dispatchProblem(ProblemDispatcher dispatcher) {
+        private Result dispatchProblem() {
             Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_NOT_REQUIRED)
                     .withParameter("required", getPropertyName())
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
     }

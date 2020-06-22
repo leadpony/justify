@@ -21,7 +21,6 @@ import java.util.Iterator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -37,21 +36,21 @@ class DisjunctiveEvaluator extends SimpleDisjunctiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        if (invokeOperandEvaluators(event, depth, dispatcher) == Result.TRUE) {
+    public Result evaluate(Event event, int depth) {
+        if (invokeOperandEvaluators(event, depth) == Result.TRUE) {
             return Result.TRUE;
         }
         if (depth == 0 && event == closingEvent) {
-            return dispatchProblems(dispatcher);
+            return dispatchProblems();
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, depth, dispatcher);
+            Result result = current.evaluate(event, depth);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else if (result != Result.PENDING) {

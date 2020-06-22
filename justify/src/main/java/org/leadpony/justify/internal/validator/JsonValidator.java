@@ -146,7 +146,7 @@ public class JsonValidator extends DefaultPointerAwareJsonParser
                 this.eventHandler = ParserEventHandler.IDLE;
             }
         }
-        Result result = evaluator.evaluate(event, depth, this);
+        Result result = evaluator.evaluate(event, depth);
         if (ParserEvents.isStartOfContainer(event)) {
             ++depth;
         }

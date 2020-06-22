@@ -29,7 +29,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -142,9 +141,9 @@ public class ContentEncoding extends AbstractAssertionKeyword {
         }
         return new ContentEncodingEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTENCODING).build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             }
         };
@@ -157,9 +156,9 @@ public class ContentEncoding extends AbstractAssertionKeyword {
         }
         return new ContentEncodingEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTENCODING).build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             }
         };

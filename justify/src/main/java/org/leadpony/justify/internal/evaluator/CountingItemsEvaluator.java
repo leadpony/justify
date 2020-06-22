@@ -47,26 +47,31 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluat
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (depth == 1 && ParserEvents.isValue(event)) {
             InstanceType type = ParserEvents.toBroadInstanceType(event);
             this.itemEvaluator = createItemEvaluator(type);
         } else if (depth == 0 && event == Event.END_ARRAY) {
-            return finish(this.validItems, this.problemBranches, dispatcher);
+            return finish(this.validItems, this.problemBranches);
         }
 
         if (this.itemEvaluator != null && depth > 0) {
-            return evaluateCurrentItem(event, depth, dispatcher);
+            return evaluateCurrentItem(event, depth);
         }
 
         return Result.PENDING;
     }
 
-    protected Result handleValidItem(int validItems, ProblemDispatcher dispatcher) {
+    @Override
+    public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+        return this;
+    }
+
+    protected Result handleValidItem(int validItems) {
         return Result.PENDING;
     }
 
-    protected abstract Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher);
+    protected abstract Result finish(int validItems, List<ProblemBranch> branches);
 
     @Override
     public final void dispatchProblem(Problem problem) {
@@ -80,11 +85,11 @@ public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluat
         return this.subschema.createEvaluator(this, type);
     }
 
-    private Result evaluateCurrentItem(Event event, int depth, ProblemDispatcher dispatcher) {
-        final Result result = this.itemEvaluator.evaluate(event, depth - 1, this);
+    private Result evaluateCurrentItem(Event event, int depth) {
+        final Result result = this.itemEvaluator.evaluate(event, depth - 1);
         if (result == Result.TRUE) {
             this.itemEvaluator = null;
-            return handleValidItem(++this.validItems, dispatcher);
+            return handleValidItem(++this.validItems);
         } else if (result == Result.FALSE) {
             accumulateProblems();
             this.itemEvaluator = null;

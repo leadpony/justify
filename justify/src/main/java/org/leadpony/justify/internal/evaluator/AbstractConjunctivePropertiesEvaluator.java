@@ -24,7 +24,6 @@ import java.util.function.Function;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -45,7 +44,7 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (depth == 0 && event == Event.END_OBJECT) {
             return finalResult;
         }
@@ -57,14 +56,14 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
         if (firstChildEvaluator != null) {
             final int childDepth = depth - 1;
 
-            if (!invokeChildEvaluator(firstChildEvaluator, event, childDepth, dispatcher)) {
+            if (!invokeChildEvaluator(firstChildEvaluator, event, childDepth)) {
                 firstChildEvaluator = null;
             }
 
             if (additionalChildEvaluators != null) {
                 Iterator<Evaluator> it = additionalChildEvaluators.iterator();
                 while (it.hasNext()) {
-                    if (!invokeChildEvaluator(it.next(), event, childDepth, dispatcher)) {
+                    if (!invokeChildEvaluator(it.next(), event, childDepth)) {
                         it.remove();
                     }
                 }
@@ -91,8 +90,8 @@ public abstract class AbstractConjunctivePropertiesEvaluator extends AbstractLog
     }
 
 
-    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, int depth, ProblemDispatcher dispatcher) {
-        Result result = evalutor.evaluate(event, depth, dispatcher);
+    private boolean invokeChildEvaluator(Evaluator evalutor, Event event, int depth) {
+        Result result = evalutor.evaluate(event, depth);
         if (result == Result.PENDING) {
             return true;
         } else {

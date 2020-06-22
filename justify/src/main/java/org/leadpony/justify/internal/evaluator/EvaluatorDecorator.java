@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * A decorator of {@link Evaluator}.
@@ -35,9 +34,9 @@ public class EvaluatorDecorator implements Evaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (finalResult == null) {
-            Result result = real.evaluate(event, depth, dispatcher);
+            Result result = real.evaluate(event, depth);
             if (result != Result.PENDING) {
                 finalResult = result;
             }

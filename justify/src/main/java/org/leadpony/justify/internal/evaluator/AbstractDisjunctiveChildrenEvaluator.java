@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -33,17 +32,17 @@ abstract class AbstractDisjunctiveChildrenEvaluator extends DisjunctiveEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (depth == 1) {
             updateChildren(event, getParser());
         }
-        return super.evaluate(event, depth, dispatcher);
+        return super.evaluate(event, depth);
     }
 
     @Override
-    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth) {
         if (depth > 0) {
-            return super.invokeOperandEvaluators(event, depth - 1, dispatcher);
+            return super.invokeOperandEvaluators(event, depth - 1);
         }
         return Result.PENDING;
     }

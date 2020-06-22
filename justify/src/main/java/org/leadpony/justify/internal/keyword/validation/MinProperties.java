@@ -22,7 +22,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -89,7 +88,7 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
         }
 
         @Override
-        public Result evaluateShallow(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluateShallow(Event event, int depth) {
             if (depth == 1) {
                 if (event == Event.KEY_NAME && ++currentCount >= minProperties) {
                     return Result.TRUE;
@@ -103,7 +102,7 @@ public class MinProperties extends AbstractAssertionKeyword implements ObjectEva
                             .withParameter("actual", currentCount)
                             .withParameter("limit", minProperties)
                             .build();
-                    dispatcher.dispatchProblem(p);
+                    getDispatcher().dispatchProblem(p);
                     return Result.FALSE;
                 }
             }

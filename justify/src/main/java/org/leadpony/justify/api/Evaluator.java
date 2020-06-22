@@ -43,17 +43,15 @@ public interface Evaluator {
     };
 
     /**
-     * Evaluates a JSON schema against each instance location to which it applies.
+     * Evaluates a JSON value with a JSON schema or a schema keyword.
      *
      * @param event      the event triggered by the JSON parser, cannot be
      *                   {@code null}.
      * @param depth      the depth where the event occurred.
-     * @param dispatcher the dispatcher of the found problems, cannot be
-     *                   {@code null}.
      * @return the result of the evaluation, one defined in {@link Result}. This
      *         cannot be {@code null}.
      */
-    Result evaluate(JsonParser.Event event, int depth, ProblemDispatcher dispatcher);
+    Result evaluate(JsonParser.Event event, int depth);
 
     /**
      * Checks whether this evaluator evaluates anything as false or not. This method
@@ -82,8 +80,22 @@ public interface Evaluator {
         return getContext().getParser();
     }
 
-    default ProblemDispatcher getDispatcher(Evaluator evaluator) {
-        return getParent().getDispatcher(this);
+    /**
+     * Returns the problem dispatcher for this evaluator.
+     * @return the problem dispatcher
+     */
+    default ProblemDispatcher getDispatcher() {
+        return getParent().getDispatcherForChild(this);
+    }
+
+    /**
+     * Returns the problem dispatcher for child evaluators.
+     *
+     * @param evaluator one of child evaluators.
+     * @return the problem dispatcher.
+     */
+    default ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+        return getDispatcher();
     }
 
     /**
@@ -103,7 +115,7 @@ public interface Evaluator {
      */
     Evaluator ALWAYS_TRUE = new Evaluator() {
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             return Result.TRUE;
         }
     };

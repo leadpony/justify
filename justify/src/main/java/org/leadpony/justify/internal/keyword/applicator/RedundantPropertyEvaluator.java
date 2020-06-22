@@ -21,7 +21,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.RedundantElementEvaluator;
 
@@ -38,12 +37,12 @@ class RedundantPropertyEvaluator extends RedundantElementEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         Problem p = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_REDUNDANT_PROPERTY)
                 .withParameter("name", keyName)
                 .build();
-        dispatcher.dispatchProblem(p);
+        getDispatcher().dispatchProblem(p);
         return Result.FALSE;
     }
 }

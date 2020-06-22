@@ -17,7 +17,6 @@ package org.leadpony.justify.internal.evaluator;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 
@@ -41,12 +40,12 @@ public abstract class AbstractPropertyDependentEvaluator extends AbstractKeyword
         return propertyName;
     }
 
-    protected final Evaluator.Result dispatchMissingPropertyProblem(ProblemDispatcher dispatcher) {
+    protected final Evaluator.Result dispatchMissingPropertyProblem() {
         Problem p = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_REQUIRED)
                 .withParameter("required", propertyName)
                 .build();
-        dispatcher.dispatchProblem(p);
+        getDispatcher().dispatchProblem(p);
         return Evaluator.Result.FALSE;
     }
 }

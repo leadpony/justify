@@ -23,7 +23,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -41,11 +40,11 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         Iterator<DeferredEvaluator> it = iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, depth, dispatcher);
+            Result result = current.evaluate(event, depth);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadEvaluator(current);
@@ -54,7 +53,7 @@ class NotExclusiveEvaluator extends SimpleNotExclusiveEvaluator {
             }
         }
         if (depth == 0 && event == closingEvent) {
-            return finalizeResult(dispatcher);
+            return finalizeResult();
         }
         return Result.PENDING;
     }

@@ -26,7 +26,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -121,10 +120,10 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (depth == 0) {
                 if (event == Event.END_ARRAY) {
-                    return getFinalResult(dispatcher);
+                    return getFinalResult();
                 } else {
                     return Result.PENDING;
                 }
@@ -159,14 +158,14 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
             return duplicated;
         }
 
-        protected Result getFinalResult(ProblemDispatcher dispatcher) {
+        protected Result getFinalResult() {
             if (duplicated) {
                 Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_UNIQUEITEMS)
                         .withParameter("index", secondOccurrenceAt)
                         .withParameter("firstIndex", firstOccurrenceAt)
                         .build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             } else {
                 return Result.TRUE;
@@ -186,14 +185,14 @@ public class UniqueItems extends AbstractAssertionKeyword implements ArrayEvalua
         }
 
         @Override
-        protected Result getFinalResult(ProblemDispatcher dispatcher) {
+        protected Result getFinalResult() {
             if (hasDuplicatedItems()) {
                 return Result.TRUE;
             } else {
                 Problem p = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_UNIQUEITEMS)
                         .build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             }
         }

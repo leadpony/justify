@@ -25,7 +25,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -96,10 +95,10 @@ public class PropertyNames extends UnaryApplicator {
     private Evaluator createForbiddenPropertyEvaluator(Evaluator parent, JsonSchema subschema) {
         return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 ProblemBuilder b = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_OBJECT_NONEMPTY);
-                dispatcher.dispatchProblem(b.build());
+                getDispatcher().dispatchProblem(b.build());
                 return Result.FALSE;
             }
         };

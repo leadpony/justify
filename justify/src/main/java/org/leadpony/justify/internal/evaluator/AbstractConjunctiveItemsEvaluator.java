@@ -21,7 +21,6 @@ import jakarta.json.stream.JsonParser.Event;
 import java.util.function.Function;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -40,7 +39,7 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (depth == 0 && event == Event.END_ARRAY) {
             return finalResult;
         }
@@ -50,7 +49,7 @@ public abstract class AbstractConjunctiveItemsEvaluator extends AbstractLogicalE
         }
 
         if (childEvaluator != null) {
-            Result result = childEvaluator.evaluate(event, depth - 1, dispatcher);
+            Result result = childEvaluator.evaluate(event, depth - 1);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;

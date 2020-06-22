@@ -28,7 +28,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -142,8 +141,8 @@ public class Properties extends AbstractProperties<String> {
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-            Result result = super.evaluate(event, depth, dispatcher);
+        public Result evaluate(Event event, int depth) {
+            Result result = super.evaluate(event, depth);
             if (depth == 1 && event == Event.KEY_NAME) {
                 defaultValues.remove(getContext().getParser().getString());
             } else if (depth == 0 && event == Event.END_OBJECT) {

@@ -32,7 +32,6 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -177,9 +176,9 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         }
         return new FalseContentEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_CONTENTMEDIATYPE).build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             }
         };
@@ -194,9 +193,9 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         }
         return new FalseContentEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 Problem p = newProblemBuilder().withMessage(Message.INSTANCE_PROBLEM_NOT_CONTENTMEDIATYPE).build();
-                dispatcher.dispatchProblem(p);
+                getDispatcher().dispatchProblem(p);
                 return Result.FALSE;
             }
         };

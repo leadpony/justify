@@ -22,7 +22,6 @@ import java.util.function.Function;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * Evaluator for "allOf" boolean logic.
@@ -45,10 +44,10 @@ class SimpleConjunctiveEvaluator extends ArrayList<Evaluator> implements Logical
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         Result finalResult = Result.TRUE;
         for (Evaluator operand : this) {
-            if (operand.evaluate(event, depth, dispatcher) == Result.FALSE) {
+            if (operand.evaluate(event, depth) == Result.FALSE) {
                 finalResult = Result.FALSE;
             }
         }

@@ -27,7 +27,6 @@ import java.util.Set;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractKeywordBasedEvaluator;
 import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
@@ -65,10 +64,10 @@ abstract class AbstractStringAssertion extends AbstractAssertionKeyword {
         }
         return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 ProblemBuilder builder = newProblemBuilder();
                 buildProblem(builder, event, value);
-                dispatcher.dispatchProblem(createProblem(builder));
+                getDispatcher().dispatchProblem(createProblem(builder));
                 return Result.FALSE;
             }
         };
@@ -83,10 +82,10 @@ abstract class AbstractStringAssertion extends AbstractAssertionKeyword {
         }
         return new AbstractKeywordBasedEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 ProblemBuilder builder = newProblemBuilder();
                 buildProblem(builder, event, value);
-                dispatcher.dispatchProblem(createNegatedProblem(builder));
+                getDispatcher().dispatchProblem(createNegatedProblem(builder));
                 return Result.FALSE;
             }
         };

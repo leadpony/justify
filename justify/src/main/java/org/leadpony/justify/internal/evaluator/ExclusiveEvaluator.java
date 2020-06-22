@@ -24,7 +24,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 
@@ -52,17 +51,17 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         if (evaluationsAsTrue <= 1) {
-            evaluateAll(event, depth, dispatcher);
+            evaluateAll(event, depth);
         }
-        evaluateAllNegated(event, depth, dispatcher);
+        evaluateAllNegated(event, depth);
         if (depth == 0 && event == closingEvent) {
             if (evaluationsAsTrue == 0) {
-                dispatchProblems(dispatcher, problemBranches);
+                dispatchProblems(problemBranches);
                 return Result.FALSE;
             } else if (evaluationsAsTrue > 1) {
-                dispatchNegatedProblems(dispatcher, negatedProblemBranches);
+                dispatchNegatedProblems(negatedProblemBranches);
                 return Result.FALSE;
             }
             return Result.TRUE;
@@ -70,11 +69,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         return Result.PENDING;
     }
 
-    private void evaluateAll(Event event, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAll(Event event, int depth) {
         Iterator<DeferredEvaluator> it = operands.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, depth, dispatcher);
+            Result result = current.evaluate(event, depth);
             if (result != Result.PENDING) {
                 if (result == Result.TRUE) {
                     evaluationsAsTrue++;
@@ -86,11 +85,11 @@ class ExclusiveEvaluator extends AbstractExclusiveEvaluator {
         }
     }
 
-    private void evaluateAllNegated(Event event, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAllNegated(Event event, int depth) {
         Iterator<DeferredEvaluator> it = negated.iterator();
         while (it.hasNext()) {
             DeferredEvaluator current = it.next();
-            Result result = current.evaluate(event, depth, dispatcher);
+            Result result = current.evaluate(event, depth);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     addBadNegatedEvaluator(current);

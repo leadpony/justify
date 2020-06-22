@@ -46,14 +46,19 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        int evaluationsAsTrue = evaluateAll(event, depth, dispatcher);
+    public Result evaluate(Event event, int depth) {
+        int evaluationsAsTrue = evaluateAll(event, depth);
         if (evaluationsAsTrue == 1) {
             return Result.TRUE;
         } else if (evaluationsAsTrue > 1) {
-            evaluateAllNegated(event, depth, dispatcher);
+            evaluateAllNegated(event, depth);
         }
         return Result.FALSE;
+    }
+
+    @Override
+    public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+        return this;
     }
 
     @Override
@@ -64,12 +69,12 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator
         this.branch.add(problem);
     }
 
-    private int evaluateAll(Event event, int depth, ProblemDispatcher dispatcher) {
+    private int evaluateAll(Event event, int depth) {
         int evaluationsAsTrue = 0;
         List<ProblemBranch> problemBranches = new ArrayList<>();
         for (JsonSchema schema : this.schemas) {
             Evaluator evaluator = schema.createEvaluator(this, this.type);
-            Result result = evaluator.evaluate(event, depth, this);
+            Result result = evaluator.evaluate(event, depth);
             if (result == Result.TRUE) {
                 ++evaluationsAsTrue;
             } else if (result == Result.FALSE) {
@@ -81,23 +86,23 @@ class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator
         }
 
         if (evaluationsAsTrue == 0) {
-            dispatchProblems(dispatcher, problemBranches);
+            dispatchProblems(problemBranches);
         }
 
         return evaluationsAsTrue;
     }
 
-    private void evaluateAllNegated(Event event, int depth, ProblemDispatcher dispatcher) {
+    private void evaluateAllNegated(Event event, int depth) {
         List<ProblemBranch> problemBranches = new ArrayList<>();
         for (JsonSchema schema : this.schemas) {
             Evaluator evaluator = schema.createNegatedEvaluator(this, this.type);
-            Result result = evaluator.evaluate(event, depth, this);
+            Result result = evaluator.evaluate(event, depth);
             if (result == Result.FALSE) {
                 problemBranches.add(this.branch);
                 this.branch = null;
             }
         }
 
-        dispatchNegatedProblems(dispatcher, problemBranches);
+        dispatchNegatedProblems(problemBranches);
     }
 }

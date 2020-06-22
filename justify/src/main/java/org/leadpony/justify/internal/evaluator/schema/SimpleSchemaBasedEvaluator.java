@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.evaluator.schema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
 
@@ -60,7 +59,7 @@ public final class SimpleSchemaBasedEvaluator extends AbstractSchemaBasedEvaluat
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        return child.evaluate(event, depth, dispatcher);
+    public Result evaluate(Event event, int depth) {
+        return child.evaluate(event, depth);
     }
 }

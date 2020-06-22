@@ -55,13 +55,19 @@ public class DeferredEvaluator implements Evaluator, ProblemDispatcher {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        return evaluator.evaluate(event, depth, this);
+    public Result evaluate(Event event, int depth) {
+        return evaluator.evaluate(event, depth);
     }
 
     @Override
     public Evaluator getParent() {
         return parent;
+    }
+
+    @Override
+    public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+        assert evaluator == this.evaluator;
+        return this;
     }
 
     @Override

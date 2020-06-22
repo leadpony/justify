@@ -119,10 +119,10 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             Result result = Result.TRUE;
             for (Evaluator child : this.children) {
-                if (child.evaluate(event, depth, dispatcher) == Result.FALSE) {
+                if (child.evaluate(event, depth) == Result.FALSE) {
                     result = Result.FALSE;
                 }
             }
@@ -141,12 +141,12 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             if (this.children.isEmpty()) {
                 return result;
             }
 
-            invokeChildren(event, depth, dispatcher);
+            invokeChildren(event, depth);
 
             if (depth == 0 && event == this.closingEvent) {
                 return result;
@@ -155,11 +155,11 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
             return Result.PENDING;
         }
 
-        private void invokeChildren(Event event, int depth, ProblemDispatcher dispatcher) {
+        private void invokeChildren(Event event, int depth) {
             Iterator<Evaluator> it = this.children.iterator();
             while (it.hasNext()) {
                 Evaluator child = it.next();
-                Result result = child.evaluate(event, depth, dispatcher);
+                Result result = child.evaluate(event, depth);
                 if (result != Result.PENDING) {
                     it.remove();
                     if (result == Result.FALSE) {
@@ -183,7 +183,7 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
             this.branches.add(branch);
         }
 
-        protected void dispatchAllProblems(ProblemDispatcher dispatcher) {
+        protected void dispatchAllProblems() {
             List<ProblemBranch> branches = this.branches.stream()
                     .filter(ProblemBranch::isResolvable)
                     .collect(Collectors.toList());
@@ -198,7 +198,7 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
                     .withMessage(Message.INSTANCE_PROBLEM_ANYOF)
                     .withBranches(branches);
 
-            dispatcher.dispatchProblem(builder.build());
+            getDispatcher().dispatchProblem(builder.build());
         }
     }
 
@@ -212,9 +212,9 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             for (Evaluator child : this.children) {
-                Result result = child.evaluate(event, depth, this);
+                Result result = child.evaluate(event, depth);
                 if (result == Result.TRUE) {
                     return Result.TRUE;
                 } else if (result == Result.FALSE) {
@@ -222,8 +222,13 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
                     this.branch = null;
                 }
             }
-            dispatchAllProblems(dispatcher);
+            dispatchAllProblems();
             return Result.FALSE;
+        }
+
+        @Override
+        public ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
+            return this;
         }
 
         @Override
@@ -256,11 +261,11 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+        public Result evaluate(Event event, int depth) {
             Iterator<Evaluator> it = this.children.iterator();
             while (it.hasNext()) {
                 Evaluator child = it.next();
-                Result result = child.evaluate(event, depth, dispatcher);
+                Result result = child.evaluate(event, depth);
                 if (result == Result.TRUE) {
                     return Result.TRUE;
                 } else if (result == Result.FALSE) {
@@ -270,7 +275,7 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
             }
 
             if (depth == 0 && event == this.closingEvent) {
-                dispatchAllProblems(dispatcher);
+                dispatchAllProblems();
                 return Result.FALSE;
             }
 

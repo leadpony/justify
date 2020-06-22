@@ -21,7 +21,6 @@ import java.util.Iterator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 
 /**
  * @author leadpony
@@ -39,18 +38,18 @@ class ConjunctiveEvaluator extends SimpleConjunctiveEvaluator {
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        invokeOperandEvaluators(event, depth, dispatcher);
+    public Result evaluate(Event event, int depth) {
+        invokeOperandEvaluators(event, depth);
         if (depth == 0 && event == closingEvent) {
             return finalResult;
         }
         return Result.PENDING;
     }
 
-    protected Result invokeOperandEvaluators(Event event, int depth, ProblemDispatcher dispatcher) {
+    protected Result invokeOperandEvaluators(Event event, int depth) {
         Iterator<Evaluator> it = iterator();
         while (it.hasNext()) {
-            Result result = it.next().evaluate(event, depth, dispatcher);
+            Result result = it.next().evaluate(event, depth);
             if (result != Result.PENDING) {
                 if (result == Result.FALSE) {
                     finalResult = Result.FALSE;

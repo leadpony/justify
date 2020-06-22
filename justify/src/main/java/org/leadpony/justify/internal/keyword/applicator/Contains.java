@@ -23,7 +23,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
@@ -167,7 +166,7 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result handleValidItem(int validItems, ProblemDispatcher dispatcher) {
+        protected Result handleValidItem(int validItems) {
             if (validItems >= bound) {
                 return Result.TRUE;
             }
@@ -175,16 +174,16 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
-            return reportTooFewValidItems(dispatcher);
+        protected Result finish(int validItems, List<ProblemBranch> branches) {
+            return reportTooFewValidItems();
         }
 
-        private Result reportTooFewValidItems(ProblemDispatcher dispatcher) {
+        private Result reportTooFewValidItems() {
             Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_MINCONTAINS)
                     .withParameter("limit", bound)
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
     }
@@ -204,24 +203,24 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result handleValidItem(int validItems, ProblemDispatcher dispatcher) {
+        protected Result handleValidItem(int validItems) {
             if (validItems > bound) {
-                return reportTooManyValidItems(dispatcher);
+                return reportTooManyValidItems();
             }
             return Result.PENDING;
         }
 
         @Override
-        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches) {
             return Result.TRUE;
         }
 
-        private Result reportTooManyValidItems(ProblemDispatcher dispatcher) {
+        private Result reportTooManyValidItems() {
             Problem problem = newProblemBuilder()
                     .withMessage(Message.INSTANCE_PROBLEM_MAXCONTAINS)
                     .withParameter("limit", bound)
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
     }
@@ -266,47 +265,47 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result handleValidItem(int validItems, ProblemDispatcher dispatcher) {
+        protected Result handleValidItem(int validItems) {
             if (validItems > upperBound && lowerBound <= upperBound) {
-                return reportTooManyValidItems(dispatcher);
+                return reportTooManyValidItems();
             }
             return Result.PENDING;
         }
 
         @Override
-        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches) {
             Result result = Result.TRUE;
 
             if (validItems < lowerBound) {
-                reportTooFewValidItems(dispatcher);
+                reportTooFewValidItems();
                 result = Result.FALSE;
             }
 
             if (validItems > upperBound) {
-                reportTooManyValidItems(dispatcher);
+                reportTooManyValidItems();
                 result = Result.FALSE;
             }
 
             return result;
         }
 
-        private Result reportTooFewValidItems(ProblemDispatcher dispatcher) {
+        private Result reportTooFewValidItems() {
             Problem problem = newProblemBuilder()
                     .withKeyword(getMinKeyword().name())
                     .withMessage(Message.INSTANCE_PROBLEM_MINCONTAINS)
                     .withParameter("limit", lowerBound)
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
 
-        private Result reportTooManyValidItems(ProblemDispatcher dispatcher) {
+        private Result reportTooManyValidItems() {
             Problem problem = newProblemBuilder()
                     .withKeyword(getMaxKeyword().name())
                     .withMessage(Message.INSTANCE_PROBLEM_MAXCONTAINS)
                     .withParameter("limit", upperBound)
                     .build();
-            dispatcher.dispatchProblem(problem);
+            getDispatcher().dispatchProblem(problem);
             return Result.FALSE;
         }
     }
@@ -319,16 +318,16 @@ public class Contains extends SimpleContains {
         }
 
         @Override
-        protected Result handleValidItem(int validItems, ProblemDispatcher dispatcher) {
+        protected Result handleValidItem(int validItems) {
             return Result.PENDING;
         }
 
         @Override
-        protected Result finish(int validItems, List<ProblemBranch> branches, ProblemDispatcher dispatcher) {
+        protected Result finish(int validItems, List<ProblemBranch> branches) {
             if (validItems < lowerBound || validItems > upperBound) {
                 return Result.TRUE;
             }
-            dispatcher.dispatchProblem(buildProblem());
+            getDispatcher().dispatchProblem(buildProblem());
             return Result.FALSE;
         }
 

@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -47,16 +46,16 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
     }
 
     @Override
-    public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+    public Result evaluate(Event event, int depth) {
         for (DeferredEvaluator operand : operands) {
-            Result result = operand.evaluate(event, depth, dispatcher);
+            Result result = operand.evaluate(event, depth);
             if (result == Result.TRUE) {
                 return Result.TRUE;
             } else {
                 addBadEvaluator(operand);
             }
         }
-        return dispatchProblems(dispatcher);
+        return dispatchProblems();
     }
 
     @Override
@@ -79,17 +78,17 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         problemBranches.add(evaluator.problems());
     }
 
-    protected Result dispatchProblems(ProblemDispatcher dispatcher) {
+    protected Result dispatchProblems() {
         if (problemBranches == null) {
-            dispatchDefaultProblem(dispatcher);
+            dispatchDefaultProblem();
         } else {
             assert !problemBranches.isEmpty();
-            dispatchProblemBranches(dispatcher);
+            dispatchProblemBranches();
         }
         return Result.FALSE;
     }
 
-    private void dispatchProblemBranches(ProblemDispatcher dispatcher) {
+    private void dispatchProblemBranches() {
         List<ProblemBranch> filteredBranches = this.problemBranches.stream()
             .filter(ProblemBranch::isResolvable)
             .collect(Collectors.toList());
@@ -99,7 +98,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         ProblemBuilder builder = newProblemBuilder()
                 .withMessage(getMessage())
                 .withBranches(filteredBranches);
-        dispatcher.dispatchProblem(builder.build());
+        getDispatcher().dispatchProblem(builder.build());
     }
 
     /**
@@ -111,7 +110,7 @@ class SimpleDisjunctiveEvaluator extends AbstractLogicalEvaluator
         return Message.INSTANCE_PROBLEM_ANYOF;
     }
 
-    protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
+    protected void dispatchDefaultProblem() {
         throw new IllegalStateException();
     }
 }

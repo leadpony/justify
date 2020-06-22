@@ -30,7 +30,6 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.AbstractEmptyMap;
 import org.leadpony.justify.internal.base.Message;
@@ -161,14 +160,14 @@ public class SchemaReference extends AbstractJsonSchema {
         public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             return new Evaluator() {
                 @Override
-                public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+                public Result evaluate(Event event, int depth) {
                     Problem p = ProblemBuilderFactory.DEFAULT.createProblemBuilder(parent.getContext())
                             .withKeyword("$ref")
                             .withMessage(Message.SCHEMA_PROBLEM_REFERENCE)
                             .withParameter("ref", ref())
                             .withParameter("targetId", getTargetId())
                             .build();
-                    dispatcher.dispatchProblem(p);
+                    getDispatcher().dispatchProblem(p);
                     return Result.FALSE;
                 }
             };

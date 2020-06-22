@@ -31,7 +31,7 @@ public interface RootEvaluator extends Evaluator, EvaluatorContext, ProblemDispa
     /* As an Evaluator */
 
     @Override
-    default Result evaluate(JsonParser.Event event, int depth, ProblemDispatcher dispatcher) {
+    default Result evaluate(JsonParser.Event event, int depth) {
         throw new UnsupportedOperationException();
     }
 
@@ -56,7 +56,7 @@ public interface RootEvaluator extends Evaluator, EvaluatorContext, ProblemDispa
     }
 
     @Override
-    default ProblemDispatcher getDispatcher(Evaluator evaluator) {
+    default ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
         return this;
     }
 

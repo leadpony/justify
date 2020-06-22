@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -130,10 +129,10 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
         }
         return new FormatEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 ProblemBuilder builder = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_FORMAT);
-                dispatcher.dispatchProblem(builder.build());
+                getDispatcher().dispatchProblem(builder.build());
                 return Result.FALSE;
             }
         };
@@ -147,10 +146,10 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
         }
         return new FormatEvaluator(parent, this) {
             @Override
-            public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
+            public Result evaluate(Event event, int depth) {
                 ProblemBuilder builder = newProblemBuilder()
                         .withMessage(Message.INSTANCE_PROBLEM_NOT_FORMAT);
-                dispatcher.dispatchProblem(builder.build());
+                getDispatcher().dispatchProblem(builder.build());
                 return Result.FALSE;
             }
         };

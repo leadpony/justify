@@ -19,7 +19,6 @@ package org.leadpony.justify.internal.evaluator;
 import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
@@ -34,9 +33,9 @@ public abstract class AbstractDisjunctivePropertiesEvaluator extends AbstractDis
     }
 
     @Override
-    protected void dispatchDefaultProblem(ProblemDispatcher dispatcher) {
+    protected void dispatchDefaultProblem() {
         ProblemBuilder b = newProblemBuilder()
                 .withMessage(Message.INSTANCE_PROBLEM_OBJECT_EMPTY);
-        dispatcher.dispatchProblem(b.build());
+        getDispatcher().dispatchProblem(b.build());
     }
 }
