@@ -24,7 +24,6 @@ import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 
 import jakarta.json.stream.JsonParser.Event;
@@ -33,7 +32,7 @@ import jakarta.json.stream.JsonParser.Event;
  * @author leadpony
  */
 class SimpleExclusiveEvaluator extends AbstractExclusiveEvaluator
-    implements DefaultProblemDispatcher {
+    implements ProblemDispatcher {
 
     private final Iterable<JsonSchema> schemas;
     private final InstanceType type;

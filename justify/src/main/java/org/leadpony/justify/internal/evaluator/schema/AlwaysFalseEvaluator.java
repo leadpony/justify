@@ -18,10 +18,14 @@ package org.leadpony.justify.internal.evaluator.schema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
+import org.leadpony.justify.internal.base.Message;
 import jakarta.json.stream.JsonParser.Event;
 
 /**
+ * An evaluator which always evaluate a value as {@code false}.
+ *
  * @author leadpony
  */
 public final class AlwaysFalseEvaluator extends AbstractSchemaBasedEvaluator {
@@ -32,7 +36,11 @@ public final class AlwaysFalseEvaluator extends AbstractSchemaBasedEvaluator {
 
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        dispatcher.dispatchInevitableProblem(getContext(), getSchema());
+        Problem problem = createProblemBuilder()
+                .withMessage(Message.INSTANCE_PROBLEM_UNKNOWN)
+                .withResolvability(false)
+                .build();
+        dispatcher.dispatchProblem(problem);
         return Result.FALSE;
     }
 

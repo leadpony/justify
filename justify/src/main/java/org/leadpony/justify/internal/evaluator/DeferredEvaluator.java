@@ -23,7 +23,6 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 
 /**
@@ -31,7 +30,7 @@ import org.leadpony.justify.internal.problem.ProblemBranch;
  *
  * @author leadpony
  */
-public class DeferredEvaluator implements Evaluator, DefaultProblemDispatcher {
+public class DeferredEvaluator implements Evaluator, ProblemDispatcher {
 
     private final Evaluator parent;
     private Evaluator evaluator;

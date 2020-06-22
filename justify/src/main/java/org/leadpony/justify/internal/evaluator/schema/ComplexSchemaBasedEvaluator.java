@@ -30,7 +30,6 @@ import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.DeferredEvaluator;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -204,7 +203,7 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
     }
 
     private static final class NegatedSimpleTypeEvaluator extends NegatedComplexSchemaBasedEvaluator
-            implements DefaultProblemDispatcher {
+            implements ProblemDispatcher {
 
         private ProblemBranch branch;
 

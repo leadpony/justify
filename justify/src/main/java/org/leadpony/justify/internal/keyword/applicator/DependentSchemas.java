@@ -35,8 +35,6 @@ import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
-
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
@@ -173,7 +171,7 @@ public class DependentSchemas extends AbstractApplicatorKeyword implements Objec
     }
 
     private abstract static class AbstractDependentEvaluator extends AbstractPropertyDependentEvaluator
-            implements DefaultProblemDispatcher {
+            implements ProblemDispatcher {
 
         private final Evaluator internalEvaluator;
         private boolean active;

@@ -46,13 +46,4 @@ public interface ProblemDispatcher {
             dispatchProblem(problem);
         }
     }
-
-    /**
-     * Dispatches an inevitable problem.
-     *
-     * @param context the evaluator context in which the problem was found, cannot
-     *                be {@code null}.
-     * @param schema  the JSON schema evaluated, cannot be {@code null}.
-     */
-    void dispatchInevitableProblem(EvaluatorContext context, JsonSchema schema);
 }

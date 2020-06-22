@@ -28,7 +28,6 @@ import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.internal.base.json.DefaultPointerAwareJsonParser;
 import org.leadpony.justify.internal.base.json.ParserEvents;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -41,9 +40,7 @@ import org.leadpony.justify.api.ProblemHandler;
  * @author leadpony
  */
 public class JsonValidator extends DefaultPointerAwareJsonParser
-    implements DefaultProblemDispatcher,
-               RootEvaluator,
-               ParserEventHandler {
+    implements RootEvaluator, ParserEventHandler {
 
     private final JsonSchema rootSchema;
     private ProblemHandler problemHandler;

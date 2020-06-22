@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.problem;
 
-import org.leadpony.justify.api.EvaluatorContext;
-import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 
@@ -33,9 +31,5 @@ public final class SilentProblemDispatcher implements ProblemDispatcher {
 
     @Override
     public void dispatchProblem(Problem problem) {
-    }
-
-    @Override
-    public void dispatchInevitableProblem(EvaluatorContext context, JsonSchema schema) {
     }
 }

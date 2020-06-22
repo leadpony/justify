@@ -26,7 +26,7 @@ import jakarta.json.stream.JsonParser;
 /**
  * @author leadpony
  */
-public interface RootEvaluator extends Evaluator, EvaluatorContext {
+public interface RootEvaluator extends Evaluator, EvaluatorContext, ProblemDispatcher {
 
     /* As an Evaluator */
 
@@ -41,16 +41,16 @@ public interface RootEvaluator extends Evaluator, EvaluatorContext {
     }
 
     @Override
-    default EvaluatorContext getContext() {
-        return this;
-    }
-
-    @Override
     default JsonSchema getSchema() {
         return null;
     }
 
-    /* As a EvaluatorContext */
+    @Override
+    default EvaluatorContext getContext() {
+        return this;
+    }
+
+    /* As an EvaluatorContext */
 
     @Override
     default Evaluator createAlwaysFalseEvaluator(Evaluator parent, JsonSchema schema) {

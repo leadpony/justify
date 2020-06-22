@@ -25,7 +25,6 @@ import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
-import org.leadpony.justify.internal.problem.DefaultProblemDispatcher;
 import org.leadpony.justify.internal.problem.ProblemBranch;
 
 import jakarta.json.stream.JsonParser.Event;
@@ -33,7 +32,7 @@ import jakarta.json.stream.JsonParser.Event;
 /**
  * @author leadpony
  */
-public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluator implements DefaultProblemDispatcher {
+public abstract class CountingItemsEvaluator extends AbstractKeywordBasedEvaluator implements ProblemDispatcher {
 
     private final JsonSchema subschema;
     private int validItems;
