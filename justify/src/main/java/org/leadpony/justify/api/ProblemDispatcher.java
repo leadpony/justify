@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2019 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,4 +46,18 @@ public interface ProblemDispatcher {
             dispatchProblem(problem);
         }
     }
+
+    /**
+     * A silent problem dispatcher.
+     */
+    ProblemDispatcher SILENT = new ProblemDispatcher() {
+
+        @Override
+        public void dispatchProblem(Problem problem) {
+        }
+
+        @Override
+        public void dispatchAllProblems(Collection<Problem> problems) {
+        }
+    };
 }

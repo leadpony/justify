@@ -18,110 +18,133 @@ package org.leadpony.justify.internal.evaluator;
 
 import jakarta.json.stream.JsonParser.Event;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.internal.problem.SilentProblemDispatcher;
+import org.leadpony.justify.internal.problem.DeferredProblemDispatcher;
 
 /**
  * Combination evaluator of if/then/else.
  *
  * @author leadpony
  */
-public final class ConditionalEvaluator implements Evaluator {
+public final class ConditionalEvaluator extends AbstractEvaluator {
 
-    private final Evaluator ifEvaluator;
-    private final DeferredEvaluator thenEvaluator;
-    private final DeferredEvaluator elseEvaluator;
+    private Evaluator ifEvaluator;
+    private Evaluator thenEvaluator;
+    private Evaluator elseEvaluator;
 
     private Result ifResult;
     private Result thenResult;
     private Result elseResult;
 
+    private Map<Evaluator, ProblemDispatcher> dispatchers;
+
     public static Evaluator of(JsonSchema ifSchema, JsonSchema thenSchema, JsonSchema elseSchema,
             Evaluator parent, InstanceType type) {
 
-        Evaluator ifEvaluator = ifSchema.createEvaluator(parent, type);
+        ConditionalEvaluator self = new ConditionalEvaluator(parent);
 
-        DeferredEvaluator thenEvaluator = new DeferredEvaluator(parent);
-        thenEvaluator.setEvaluator(thenSchema != null
-                ? thenSchema.createEvaluator(thenEvaluator, type)
-                : Evaluator.ALWAYS_TRUE
-                );
+        Evaluator ifEvaluator = ifSchema.createEvaluator(self, type);
 
-        DeferredEvaluator elseEvaluator = new DeferredEvaluator(parent);
-        elseEvaluator.setEvaluator(elseSchema != null
-                ? elseSchema.createEvaluator(elseEvaluator, type)
-                : Evaluator.ALWAYS_TRUE
-                );
+        Evaluator thenEvaluator = thenSchema != null
+                ? thenSchema.createEvaluator(self, type)
+                : Evaluator.ALWAYS_TRUE;
 
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+        Evaluator elseEvaluator = elseSchema != null
+                ? elseSchema.createEvaluator(self, type)
+                : Evaluator.ALWAYS_TRUE;
+
+        self.withChildren(ifEvaluator, thenEvaluator, elseEvaluator);
+        return self;
     }
 
     public static Evaluator ofNegated(JsonSchema ifSchema, JsonSchema thenSchema, JsonSchema elseSchema,
             Evaluator parent, InstanceType type) {
 
-        Evaluator ifEvaluator = ifSchema.createEvaluator(parent, type);
+        ConditionalEvaluator self = new ConditionalEvaluator(parent);
 
-        DeferredEvaluator thenEvaluator = new DeferredEvaluator(parent);
-        thenEvaluator.setEvaluator(thenSchema != null
-                ? thenSchema.createNegatedEvaluator(thenEvaluator, type)
-                : ifSchema.createNegatedEvaluator(thenEvaluator, type)
-                );
+        Evaluator ifEvaluator = ifSchema.createEvaluator(self, type);
 
-        DeferredEvaluator elseEvaluator = new DeferredEvaluator(parent);
-        elseEvaluator.setEvaluator(elseSchema != null
-                ? elseSchema.createNegatedEvaluator(elseEvaluator, type)
-                : ifSchema.createEvaluator(elseEvaluator, type)
-                );
+        Evaluator thenEvaluator = thenSchema != null
+                ? thenSchema.createNegatedEvaluator(self, type)
+                : ifSchema.createNegatedEvaluator(self, type);
 
-        return new ConditionalEvaluator(ifEvaluator, thenEvaluator, elseEvaluator);
+        Evaluator elseEvaluator = elseSchema != null
+                ? elseSchema.createNegatedEvaluator(self, type)
+                : ifSchema.createEvaluator(self, type);
+
+        self.withChildren(ifEvaluator, thenEvaluator, elseEvaluator);
+        return self;
     }
 
-    private ConditionalEvaluator(Evaluator ifEvaluator,
-            DeferredEvaluator thenEvaluator,
-            DeferredEvaluator elseEvaluator) {
-        this.ifEvaluator = ifEvaluator;
-        this.thenEvaluator = thenEvaluator;
-        this.elseEvaluator = elseEvaluator;
+    private ConditionalEvaluator(Evaluator parent) {
+        super(parent);
         this.ifResult = Result.PENDING;
         this.thenResult = Result.PENDING;
         this.elseResult = Result.PENDING;
     }
 
+    private void withChildren(Evaluator ifEvaluator, Evaluator thenEvaluator, Evaluator elseEvaluator) {
+        this.ifEvaluator = ifEvaluator;
+        this.thenEvaluator = thenEvaluator;
+        this.elseEvaluator = elseEvaluator;
+    }
+
     @Override
     public Result evaluate(Event event, int depth, ProblemDispatcher dispatcher) {
-        ifResult = updateEvaluation(ifResult, ifEvaluator, event, depth, SilentProblemDispatcher.SINGLETON);
+        ifResult = updateEvaluation(ifResult, ifEvaluator, event, depth);
         if (ifResult == Result.TRUE) {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth, dispatcher);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth);
             if (thenResult != Result.PENDING) {
                 return finalizeEvaluation(thenResult, thenEvaluator, dispatcher);
             }
         } else if (ifResult == Result.FALSE) {
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth, dispatcher);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth);
             if (elseResult != Result.PENDING) {
                 return finalizeEvaluation(elseResult, elseEvaluator, dispatcher);
             }
         } else {
-            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth, dispatcher);
-            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth, dispatcher);
+            thenResult = updateEvaluation(thenResult, thenEvaluator, event, depth);
+            elseResult = updateEvaluation(elseResult, elseEvaluator, event, depth);
         }
         return Result.PENDING;
     }
 
-    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, int depth,
-            ProblemDispatcher dispatcher) {
+    @Override
+    public ProblemDispatcher getDispatcher(Evaluator evaluator) {
+        if (dispatchers == null) {
+            dispatchers = new HashMap<>();
+        }
+
+        ProblemDispatcher dispatcher = dispatchers.get(evaluator);
+        if (dispatcher == null) {
+            if (evaluator == ifEvaluator) {
+                dispatcher = ProblemDispatcher.SILENT;
+            } else {
+                dispatcher = DeferredProblemDispatcher.empty();
+            }
+            dispatchers.put(evaluator, dispatcher);
+        }
+        return dispatcher;
+    }
+
+    private Result updateEvaluation(Result result, Evaluator evaluator, Event event, int depth) {
         if (result == Result.PENDING) {
-            return evaluator.evaluate(event, depth, dispatcher);
+            return evaluator.evaluate(event, depth, getDispatcher(evaluator));
         } else {
             return result;
         }
     }
 
-    private Result finalizeEvaluation(Result result, DeferredEvaluator evaluator, ProblemDispatcher dispatcher) {
+    private Result finalizeEvaluation(Result result, Evaluator evaluator, ProblemDispatcher dispatcher) {
         if (result == Result.FALSE) {
-            evaluator.problems().forEach(problem -> dispatcher.dispatchProblem(problem));
+            DeferredProblemDispatcher deferred = (DeferredProblemDispatcher) dispatchers.get(evaluator);
+            dispatcher.dispatchAllProblems(deferred);
         }
         return result;
     }

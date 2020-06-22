@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.problem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
@@ -22,14 +24,20 @@ import org.leadpony.justify.api.ProblemDispatcher;
 /**
  * @author leadpony
  */
-public final class SilentProblemDispatcher implements ProblemDispatcher {
+public interface DeferredProblemDispatcher extends ProblemDispatcher, List<Problem> {
 
-    public static final SilentProblemDispatcher SINGLETON = new SilentProblemDispatcher();
+    static DeferredProblemDispatcher empty() {
 
-    private SilentProblemDispatcher() {
+        @SuppressWarnings("serial")
+        class ProblemDispatcherImpl extends ArrayList<Problem> implements DeferredProblemDispatcher {
+
+            @Override
+            public void dispatchProblem(Problem problem) {
+                add(problem);
+            }
+        }
+
+        return new ProblemDispatcherImpl();
     }
 
-    @Override
-    public void dispatchProblem(Problem problem) {
-    }
 }

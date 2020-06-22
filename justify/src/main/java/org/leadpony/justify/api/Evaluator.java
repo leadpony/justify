@@ -70,12 +70,20 @@ public interface Evaluator {
         throw new UnsupportedOperationException();
     }
 
+    default JsonSchema getSchema() {
+        return getParent().getSchema();
+    }
+
     default EvaluatorContext getContext() {
         return getParent().getContext();
     }
 
-    default JsonSchema getSchema() {
-        return getParent().getSchema();
+    default JsonParser getParser() {
+        return getContext().getParser();
+    }
+
+    default ProblemDispatcher getDispatcher(Evaluator evaluator) {
+        return getParent().getDispatcher(this);
     }
 
     /**

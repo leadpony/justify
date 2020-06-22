@@ -50,6 +50,16 @@ public interface RootEvaluator extends Evaluator, EvaluatorContext, ProblemDispa
         return this;
     }
 
+    @Override
+    default JsonParser getParser() {
+        return Evaluator.super.getParser();
+    }
+
+    @Override
+    default ProblemDispatcher getDispatcher(Evaluator evaluator) {
+        return this;
+    }
+
     /* As an EvaluatorContext */
 
     @Override

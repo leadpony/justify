@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,37 +22,29 @@ import org.leadpony.justify.internal.base.json.SimpleJsonLocation;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 import jakarta.json.stream.JsonLocation;
-import jakarta.json.stream.JsonParser;
 
 /**
  * An implementation of {@link Evaluator} which is provided by a keyword.
  *
  * @author leadpony
  */
-public abstract class AbstractKeywordBasedEvaluator implements Evaluator {
+public abstract class AbstractKeywordBasedEvaluator extends AbstractEvaluator {
 
-    private final Evaluator parent;
-    private final EvaluatorContext context;
     private final Keyword keyword;
+    private EvaluatorContext context;
 
     protected AbstractKeywordBasedEvaluator(Evaluator parent, Keyword keyword) {
-        this.parent = parent;
-        this.context = parent.getContext();
+        super(parent);
         this.keyword = keyword;
     }
 
     @Override
-    public final Evaluator getParent() {
-        return parent;
-    }
-
-    @Override
     public final EvaluatorContext getContext() {
+        if (context != null) {
+            return context;
+        }
+        this.context = getParent().getContext();
         return context;
-    }
-
-    public final JsonParser getParser() {
-        return getContext().getParser();
     }
 
     public final Keyword getKeyword() {
