@@ -15,6 +15,8 @@
  */
 package org.leadpony.justify.internal.validator;
 
+import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.JsonSchema;
@@ -64,6 +66,8 @@ public interface RootEvaluator extends Evaluator, EvaluatorContext, ProblemDispa
 
     @Override
     default Evaluator createAlwaysFalseEvaluator(Evaluator parent, JsonSchema schema) {
+        requireNonNull(parent, "parent");
+        requireNonNull(schema, "schema");
         return new AlwaysFalseEvaluator(parent, schema, this);
     }
 }

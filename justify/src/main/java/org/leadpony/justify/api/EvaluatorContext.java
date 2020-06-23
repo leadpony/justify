@@ -85,10 +85,12 @@ public interface EvaluatorContext {
     void putDefaultItems(List<JsonValue> items);
 
     /**
-     * Creates an evaluator which always evaluates the specified schema as
-     * {@code false}.
+     * Creates an evaluator which evaluates anything as {@code false}.
      *
-     * @param schema the schema against which the instance will be evaluated, cannot be {@code null}.
+     * @param parent the parent evaluator of the evaluator to create, cannot be
+     *               {@code null}.
+     * @param schema the schema against which the instance will be evaluated, cannot
+     *               be {@code null}.
      * @return newly created evaluator. It must not be {@code null}.
      */
     Evaluator createAlwaysFalseEvaluator(Evaluator parent, JsonSchema schema);
