@@ -69,6 +69,15 @@ abstract class AbstractSchemaBasedEvaluator extends AbstractEvaluator {
         return dispatcher;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@code true} bacause this evaluator is based on a schema.
+     */
+    @Override
+    public boolean isBasedOnSchema() {
+        return true;
+    }
+
     protected final ProblemBuilder createProblemBuilder() {
         EvaluatorContext context = getContext();
         JsonLocation location = context.getParser().getLocation();

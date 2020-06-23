@@ -45,9 +45,8 @@ public interface Evaluator {
     /**
      * Evaluates a JSON value with a JSON schema or a schema keyword.
      *
-     * @param event      the event triggered by the JSON parser, cannot be
-     *                   {@code null}.
-     * @param depth      the depth where the event occurred.
+     * @param event the event triggered by the JSON parser, cannot be {@code null}.
+     * @param depth the depth where the event occurred.
      * @return the result of the evaluation, one defined in {@link Result}. This
      *         cannot be {@code null}.
      */
@@ -82,6 +81,7 @@ public interface Evaluator {
 
     /**
      * Returns the problem dispatcher for this evaluator.
+     *
      * @return the problem dispatcher
      */
     default ProblemDispatcher getDispatcher() {
@@ -96,6 +96,16 @@ public interface Evaluator {
      */
     default ProblemDispatcher getDispatcherForChild(Evaluator evaluator) {
         return getDispatcher();
+    }
+
+    /**
+     * Checks whether this evaluator is based on a schema or not.
+     *
+     * @return {@code true} if this evaluator is based on a schema, {@code false}
+     *         otherwise.
+     */
+    default boolean isBasedOnSchema() {
+        return false;
     }
 
     /**
