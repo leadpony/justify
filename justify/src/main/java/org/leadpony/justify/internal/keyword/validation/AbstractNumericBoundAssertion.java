@@ -60,6 +60,15 @@ abstract class AbstractNumericBoundAssertion extends AbstractNumericAssertion {
     }
 
     /**
+     * Returns the boundary value of this assertion.
+     *
+     * @return the boundary value.
+     */
+    protected final BigDecimal getLimit() {
+        return limit;
+    }
+
+    /**
      * Tests a value against the boundary.
      *
      * @param actual the value to test.

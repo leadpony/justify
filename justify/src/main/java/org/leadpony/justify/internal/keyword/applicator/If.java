@@ -17,13 +17,11 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -42,8 +40,17 @@ public class If extends Conditional {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchema("if", If::new);
 
+    private final JsonSchema thenSchema;
+    private final JsonSchema elseSchema;
+
     public If(JsonSchema schema) {
+        this(schema, null, null);
+    }
+
+    public If(JsonSchema schema, JsonSchema thenSchema, JsonSchema elseSchema) {
         super(schema);
+        this.thenSchema = thenSchema;
+        this.elseSchema = elseSchema;
     }
 
     @Override
@@ -52,12 +59,7 @@ public class If extends Conditional {
     }
 
     @Override
-    public boolean canEvaluate() {
-        return true;
-    }
-
-    @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
         JsonSchema thenSchema = null;
         JsonSchema elseSchema = null;
 
@@ -75,30 +77,28 @@ public class If extends Conditional {
         }
 
         if (thenSchema != null || elseSchema != null) {
-            return Optional.of(createEvaluatorSource(thenSchema, elseSchema));
+            return new If(getSubschema(), thenSchema, elseSchema);
         } else {
-            return Optional.empty();
+            return this;
         }
     }
 
-    private EvaluatorSource createEvaluatorSource(JsonSchema thenSchema, JsonSchema elseSchema) {
-        final Keyword keyword = this;
-        return new EvaluatorSource() {
+    @Override
+    public boolean canEvaluate() {
+        return !isAlone();
+    }
 
-            @Override
-            public Keyword getSourceKeyword() {
-                return keyword;
-            }
+    @Override
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        return ConditionalEvaluator.of(getSubschema(), thenSchema, elseSchema, parent, type);
+    }
 
-            @Override
-            public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-                return ConditionalEvaluator.of(getSubschema(), thenSchema, elseSchema, parent, type);
-            }
+    @Override
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        return ConditionalEvaluator.ofNegated(getSubschema(), thenSchema, elseSchema, parent, type);
+    }
 
-            @Override
-            public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-                return ConditionalEvaluator.ofNegated(getSubschema(), thenSchema, elseSchema, parent, type);
-            }
-        };
+    private boolean isAlone() {
+        return thenSchema == null && elseSchema == null;
     }
 }

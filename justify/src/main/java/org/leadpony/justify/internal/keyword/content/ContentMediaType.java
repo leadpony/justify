@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import jakarta.json.JsonString;
@@ -33,7 +32,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -128,9 +126,15 @@ public class ContentMediaType extends AbstractAssertionKeyword {
      * @param parameters additional parameters of this media type.
      */
     public ContentMediaType(JsonValue json, ContentMimeType mimeType, Map<String, String> parameters) {
+        this(json, mimeType, parameters, null);
+    }
+
+    public ContentMediaType(JsonValue json, ContentMimeType mimeType, Map<String, String> parameters,
+            ContentEncodingScheme encodingScheme) {
         super(json);
         this.mimeType = mimeType;
         this.parameters = parameters;
+        this.encodingScheme = encodingScheme;
     }
 
     @Override
@@ -139,17 +143,19 @@ public class ContentMediaType extends AbstractAssertionKeyword {
     }
 
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
         if (siblings.containsKey("contentEncoding")) {
             Keyword keyword = siblings.get("contentEncoding");
             if (keyword instanceof ContentEncoding) {
-                this.encodingScheme = ((ContentEncoding) keyword).scheme();
-            } else {
-                // Unknown encoding scheme
-                return Optional.empty();
+                ContentEncodingScheme encodingScheme = ((ContentEncoding) keyword).scheme();
+                return new ContentMediaType(
+                        getValueAsJson(),
+                        this.mimeType,
+                        this.parameters,
+                        encodingScheme);
             }
         }
-        return Optional.of(this);
+        return this;
     }
 
     @Override

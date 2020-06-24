@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2002 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import jakarta.json.stream.JsonParser.Event;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -81,10 +80,17 @@ public class PatternProperties extends AbstractProperties<Pattern> {
         }
     };
 
-    private Properties properties;
+    private final Properties properties;
 
-    public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> properties) {
-        super(json, properties);
+    public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> propertyMap) {
+        this(json, propertyMap, null, null);
+    }
+
+    public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> propertyMap,
+            Properties properties,
+            AdditionalProperties additionalProperties) {
+        super(json, propertyMap, additionalProperties);
+        this.properties = properties;
     }
 
     @Override
@@ -94,17 +100,18 @@ public class PatternProperties extends AbstractProperties<Pattern> {
 
     @Override
     public boolean canEvaluate() {
-        return true;
+        return properties == null;
     }
 
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        super.getEvaluatorSource(siblings);
-        this.properties = (Properties) siblings.get("properties");
-        if (this.properties == null) {
-            return Optional.of(this);
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
+        Properties properties = (Properties) siblings.get("properties");
+        AdditionalProperties additionalProperties = getAdditionalProperties(siblings);
+        if (properties != null || additionalProperties != null) {
+            return new PatternProperties(getValueAsJson(), propertyMap,
+                    properties, additionalProperties);
         } else {
-            return Optional.empty();
+            return this;
         }
     }
 

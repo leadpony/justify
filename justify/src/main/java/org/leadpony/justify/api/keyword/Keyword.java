@@ -16,8 +16,6 @@
 package org.leadpony.justify.api.keyword;
 
 import java.util.Map;
-import java.util.Optional;
-
 import jakarta.json.JsonValue;
 
 /**
@@ -40,6 +38,7 @@ public interface Keyword {
      * Checks whether this keyword is recognized or not.
      *
      * @return {@code true} if the keyword is recognized, {@code false} otherwise.
+     * @since 4.0
      */
     default boolean isRecognized() {
         return true;
@@ -61,6 +60,17 @@ public interface Keyword {
     KeywordType getType();
 
     /**
+     * Combines this keyword with sibling keywords.
+     *
+     * @param siblings the sibling keywords owned by the same schema, never be
+     *                 {@code null}.
+     * @return the keyword after modification.
+     */
+    default Keyword withKeywords(Map<String, Keyword> siblings) {
+        return this;
+    }
+
+    /**
      * Checks if this keyword can evaluate a JSON instance.
      *
      * @return {@code true} if this keyword can evaluate, {@code false} it cannot.
@@ -68,18 +78,6 @@ public interface Keyword {
      */
     default boolean canEvaluate() {
         return false;
-    }
-
-    /**
-     * Retunrs the evaluator source if available.
-     *
-     * @param siblings the sibling keywords owned by the same schema, never be
-     *                 {@code null}.
-     * @return the evaluator source.
-     * @since 4.0
-     */
-    default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        return Optional.empty();
     }
 
     /**

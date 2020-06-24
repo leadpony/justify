@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@ package org.leadpony.justify.internal.keyword.validation;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Optional;
-
 import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -42,10 +39,15 @@ public class Draft04Maximum extends Maximum {
 
     public static final KeywordType TYPE = KeywordTypes.mappingNumber("maximum", Draft04Maximum::new);
 
-    private boolean exclusive = false;
+    private final boolean exclusive;
 
     public Draft04Maximum(JsonValue json, BigDecimal limit) {
+        this(json, limit, false);
+    }
+
+    public Draft04Maximum(JsonValue json, BigDecimal limit, boolean exclusive) {
         super(json, limit);
+        this.exclusive = exclusive;
     }
 
     @Override
@@ -54,12 +56,14 @@ public class Draft04Maximum extends Maximum {
     }
 
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
         if (siblings.containsKey("exclusiveMaximum")) {
             ExclusiveMaximum keyword = (ExclusiveMaximum) siblings.get("exclusiveMaximum");
-            exclusive = keyword.value;
+            if (keyword.value) {
+                return new Draft04Maximum(getValueAsJson(), getLimit(), true);
+            }
         }
-        return Optional.of(this);
+        return this;
     }
 
     @Override

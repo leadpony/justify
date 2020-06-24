@@ -19,8 +19,7 @@ import java.util.Set;
 
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
-import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.EvaluationKeyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
@@ -36,14 +35,9 @@ public final class UnsupportedTypeEvaluator extends AbstractKeywordBasedEvaluato
     private final Set<InstanceType> expected;
     private final InstanceType actual;
 
-    public UnsupportedTypeEvaluator(Evaluator parent, EvaluatorSource source, InstanceType actual) {
-        this(parent, source.getSourceKeyword(), source.getSupportedTypes(), actual);
-    }
-
-    public UnsupportedTypeEvaluator(Evaluator parent, Keyword keyword,
-            Set<InstanceType> expected, InstanceType actual) {
+    public UnsupportedTypeEvaluator(Evaluator parent, EvaluationKeyword keyword, InstanceType actual) {
         super(parent, keyword);
-        this.expected = expected;
+        this.expected = keyword.getSupportedTypes();
         this.actual = actual;
     }
 

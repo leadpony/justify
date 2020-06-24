@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.evaluator.schema;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
+import org.leadpony.justify.api.keyword.EvaluationKeyword;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
 
 import jakarta.json.stream.JsonParser.Event;
@@ -28,26 +28,26 @@ import jakarta.json.stream.JsonParser.Event;
  */
 public final class SimpleSchemaBasedEvaluator extends AbstractSchemaBasedEvaluator {
 
-    public static Evaluator of(EvaluatorSource source, Evaluator parent,
+    public static Evaluator of(EvaluationKeyword keyword, Evaluator parent,
             JsonSchema schema,
             InstanceType type) {
-        if (source.supportsType(type)) {
+        if (keyword.supportsType(type)) {
             SimpleSchemaBasedEvaluator self = new SimpleSchemaBasedEvaluator(parent, schema);
-            self.child = source.createEvaluator(self, type);
+            self.child = keyword.createEvaluator(self, type);
             return self;
         } else {
             return Evaluator.ALWAYS_TRUE;
         }
     }
 
-    public static Evaluator ofNegated(EvaluatorSource source, Evaluator parent,
+    public static Evaluator ofNegated(EvaluationKeyword keyword, Evaluator parent,
             JsonSchema schema,
             InstanceType type) {
         SimpleSchemaBasedEvaluator self = new SimpleSchemaBasedEvaluator(parent, schema);
-        if (source.supportsType(type)) {
-            self.child = source.createNegatedEvaluator(self, type);
+        if (keyword.supportsType(type)) {
+            self.child = keyword.createNegatedEvaluator(self, type);
         } else {
-            self.child = new UnsupportedTypeEvaluator(self, source, type);
+            self.child = new UnsupportedTypeEvaluator(self, keyword, type);
         }
         return self;
     }

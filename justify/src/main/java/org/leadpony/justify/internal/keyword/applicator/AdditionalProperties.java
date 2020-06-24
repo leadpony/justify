@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import jakarta.json.stream.JsonParser;
@@ -28,7 +27,6 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -54,6 +52,8 @@ public final class AdditionalProperties extends UnaryApplicator {
 
     private static final AdditionalProperties FALSE = new AdditionalProperties(JsonSchema.FALSE);
 
+    private final boolean alone;
+
     public static AdditionalProperties of(JsonSchema schema) {
         if (schema == JsonSchema.FALSE) {
             return FALSE;
@@ -63,7 +63,12 @@ public final class AdditionalProperties extends UnaryApplicator {
     }
 
     private AdditionalProperties(JsonSchema subschema) {
+        this(subschema, false);
+    }
+
+    private AdditionalProperties(JsonSchema subschema, boolean alone) {
         super(subschema);
+        this.alone = alone;
     }
 
     @Override
@@ -75,21 +80,22 @@ public final class AdditionalProperties extends UnaryApplicator {
      * {@inheritDoc}
      * <p>
      * If there are neither "properties" nor "patternProperties", the instance must
-     * evaluated by this keyword.
+     * be evaluated by this keyword.
      * </p>
      */
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        if (!siblings.containsKey("properties") && !siblings.containsKey("patternProperties")) {
-            return Optional.of(this);
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
+        boolean alone = !siblings.containsKey("properties") && !siblings.containsKey("patternProperties");
+        if (alone) {
+            return new AdditionalProperties(getSubschema(), true);
         } else {
-            return Optional.empty();
+            return this;
         }
     }
 
     @Override
     public boolean canEvaluate() {
-        return true;
+        return alone;
     }
 
     @Override

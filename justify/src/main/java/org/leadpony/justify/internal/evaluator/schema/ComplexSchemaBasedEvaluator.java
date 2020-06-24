@@ -26,7 +26,7 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.ProblemDispatcher;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
+import org.leadpony.justify.api.keyword.EvaluationKeyword;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.DeferredEvaluator;
 import org.leadpony.justify.internal.evaluator.UnsupportedTypeEvaluator;
@@ -40,26 +40,26 @@ import jakarta.json.stream.JsonParser.Event;
  */
 public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEvaluator {
 
-    public static Evaluator of(Collection<EvaluatorSource> sources,
+    public static Evaluator of(Collection<EvaluationKeyword> keywords,
             Evaluator parent,
             JsonSchema schema,
             InstanceType type) {
 
         ComplexSchemaBasedEvaluator self = createEvaluator(parent, schema, type);
-        self.addChildren(sources, type);
+        self.addChildren(keywords, type);
         if (self.isEmpty()) {
             return Evaluator.ALWAYS_TRUE;
         }
         return self;
     }
 
-    public static Evaluator ofNegated(Collection<EvaluatorSource> sources,
+    public static Evaluator ofNegated(Collection<EvaluationKeyword> keywords,
             Evaluator parent,
             JsonSchema schema,
             InstanceType type) {
 
         ComplexSchemaBasedEvaluator self = createNegatedEvaluator(parent, schema, type);
-        self.addChildren(sources, type);
+        self.addChildren(keywords, type);
         return self;
     }
 
@@ -97,15 +97,15 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         return children.isEmpty();
     }
 
-    private void addChildren(Collection<EvaluatorSource> sources, InstanceType type) {
-        for (EvaluatorSource source : sources) {
-            addChild(source, type);
+    private void addChildren(Collection<EvaluationKeyword> keywords, InstanceType type) {
+        for (EvaluationKeyword keyword : keywords) {
+            addChild(keyword, type);
         }
     }
 
-    protected void addChild(EvaluatorSource source, InstanceType type) {
-        if (source.supportsType(type)) {
-            Evaluator child = source.createEvaluator(this, type);
+    protected void addChild(EvaluationKeyword keyword, InstanceType type) {
+        if (keyword.supportsType(type)) {
+            Evaluator child = keyword.createEvaluator(this, type);
             if (child != Evaluator.ALWAYS_TRUE) {
                 this.children.add(child);
             }
@@ -240,12 +240,12 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        protected void addChild(EvaluatorSource source, InstanceType type) {
+        protected void addChild(EvaluationKeyword keyword, InstanceType type) {
             Evaluator child;
-            if (source.supportsType(type)) {
-                child = source.createNegatedEvaluator(this, type);
+            if (keyword.supportsType(type)) {
+                child = keyword.createNegatedEvaluator(this, type);
             } else {
-                child = new UnsupportedTypeEvaluator(this, source, type);
+                child = new UnsupportedTypeEvaluator(this, keyword, type);
             }
             this.children.add(child);
         }
@@ -283,13 +283,13 @@ public abstract class ComplexSchemaBasedEvaluator extends AbstractSchemaBasedEva
         }
 
         @Override
-        protected void addChild(EvaluatorSource source, InstanceType type) {
+        protected void addChild(EvaluationKeyword keyword, InstanceType type) {
             DeferredEvaluator deferred = new DeferredEvaluator(this);
             Evaluator evaluator;
-            if (source.supportsType(type)) {
-                evaluator = source.createNegatedEvaluator(deferred, type);
+            if (keyword.supportsType(type)) {
+                evaluator = keyword.createNegatedEvaluator(deferred, type);
             } else {
-                evaluator = new UnsupportedTypeEvaluator(deferred, source, type);
+                evaluator = new UnsupportedTypeEvaluator(deferred, keyword, type);
             }
             deferred.setEvaluator(evaluator);
             this.children.add(deferred);

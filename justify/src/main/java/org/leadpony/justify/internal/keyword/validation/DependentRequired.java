@@ -30,8 +30,7 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractPropertyDependentEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
+import org.leadpony.justify.internal.keyword.AbstractObjectAssertionKeyword;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
 
 import jakarta.json.JsonString;
@@ -44,7 +43,7 @@ import jakarta.json.stream.JsonParser.Event;
  *
  * @author leadpony
  */
-public class DependentRequired extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
+public class DependentRequired extends AbstractObjectAssertionKeyword {
 
     static final KeywordType TYPE = new KeywordType() {
 

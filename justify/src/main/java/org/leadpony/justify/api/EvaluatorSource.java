@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api.keyword;
-
-import java.util.EnumSet;
-import java.util.Set;
-
-import org.leadpony.justify.api.Evaluator;
-import org.leadpony.justify.api.InstanceType;
+package org.leadpony.justify.api;
 
 /**
  * A source of instance evaluators.
@@ -30,36 +24,10 @@ import org.leadpony.justify.api.InstanceType;
 public interface EvaluatorSource {
 
     /**
-     * Returns the keyword that provides the evaluators.
-     *
-     * @return the keyword that provides the evaluators.
-     */
-    Keyword getSourceKeyword();
-
-    /**
-     * Checks if the evaluator supports the specified instance type. All instance
-     * types are supported by default.
-     *
-     * @param type the type to check, never be {@code null}.
-     * @return {@code true} if the evaluator supports the instance type,
-     *         {@code null} otherwise.
-     */
-    default boolean supportsType(InstanceType type) {
-        return true;
-    }
-
-    /**
-     * Returns the types supported by the evaluator. All instance types are
-     * supported by default.
-     *
-     * @return the supported types.
-     */
-    default Set<InstanceType> getSupportedTypes() {
-        return EnumSet.allOf(InstanceType.class);
-    }
-
-    /**
      * Creates an evaluator of the JSON instance.
+     * <p>
+     * Note that this method is not intended to be used directly by end users.
+     * </p>
      *
      * @param parent the parent evaluator, never be {@code null}.
      * @param type   the type of the target JSON instance to validate, never be
@@ -67,13 +35,16 @@ public interface EvaluatorSource {
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
+     * @throws NullPointerException          if any of the arguments is
+     *                                       {@code null}.
      */
-    default Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
-    }
+    Evaluator createEvaluator(Evaluator parent, InstanceType type);
 
     /**
      * Creates a negated evaluator of the JSON instance.
+     * <p>
+     * Note that this method is not intended to be used directly by end users.
+     * </p>
      *
      * @param parent the parent evaluator, never be {@code null}.
      * @param type   the type of the target JSON instance to validate, cannot be
@@ -81,8 +52,8 @@ public interface EvaluatorSource {
      * @return the created evaluator to evaluate JSON instances. This cannot be
      *         {@code null}.
      * @throws UnsupportedOperationException if this method is not implemented.
+     * @throws NullPointerException          if any of the arguments is
+     *                                       {@code null}.
      */
-    default Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
-    }
+    Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type);
 }

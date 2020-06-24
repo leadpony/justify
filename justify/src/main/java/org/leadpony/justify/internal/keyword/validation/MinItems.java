@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
-import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
-import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
+import org.leadpony.justify.internal.keyword.AbstractArrayAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
@@ -43,7 +42,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MinItems extends AbstractAssertionKeyword implements ArrayEvaluatorSource {
+public class MinItems extends AbstractArrayAssertionKeyword {
 
     public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minItems", MinItems::new);
 

@@ -43,7 +43,6 @@ import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 import org.leadpony.justify.internal.keyword.validation.DependentRequired;
 
 /**
@@ -55,7 +54,7 @@ import org.leadpony.justify.internal.keyword.validation.DependentRequired;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Dependencies extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
+public class Dependencies extends AbstractObjectApplicatorKeyword {
 
     public static final KeywordType TYPE = new KeywordType() {
 

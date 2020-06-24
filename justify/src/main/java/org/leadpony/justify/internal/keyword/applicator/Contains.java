@@ -17,14 +17,11 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
@@ -43,8 +40,17 @@ public class Contains extends SimpleContains {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("contains", Contains::new);
 
+    private final MaxContains maxContains;
+    private final MinContains minContains;
+
     public Contains(JsonSchema subschema) {
+        this(subschema, null, null);
+    }
+
+    public Contains(JsonSchema subschema, MaxContains maxContains, MinContains minContains) {
         super(subschema);
+        this.maxContains = maxContains;
+        this.minContains = minContains;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class Contains extends SimpleContains {
     }
 
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
         MaxContains maxContains = null;
         if (siblings.containsKey("maxContains")) {
             Keyword keyword = siblings.get("maxContains");
@@ -70,74 +76,43 @@ public class Contains extends SimpleContains {
             }
         }
 
-        return Optional.of(createEvaluatorSource(maxContains, minContains));
+        if (maxContains != null || minContains != null) {
+            return new Contains(getSubschema(), maxContains, minContains);
+        } else {
+            return this;
+        }
     }
 
-    private EvaluatorSource createEvaluatorSource(MaxContains maxContains, MinContains minContains) {
-        Keyword contains = this;
+    @Override
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         if (maxContains != null) {
-            return new EvaluatorSource() {
-
-                @Override
-                public Keyword getSourceKeyword() {
-                    return contains;
-                }
-
-                @Override
-                public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-                    return new BoundedItemsEvaluator(parent, maxContains, minContains);
-                }
-
-                @Override
-                public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-                    return new OutOfBoundsItemsEvaluator(parent, maxContains, minContains);
-                }
-            };
+            return new BoundedItemsEvaluator(parent, maxContains, minContains);
         } else if (minContains != null) {
             final int bound = minContains.value();
             if (bound > 1) {
-                return new EvaluatorSource() {
-
-                    @Override
-                    public Keyword getSourceKeyword() {
-                        return minContains;
-                    }
-
-                    @Override
-                    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-                        return new LowerBoundedItemsEvaluator(parent, minContains, bound);
-                    }
-
-                    @Override
-                    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-                        return new UpperBoundedItemsEvaluator(parent, minContains,
-                                bound - 1 // At most bound - 1
-                                );
-                    }
-                };
-            } else if (bound == 1) {
-                return this;
-            } else {
-                return new EvaluatorSource() {
-
-                    @Override
-                    public Keyword getSourceKeyword() {
-                        return contains;
-                    }
-
-                    @Override
-                    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-                        return Evaluator.ALWAYS_TRUE;
-                    }
-
-                    @Override
-                    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-                        return Evaluator.alwaysFalse(parent, parent.getSchema());
-                    }
-                };
+                return new LowerBoundedItemsEvaluator(parent, minContains, bound);
+            } else if (bound < 1) {
+                return Evaluator.ALWAYS_TRUE;
             }
         }
-        return this;
+        return super.createEvaluator(parent, type);
+    }
+
+    @Override
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        if (maxContains != null) {
+            return new OutOfBoundsItemsEvaluator(parent, maxContains, minContains);
+        } else if (minContains != null) {
+            final int bound = minContains.value();
+            if (bound > 1) {
+                return new UpperBoundedItemsEvaluator(parent, minContains,
+                        bound - 1 // At most bound - 1
+                        );
+            } else if (bound < 1) {
+                return Evaluator.alwaysFalse(parent, parent.getSchema());
+            }
+        }
+        return super.createNegatedEvaluator(parent, type);
     }
 
     private abstract class AbstractBoundedItemsEvaluator extends CountingItemsEvaluator {

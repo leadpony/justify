@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,8 @@ import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.ShallowEvaluator;
-import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
+import org.leadpony.justify.internal.keyword.AbstractObjectAssertionKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
  * Assertion specified with "minProperties" validation keyword.
@@ -42,7 +41,7 @@ import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class MinProperties extends AbstractAssertionKeyword implements ObjectEvaluatorSource {
+public class MinProperties extends AbstractObjectAssertionKeyword {
 
     public static final KeywordType TYPE = KeywordTypes.mappingNonNegativeInteger("minProperties", MinProperties::new);
 

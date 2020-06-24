@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,8 @@ import org.leadpony.justify.internal.schema.SchemaSpec;
 import org.leadpony.justify.internal.validator.JsonValidator;
 
 /**
+ * A basic implementation of {@link JsonSchemaReader}.
+ *
  * @author leadpony
  */
 public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements ProblemHandler {
@@ -453,11 +455,16 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
         }
 
         private JsonSchema build() {
+            combineKeywords(this.keywords);
             JsonSchema schema = createSchema();
             if (this.id != null) {
                 identifiedSchemas.add(schema);
             }
             return schema;
+        }
+
+        private void combineKeywords(Map<String, Keyword> keywords) {
+            keywords.replaceAll((name, keyword) -> keyword.withKeywords(keywords));
         }
 
         private JsonSchema createSchema() {

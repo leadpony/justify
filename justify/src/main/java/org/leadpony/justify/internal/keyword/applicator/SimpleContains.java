@@ -19,6 +19,9 @@ package org.leadpony.justify.internal.keyword.applicator;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -30,7 +33,6 @@ import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
-import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
 /**
@@ -41,7 +43,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @KeywordClass("contains")
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSource {
+public class SimpleContains extends UnaryApplicator {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchema("contains", SimpleContains::new);
 
@@ -52,6 +54,16 @@ public class SimpleContains extends UnaryApplicator implements ArrayEvaluatorSou
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    @Override
+    public boolean supportsType(InstanceType type) {
+        return type == InstanceType.ARRAY;
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(InstanceType.ARRAY);
     }
 
     @Override

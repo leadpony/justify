@@ -64,7 +64,7 @@ import jakarta.json.JsonValue.ValueType;
  *
  * @author leadpony
  */
-public interface JsonSchema {
+public interface JsonSchema extends EvaluatorSource {
 
     /**
      * Checks if this schema has an identifier assigned or not.
@@ -239,38 +239,6 @@ public interface JsonSchema {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
         return jsonPointer.isEmpty() ? this : null;
     }
-
-    /**
-     * Creates an evaluator of this schema.
-     * <p>
-     * Note that this method is not intended to be used directly by end users.
-     * </p>
-     *
-     * @param parent the parent of the evaluator to create.
-     * @param type   the type of the JSON instance against which this schema will be
-     *               evaluated. For integers, {@link InstanceType#NUMBER} will be
-     *               passed instead of {@link InstanceType#INTEGER}.
-     *
-     * @return newly created evaluator. It must not be {@code null}.
-     * @throws NullPointerException if the specified {@code type} is {@code null}.
-     */
-    Evaluator createEvaluator(Evaluator parent, InstanceType type);
-
-    /**
-     * Creates an evaluator of the negated version of this schema.
-     * <p>
-     * Note that this method is not intended to be used directly by end users.
-     * </p>
-     *
-     * @param parent the parent of the evaluator to create.
-     * @param type   the type of the JSON instance against which this schema will be
-     *               evaluated. For integers, {@link InstanceType#NUMBER} will be
-     *               passed instead of {@link InstanceType#INTEGER}.
-     *
-     * @return newly created evaluator. It must not be {@code null}.
-     * @throws NullPointerException if the specified {@code type} is {@code null}.
-     */
-    Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type);
 
     /**
      * Returns the value type of JSON representing this schema.

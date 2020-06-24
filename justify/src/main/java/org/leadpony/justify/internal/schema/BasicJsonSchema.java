@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
+import org.leadpony.justify.api.keyword.EvaluationKeyword;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.evaluator.schema.ComplexSchemaBasedEvaluator;
 import org.leadpony.justify.internal.evaluator.schema.SimpleSchemaBasedEvaluator;
@@ -45,13 +45,13 @@ import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 public abstract class BasicJsonSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
 
     public static JsonSchema of(URI id, JsonObject json, Map<String, Keyword> keywords) {
-        List<EvaluatorSource> sources = collectEvaluatorSources(keywords);
-        if (sources.isEmpty()) {
+        List<EvaluationKeyword> evaluationKeywords = collectEvaluationKeywords(keywords);
+        if (evaluationKeywords.isEmpty()) {
             return new None(id, json, keywords);
-        } else if (sources.size() == 1) {
-            return new One(id, json, keywords, sources.get(0));
+        } else if (evaluationKeywords.size() == 1) {
+            return new One(id, json, keywords, evaluationKeywords.get(0));
         } else {
-            return new Many(id, json, keywords, sources);
+            return new Many(id, json, keywords, evaluationKeywords);
         }
     }
 
@@ -90,12 +90,14 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
                 .withSchema(this);
     }
 
-    private static List<EvaluatorSource> collectEvaluatorSources(Map<String, Keyword> keywords) {
-        List<EvaluatorSource> sources = new ArrayList<>();
+    private static List<EvaluationKeyword> collectEvaluationKeywords(Map<String, Keyword> keywords) {
+        List<EvaluationKeyword> result = new ArrayList<>();
         for (Keyword keyword : keywords.values()) {
-            keyword.getEvaluatorSource(keywords).ifPresent(sources::add);
+            if (keyword.canEvaluate()) {
+                result.add((EvaluationKeyword) keyword);
+            }
         }
-        return sources;
+        return result;
     }
 
     /**
@@ -125,24 +127,24 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      */
     private static final class One extends BasicJsonSchema {
 
-        private final EvaluatorSource source;
+        private final EvaluationKeyword evaluationKeyword;
 
         private One(URI id, JsonObject json, Map<String, Keyword> keywords,
-                EvaluatorSource source) {
+                EvaluationKeyword evaluationKeyword) {
             super(id, json, keywords);
-            this.source = source;
+            this.evaluationKeyword = evaluationKeyword;
         }
 
         @Override
         public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return SimpleSchemaBasedEvaluator.of(source, parent, this, type);
+            return SimpleSchemaBasedEvaluator.of(evaluationKeyword, parent, this, type);
         }
 
         @Override
         public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return SimpleSchemaBasedEvaluator.ofNegated(source, parent, this, type);
+            return SimpleSchemaBasedEvaluator.ofNegated(evaluationKeyword, parent, this, type);
         }
     }
 
@@ -151,24 +153,24 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
      */
     private static final class Many extends BasicJsonSchema {
 
-        private final List<EvaluatorSource> sources;
+        private final List<EvaluationKeyword> evaluationKeywords;
 
         private Many(URI id, JsonObject json, Map<String, Keyword> keywords,
-                List<EvaluatorSource> sources) {
+                List<EvaluationKeyword> evaluationKeywords) {
             super(id, json, keywords);
-            this.sources = sources;
+            this.evaluationKeywords = evaluationKeywords;
         }
 
         @Override
         public Evaluator createEvaluator(Evaluator parenet, InstanceType type) {
             requireNonNull(type, "type");
-            return ComplexSchemaBasedEvaluator.of(sources, parenet, this, type);
+            return ComplexSchemaBasedEvaluator.of(evaluationKeywords, parenet, this, type);
         }
 
         @Override
         public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
             requireNonNull(type, "type");
-            return ComplexSchemaBasedEvaluator.ofNegated(sources, parent, this, type);
+            return ComplexSchemaBasedEvaluator.ofNegated(evaluationKeywords, parent, this, type);
         }
     }
 }

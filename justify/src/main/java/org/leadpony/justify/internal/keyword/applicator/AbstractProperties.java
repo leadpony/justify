@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -28,12 +27,10 @@ import jakarta.json.stream.JsonParser.Event;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 
 /**
  * A skeletal implementation for "properties" and "patternProperties" keywords.
@@ -42,34 +39,28 @@ import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
  *
  * @author leadpony
  */
-public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
+public abstract class AbstractProperties<K> extends AbstractObjectApplicatorKeyword {
 
     protected final Map<K, JsonSchema> propertyMap;
-    private JsonSchema defaultSchema;
+    private final JsonSchema defaultSchema;
 
-    protected AbstractProperties(JsonValue json, Map<K, JsonSchema> properties) {
+    protected AbstractProperties(JsonValue json,
+            Map<K, JsonSchema> propertyMap,
+            AdditionalProperties additionalProperties) {
         super(json);
-        this.propertyMap = properties;
-        this.defaultSchema = JsonSchema.TRUE;
-    }
-
-    @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        if (siblings.containsKey("additionalProperties")) {
-            AdditionalProperties additionalProperties = (AdditionalProperties) siblings.get("additionalProperties");
-            this.defaultSchema = additionalProperties.getSubschema();
-        }
-        return Optional.of(this);
+        this.propertyMap = propertyMap;
+        this.defaultSchema = (additionalProperties != null)
+                ? additionalProperties.getSubschema() : JsonSchema.TRUE;
     }
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType typep) {
-        return new PropertiesEvaluator(parent, this, defaultSchema);
+        return new PropertiesEvaluator(parent, this, this.defaultSchema);
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-        return new NegatedPropertiesEvaluator(parent, this, defaultSchema);
+        return new NegatedPropertiesEvaluator(parent, this, this.defaultSchema);
     }
 
     @Override
@@ -85,6 +76,13 @@ public abstract class AbstractProperties<K> extends AbstractApplicatorKeyword im
     @Override
     public Stream<JsonSchema> getSchemasAsStream() {
         return propertyMap.values().stream();
+    }
+
+    protected final AdditionalProperties getAdditionalProperties(Map<String, Keyword> siblings) {
+        if (siblings.containsKey("additionalProperties")) {
+            return (AdditionalProperties) siblings.get("additionalProperties");
+        }
+        return null;
     }
 
     protected abstract boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer);

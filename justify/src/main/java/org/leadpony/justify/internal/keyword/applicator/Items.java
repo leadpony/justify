@@ -33,7 +33,6 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
@@ -43,7 +42,6 @@ import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
-import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 
 /**
  * A keyword type representing "items".
@@ -54,7 +52,7 @@ import org.leadpony.justify.internal.keyword.ArrayEvaluatorSource;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public abstract class Items extends AbstractApplicatorKeyword implements ArrayEvaluatorSource {
+public abstract class Items extends AbstractArrayApplicatorKeyword  {
 
     public static final KeywordType TYPE = new KeywordType() {
 
@@ -224,22 +222,29 @@ public abstract class Items extends AbstractApplicatorKeyword implements ArrayEv
     static class DiscreteItems extends Items {
 
         private final List<JsonSchema> subschemas;
-        private JsonSchema defaultSchema = JsonSchema.TRUE;
-        private List<JsonValue> defaultValues;
+        private final JsonSchema defaultSchema;
+        private final List<JsonValue> defaultValues;
 
         DiscreteItems(JsonValue json, List<JsonSchema> subschemas) {
+            this(json, subschemas, JsonSchema.TRUE);
+        }
+
+        DiscreteItems(JsonValue json, List<JsonSchema> subschemas, JsonSchema defaultSchema) {
             super(json);
             this.subschemas = subschemas;
+            this.defaultSchema = defaultSchema;
             this.defaultValues = findDefaultValues(subschemas);
         }
 
         @Override
-        public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
+        public Keyword withKeywords(Map<String, Keyword> siblings) {
             if (siblings.containsKey("additionalItems")) {
                 AdditionalItems additionalItems = (AdditionalItems) siblings.get("additionalItems");
-                this.defaultSchema = additionalItems.getSubschema();
+                JsonSchema defaultSchema = additionalItems.getSubschema();
+                return new DiscreteItems(getValueAsJson(), this.subschemas, defaultSchema);
+            } else {
+                return this;
             }
-            return Optional.of(this);
         }
 
         @Override

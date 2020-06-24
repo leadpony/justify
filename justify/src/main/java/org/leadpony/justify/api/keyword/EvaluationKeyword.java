@@ -15,8 +15,12 @@
  */
 package org.leadpony.justify.api.keyword;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.EnumSet;
+import java.util.Set;
+
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.EvaluatorSource;
+import org.leadpony.justify.api.InstanceType;
 
 /**
  * A keyword which is also an {@link EvaluatorSource}.
@@ -25,17 +29,41 @@ import java.util.Optional;
  */
 public interface EvaluationKeyword extends Keyword, EvaluatorSource {
 
-    @Override
-    default Keyword getSourceKeyword() {
-        return this;
+    /**
+     * Checks if the evaluator supports the specified instance type. All instance
+     * types are supported by default.
+     *
+     * @param type the type to check, never be {@code null}.
+     * @return {@code true} if the evaluator supports the instance type,
+     *         {@code null} otherwise.
+     */
+    default boolean supportsType(InstanceType type) {
+        return true;
     }
 
+    /**
+     * Returns the types supported by the evaluator. All instance types are
+     * supported by default.
+     *
+     * @return the supported types.
+     */
+    default Set<InstanceType> getSupportedTypes() {
+        return EnumSet.allOf(InstanceType.class);
+    }
+
+    /**
+     * {@inheritDoc}}
+     */
     @Override
-    default Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        if (canEvaluate()) {
-            return Optional.of(this);
-        } else {
-            return Optional.empty();
-        }
+    default Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
+    }
+
+    /**
+     * {@inheritDoc}}
+     */
+    @Override
+    default Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        throw new UnsupportedOperationException(getClass().getName() + " does not support evaluation.");
     }
 }

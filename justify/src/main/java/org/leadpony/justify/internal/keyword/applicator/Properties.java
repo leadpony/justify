@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -29,7 +30,6 @@ import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.EvaluatorSource;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -50,17 +50,20 @@ public class Properties extends AbstractProperties<String> {
 
     public static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("properties", Properties::new);
 
-    private PatternProperties patternProperties;
-    private Map<String, JsonValue> defaultValues;
+    private final PatternProperties patternProperties;
+    private final Map<String, JsonValue> defaultValues;
 
-    public Properties(JsonValue json, Map<String, JsonSchema> subschemas) {
-        super(json, subschemas);
-        for (Map.Entry<String, JsonSchema> entry : subschemas.entrySet()) {
-            JsonSchema subschema = entry.getValue();
-            if (subschema.containsKeyword("default")) {
-                addDefaultValue(entry.getKey(), subschema.defaultValue());
-            }
-        }
+    public Properties(JsonValue json, Map<String, JsonSchema> propertyMap) {
+        this(json, propertyMap, null, null);
+    }
+
+    public Properties(JsonValue json, Map<String, JsonSchema> propertyMap,
+            PatternProperties patternProperties,
+            AdditionalProperties additionalProperties
+            ) {
+        super(json, propertyMap, additionalProperties);
+        this.patternProperties = patternProperties;
+        this.defaultValues = generateDefaultValueMap(propertyMap);
     }
 
     @Override
@@ -69,12 +72,21 @@ public class Properties extends AbstractProperties<String> {
     }
 
     @Override
-    public Optional<EvaluatorSource> getEvaluatorSource(Map<String, Keyword> siblings) {
-        super.getEvaluatorSource(siblings);
+    public Keyword withKeywords(Map<String, Keyword> siblings) {
+        PatternProperties patternProperties = null;
         if (siblings.containsKey("patternProperties")) {
-            this.patternProperties = (PatternProperties) siblings.get("patternProperties");
+            patternProperties = (PatternProperties) siblings.get("patternProperties");
         }
-        return Optional.of(this);
+
+        AdditionalProperties additionalProperties = getAdditionalProperties(siblings);
+
+        if (patternProperties != null || additionalProperties != null) {
+            return new Properties(getValueAsJson(), propertyMap,
+                    patternProperties,
+                    additionalProperties);
+        } else {
+            return this;
+        }
     }
 
     @Override
@@ -111,16 +123,17 @@ public class Properties extends AbstractProperties<String> {
         return found;
     }
 
-    private void addDefaultValue(String key, JsonValue defaultValue) {
-        if (defaultValues == null) {
-            defaultValues = new LinkedHashMap<>();
-        }
-        defaultValues.put(key, defaultValue);
+    private static Map<String, JsonValue> generateDefaultValueMap(Map<String, JsonSchema> propertyMap) {
+        return propertyMap.entrySet().stream()
+            .filter(entry -> entry.getValue().containsKeyword("default"))
+            .collect(Collectors.toMap(
+                    entry -> entry.getKey(),
+                    entry -> entry.getValue().defaultValue()));
     }
 
     private Evaluator decorateEvaluator(Evaluator evaluator) {
         EvaluatorContext context = evaluator.getContext();
-        if (context.acceptsDefaultValues() && defaultValues != null) {
+        if (context.acceptsDefaultValues() && !defaultValues.isEmpty()) {
             return new PropertiesDefaultEvaluator(evaluator, defaultValues);
         }
         return evaluator;

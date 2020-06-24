@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.justify.internal.keyword.applicator;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+import org.leadpony.justify.api.InstanceType;
 
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.keyword.ApplicatorKeyword;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
-
 /**
- * A keyword which applies subschemas.
- *
  * @author leadpony
  */
-abstract class AbstractApplicatorKeyword extends AbstractKeyword implements ApplicatorKeyword {
+abstract class AbstractObjectApplicatorKeyword extends AbstractApplicatorKeyword {
 
-    /**
-     * Constructs this keyword as an applicator.
-     *
-     * @param json the JSON representation of this keyword.
-     */
-    protected AbstractApplicatorKeyword(JsonValue json) {
+    protected AbstractObjectApplicatorKeyword(JsonValue json) {
         super(json);
+    }
+
+    @Override
+    public boolean supportsType(InstanceType type) {
+        return type == InstanceType.OBJECT;
+    }
+
+    @Override
+    public Set<InstanceType> getSupportedTypes() {
+        return EnumSet.of(InstanceType.OBJECT);
     }
 }

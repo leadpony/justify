@@ -34,14 +34,13 @@ import org.leadpony.justify.internal.evaluator.AbstractPropertyDependentEvaluato
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
-import org.leadpony.justify.internal.keyword.ObjectEvaluatorSource;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
 
 /**
  * @author leadpony
  */
-public class DependentSchemas extends AbstractApplicatorKeyword implements ObjectEvaluatorSource {
+public class DependentSchemas extends AbstractObjectApplicatorKeyword {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("dependentSchemas", DependentSchemas::new);
 
