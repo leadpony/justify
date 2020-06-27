@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.json.Json;
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.JsonSchemaReader;
+import org.leadpony.justify.api.JsonSchemaReaderFactory;
+import org.leadpony.justify.api.JsonSchemaVisitor;
 import org.leadpony.justify.api.JsonValidationService;
+import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.tests.helper.JsonResource;
+import org.leadpony.justify.tests.helper.JsonSource;
 import org.leadpony.justify.tests.helper.ValidationServiceType;
 
 /**
@@ -49,6 +61,15 @@ import org.leadpony.justify.tests.helper.ValidationServiceType;
 public class JsonSchemaTest {
 
     private static final JsonValidationService SERVICE = ValidationServiceType.DEFAULT.getService();
+
+    private static JsonSchemaReaderFactory schemaReaderFactory;
+
+    @BeforeAll
+    public static void setUpOnce() {
+        schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
+                .withDefaultSpecVersion(SpecVersion.DRAFT_2019_09)
+                .build();
+    }
 
     @Test
     public void defaultValueShouldReturnValueIfExists() {
@@ -258,7 +279,7 @@ public class JsonSchemaTest {
 
     private static final String SUBSCHEMAS_JSON = "/org/leadpony/justify/tests/api/subschemas.json";
 
-    private static Stream<Arguments> subschemaFixtures(String keyName) {
+    private static Stream<Arguments> subschemaTestCases(String keyName) {
         InputStream in = JsonSchemaTest.class.getResourceAsStream(SUBSCHEMAS_JSON);
         try (JsonReader reader = Json.createReader(in)) {
             return reader.readArray().stream()
@@ -274,16 +295,17 @@ public class JsonSchemaTest {
         }
     }
 
-    public static Stream<Arguments> subschemasFixtures() {
-        return subschemaFixtures("subschemas");
+    public static Stream<Arguments> subschemasTestCases() {
+        return subschemaTestCases("subschemas");
     }
 
     @ParameterizedTest
-    @MethodSource("subschemasFixtures")
+    @MethodSource("subschemasTestCases")
     public void getSubschemasShouldReturnSubschemas(String json, List<String> jsonPointers) {
         JsonSchema schema = fromString(json);
         List<JsonSchema> expected = jsonPointers.stream()
-                .map(schema::getSubschemaAt)
+                .map(schema::findSchema)
+                .map(Optional::get)
                 .collect(Collectors.toList());
 
         Stream<JsonSchema> actual = schema.getSubschemas();
@@ -291,16 +313,17 @@ public class JsonSchemaTest {
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
-    public static Stream<Arguments> inPlaceSubschemasFixtures() {
-        return subschemaFixtures("inPlaceSubschemas");
+    public static Stream<Arguments> inPlaceSubschemasTestCases() {
+        return subschemaTestCases("inPlaceSubschemas");
     }
 
     @ParameterizedTest
-    @MethodSource("inPlaceSubschemasFixtures")
+    @MethodSource("inPlaceSubschemasTestCases")
     public void getInPlaceSubschemasShouldReturnSubschemas(String json, List<String> jsonPointers) {
         JsonSchema schema = fromString(json);
         List<JsonSchema> expected = jsonPointers.stream()
-                .map(schema::getSubschemaAt)
+                .map(schema::findSchema)
+                .map(Optional::get)
                 .collect(Collectors.toList());
 
         Stream<JsonSchema> actual = schema.getInPlaceSubschemas();
@@ -308,11 +331,72 @@ public class JsonSchemaTest {
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    @ParameterizedTest
+    @JsonSource("/org/jsonschema/draft201909/schema-identification.json")
+    public void collectSchemasShouldReturnExpectedSchemas(JsonObject test) {
+        JsonSchema schema = fromValue(test.get("schema"));
+        Map<String, JsonValue> expected = test.getJsonObject("schemas");
+
+        Map<String, JsonSchema> collected = schema.collectSchemas();
+
+        Map<String, JsonValue> actual = collected.entrySet().stream()
+            .collect(Collectors.toMap(
+                    e -> e.getKey(),
+                    e -> e.getValue().toJson()));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Disabled
+    @ParameterizedTest
+    @JsonSource("/org/jsonschema/draft201909/schema-identification.json")
+    public void collectIdentifiedSchemasShouldReturnExpectedSchemas(JsonObject test) {
+        JsonSchema schema = fromValue(test.get("schema"));
+        Map<String, JsonValue> expected = test.getJsonObject("identified");
+
+        Map<URI, JsonSchema> collected = schema.collectIdentifiedSchemas(URI.create("https://example.com"));
+
+        Map<String, JsonValue> actual = collected.entrySet().stream()
+            .collect(Collectors.toMap(
+                    e -> e.getKey().toString(),
+                    e -> e.getValue().toJson()));
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    private static class CollectiingJsonSchemaVisitor implements JsonSchemaVisitor {
+
+        final Map<String, JsonValue> schemas = new HashMap<>();
+
+        @Override
+        public Result visitSchema(JsonSchema schema, String pointer) {
+            this.schemas.put(pointer, schema.toJson());
+            return Result.CONTINUE;
+        }
+    }
+
+    @ParameterizedTest
+    @JsonSource("/org/jsonschema/draft201909/schema-identification.json")
+    public void walkSchemaTreeShouldVisitAllSchemas(JsonObject object) {
+        JsonSchema schema = fromValue(object.get("schema"));
+        Map<String, JsonValue> expected = object.getJsonObject("schemas");
+
+        CollectiingJsonSchemaVisitor visitor = new CollectiingJsonSchemaVisitor();
+        schema.walkSchemaTree(visitor);
+
+        assertThat(visitor.schemas).isEqualTo(expected);
+    }
+
+    /* helpers */
+
     private static JsonSchema fromValue(JsonValue value) {
         return fromString(value.toString());
     }
 
     private static JsonSchema fromString(String string) {
-        return SERVICE.readSchema(new StringReader(string));
+        StringReader source = new StringReader(string);
+        try (JsonSchemaReader reader = schemaReaderFactory.createSchemaReader(source)) {
+            return reader.read();
+        }
     }
 }

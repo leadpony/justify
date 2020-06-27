@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObjectBuilder;
@@ -37,8 +38,10 @@ import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.base.json.JsonPointers;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 import org.leadpony.justify.internal.keyword.validation.DependentRequired;
 
 /**
@@ -94,17 +97,17 @@ public class Dependencies extends AbstractObjectApplicatorKeyword {
         }
     };
 
-    private final Map<String, JsonSchema> schemaMap;
+    private final JsonSchemaMap schemaMap;
     private final Map<String, Dependent> dependentMap;
 
     public Dependencies(JsonValue json, Map<String, Object> map) {
         super(json);
-        Map<String, JsonSchema> schemaMap = new LinkedHashMap<>();
+        JsonSchemaMap schemaMap = new JsonSchemaMap();
         Map<String, Dependent> dependentMap = new LinkedHashMap<>();
         map.forEach((property, value) -> {
             if (value instanceof JsonSchema) {
                 JsonSchema schema = (JsonSchema) value;
-                schemaMap.put(property, schema);
+                schemaMap.put(JsonPointers.encode(property), schema);
                 dependentMap.put(property, createDependent(property, schema));
             } else if (value instanceof Set) {
                 @SuppressWarnings("unchecked")
@@ -147,6 +150,11 @@ public class Dependencies extends AbstractObjectApplicatorKeyword {
     @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
         return schemaMap;
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 
     private Dependent createDependent(String property, JsonSchema subschema) {

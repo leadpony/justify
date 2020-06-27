@@ -17,11 +17,11 @@
 package org.leadpony.justify.internal.keyword;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.keyword.KeywordType;
-import org.leadpony.justify.internal.base.Maps;
 
 /**
  * A keyword containing referenceable subschema.
@@ -32,6 +32,7 @@ public class Referenceable extends AbstractKeyword {
 
     private final String name;
     private final JsonSchema subschema;
+    private final JsonSchemaMap schemaMap;
 
     /**
      * Constructs this keyword.
@@ -43,6 +44,7 @@ public class Referenceable extends AbstractKeyword {
         super(subschema.toJson());
         this.name = name;
         this.subschema = subschema;
+        this.schemaMap = JsonSchemaMap.of(subschema);
     }
 
     @Override
@@ -62,11 +64,16 @@ public class Referenceable extends AbstractKeyword {
 
     @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
-        return Maps.of("", subschema);
+        return schemaMap;
     }
 
     @Override
     public Stream<JsonSchema> getSchemasAsStream() {
         return Stream.of(subschema);
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 }

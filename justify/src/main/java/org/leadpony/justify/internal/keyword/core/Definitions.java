@@ -17,6 +17,8 @@
 package org.leadpony.justify.internal.keyword.core;
 
 import java.util.Map;
+import java.util.Optional;
+
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
@@ -25,6 +27,7 @@ import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * @author leadpony
@@ -37,11 +40,11 @@ public class Definitions extends AbstractKeyword {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("definitions", Definitions::new);
 
-    private final Map<String, JsonSchema> definitionMap;
+    private final JsonSchemaMap schemaMap;
 
     public Definitions(JsonValue json, Map<String, JsonSchema> definitionMap) {
         super(json);
-        this.definitionMap = definitionMap;
+        this.schemaMap = JsonSchemaMap.of(definitionMap);
     }
 
     @Override
@@ -51,6 +54,11 @@ public class Definitions extends AbstractKeyword {
 
     @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
-        return definitionMap;
+        return schemaMap;
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 }

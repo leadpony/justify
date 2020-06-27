@@ -17,9 +17,9 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonArrayBuilder;
@@ -38,11 +38,11 @@ import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.base.Maps;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.EvaluatorDecorator;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * A keyword type representing "items".
@@ -119,10 +119,12 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
     static class BroadcastItems extends Items {
 
         private final JsonSchema subschema;
+        private final JsonSchemaMap schemaMap;
 
         BroadcastItems(JsonValue json, JsonSchema subschema) {
             super(json);
             this.subschema = subschema;
+            this.schemaMap = JsonSchemaMap.of(subschema);
         }
 
         @Override
@@ -150,12 +152,17 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
 
         @Override
         public Map<String, JsonSchema> getSchemasAsMap() {
-            return Maps.of("", subschema);
+            return schemaMap;
         }
 
         @Override
         public Stream<JsonSchema> getSchemasAsStream() {
             return Stream.of(subschema);
+        }
+
+        @Override
+        public Optional<JsonSchema> findSchema(String jsonPointer) {
+            return schemaMap.findSchema(jsonPointer);
         }
 
         private Evaluator createItemsEvaluator(Evaluator parent) {
@@ -220,6 +227,7 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
 
         private final List<JsonSchema> subschemas;
         private final JsonSchema defaultSchema;
+        private final JsonSchemaMap schemaMap;
         private final List<JsonValue> defaultValues;
 
         DiscreteItems(JsonValue json, List<JsonSchema> subschemas) {
@@ -229,6 +237,7 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
         DiscreteItems(JsonValue json, List<JsonSchema> subschemas, JsonSchema defaultSchema) {
             super(json);
             this.subschemas = subschemas;
+            this.schemaMap = JsonSchemaMap.of(subschemas);
             this.defaultSchema = defaultSchema;
             this.defaultValues = findDefaultValues(subschemas);
         }
@@ -255,22 +264,13 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
         }
 
         @Override
-        public boolean containsSchemas() {
-            return !subschemas.isEmpty();
-        }
-
-        @Override
         public Map<String, JsonSchema> getSchemasAsMap() {
-            Map<String, JsonSchema> map = new LinkedHashMap<>();
-            for (int i = 0; i < subschemas.size(); i++) {
-                map.put(String.valueOf(i), subschemas.get(i));
-            }
-            return map;
+            return schemaMap;
         }
 
         @Override
-        public Stream<JsonSchema> getSchemasAsStream() {
-            return this.subschemas.stream();
+        public Optional<JsonSchema> findSchema(String jsonPointer) {
+            return schemaMap.findSchema(jsonPointer);
         }
 
         private JsonSchema findSubschemaAt(int itemIndex) {

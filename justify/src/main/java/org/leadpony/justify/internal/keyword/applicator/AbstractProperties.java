@@ -16,11 +16,9 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
@@ -32,6 +30,7 @@ import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctivePropertiesEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEvaluator;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * A skeletal implementation for "properties" and "patternProperties" keywords.
@@ -43,6 +42,7 @@ import org.leadpony.justify.internal.evaluator.AbstractDisjunctivePropertiesEval
 public abstract class AbstractProperties<K> extends AbstractObjectApplicatorKeyword {
 
     protected final Map<K, JsonSchema> propertyMap;
+    private final JsonSchemaMap schemaMap;
     private final JsonSchema defaultSchema;
 
     protected AbstractProperties(JsonValue json,
@@ -50,6 +50,7 @@ public abstract class AbstractProperties<K> extends AbstractObjectApplicatorKeyw
             AdditionalProperties additionalProperties) {
         super(json);
         this.propertyMap = propertyMap;
+        this.schemaMap = JsonSchemaMap.of(propertyMap);
         this.defaultSchema = (additionalProperties != null)
                 ? additionalProperties.getSubschema() : JsonSchema.TRUE;
     }
@@ -70,20 +71,13 @@ public abstract class AbstractProperties<K> extends AbstractObjectApplicatorKeyw
     }
 
     @Override
-    public boolean containsSchemas() {
-        return !propertyMap.isEmpty();
-    }
-
-    @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
-        Map<String, JsonSchema> map = new LinkedHashMap<>();
-        propertyMap.forEach((k, v) -> map.put(k.toString(), v));
-        return map;
+        return schemaMap;
     }
 
     @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return propertyMap.values().stream();
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 
     protected final AdditionalProperties getAdditionalProperties(Map<String, Keyword> siblings) {

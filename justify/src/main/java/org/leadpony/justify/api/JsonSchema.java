@@ -16,7 +16,11 @@
 package org.leadpony.justify.api;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonException;
@@ -228,25 +232,50 @@ public interface JsonSchema extends EvaluatorSource {
      *
      * @param jsonPointer the valid escaped JSON Pointer string. It must be an empty
      *                    string or a sequence of '/' prefixed tokens.
-     * @return the subschema found or {@code null} if the specified subschema does
-     *         not exist.
+     * @return the subschema if found or empty if the specified subschema does not
+     *         exist at the specified location.
      * @throws NullPointerException if the specified {@code jsonPointer} is
      *                              {@code null}.
      * @throws JsonException        if the specified {@code jsonPointer} is not a
      *                              valid JSON Pointer.
+     * @since 4.0
      */
-    default JsonSchema getSubschemaAt(String jsonPointer) {
+    default Optional<JsonSchema> findSchema(String jsonPointer) {
         Objects.requireNonNull(jsonPointer, "jsonPointer must not be null.");
-        return jsonPointer.isEmpty() ? this : null;
+        return jsonPointer.isEmpty() ? Optional.of(this) : Optional.empty();
     }
 
     /**
-     * Returns the value type of JSON representing this schema.
+     * Collects all descendant schemas under this schema.
      *
-     * @return the value type of JSON.
+     * @return the map of schemas whose keys are JSON pointers and values are
+     *         schemas, including this schema.
+     * @since 4.0
      */
-    ValueType getJsonValueType();
+    default Map<String, JsonSchema> collectSchemas() {
+        Map<String, JsonSchema> schemas = new HashMap<>();
+        schemas.put("", this);
+        return schemas;
+    }
 
+    /**
+     * Collects all identified schemas under this schema.
+     *
+     * @param baseUri the initial base URI.
+     * @return the map of schemas whose keys are resolved URIs and values are
+     *         schemas. The map may contains this schema.
+     * @since 4.0
+     */
+    default Map<URI, JsonSchema> collectIdentifiedSchemas(URI baseUri) {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Walks the schema tree starting from this schema.
+     *
+     * @param visitor the schema visitor which will be invoked for each schema and
+     *                keyword.
+     */
     default void walkSchemaTree(JsonSchemaVisitor visitor) {
         Objects.requireNonNull(visitor, "visitor must not be null.");
         JsonSchemaVisitor.Result result = visitor.visitSchema(this, "");
@@ -254,6 +283,14 @@ public interface JsonSchema extends EvaluatorSource {
             visitor.leaveSchema(this, "");
         }
     }
+
+    /**
+     * Returns the value type of JSON representing this schema.
+     *
+     * @return the value type of JSON.
+     * @see #toJson()
+     */
+    ValueType getJsonValueType();
 
     /**
      * Returns the JSON representation of this schema.

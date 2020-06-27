@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import jakarta.json.JsonException;
@@ -242,14 +243,14 @@ public class JsonSchemaReaderImpl extends AbstractJsonSchemaReader implements Pr
     }
 
     private JsonSchema findSubschema(JsonSchema schema, URI id, String jsonPointer) {
-        JsonSchema subschema = schema.getSubschemaAt(jsonPointer);
-        if (subschema == null) {
-            subschema = findSubschema(schema.toJson(), jsonPointer);
-            if (subschema instanceof Resolvable) {
-                ((Resolvable) subschema).resolve(id);
+        Optional<JsonSchema> subschema = schema.findSchema(jsonPointer);
+        return subschema.orElseGet(() -> {
+            JsonSchema another = findSubschema(schema.toJson(), jsonPointer);
+            if (another instanceof Resolvable) {
+                ((Resolvable) another).resolve(id);
             }
-        }
-        return subschema;
+            return another;
+        });
     }
 
     private JsonSchema findSubschema(JsonValue jsonValue, String jsonPointer) {

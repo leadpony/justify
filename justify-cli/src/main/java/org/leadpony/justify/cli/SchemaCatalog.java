@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ abstract class SchemaCatalog extends HashMap<URI, Location> implements JsonSchem
         if (fragment == null) {
             return schema;
         } else {
-            return schema.getSubschemaAt(fragment);
+            return schema.findSchema(fragment).orElse(null);
         }
     }
 

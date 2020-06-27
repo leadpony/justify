@@ -58,7 +58,7 @@ public class JsonPointerTokenizer implements Iterator<String> {
             token = jsonPointer.substring(offset + 1);
             offset = jsonPointer.length();
         }
-        return decode(token);
+        return JsonPointers.decode(token);
     }
 
     /**
@@ -68,15 +68,5 @@ public class JsonPointerTokenizer implements Iterator<String> {
      */
     public String remaining() {
         return jsonPointer.substring(offset);
-    }
-
-    /**
-     * Decodes a reference token.
-     *
-     * @param token the reference token to decode.
-     * @return decoded reference token.
-     */
-    private static String decode(String token) {
-        return token.replaceAll("~1", "/").replaceAll("~0", "~");
     }
 }

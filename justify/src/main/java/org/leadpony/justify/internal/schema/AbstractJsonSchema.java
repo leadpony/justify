@@ -21,6 +21,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 import java.net.URI;
 import java.util.AbstractMap;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,7 +33,6 @@ import org.leadpony.justify.api.JsonSchemaVisitor;
 import org.leadpony.justify.api.keyword.ApplicatorKeyword;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.core.Comment;
 import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.internal.keyword.metadata.Default;
@@ -142,12 +142,43 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     }
 
     @Override
-    public JsonSchema getSubschemaAt(String jsonPointer) {
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
         requireNonNull(jsonPointer, "jsonPointer");
         if (jsonPointer.isEmpty()) {
-            return this;
+            return Optional.of(this);
         }
-        return searchKeywordsForSubschema(jsonPointer).orElse(null);
+
+        int next = jsonPointer.indexOf('/', 1);
+        if (next < 0) {
+            Keyword keyword = keywordMap.get(jsonPointer.substring(1));
+            if (keyword != null) {
+                return keyword.findSchema("");
+            }
+        } else {
+            Keyword keyword = keywordMap.get(jsonPointer.substring(1, next));
+            if (keyword != null) {
+                return keyword.findSchema(jsonPointer.substring(next));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Map<String, JsonSchema> collectSchemas() {
+        Map<String, JsonSchema> schemas = new LinkedHashMap<>();
+        JsonSchemaCollector collector = new JsonSchemaCollector(schemas);
+        walkSchemaTree(collector);
+        return schemas;
+    }
+
+    @Override
+    public Map<URI, JsonSchema> collectIdentifiedSchemas(URI baseUri) {
+        requireNonNull(baseUri, "baseUri");
+        Map<URI, JsonSchema> schemas = new LinkedHashMap<>();
+        IdentifiedJsonSchemaCollector collector = new IdentifiedJsonSchemaCollector(baseUri, schemas);
+        walkSchemaTree(collector);
+        return schemas;
     }
 
     @Override
@@ -234,24 +265,6 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         return keywordMap.values().stream()
                 .filter(keyword -> keyword instanceof ApplicatorKeyword)
                 .map(keyword -> (ApplicatorKeyword) keyword);
-    }
-
-    private Optional<JsonSchema> searchKeywordsForSubschema(String jsonPointer) {
-        JsonPointerTokenizer tokenizer = new JsonPointerTokenizer(jsonPointer);
-        Keyword keyword = keywordMap.get(tokenizer.next());
-        if (keyword != null && keyword.containsSchemas()) {
-            String token = tokenizer.hasNext() ? tokenizer.next() : "";
-            Map<String, JsonSchema> map = keyword.getSchemasAsMap();
-            if (map.containsKey(token)) {
-                JsonSchema schema = map.get(token);
-                if (tokenizer.hasNext()) {
-                    return Optional.of(schema.getSubschemaAt(tokenizer.remaining()));
-                } else {
-                    return Optional.of(schema);
-                }
-            }
-        }
-        return Optional.empty();
     }
 
     private void resolveSubschemas(URI baseUri) {

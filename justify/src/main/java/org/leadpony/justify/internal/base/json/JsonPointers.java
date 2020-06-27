@@ -13,22 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.base;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.leadpony.justify.internal.base.json;
 
 /**
  * @author leadpony
  */
-public final class Maps {
+public final class JsonPointers {
 
-    public static <K, V> Map<K, V> of(K key, V value) {
-        Map<K, V> map = new HashMap<K, V>();
-        map.put(key, value);
-        return map;
+    /**
+     * Encodes a reference token.
+     *
+     * @param token the reference token to encode.
+     * @return encoded reference token.
+     */
+    public static String encode(String token) {
+        return token.replaceAll("~", "~0").replaceAll("/", "~1");
     }
 
-    private Maps() {
+    /**
+     * Decodes a reference token.
+     *
+     * @param token the reference token to decode.
+     * @return decoded reference token.
+     */
+    public static String decode(String token) {
+        return token.replaceAll("~1", "/").replaceAll("~0", "~");
+    }
+
+    private JsonPointers() {
     }
 }

@@ -37,9 +37,9 @@ public enum SchemaExample {
     PERSON("person.schema.json"),
     PRODUCT("product.schema.json");
 
-    static final String BASE_PACKAGE = "/org/json_schema/examples/draft7/";
+    static final String BASE_PACKAGE = "/org/jsonschema/draft7/examples/";
     static final Path BASE_PATH = Paths.get(
-            "target", "test-classes", "org", "json_schema", "examples", "draft7");
+            "target", "test-classes", "org", "jsonschema", "draft7", "examples");
 
     private final String jsonName;
     private final String yamlName;

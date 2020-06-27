@@ -18,14 +18,13 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * N-ary boolean logic. This class is the abstract base class for {@link AllOf},
@@ -37,6 +36,7 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
 
     private final List<JsonSchema> subschemas;
     private final List<JsonSchema> distinctSubschemas;
+    private final JsonSchemaMap schemaMap;
 
     protected NaryBooleanLogic(JsonValue json, Collection<JsonSchema> subschemas) {
         super(json);
@@ -44,6 +44,7 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
         this.distinctSubschemas = subschemas.stream()
                 .distinct()
                 .collect(Collectors.toList());
+        this.schemaMap = JsonSchemaMap.of(this.subschemas);
     }
 
     @Override
@@ -52,22 +53,13 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public boolean containsSchemas() {
-        return !subschemas.isEmpty();
-    }
-
-    @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
-        Map<String, JsonSchema> map = new LinkedHashMap<>();
-        for (int i = 0; i < subschemas.size(); i++) {
-            map.put(String.valueOf(i), subschemas.get(i));
-        }
-        return map;
+        return schemaMap;
     }
 
     @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return this.subschemas.stream();
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 
     protected final Iterable<JsonSchema> getSubschemas() {

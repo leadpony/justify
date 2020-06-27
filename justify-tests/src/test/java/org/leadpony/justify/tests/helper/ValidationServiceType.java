@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 import java.util.function.Predicate;
 
 import org.leadpony.justify.api.JsonValidationService;
-
 import jakarta.json.spi.JsonProvider;
 
 /**

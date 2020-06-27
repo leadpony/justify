@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -27,9 +29,11 @@ import org.leadpony.justify.api.ProblemDispatcher;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.json.JsonPointers;
 import org.leadpony.justify.internal.evaluator.AbstractPropertyDependentEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
 import org.leadpony.justify.internal.evaluator.LogicalEvaluator;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser.Event;
@@ -41,16 +45,18 @@ public class DependentSchemas extends AbstractObjectApplicatorKeyword {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("dependentSchemas", DependentSchemas::new);
 
-    private final Map<String, JsonSchema> schemaMap;
+    private final JsonSchemaMap schemaMap;
     private final Map<String, Dependent> dependentMap;
 
-    public DependentSchemas(JsonValue json, Map<String, JsonSchema> schemaMap) {
+    public DependentSchemas(JsonValue json, Map<String, JsonSchema> map) {
         super(json);
-        this.schemaMap = schemaMap;
+        JsonSchemaMap schemaMap = new JsonSchemaMap();
         Map<String, Dependent> dependentMap = new LinkedHashMap<>();
-        schemaMap.forEach((key, value) -> {
+        map.forEach((key, value) -> {
+            schemaMap.put(JsonPointers.encode(key), value);
             dependentMap.put(key, createDependent(key, value));
         });
+        this.schemaMap = schemaMap;
         this.dependentMap = dependentMap;
     }
 
@@ -85,6 +91,11 @@ public class DependentSchemas extends AbstractObjectApplicatorKeyword {
     @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
         return schemaMap;
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 
     private Dependent createDependent(String propertyName, JsonSchema schema) {

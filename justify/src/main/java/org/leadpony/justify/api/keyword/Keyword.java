@@ -17,6 +17,7 @@ package org.leadpony.justify.api.keyword;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
@@ -115,6 +116,16 @@ public interface Keyword {
      */
     default Stream<JsonSchema> getSchemasAsStream() {
         return getSchemasAsMap().values().stream();
+    }
+
+    /**
+     * Finds a subschema by a JSON pointer.
+     *
+     * @param jsonPointer the JSON pointer.
+     * @return the JSON schema if found, or empty if not found.
+     */
+    default Optional<JsonSchema> findSchema(String jsonPointer) {
+        return Optional.empty();
     }
 
     /**

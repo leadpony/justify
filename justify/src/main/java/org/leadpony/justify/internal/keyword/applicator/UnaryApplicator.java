@@ -17,10 +17,11 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.base.Maps;
+import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * An applicator operating on single subschema.
@@ -30,10 +31,12 @@ import org.leadpony.justify.internal.base.Maps;
 abstract class UnaryApplicator extends AbstractApplicatorKeyword {
 
     private final JsonSchema subschema;
+    private final JsonSchemaMap schemaMap;
 
     protected UnaryApplicator(JsonSchema subschema) {
         super(subschema.toJson());
         this.subschema = subschema;
+        this.schemaMap = JsonSchemaMap.of(subschema);
     }
 
     JsonSchema getSubschema() {
@@ -47,11 +50,16 @@ abstract class UnaryApplicator extends AbstractApplicatorKeyword {
 
     @Override
     public Map<String, JsonSchema> getSchemasAsMap() {
-        return Maps.of("", subschema);
+        return schemaMap;
     }
 
     @Override
     public Stream<JsonSchema> getSchemasAsStream() {
         return Stream.of(subschema);
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        return schemaMap.findSchema(jsonPointer);
     }
 }

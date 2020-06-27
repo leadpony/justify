@@ -1,0 +1,115 @@
+[
+    {
+        "schema": {
+            "$id": "https://example.com/root.json",
+            "$defs": {
+                "A": { "$anchor": "foo" },
+                "B": {
+                    "$id": "other.json",
+                    "$defs": {
+                        "X": { "$anchor": "bar" },
+                        "Y": {
+                            "$id": "t/inner.json",
+                            "$anchor": "bar"
+                        }
+                    }
+                },
+                "C": {
+                    "$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
+                }
+            }
+        },
+        "schemas": {
+            "": {
+                "$id": "https://example.com/root.json",
+                "$defs": {
+                    "A": { "$anchor": "foo" },
+                    "B": {
+                        "$id": "other.json",
+                        "$defs": {
+                            "X": { "$anchor": "bar" },
+                            "Y": {
+                                "$id": "t/inner.json",
+                                "$anchor": "bar"
+                            }
+                        }
+                    },
+                    "C": {
+                        "$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
+                    }
+                }
+            },
+            "/$defs/A": { 
+                "$anchor": "foo" 
+            },
+            "/$defs/B": {
+                "$id": "other.json",
+                "$defs": {
+                    "X": { "$anchor": "bar" },
+                    "Y": {
+                        "$id": "t/inner.json",
+                        "$anchor": "bar"
+                    }
+                }
+            },
+            "/$defs/B/$defs/X": {
+                "$anchor": "bar"
+            },
+            "/$defs/B/$defs/Y": {
+                "$id": "t/inner.json",
+                "$anchor": "bar"
+            },
+            "/$defs/C": {
+                "$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
+            }
+        },
+        "identified": {
+            "https://example.com/root.json": {
+                "$id": "https://example.com/root.json",
+                "$defs": {
+                    "A": { "$anchor": "foo" },
+                    "B": {
+                        "$id": "other.json",
+                        "$defs": {
+                            "X": { "$anchor": "bar" },
+                            "Y": {
+                                "$id": "t/inner.json",
+                                "$anchor": "bar"
+                            }
+                        }
+                    },
+                    "C": {
+                        "$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
+                    }
+                }
+            },
+            "https://example.com/root.json#foo": {
+                "$anchor": "foo"
+            },
+            "https://example.com/other.json": {
+                "$id": "other.json",
+                "$defs": {
+                    "X": { "$anchor": "bar" },
+                    "Y": {
+                        "$id": "t/inner.json",
+                        "$anchor": "bar"
+                    }
+                }
+            },
+            "https://example.com/other.json#bar": {
+                "$anchor": "bar"
+            },
+            "https://example.com/t/inner.json": {
+                "$id": "t/inner.json",
+                "$anchor": "bar"
+            },
+            "https://example.com/t/inner.json#bar": {
+                "$id": "t/inner.json",
+                "$anchor": "bar"
+            },
+            "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f": {
+                "$id": "urn:uuid:ee564b8a-7a87-4125-8c96-e9f123d6766f"
+            }
+        }
+    }
+]

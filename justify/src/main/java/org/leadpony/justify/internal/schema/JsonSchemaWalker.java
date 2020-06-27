@@ -15,6 +15,8 @@
  */
 package org.leadpony.justify.internal.schema;
 
+import static org.leadpony.justify.internal.base.json.JsonPointers.encode;
+
 import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
@@ -24,6 +26,8 @@ import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
+ * A walker of JSON schema tree.
+ *
  * @author leadpony
  */
 class JsonSchemaWalker {
@@ -58,15 +62,19 @@ class JsonSchemaWalker {
     }
 
     private Result walkKeyword(Keyword keyword, String basePointer) {
-        String pointer = concatinate(basePointer, keyword.name());
+        String pointer = basePointer + "/" + encode(keyword.name());
         Result result = visitor.visitKeyword(keyword, pointer);
         if (result == Result.TERMINATE) {
             return result;
         }
+        if (keyword.containsSchemas()) {
+            for (Map.Entry<String, JsonSchema> entry : keyword.getSchemasAsMap().entrySet()) {
+                result = walkSchema(entry.getValue(), pointer + entry.getKey());
+                if (result == Result.TERMINATE) {
+                    return result;
+                }
+            }
+        }
         return visitor.leaveKeyword(keyword, pointer);
-    }
-
-    private static String concatinate(String base, String name) {
-        return base + "/" + name;
     }
 }
