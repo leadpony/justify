@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,10 @@
 package org.leadpony.justify.internal.keyword.core;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
-import org.leadpony.justify.api.keyword.SchemaContainer;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
@@ -37,7 +33,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Definitions extends AbstractKeyword implements SchemaContainer {
+public class Definitions extends AbstractKeyword {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("definitions", Definitions::new);
 
@@ -54,20 +50,7 @@ public class Definitions extends AbstractKeyword implements SchemaContainer {
     }
 
     @Override
-    public boolean containsSchemas() {
-        return !definitionMap.isEmpty();
-    }
-
-    @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return this.definitionMap.values().stream();
-    }
-
-    @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        if (definitionMap.containsKey(token)) {
-            return Optional.of(definitionMap.get(token));
-        }
-        return Optional.empty();
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        return definitionMap;
     }
 }

@@ -17,14 +17,10 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
-
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
@@ -98,20 +94,25 @@ public class Dependencies extends AbstractObjectApplicatorKeyword {
         }
     };
 
+    private final Map<String, JsonSchema> schemaMap;
     private final Map<String, Dependent> dependentMap;
 
     public Dependencies(JsonValue json, Map<String, Object> map) {
         super(json);
-        Map<String, Dependent> dependentMap = new HashMap<>();
+        Map<String, JsonSchema> schemaMap = new LinkedHashMap<>();
+        Map<String, Dependent> dependentMap = new LinkedHashMap<>();
         map.forEach((property, value) -> {
             if (value instanceof JsonSchema) {
-                dependentMap.put(property, createDependent(property, (JsonSchema) value));
+                JsonSchema schema = (JsonSchema) value;
+                schemaMap.put(property, schema);
+                dependentMap.put(property, createDependent(property, schema));
             } else if (value instanceof Set) {
                 @SuppressWarnings("unchecked")
                 Set<String> requiredProperties = (Set<String>) value;
                 dependentMap.put(property, createDependent(property, requiredProperties));
             }
         });
+        this.schemaMap = schemaMap;
         this.dependentMap = dependentMap;
     }
 
@@ -144,30 +145,8 @@ public class Dependencies extends AbstractObjectApplicatorKeyword {
     }
 
     @Override
-    public boolean containsSchemas() {
-        return dependentMap.values()
-                .stream()
-                .anyMatch(d -> d instanceof SchemaDependent);
-    }
-
-    @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return dependentMap.values().stream()
-                .filter(d -> d instanceof SchemaDependent)
-                .map(d -> (SchemaDependent) d)
-                .map(SchemaDependent::getSubschema);
-    }
-
-    @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        if (dependentMap.containsKey(token)) {
-            Dependent dependent = dependentMap.get(token);
-            if (dependent instanceof SchemaDependent) {
-                SchemaDependent schemaDependent = (SchemaDependent) dependent;
-                return Optional.of(schemaDependent.getSubschema());
-            }
-        }
-        return Optional.empty();
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        return schemaMap;
     }
 
     private Dependent createDependent(String property, JsonSchema subschema) {

@@ -247,6 +247,14 @@ public interface JsonSchema extends EvaluatorSource {
      */
     ValueType getJsonValueType();
 
+    default void walkSchemaTree(JsonSchemaVisitor visitor) {
+        Objects.requireNonNull(visitor, "visitor must not be null.");
+        JsonSchemaVisitor.Result result = visitor.visitSchema(this, "");
+        if (result == JsonSchemaVisitor.Result.CONTINUE) {
+            visitor.leaveSchema(this, "");
+        }
+    }
+
     /**
      * Returns the JSON representation of this schema.
      *

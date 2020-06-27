@@ -18,7 +18,6 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -86,15 +85,6 @@ public class Properties extends AbstractProperties<String> {
                     additionalProperties);
         } else {
             return this;
-        }
-    }
-
-    @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        if (propertyMap.containsKey(token)) {
-            return Optional.of(propertyMap.get(token));
-        } else {
-            return Optional.empty();
         }
     }
 

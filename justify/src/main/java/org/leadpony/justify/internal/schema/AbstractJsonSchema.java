@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.JsonSchemaVisitor;
 import org.leadpony.justify.api.keyword.ApplicatorKeyword;
 import org.leadpony.justify.api.keyword.Keyword;
-import org.leadpony.justify.api.keyword.SchemaContainer;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.internal.base.json.JsonPointerTokenizer;
 import org.leadpony.justify.internal.keyword.core.Comment;
@@ -128,9 +128,9 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
 
     @Override
     public Stream<JsonSchema> getSubschemas() {
-        return getContainerKeywordsAsStream()
-                .filter(SchemaContainer::containsSchemas)
-                .flatMap(SchemaContainer::getSchemasAsStream);
+        return keywordMap.values().stream()
+                .filter(Keyword::containsSchemas)
+                .flatMap(Keyword::getSchemasAsStream);
     }
 
     @Override
@@ -151,9 +151,18 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     }
 
     @Override
+    public void walkSchemaTree(JsonSchemaVisitor visitor) {
+        requireNonNull(visitor, "visitor");
+        JsonSchemaWalker walker = new JsonSchemaWalker(visitor);
+        walker.walkSchema(this);
+    }
+
+    @Override
     public final JsonValue toJson() {
         return json;
     }
+
+    /* As an Object */
 
     @Override
     public int hashCode() {
@@ -221,12 +230,6 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
         return (T) keywordMap.get(name);
     }
 
-    private Stream<SchemaContainer> getContainerKeywordsAsStream() {
-        return keywordMap.values().stream()
-                .filter(keyword -> keyword instanceof SchemaContainer)
-                .map(keyword -> (SchemaContainer) keyword);
-    }
-
     private Stream<ApplicatorKeyword> getApplicatorKeywordsAsStream() {
         return keywordMap.values().stream()
                 .filter(keyword -> keyword instanceof ApplicatorKeyword)
@@ -236,17 +239,17 @@ abstract class AbstractJsonSchema extends AbstractMap<String, Keyword> implement
     private Optional<JsonSchema> searchKeywordsForSubschema(String jsonPointer) {
         JsonPointerTokenizer tokenizer = new JsonPointerTokenizer(jsonPointer);
         Keyword keyword = keywordMap.get(tokenizer.next());
-        if (keyword != null && keyword instanceof SchemaContainer) {
-            SchemaContainer container = (SchemaContainer) keyword;
+        if (keyword != null && keyword.containsSchemas()) {
             String token = tokenizer.hasNext() ? tokenizer.next() : "";
-            Optional<JsonSchema> found =  container.findSchema(token);
-            return found.map(schema -> {
+            Map<String, JsonSchema> map = keyword.getSchemasAsMap();
+            if (map.containsKey(token)) {
+                JsonSchema schema = map.get(token);
                 if (tokenizer.hasNext()) {
-                    return schema.getSubschemaAt(tokenizer.remaining());
+                    return Optional.of(schema.getSubschemaAt(tokenizer.remaining()));
                 } else {
-                    return schema;
+                    return Optional.of(schema);
                 }
-            });
+            }
         }
         return Optional.empty();
     }

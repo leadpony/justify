@@ -16,19 +16,19 @@
 
 package org.leadpony.justify.internal.keyword;
 
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.keyword.KeywordType;
-import org.leadpony.justify.api.keyword.SchemaContainer;
+import org.leadpony.justify.internal.base.Maps;
 
 /**
  * A keyword containing referenceable subschema.
  *
  * @author leadpony
  */
-public class Referenceable extends AbstractKeyword implements SchemaContainer {
+public class Referenceable extends AbstractKeyword {
 
     private final String name;
     private final JsonSchema subschema;
@@ -61,16 +61,12 @@ public class Referenceable extends AbstractKeyword implements SchemaContainer {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return Stream.of(subschema);
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        return Maps.of("", subschema);
     }
 
     @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        if (token.isEmpty()) {
-            return Optional.of(subschema);
-        } else {
-            return Optional.empty();
-        }
+    public Stream<JsonSchema> getSchemasAsStream() {
+        return Stream.of(subschema);
     }
 }

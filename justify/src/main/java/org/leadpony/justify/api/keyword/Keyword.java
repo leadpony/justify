@@ -15,7 +15,12 @@
  */
 package org.leadpony.justify.api.keyword;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import org.leadpony.justify.api.JsonSchema;
+
 import jakarta.json.JsonValue;
 
 /**
@@ -65,6 +70,7 @@ public interface Keyword {
      * @param siblings the sibling keywords owned by the same schema, never be
      *                 {@code null}.
      * @return the keyword after modification.
+     * @since 4.0
      */
     default Keyword withKeywords(Map<String, Keyword> siblings) {
         return this;
@@ -78,6 +84,37 @@ public interface Keyword {
      */
     default boolean canEvaluate() {
         return false;
+    }
+
+    /**
+     * Checks whether this keyword contains any schemas or not.
+     *
+     * @return {@code true} if this keyword directly contains any schemas,
+     *         {@code false} if it does not.
+     * @since 4.0
+     */
+    default boolean containsSchemas() {
+        return !getSchemasAsMap().isEmpty();
+    }
+
+    /**
+     * Returns all subschemas directly contained by this keyword as a map.
+     *
+     * @return the map containing all subschemas.
+     * @since 4.0
+     */
+    default Map<String, JsonSchema> getSchemasAsMap() {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Returns all schemas contained by this keyword as a stream.
+     *
+     * @return the stream of schemas.
+     * @since 4.0
+     */
+    default Stream<JsonSchema> getSchemasAsStream() {
+        return getSchemasAsMap().values().stream();
     }
 
     /**

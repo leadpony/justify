@@ -18,8 +18,9 @@ package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,20 +57,17 @@ abstract class NaryBooleanLogic extends AbstractApplicatorKeyword {
     }
 
     @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return this.subschemas.stream();
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        Map<String, JsonSchema> map = new LinkedHashMap<>();
+        for (int i = 0; i < subschemas.size(); i++) {
+            map.put(String.valueOf(i), subschemas.get(i));
+        }
+        return map;
     }
 
     @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        try {
-            int index = Integer.parseInt(token);
-            if (index < subschemas.size()) {
-                return Optional.of(subschemas.get(index));
-            }
-        } catch (NumberFormatException e) {
-        }
-        return Optional.empty();
+    public Stream<JsonSchema> getSchemasAsStream() {
+        return this.subschemas.stream();
     }
 
     protected final Iterable<JsonSchema> getSubschemas() {

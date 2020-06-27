@@ -31,6 +31,8 @@ import jakarta.json.JsonValue;
  */
 class EmptyJsonSchema implements ObjectJsonSchema {
 
+    /* As a EvalautorSource */
+
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
         return Evaluator.ALWAYS_TRUE;
@@ -45,6 +47,8 @@ class EmptyJsonSchema implements ObjectJsonSchema {
     public JsonValue toJson() {
         return JsonValue.EMPTY_JSON_OBJECT;
     }
+
+    /* As a ObjectJsonSchema */
 
     @Override
     public int size() {

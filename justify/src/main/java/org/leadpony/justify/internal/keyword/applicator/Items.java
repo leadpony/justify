@@ -17,9 +17,9 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonArrayBuilder;
@@ -38,6 +38,7 @@ import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.internal.base.Maps;
 import org.leadpony.justify.internal.base.json.ParserEvents;
 import org.leadpony.justify.internal.evaluator.AbstractConjunctiveItemsEvaluator;
 import org.leadpony.justify.internal.evaluator.AbstractDisjunctiveItemsEvaluator;
@@ -148,17 +149,13 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
         }
 
         @Override
-        public Stream<JsonSchema> getSchemasAsStream() {
-            return Stream.of(subschema);
+        public Map<String, JsonSchema> getSchemasAsMap() {
+            return Maps.of("", subschema);
         }
 
         @Override
-        public Optional<JsonSchema> findSchema(String token) {
-            if (token.isEmpty()) {
-                return Optional.of(subschema);
-            } else {
-                return Optional.empty();
-            }
+        public Stream<JsonSchema> getSchemasAsStream() {
+            return Stream.of(subschema);
         }
 
         private Evaluator createItemsEvaluator(Evaluator parent) {
@@ -263,20 +260,17 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
         }
 
         @Override
-        public Stream<JsonSchema> getSchemasAsStream() {
-            return this.subschemas.stream();
+        public Map<String, JsonSchema> getSchemasAsMap() {
+            Map<String, JsonSchema> map = new LinkedHashMap<>();
+            for (int i = 0; i < subschemas.size(); i++) {
+                map.put(String.valueOf(i), subschemas.get(i));
+            }
+            return map;
         }
 
         @Override
-        public Optional<JsonSchema> findSchema(String token) {
-            try {
-                int index = Integer.parseInt(token);
-                if (index < subschemas.size()) {
-                    return Optional.of(subschemas.get(index));
-                }
-            } catch (NumberFormatException e) {
-            }
-            return Optional.empty();
+        public Stream<JsonSchema> getSchemasAsStream() {
+            return this.subschemas.stream();
         }
 
         private JsonSchema findSubschemaAt(int itemIndex) {

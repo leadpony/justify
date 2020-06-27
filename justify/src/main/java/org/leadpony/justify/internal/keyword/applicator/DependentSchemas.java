@@ -16,12 +16,9 @@
 package org.leadpony.justify.internal.keyword.applicator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
@@ -44,12 +41,14 @@ public class DependentSchemas extends AbstractObjectApplicatorKeyword {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("dependentSchemas", DependentSchemas::new);
 
+    private final Map<String, JsonSchema> schemaMap;
     private final Map<String, Dependent> dependentMap;
 
-    public DependentSchemas(JsonValue json, Map<String, JsonSchema> map) {
+    public DependentSchemas(JsonValue json, Map<String, JsonSchema> schemaMap) {
         super(json);
-        Map<String, Dependent> dependentMap = new HashMap<>();
-        map.forEach((key, value) -> {
+        this.schemaMap = schemaMap;
+        Map<String, Dependent> dependentMap = new LinkedHashMap<>();
+        schemaMap.forEach((key, value) -> {
             dependentMap.put(key, createDependent(key, value));
         });
         this.dependentMap = dependentMap;
@@ -84,21 +83,8 @@ public class DependentSchemas extends AbstractObjectApplicatorKeyword {
     }
 
     @Override
-    public boolean containsSchemas() {
-        return !dependentMap.isEmpty();
-    }
-
-    @Override
-    public Stream<JsonSchema> getSchemasAsStream() {
-        return dependentMap.values().stream().map(Dependent::getSubschema);
-    }
-
-    @Override
-    public Optional<JsonSchema> findSchema(String token) {
-        if (dependentMap.containsKey(token)) {
-            return Optional.of(dependentMap.get(token).getSubschema());
-        }
-        return Optional.empty();
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        return schemaMap;
     }
 
     private Dependent createDependent(String propertyName, JsonSchema schema) {

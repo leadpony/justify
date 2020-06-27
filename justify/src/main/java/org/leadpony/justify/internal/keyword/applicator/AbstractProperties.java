@@ -16,6 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.applicator;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -71,6 +72,13 @@ public abstract class AbstractProperties<K> extends AbstractObjectApplicatorKeyw
     @Override
     public boolean containsSchemas() {
         return !propertyMap.isEmpty();
+    }
+
+    @Override
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        Map<String, JsonSchema> map = new LinkedHashMap<>();
+        propertyMap.forEach((k, v) -> map.put(k.toString(), v));
+        return map;
     }
 
     @Override
