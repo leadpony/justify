@@ -21,6 +21,7 @@ import jakarta.json.JsonValue;
 
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SimpleValueKeyword;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
@@ -35,7 +36,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Schema extends AbstractKeyword {
+public class Schema extends AbstractKeyword implements SimpleValueKeyword<URI> {
 
     static final KeywordType TYPE = KeywordTypes.mappingUri("$schema", Schema::new);
 
@@ -51,6 +52,7 @@ public class Schema extends AbstractKeyword {
         return TYPE;
     }
 
+    @Override
     public URI value() {
         return value;
     }

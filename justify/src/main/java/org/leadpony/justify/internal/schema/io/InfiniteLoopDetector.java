@@ -20,7 +20,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.internal.schema.SchemaReference;
+import org.leadpony.justify.api.keyword.JsonSchemaReference;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.RefKeyword;
 
 /**
  * A detector of infinite recursive looping starting from a schema reference.
@@ -29,33 +31,46 @@ import org.leadpony.justify.internal.schema.SchemaReference;
  */
 class InfiniteLoopDetector {
 
-    private final Set<SchemaReference> checkPoints = new HashSet<>();
+    private static final String REFERENCE_KEYWORD = "$ref";
 
-    boolean detectInfiniteLoop(SchemaReference ref) {
-        checkPoints.add(ref);
-        boolean result = detectLoopFrom(ref.getReferencedSchema());
-        checkPoints.remove(ref);
-        assert checkPoints.isEmpty();
-        return result;
+    private final Set<JsonSchemaReference> checkPoints = new HashSet<>();
+
+    boolean detectInfiniteLoop(JsonSchemaReference ref) {
+        try {
+            return detectLoopFrom(ref);
+        } finally {
+            checkPoints.clear();
+        }
     }
 
     private boolean detectLoopFrom(JsonSchema schema) {
-        if (checkPoints.contains(schema)) {
-            return true;
-        } else if (schema instanceof SchemaReference) {
-            SchemaReference ref = (SchemaReference) schema;
-            checkPoints.add(ref);
-            boolean result = detectLoopFrom(ref.getReferencedSchema());
-            checkPoints.remove(ref);
-            return result;
-        } else {
-            Iterator<JsonSchema> it = schema.getInPlaceSubschemas().iterator();
-            while (it.hasNext()) {
-                if (detectLoopFrom(it.next())) {
+
+        if (schema.containsKeyword(REFERENCE_KEYWORD)) {
+            Keyword keyword = schema.asObjectJsonSchema().get(REFERENCE_KEYWORD);
+            if (keyword instanceof RefKeyword) {
+                RefKeyword ref = (RefKeyword) keyword;
+                if (detectLoopFrom(ref.getSchemaReference())) {
                     return true;
                 }
             }
-            return false;
         }
+
+        Iterator<JsonSchema> it = schema.getInPlaceSubschemas().iterator();
+        while (it.hasNext()) {
+            if (detectLoopFrom(it.next())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean detectLoopFrom(JsonSchemaReference ref) {
+        if (checkPoints.contains(ref)) {
+            return true;
+        }
+        checkPoints.add(ref);
+        boolean result = detectLoopFrom(ref.getReferencedSchema());
+        checkPoints.remove(ref);
+        return result;
     }
 }

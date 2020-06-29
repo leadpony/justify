@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,23 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import java.net.URI;
-
-import jakarta.json.JsonValue;
-
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.IdKeyword;
 import org.leadpony.justify.api.keyword.KeywordType;
-import org.leadpony.justify.internal.annotation.KeywordClass;
-import org.leadpony.justify.internal.annotation.Spec;
+import org.leadpony.justify.api.keyword.SimpleValueKeyword;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
 
+import jakarta.json.JsonValue;
+
 /**
- * A keyword type representing "$id" keyword.
- *
  * @author leadpony
  */
-@KeywordClass("$id")
-@Spec(SpecVersion.DRAFT_06)
-@Spec(SpecVersion.DRAFT_07)
-public class Id extends AbstractKeyword implements IdKeyword {
+public class Anchor extends AbstractKeyword implements SimpleValueKeyword<String> {
 
-    static final KeywordType TYPE = KeywordTypes.mappingUri("$id", Id::new);
+    static final KeywordType TYPE = KeywordTypes.mappingString("$anchor", Anchor::new);
 
-    private final URI value;
+    private final String value;
 
-    public Id(JsonValue json, URI value) {
+    public Anchor(JsonValue json, String value) {
         super(json);
         this.value = value;
     }
@@ -52,7 +42,7 @@ public class Id extends AbstractKeyword implements IdKeyword {
     }
 
     @Override
-    public URI value() {
+    public String value() {
         return value;
     }
 }

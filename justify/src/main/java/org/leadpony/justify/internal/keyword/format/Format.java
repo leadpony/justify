@@ -29,8 +29,10 @@ import java.util.Set;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
@@ -73,22 +75,20 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
-            if (jsonValue.getValueType() == ValueType.STRING) {
-                String name = ((JsonString) jsonValue).getString();
-                return createFormat(jsonValue, name);
-            } else {
-                return failed(jsonValue);
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.STRING) {
+                throw new InvalidKeywordException("Must be a string");
             }
+            JsonString string = (JsonString) jsonValue;
+            return createFormat(jsonValue, string.getString());
         }
 
         private Keyword createFormat(JsonValue jsonValue, String name) {
             FormatAttribute attribute = attributeMap.get(name);
-            if (attribute != null) {
-                return new Format(jsonValue, attribute);
-            } else {
-                return new UnrecognizedFormat(jsonValue, name);
+            if (attribute == null) {
+                throw new InvalidFormatException("Unknown format attribute", name);
             }
+            return new Format(jsonValue, attribute);
         }
     }
 
@@ -175,37 +175,6 @@ public class Format extends AbstractAssertionKeyword implements FormatKeyword {
             return super.newProblemBuilder()
                 .withParameter("attribute", attribute.name())
                 .withParameter("localizedAttribute", attribute.localizedName());
-        }
-    }
-
-    private static class UnrecognizedFormat implements FormatKeyword {
-
-        private final JsonValue jsonValue;
-        private final String attributeName;
-
-        UnrecognizedFormat(JsonValue jsonValue, String attributeName) {
-            this.jsonValue = jsonValue;
-            this.attributeName = attributeName;
-        }
-
-        @Override
-        public boolean isRecognized() {
-            return false;
-        }
-
-        @Override
-        public JsonValue getValueAsJson() {
-            return jsonValue;
-        }
-
-        @Override
-        public KeywordType getType() {
-            return TYPE;
-        }
-
-        @Override
-        public String getAttributeName() {
-            return attributeName;
         }
     }
 }

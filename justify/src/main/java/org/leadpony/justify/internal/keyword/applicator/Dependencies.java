@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,17 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import jakarta.json.JsonBuilderFactory;
-import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
-import jakarta.json.stream.JsonParser.Event;
-
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
-import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.json.JsonPointers;
@@ -63,37 +60,28 @@ public class Dependencies extends AbstractObjectApplicatorKeyword {
         }
 
         @Override
-        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
-            if (parser.next() == Event.START_OBJECT) {
-                Map<String, Object> map = new LinkedHashMap<>();
-                JsonObjectBuilder builder = factory.createObjectBuilder();
-                while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
-                    String name = parser.getString();
-                    if (parser.next() == Event.START_ARRAY) {
-                        JsonValue array = parser.getValue();
-                        Set<String> properties = new LinkedHashSet<>();
-                        for (JsonValue item : array.asJsonArray()) {
-                            if (item.getValueType() == ValueType.STRING) {
-                                properties.add(((JsonString) item).getString());
-                            } else {
-                                return failed(parser, builder, name);
-                            }
-                        }
-                        map.put(name, properties);
-                        builder.add(name, array);
-                    } else {
-                        if (parser.canGetSchema()) {
-                            JsonSchema schema = parser.getSchema();
-                            map.put(name, schema);
-                            builder.add(name, schema.toJson());
-                        } else {
-                            return failed(parser, builder, name);
-                        }
-                    }
-                }
-                return new Dependencies(builder.build(), map);
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.OBJECT) {
+                throw new InvalidKeywordException("Must be an object");
             }
-            return failed(parser);
+            Map<String, Object> map = new LinkedHashMap<>();
+            for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
+                String name = entry.getKey();
+                JsonValue value = entry.getValue();
+                if (value.getValueType() == ValueType.ARRAY) {
+                    Set<String> properties = new LinkedHashSet<>();
+                    for (JsonValue item : value.asJsonArray()) {
+                        if (item.getValueType() != ValueType.STRING) {
+                            throw new InvalidKeywordException("Must be a string");
+                        }
+                        properties.add(((JsonString) item).getString());
+                    }
+                    map.put(name,  properties);
+                } else {
+                    map.put(name, schemaParser.parseSubschema(value, name));
+                }
+            }
+            return new Dependencies(jsonValue, map);
         }
     };
 

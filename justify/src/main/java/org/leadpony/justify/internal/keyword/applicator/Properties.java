@@ -74,7 +74,10 @@ public class Properties extends AbstractProperties<String> {
     public Keyword withKeywords(Map<String, Keyword> siblings) {
         PatternProperties patternProperties = null;
         if (siblings.containsKey("patternProperties")) {
-            patternProperties = (PatternProperties) siblings.get("patternProperties");
+            Keyword sibling = siblings.get("patternProperties");
+            if (sibling instanceof PatternProperties) {
+                patternProperties = (PatternProperties) sibling;
+            }
         }
 
         AdditionalProperties additionalProperties = getAdditionalProperties(siblings);

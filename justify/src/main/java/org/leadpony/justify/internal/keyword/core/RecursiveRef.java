@@ -15,13 +15,11 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import java.net.URI;
-
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.JsonSchemaReference;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
-
 import jakarta.json.JsonValue;
 
 /**
@@ -32,10 +30,21 @@ import jakarta.json.JsonValue;
 @Spec(SpecVersion.DRAFT_2019_09)
 public class RecursiveRef extends Ref {
 
-    static final KeywordType TYPE = KeywordTypes.mappingUri("$recursiveRef", Ref::new);
+    static final KeywordType TYPE = new RefKeywordType() {
 
-    public RecursiveRef(JsonValue json, URI value) {
-        super(json, value);
+        @Override
+        public String name() {
+            return "$recursiveRef";
+        }
+
+        @Override
+        protected Keyword map(JsonValue jsonValue, JsonSchemaReference reference) {
+            return new RecursiveRef(jsonValue, reference);
+        }
+    };
+
+    public RecursiveRef(JsonValue jsonValue, JsonSchemaReference reference) {
+        super(jsonValue, reference);
     }
 
     @Override

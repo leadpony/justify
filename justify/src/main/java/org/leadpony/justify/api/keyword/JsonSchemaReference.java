@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api;
+package org.leadpony.justify.api.keyword;
 
-import org.leadpony.justify.api.keyword.Keyword;
+import java.net.URI;
+
+import org.leadpony.justify.api.JsonSchema;
 
 /**
- * A base type of {@link JsonSchemaBuilder}.
- *
  * @author leadpony
+ * @since 4.0
  */
-public interface BaseJsonSchemaBuilder {
+public interface JsonSchemaReference {
+
+    URI getTargetId();
+
+    URI getResolvedTargetId();
 
     /**
-     * Adds a schema keyword to this builder.
+     * Returns the referenced JSON schema.
      *
-     * @param keyword the schema keyword to add, cannot be {@code null}.
+     * @return the referenced JSON schema.
+     * @throws IllegalStateException if the referenced schema cannot be found.
      */
-    void addKeyword(Keyword keyword);
+    JsonSchema getReferencedSchema();
 }

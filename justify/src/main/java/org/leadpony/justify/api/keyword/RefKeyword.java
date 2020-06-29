@@ -13,16 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.keyword;
+package org.leadpony.justify.api.keyword;
 
 import java.net.URI;
 
-import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.JsonSchema;
 
 /**
+ * A special keyword for referencing another JSON schema.
+ *
  * @author leadpony
+ * @since 4.0
  */
-public interface RefKeyword extends Keyword {
+public interface RefKeyword extends EvaluationKeyword, SimpleValueKeyword<URI> {
 
-    URI value();
+    /**
+     * Returns the JSON schema reference.
+     *
+     * @return the JSON schema reference, never be {@code null}.
+     */
+    JsonSchemaReference getSchemaReference();
+
+    /**
+     * Returns the referenced JSON schema.
+     *
+     * @return the referenced JSON schema.
+     */
+    default JsonSchema getReferencedSchema() {
+        return getSchemaReference().getReferencedSchema();
+    }
 }

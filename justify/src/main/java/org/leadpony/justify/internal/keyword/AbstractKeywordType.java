@@ -15,21 +15,21 @@
  */
 package org.leadpony.justify.internal.keyword;
 
-import java.net.URI;
-
-import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 
 /**
- * A special keyword which provides an identifier of the schema.
- *
  * @author leadpony
  */
-public interface IdKeyword extends Keyword {
+abstract class AbstractKeywordType implements KeywordType {
 
-    /**
-     * Returns the identifier as a URI.
-     *
-     * @return the identifier as a URI.
-     */
-    URI value();
+    private final String name;
+
+    protected AbstractKeywordType(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
 }

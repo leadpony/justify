@@ -44,9 +44,11 @@ import jakarta.json.spi.JsonProvider;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaBuilder;
+import org.leadpony.justify.api.keyword.IdKeyword;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.base.MediaType;
 import org.leadpony.justify.internal.base.json.JsonService;
+import org.leadpony.justify.internal.keyword.UnrecognizedKeyword;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalItems;
 import org.leadpony.justify.internal.keyword.applicator.AdditionalProperties;
 import org.leadpony.justify.internal.keyword.applicator.AllOf;
@@ -114,7 +116,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     private final Map<String, ContentMimeType> mimeTypes;
 
     private final Map<String, Keyword> keywords = new LinkedHashMap<>();
-    private URI id;
+    private IdKeyword id;
 
     private final Map<String, KeywordBuilder> builders = new HashMap<>();
 
@@ -147,18 +149,15 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         JsonObject json = objectBuilder.build();
         if (keywords.isEmpty()) {
             return JsonSchema.EMPTY;
-        } else if (keywords.containsKey("$ref")) {
-            return new SchemaReference(id, json, keywords);
         } else {
-            return BasicJsonSchema.of(id, json, keywords);
+            return BasicJsonSchema.of(keywords, id, json);
         }
     }
 
     @Override
     public JsonSchemaBuilder withId(URI id) {
         requireNonNull(id, "id");
-        addKeyword(new Id(toJson(id), id));
-        this.id = id;
+        addIdKeyword(new Id(toJson(id), id));
         return this;
     }
 
@@ -578,7 +577,7 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         if (foundAttribute != null) {
             format = new Format(toJson(attribute), foundAttribute);
         } else {
-            format = Keyword.unrecognized("format", toJson(attribute));
+            format = new UnrecognizedKeyword("format", toJson(attribute));
         }
         addKeyword(format);
         return this;
@@ -650,14 +649,18 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
         return this;
     }
 
-    /* As a BaseJsonSchemaBuilder */
-
-    @Override
-    public void addKeyword(Keyword keyword) {
+    private void addKeyword(Keyword keyword) {
         requireNonNull(keyword, "keyword");
         this.keywords.put(keyword.name(), keyword);
         this.objectBuilder.add(keyword.name(), keyword.getValueAsJson());
     }
+
+    private void addIdKeyword(IdKeyword keyword) {
+        addKeyword(keyword);
+        this.id = keyword;
+    }
+
+    /* helpers */
 
     @SuppressWarnings("unchecked")
     private <T extends KeywordBuilder> T getBuilder(String name, Function<JsonBuilderFactory, T> function) {

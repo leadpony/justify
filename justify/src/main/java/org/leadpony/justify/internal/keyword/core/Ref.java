@@ -19,13 +19,18 @@ import java.net.URI;
 
 import jakarta.json.JsonValue;
 
+import org.leadpony.justify.api.Evaluator;
+import org.leadpony.justify.api.InstanceType;
+import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.JsonSchemaReference;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.RefKeyword;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.AbstractKeyword;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
-import org.leadpony.justify.internal.keyword.RefKeyword;
 
 /**
  * A keyword type representing "$ref" keyword.
@@ -39,13 +44,30 @@ import org.leadpony.justify.internal.keyword.RefKeyword;
 @Spec(SpecVersion.DRAFT_2019_09)
 public class Ref extends AbstractKeyword implements RefKeyword {
 
-    static final KeywordType TYPE = KeywordTypes.mappingUri("$ref", Ref::new);
+    static class RefKeywordType implements KeywordType {
 
-    private final URI value;
+        @Override
+        public String name() {
+            return "$ref";
+        }
 
-    public Ref(JsonValue json, URI value) {
-        super(json);
-        this.value = value;
+        @Override
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            return map(jsonValue, schemaParser.parseSchemaReference(jsonValue));
+        }
+
+        protected Keyword map(JsonValue jsonValue, JsonSchemaReference reference) {
+            return new Ref(jsonValue, reference);
+        }
+    }
+
+    static final KeywordType TYPE = new RefKeywordType();
+
+    protected final JsonSchemaReference reference;
+
+    Ref(JsonValue jsonValue, JsonSchemaReference reference) {
+        super(jsonValue);
+        this.reference = reference;
     }
 
     @Override
@@ -54,7 +76,31 @@ public class Ref extends AbstractKeyword implements RefKeyword {
     }
 
     @Override
+    public boolean canEvaluate() {
+        return true;
+    }
+
+    @Override
+    public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
+        JsonSchema schema = this.reference.getReferencedSchema();
+        return schema.createEvaluator(parent, type);
+    }
+
+    @Override
+    public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
+        JsonSchema schema = this.reference.getReferencedSchema();
+        return schema.createNegatedEvaluator(parent, type);
+    }
+
+    /* As a RefKeyword */
+
+    @Override
     public URI value() {
-        return value;
+        return reference.getTargetId();
+    }
+
+    @Override
+    public JsonSchemaReference getSchemaReference() {
+        return reference;
     }
 }

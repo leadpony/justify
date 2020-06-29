@@ -148,6 +148,10 @@ public interface JsonSchema extends EvaluatorSource {
         return null;
     }
 
+    default Optional<String> getAnchor() {
+        return Optional.empty();
+    }
+
     /**
      * Checks if this schema is a boolean schema.
      *

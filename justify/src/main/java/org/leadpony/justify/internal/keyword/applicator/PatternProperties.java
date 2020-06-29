@@ -23,16 +23,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import jakarta.json.JsonBuilderFactory;
-import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonParser.Event;
-
+import jakarta.json.JsonValue.ValueType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
-import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 
@@ -53,29 +51,22 @@ public class PatternProperties extends AbstractProperties<Pattern> {
         }
 
         @Override
-        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
-            if (parser.next() == Event.START_OBJECT) {
-                JsonObjectBuilder builder = factory.createObjectBuilder();
-                Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
-                while (parser.hasNext() && parser.next() != Event.END_OBJECT) {
-                    String name = parser.getString();
-                    try {
-                        Pattern pattern = Pattern.compile(name);
-                        parser.next();
-                        if (parser.canGetSchema()) {
-                            JsonSchema schema = parser.getSchema();
-                            schemas.put(pattern, schema);
-                            builder.add(name, schema.toJson());
-                        } else {
-                            return failed(parser, builder, name);
-                        }
-                    } catch (PatternSyntaxException e) {
-                        return failed(parser, builder, name);
-                    }
-                }
-                return new PatternProperties(builder.build(), schemas);
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.OBJECT) {
+                throw new InvalidKeywordException("Must be an object");
             }
-            return failed(parser);
+            Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
+            try {
+                for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
+                    String name = entry.getKey();
+                    Pattern pattern = Pattern.compile(name);
+                    JsonSchema schema = schemaParser.parseSubschema(entry.getValue(), name);
+                    schemas.put(pattern, schema);
+                }
+                return new PatternProperties(jsonValue, schemas);
+            } catch (PatternSyntaxException e) {
+                throw new InvalidKeywordException("Must be a pattern", e);
+            }
         }
     };
 

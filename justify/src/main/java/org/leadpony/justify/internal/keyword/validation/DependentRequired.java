@@ -24,8 +24,10 @@ import java.util.Set;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.base.Message;
 import org.leadpony.justify.internal.evaluator.AbstractPropertyDependentEvaluator;
 import org.leadpony.justify.internal.evaluator.Evaluators;
@@ -53,30 +55,26 @@ public class DependentRequired extends AbstractObjectAssertionKeyword {
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
-            if (jsonValue.getValueType() == ValueType.OBJECT) {
-                Map<String, Set<String>> map = new LinkedHashMap<>();
-                for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
-                    String k = entry.getKey();
-                    JsonValue v = entry.getValue();
-                    if (v.getValueType() == ValueType.ARRAY) {
-                        Set<String> properties = new LinkedHashSet<>();
-                        for (JsonValue item : v.asJsonArray()) {
-                            if (item.getValueType() == ValueType.STRING) {
-                                properties.add(((JsonString) item).getString());
-                            } else {
-                                throw new IllegalArgumentException();
-                            }
-                        }
-                        map.put(k, properties);
-                    } else {
-                        throw new IllegalArgumentException();
-                    }
-                }
-                return new DependentRequired(jsonValue, map);
-            } else {
-                throw new IllegalArgumentException();
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.OBJECT) {
+                throw new InvalidKeywordException("Must be an object");
             }
+            Map<String, Set<String>> map = new LinkedHashMap<>();
+            for (Map.Entry<String, JsonValue> entry : jsonValue.asJsonObject().entrySet()) {
+                JsonValue entryValue = entry.getValue();
+                if (entryValue.getValueType() != ValueType.ARRAY) {
+                    throw new InvalidKeywordException("Must be an array");
+                }
+                Set<String> properties = new LinkedHashSet<>();
+                for (JsonValue item : entryValue.asJsonArray()) {
+                    if (item.getValueType() != ValueType.STRING) {
+                        throw new InvalidKeywordException("Must be a string");
+                    }
+                    properties.add(((JsonString) item).getString());
+                }
+                map.put(entry.getKey(), properties);
+            }
+            return new DependentRequired(jsonValue, map);
         }
     };
 

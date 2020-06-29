@@ -13,32 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api.keyword;
+package org.leadpony.justify.internal.schema.io;
+
+import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.keyword.SubschemaParser;
+import org.leadpony.justify.internal.base.json.JsonPointers;
 
 import jakarta.json.JsonValue;
 
 /**
- * A definition of a keyword.
- *
  * @author leadpony
- * @since 4.0
  */
-public interface KeywordType {
+abstract class AbstractSubschemaParser implements SubschemaParser {
 
-    /**
-     * Returns the name of the keyword.
-     *
-     * @return the name of the keyword, cannot be {@code null}.
-     */
-    String name();
-
-    /**
-     * Creates a keyword of this type.
-     *
-     * @param jsonValue the value of the keyword.
-     * @param schemaParser the parser of subschemas.
-     * @return the created keyword, cannot be {@code null}.
-     * @throws InvalidKeywordException if the input JSON value is invalid.
-     */
-    Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser);
+    public JsonSchema parseSubschema(JsonValue jsonValue, Object... tokens) {
+        StringBuilder builder = new StringBuilder();
+        for (Object token : tokens) {
+            builder.append('/').append(JsonPointers.encode(token.toString()));
+        }
+        return parseSubschemaAt(builder.toString(), jsonValue);
+    }
 }

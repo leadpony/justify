@@ -71,7 +71,7 @@ import jakarta.json.JsonValue;
  * @author leadpony
  * @see <a href="http://json-schema.org/">JSON Schema Specification</a>
  */
-public interface JsonSchemaBuilder extends BaseJsonSchemaBuilder {
+public interface JsonSchemaBuilder {
 
     /**
      * Builds a new instance of {@link JsonSchema}.

@@ -27,6 +27,7 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
@@ -48,7 +49,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class UniqueItems extends AbstractArrayAssertionKeyword {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingJson("uniqueItems", UniqueItems::of);
+    public static final KeywordType TYPE = KeywordTypes.mappingJsonValue("uniqueItems", UniqueItems::of);
 
     private static final UniqueItems TRUE = new UniqueItems(JsonValue.TRUE) {
 
@@ -76,13 +77,13 @@ public class UniqueItems extends AbstractArrayAssertionKeyword {
         }
     };
 
-    public static Keyword of(JsonValue value) {
+    private static Keyword of(JsonValue value) {
         if (value == JsonValue.TRUE) {
             return TRUE;
         } else if (value == JsonValue.FALSE) {
             return FALSE;
         } else {
-            throw new IllegalArgumentException();
+            throw new InvalidKeywordException("Not a boolean");
         }
     }
 

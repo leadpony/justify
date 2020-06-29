@@ -17,27 +17,29 @@ package org.leadpony.justify.api.keyword;
 
 import org.leadpony.justify.api.JsonSchema;
 
-import jakarta.json.stream.JsonParser;
+import jakarta.json.JsonValue;
 
 /**
- * A JSON parser which is available for construction of keywords.
+ * A parser of subschemas.
  *
  * @author leadpony
- * @since 4.0
  */
-public interface KeywordParser extends JsonParser {
+public interface SubschemaParser {
 
     /**
-     * Checks if a JSON schema can be retrieved by the parser in the current state.
-     * @return {@code true} if the parser can retrieve a JSON schema, {@code false} otherwise.
-     */
-    boolean canGetSchema();
-
-    /**
-     * Returns a {@link JsonSchema} at the current parser position.
+     * Parses a subschema.
      *
-     * @return the {@code JsonSchema} at the current parser position.
-     * @throws IllegalStateException if schema is not found at the current position.
+     * @param jsonValue the original JSON value to parse.
+     * @return newly created subschema.
+     * @throws InvalidKeywordException if the input value is not a schema.
      */
-    JsonSchema getSchema();
+    default JsonSchema parseSubschema(JsonValue jsonValue) {
+        return parseSubschemaAt("", jsonValue);
+    }
+
+    JsonSchema parseSubschema(JsonValue jsonValue, Object... tokens);
+
+    JsonSchema parseSubschemaAt(String jsonPointer, JsonValue jsonValue);
+
+    JsonSchemaReference parseSchemaReference(JsonValue jsonValue);
 }

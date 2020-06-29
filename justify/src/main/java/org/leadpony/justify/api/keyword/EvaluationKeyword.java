@@ -52,6 +52,15 @@ public interface EvaluationKeyword extends Keyword, EvaluatorSource {
     }
 
     /**
+     * Checks whether this keyword is exclusive one or not.
+     *
+     * @return {@code true} if this keyword is exclusive one, {@code false} otherwise.
+     */
+    default boolean isExclusive() {
+        return false;
+    }
+
+    /**
      * {@inheritDoc}}
      */
     @Override

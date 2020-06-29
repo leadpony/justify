@@ -31,8 +31,10 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
@@ -49,7 +51,7 @@ import org.leadpony.justify.internal.keyword.AbstractAssertionKeyword;
 @Spec(SpecVersion.DRAFT_07)
 public abstract class Type extends AbstractAssertionKeyword {
 
-    public static final KeywordType TYPE = new KeywordType() {
+    static class TypeKeywordType implements KeywordType {
 
         @Override
         public String name() {
@@ -57,25 +59,44 @@ public abstract class Type extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
             switch (jsonValue.getValueType()) {
             case STRING:
-                return new Single(jsonValue, toInstanceType((JsonString) jsonValue));
+                return map(jsonValue, toInstanceType((JsonString) jsonValue));
             case ARRAY:
                 Set<InstanceType> types = new LinkedHashSet<>();
                 for (JsonValue item : jsonValue.asJsonArray()) {
                     if (item.getValueType() == ValueType.STRING) {
                         types.add(toInstanceType((JsonString) item));
                     } else {
-                        return failed(jsonValue);
+                        throw new InvalidKeywordException("Not a type");
                     }
                 }
-                return new Multiple(jsonValue, types);
+                return map(jsonValue, types);
             default:
-                return failed(jsonValue);
+                throw new InvalidKeywordException("Not a type");
+            }
+        }
+
+        protected Keyword map(JsonValue jsonValue, InstanceType type) {
+            return new Single(jsonValue, type);
+        }
+
+        protected Keyword map(JsonValue jsonValue, Set<InstanceType> types) {
+            return new Multiple(jsonValue, types);
+        }
+
+        private static InstanceType toInstanceType(JsonString value) {
+            try {
+                String name = value.getString().toUpperCase();
+                return InstanceType.valueOf(name);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidKeywordException(e.getMessage(), e);
             }
         }
     };
+
+    public static final KeywordType TYPE = new TypeKeywordType();
 
     public static Type of(JsonValue json, InstanceType type) {
         return new Single(json, type);
@@ -115,11 +136,6 @@ public abstract class Type extends AbstractAssertionKeyword {
             }
             return type;
         }
-    }
-
-    static InstanceType toInstanceType(JsonString value) {
-        String name = value.getString().toUpperCase();
-        return InstanceType.valueOf(name);
     }
 
     protected Type(JsonValue json) {

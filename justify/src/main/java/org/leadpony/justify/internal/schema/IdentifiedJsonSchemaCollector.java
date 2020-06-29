@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaVisitor;
+import org.leadpony.justify.internal.base.URIs;
 
 /**
  * @author leadpony
@@ -44,6 +45,11 @@ public class IdentifiedJsonSchemaCollector implements JsonSchemaVisitor {
         if (schema.hasId()) {
             pushIdentifiedSchema(schema);
         }
+
+        schema.getAnchor().ifPresent(anchor -> {
+            processSchemaWithAnchor(schema, anchor);
+        });
+
         return Result.CONTINUE;
     }
 
@@ -57,7 +63,7 @@ public class IdentifiedJsonSchemaCollector implements JsonSchemaVisitor {
 
     private void pushIdentifiedSchema(JsonSchema schema) {
         URI id = schema.id();
-        URI baseUri = id.isAbsolute() ? id : currentScope.baseUri.resolve(id);
+        URI baseUri = id.isAbsolute() ? id : getCurrentBaseUri().resolve(id);
         outerScopes.addLast(currentScope);
         currentScope = new Scope(baseUri, schema);
         addIdentifiedSchema(baseUri, schema);
@@ -69,8 +75,17 @@ public class IdentifiedJsonSchemaCollector implements JsonSchemaVisitor {
         }
     }
 
-    private void addIdentifiedSchema(URI baseUri, JsonSchema schema) {
-        schemas.put(baseUri, schema);
+    private void processSchemaWithAnchor(JsonSchema schema, String anchor) {
+        URI id = getCurrentBaseUri().resolve("#" + anchor);
+        addIdentifiedSchema(id, schema);
+    }
+
+    private void addIdentifiedSchema(URI id, JsonSchema schema) {
+        schemas.put(URIs.removeEmptyFragment(id), schema);
+    }
+
+    private URI getCurrentBaseUri() {
+        return currentScope.baseUri;
     }
 
     static class Scope {

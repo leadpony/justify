@@ -36,7 +36,7 @@ import org.leadpony.justify.internal.keyword.KeywordTypes;
 @Spec(SpecVersion.DRAFT_07)
 public class Default extends AbstractKeyword implements MetadataKeyword<JsonValue> {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingJson("default", Default::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingJsonValue("default", Default::new);
 
     public Default(JsonValue value) {
         super(value);

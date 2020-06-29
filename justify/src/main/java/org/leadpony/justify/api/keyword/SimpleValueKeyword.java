@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema;
-
-import java.net.URI;
+package org.leadpony.justify.api.keyword;
 
 /**
- * A interface for resolving identifiers.
+ * A keyword holding a simple-type value.
+ *
+ * @param <T> the type of the value.
  *
  * @author leadpony
+ * @since 4.0
  */
-public interface Resolvable {
+public interface SimpleValueKeyword<T> extends Keyword {
 
     /**
-     * Resolves the identifier of this object.
+     * Returns the value of this keyword.
      *
-     * @param baseUri the base URI by which the identifier will be resolved, cannot
-     *                be {@code null}.
+     * @return the value of this keyword.
      */
-    void resolve(URI baseUri);
+    T value();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.api.keyword;
+package org.leadpony.justify.internal.keyword;
+
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 
 import jakarta.json.JsonValue;
 
@@ -22,7 +26,7 @@ import jakarta.json.JsonValue;
  *
  * @author leadpony
  */
-class UnrecognizedKeyword implements Keyword {
+public class UnrecognizedKeyword implements Keyword, KeywordType {
 
     private final String name;
     private final JsonValue value;
@@ -33,10 +37,12 @@ class UnrecognizedKeyword implements Keyword {
      * @param name the name of this keyword.
      * @param value the value of this keyword.
      */
-    UnrecognizedKeyword(String name, JsonValue value) {
+    public UnrecognizedKeyword(String name, JsonValue value) {
         this.name = name;
         this.value = value;
     }
+
+    /* As a Keyword */
 
     @Override
     public String name() {
@@ -55,6 +61,13 @@ class UnrecognizedKeyword implements Keyword {
 
     @Override
     public KeywordType getType() {
-        throw new UnsupportedOperationException("Not supported");
+        return this;
+    }
+
+    /* As a KeywordType */
+
+    @Override
+    public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+        return new UnrecognizedKeyword(this.name, jsonValue);
     }
 }

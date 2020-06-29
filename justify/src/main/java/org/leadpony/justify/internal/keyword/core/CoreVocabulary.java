@@ -33,27 +33,28 @@ public enum CoreVocabulary implements DefaultVocabulary {
     DRAFT_04(
             Definitions.TYPE,
             LegacyId.TYPE,
-            Ref.TYPE,
+            ExclusiveRef.TYPE,
             Schema.TYPE),
 
     DRAFT_06(
             Definitions.TYPE,
             Id.TYPE,
-            Ref.TYPE,
+            ExclusiveRef.TYPE,
             Schema.TYPE),
 
     DRAFT_07(
             Comment.TYPE,
             Definitions.TYPE,
             Id.TYPE,
-            Ref.TYPE,
+            ExclusiveRef.TYPE,
             Schema.TYPE),
 
     DRAFT_2019_09("https://json-schema.org/draft/2019-09/vocab/core",
             "https://json-schema.org/draft/2019-09/meta/core",
+            Anchor.TYPE, // added
             Comment.TYPE,
             Definitions.TYPE,
-            Defs.TYPE,
+            Defs.TYPE, // added
             Id.TYPE,
             RecursiveRef.TYPE, // added
             Ref.TYPE,

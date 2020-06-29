@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.justify.internal.schema.io;
+package org.leadpony.justify.api.keyword;
 
-import org.leadpony.justify.api.keyword.KeywordParser;
-import org.leadpony.justify.internal.base.json.PointerAwareJsonParser;
+import java.net.URI;
 
 /**
+ * A special keyword for identifying a JSON schema.
+ *
  * @author leadpony
+ * @since 4.0
  */
-interface SchemaKeywordParser extends PointerAwareJsonParser, KeywordParser {
-
-    Event getCurrentEvent();
-
-    default boolean canGetSchema() {
-        Event event = getCurrentEvent();
-        return event == Event.START_OBJECT || event == Event.VALUE_TRUE || event == Event.VALUE_FALSE;
-    }
+public interface IdKeyword extends SimpleValueKeyword<URI> {
 }

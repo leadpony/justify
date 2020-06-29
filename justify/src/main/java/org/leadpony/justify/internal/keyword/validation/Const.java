@@ -37,7 +37,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_07)
 public class Const extends AbstractEqualityAssertion {
 
-    public static final KeywordType TYPE = KeywordTypes.mappingJson("const", Const::new);
+    public static final KeywordType TYPE = KeywordTypes.mappingJsonValue("const", Const::new);
 
     public Const(JsonValue expected) {
         super(expected);

@@ -127,15 +127,4 @@ public interface Keyword {
     default Optional<JsonSchema> findSchema(String jsonPointer) {
         return Optional.empty();
     }
-
-    /**
-     * Creates an unrecognized keyword.
-     *
-     * @param name      the keyword name.
-     * @param jsonValue the value given for the keyword.
-     * @return newly created keyword.
-     */
-    static Keyword unrecognized(String name, JsonValue jsonValue) {
-        return new UnrecognizedKeyword(name, jsonValue);
-    }
 }

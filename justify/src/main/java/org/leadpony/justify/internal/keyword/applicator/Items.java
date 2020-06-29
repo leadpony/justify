@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParser.Event;
@@ -34,8 +32,8 @@ import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.Keyword;
-import org.leadpony.justify.api.keyword.KeywordParser;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.json.ParserEvents;
@@ -63,28 +61,18 @@ public abstract class Items extends AbstractArrayApplicatorKeyword  {
         }
 
         @Override
-        public Keyword parse(KeywordParser parser, JsonBuilderFactory factory) {
-            switch (parser.next()) {
-            case START_ARRAY:
-                JsonArrayBuilder builder = factory.createArrayBuilder();
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            switch (jsonValue.getValueType()) {
+            case ARRAY:
                 List<JsonSchema> schemas = new ArrayList<>();
-                while (parser.hasNext() && parser.next() != Event.END_ARRAY) {
-                    if (parser.canGetSchema()) {
-                        JsonSchema schema = parser.getSchema();
-                        schemas.add(schema);
-                        builder.add(schema.toJson());
-                    } else {
-                        failed(parser, builder);
-                    }
+                int i = 0;
+                for (JsonValue item : jsonValue.asJsonArray()) {
+                    schemas.add(schemaParser.parseSubschema(item, i++));
                 }
-                return Items.of(builder.build(), schemas);
-            case START_OBJECT:
-            case VALUE_TRUE:
-            case VALUE_FALSE:
-                JsonSchema schema = parser.getSchema();
-                return Items.of(schema.toJson(), schema);
+                return Items.of(jsonValue, schemas);
             default:
-                return failed(parser);
+                JsonSchema schema = schemaParser.parseSubschema(jsonValue);
+                return Items.of(jsonValue, schema);
             }
         }
     };

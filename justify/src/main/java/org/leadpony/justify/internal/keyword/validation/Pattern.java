@@ -24,8 +24,10 @@ import jakarta.json.JsonValue.ValueType;
 
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
@@ -51,15 +53,17 @@ public class Pattern extends AbstractStringAssertion {
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
-            if (jsonValue.getValueType() == ValueType.STRING) {
-                String string = ((JsonString) jsonValue).getString();
-                try {
-                    return new Pattern(jsonValue, Ecma262Pattern.compile(string));
-                } catch (PatternSyntaxException e) {
-                }
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.STRING) {
+                throw new InvalidKeywordException("Not a string");
             }
-            return failed(jsonValue);
+
+            JsonString string = (JsonString) jsonValue;
+            try {
+                return new Pattern(jsonValue, Ecma262Pattern.compile(string.getString()));
+            } catch (PatternSyntaxException e) {
+                throw new InvalidKeywordException("Not a pattern");
+            }
         }
     };
 

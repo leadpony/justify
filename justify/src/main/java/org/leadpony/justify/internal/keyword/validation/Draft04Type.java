@@ -15,13 +15,9 @@
  */
 package org.leadpony.justify.internal.keyword.validation;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
-import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
-
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.SpecVersion;
@@ -37,45 +33,18 @@ import org.leadpony.justify.internal.annotation.Spec;
 @Spec(SpecVersion.DRAFT_04)
 public final class Draft04Type {
 
-    public static final KeywordType TYPE = new KeywordType() {
+    public static final KeywordType TYPE = new Type.TypeKeywordType() {
 
         @Override
-        public String name() {
-            return "type";
+        protected Keyword map(JsonValue jsonValue, InstanceType type) {
+            return new Single(jsonValue, type);
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
-            switch (jsonValue.getValueType()) {
-            case STRING:
-                return new Single(jsonValue, Type.toInstanceType((JsonString) jsonValue));
-            case ARRAY:
-                Set<InstanceType> types = new LinkedHashSet<>();
-                for (JsonValue item : jsonValue.asJsonArray()) {
-                    if (item.getValueType() == ValueType.STRING) {
-                        types.add(Type.toInstanceType((JsonString) item));
-                    } else {
-                        return failed(jsonValue);
-                    }
-                }
-                return new Multiple(jsonValue, types);
-            default:
-                return failed(jsonValue);
-            }
+        protected Keyword map(JsonValue jsonValue, Set<InstanceType> types) {
+            return new Multiple(jsonValue, types);
         }
     };
-
-    public static Type of(JsonValue json, InstanceType type) {
-        return new Single(json, type);
-    }
-
-    public static Type of(JsonValue json, Set<InstanceType> types) {
-        if (types.size() == 1) {
-            return new Single(json, types.iterator().next());
-        } else {
-            return new Multiple(json, types);
-        }
-    }
 
     private static InstanceType getNarrowType(InstanceType type, EvaluatorContext context) {
         if (type == InstanceType.NUMBER

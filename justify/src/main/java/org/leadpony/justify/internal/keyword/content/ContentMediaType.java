@@ -32,8 +32,10 @@ import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.Problem;
 import org.leadpony.justify.api.SpecVersion;
+import org.leadpony.justify.api.keyword.InvalidKeywordException;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.KeywordType;
+import org.leadpony.justify.api.keyword.SubschemaParser;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.MediaType;
@@ -80,13 +82,12 @@ public class ContentMediaType extends AbstractAssertionKeyword {
         }
 
         @Override
-        public Keyword parse(JsonValue jsonValue) {
-            if (jsonValue.getValueType() == ValueType.STRING) {
-                final String name = ((JsonString) jsonValue).getString();
-                return createKeyword(jsonValue, name);
-            } else {
-                throw new IllegalArgumentException();
+        public Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser) {
+            if (jsonValue.getValueType() != ValueType.STRING) {
+                throw new InvalidKeywordException("Must be a string");
             }
+            JsonString string = (JsonString) jsonValue;
+            return createKeyword(jsonValue, string.getString());
         }
 
         private Keyword createKeyword(JsonValue jsonValue, String name) {

@@ -19,51 +19,97 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.json.JsonObject;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
-import org.leadpony.justify.api.EvaluatorContext;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
+import org.leadpony.justify.api.ObjectJsonSchema;
+import org.leadpony.justify.api.JsonSchemaVisitor;
+import org.leadpony.justify.api.keyword.ApplicatorKeyword;
+import org.leadpony.justify.api.keyword.EvaluationKeyword;
+import org.leadpony.justify.api.keyword.IdKeyword;
+import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.Evaluator;
 import org.leadpony.justify.api.InstanceType;
 import org.leadpony.justify.api.JsonSchema;
-import org.leadpony.justify.api.keyword.EvaluationKeyword;
-import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.evaluator.schema.ComplexSchemaBasedEvaluator;
 import org.leadpony.justify.internal.evaluator.schema.SimpleSchemaBasedEvaluator;
+import org.leadpony.justify.internal.keyword.core.Anchor;
+import org.leadpony.justify.internal.keyword.core.Comment;
+import org.leadpony.justify.internal.keyword.core.Schema;
+import org.leadpony.justify.internal.keyword.metadata.Default;
 import org.leadpony.justify.internal.keyword.metadata.Description;
 import org.leadpony.justify.internal.keyword.metadata.Title;
-import org.leadpony.justify.internal.problem.ProblemBuilder;
-import org.leadpony.justify.internal.problem.ProblemBuilderFactory;
 
 /**
- * JSON Schema with keywords.
+ * A basic implementation of {@link JsonSchema}.
  *
  * @author leadpony
  */
-public abstract class BasicJsonSchema extends AbstractJsonSchema implements ProblemBuilderFactory {
+public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> implements ObjectJsonSchema {
 
-    public static JsonSchema of(URI id, JsonObject json, Map<String, Keyword> keywords) {
+    private final Map<String, Keyword> keywordMap;
+    private final IdKeyword id;
+    private final JsonValue json;
+
+    private Optional<String> anchor;
+
+    public static JsonSchema of(Map<String, Keyword> keywords, IdKeyword id, JsonObject json) {
+        combineKeywords(keywords);
         List<EvaluationKeyword> evaluationKeywords = collectEvaluationKeywords(keywords);
         if (evaluationKeywords.isEmpty()) {
-            return new None(id, json, keywords);
+            return new None(keywords, id, json);
         } else if (evaluationKeywords.size() == 1) {
-            return new One(id, json, keywords, evaluationKeywords.get(0));
+            return new One(keywords, id, json, evaluationKeywords.get(0));
         } else {
-            return new Many(id, json, keywords, evaluationKeywords);
+            return new Many(keywords, id, json, evaluationKeywords);
         }
     }
 
-    /**
-     * Constructs this schema.
-     *
-     * @param id       the identifier of this schema, may be {@code null}.
-     * @param json     the JSON representation of this schema.
-     * @param keywords all keywords.
-     */
-    protected BasicJsonSchema(URI id, JsonObject json, Map<String, Keyword> keywords) {
-        super(id, json, keywords);
+    protected BasicJsonSchema(Map<String, Keyword> keywords, IdKeyword id, JsonValue json) {
+        this.keywordMap = Collections.unmodifiableMap(keywords);
+        this.id = id;
+        this.json = json;
+    }
+
+    /* As a JsonSchema */
+
+    @Override
+    public boolean hasId() {
+        return id != null;
+    }
+
+    @Override
+    public URI id() {
+        return id != null ? id.value() : null;
+    }
+
+    @Override
+    public URI schema() {
+        if (containsKeyword("$schema")) {
+            Schema keyword = getKeyword("$schema");
+            return keyword.value();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String comment() {
+        if (containsKeyword("$comment")) {
+            Comment keyword = getKeyword("$comment");
+            return keyword.value();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -85,16 +131,207 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     }
 
     @Override
-    public ProblemBuilder createProblemBuilder(EvaluatorContext context) {
-        return ProblemBuilderFactory.super.createProblemBuilder(context)
-                .withSchema(this);
+    public JsonValue defaultValue() {
+        if (containsKeyword("default")) {
+            Default keyword = getKeyword("default");
+            return keyword.value();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Optional<String> getAnchor() {
+        if (this.anchor != null) {
+            return this.anchor;
+        }
+        Optional<Anchor> keyword = getKeyword("$anchor", Anchor.class);
+        this.anchor = keyword.map(Anchor::value);
+        return this.anchor;
+    }
+
+    @Override
+    public boolean isBoolean() {
+        return false;
+    }
+
+    @Override
+    public boolean containsKeyword(String keyword) {
+        requireNonNull(keyword, "keyword");
+        return keywordMap.containsKey(keyword);
+    }
+
+    @Override
+    public JsonValue getKeywordValue(String keyword) {
+        return getKeywordValue(keyword, null);
+    }
+
+    @Override
+    public JsonValue getKeywordValue(String keyword, JsonValue defaultValue) {
+        requireNonNull(keyword, "keyword");
+        Keyword found = keywordMap.get(keyword);
+        if (found == null) {
+            return defaultValue;
+        }
+        return found.getValueAsJson();
+    }
+
+    @Override
+    public Stream<JsonSchema> getSubschemas() {
+        return keywordMap.values().stream()
+                .filter(Keyword::containsSchemas)
+                .flatMap(Keyword::getSchemasAsStream);
+    }
+
+    @Override
+    public Stream<JsonSchema> getInPlaceSubschemas() {
+        return getApplicatorKeywordsAsStream()
+                .filter(ApplicatorKeyword::containsSchemas)
+                .filter(keyword -> keyword.getApplicableLocation() == ApplicatorKeyword.ApplicableLocation.CURRENT)
+                .flatMap(ApplicatorKeyword::getSchemasAsStream);
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        requireNonNull(jsonPointer, "jsonPointer");
+        if (jsonPointer.isEmpty()) {
+            return Optional.of(this);
+        }
+
+        int next = jsonPointer.indexOf('/', 1);
+        if (next < 0) {
+            Keyword keyword = keywordMap.get(jsonPointer.substring(1));
+            if (keyword != null) {
+                return keyword.findSchema("");
+            }
+        } else {
+            Keyword keyword = keywordMap.get(jsonPointer.substring(1, next));
+            if (keyword != null) {
+                return keyword.findSchema(jsonPointer.substring(next));
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Map<String, JsonSchema> collectSchemas() {
+        Map<String, JsonSchema> schemas = new LinkedHashMap<>();
+        JsonSchemaCollector collector = new JsonSchemaCollector(schemas);
+        walkSchemaTree(collector);
+        return schemas;
+    }
+
+    @Override
+    public Map<URI, JsonSchema> collectIdentifiedSchemas(URI baseUri) {
+        requireNonNull(baseUri, "baseUri");
+        Map<URI, JsonSchema> schemas = new LinkedHashMap<>();
+        if (!hasId()) {
+            schemas.put(baseUri, this);
+        }
+        IdentifiedJsonSchemaCollector collector = new IdentifiedJsonSchemaCollector(baseUri, schemas);
+        walkSchemaTree(collector);
+        return schemas;
+    }
+
+    @Override
+    public void walkSchemaTree(JsonSchemaVisitor visitor) {
+        requireNonNull(visitor, "visitor");
+        JsonSchemaWalker walker = new JsonSchemaWalker(visitor);
+        walker.walkSchema(this);
+    }
+
+    @Override
+    public final JsonValue toJson() {
+        return json;
+    }
+
+    /* As an Object */
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
+    }
+
+    @Override
+    public String toString() {
+        return toJson().toString();
+    }
+
+    public boolean hasAbsoluteId() {
+        return hasId() && id().isAbsolute();
+    }
+
+    /* As a Map */
+
+    @Override
+    public int size() {
+        return keywordMap.size();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return keywordMap.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return keywordMap.containsValue(value);
+    }
+
+    @Override
+    public Keyword get(Object key) {
+        return keywordMap.get(key);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<Entry<String, Keyword>> entrySet() {
+        Set<?> entrySet = this.keywordMap.entrySet();
+        return (Set<Entry<String, Keyword>>) entrySet;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends Keyword> T getKeyword(String name) {
+        return (T) keywordMap.get(name);
+    }
+
+    protected <T extends Keyword> Optional<T> getKeyword(String name, Class<T> type) {
+        if (containsKeyword(name)) {
+            Keyword keyword = this.keywordMap.get(name);
+            if (type.isInstance(keyword)) {
+                return Optional.of(type.cast(keyword));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Stream<ApplicatorKeyword> getApplicatorKeywordsAsStream() {
+        return keywordMap.values().stream()
+                .filter(keyword -> keyword instanceof ApplicatorKeyword)
+                .map(keyword -> (ApplicatorKeyword) keyword);
+    }
+
+    private static void combineKeywords(Map<String, Keyword> keywords) {
+        keywords.replaceAll((name, keyword) -> keyword.withKeywords(keywords));
     }
 
     private static List<EvaluationKeyword> collectEvaluationKeywords(Map<String, Keyword> keywords) {
         List<EvaluationKeyword> result = new ArrayList<>();
         for (Keyword keyword : keywords.values()) {
             if (keyword.canEvaluate()) {
-                result.add((EvaluationKeyword) keyword);
+                EvaluationKeyword evaluation = (EvaluationKeyword) keyword;
+                if (evaluation.isExclusive()) {
+                    result.clear();
+                    result.add(evaluation);
+                    break;
+                }
+                result.add(evaluation);
             }
         }
         return result;
@@ -103,10 +340,10 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     /**
      * JSON Schema without any evalutable keywords.
      */
-    private static final class None extends BasicJsonSchema {
+    static final class None extends BasicJsonSchema {
 
-        private None(URI id, JsonObject json, Map<String, Keyword> keywords) {
-            super(id, json, keywords);
+        None(Map<String, Keyword> keywords, IdKeyword id, JsonObject json) {
+            super(keywords, id, json);
         }
 
         @Override
@@ -125,13 +362,13 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     /**
      * JSON Schema with single evalutable keyword.
      */
-    private static final class One extends BasicJsonSchema {
+    static final class One extends BasicJsonSchema {
 
         private final EvaluationKeyword evaluationKeyword;
 
-        private One(URI id, JsonObject json, Map<String, Keyword> keywords,
+        One(Map<String, Keyword> keywords, IdKeyword id, JsonObject json,
                 EvaluationKeyword evaluationKeyword) {
-            super(id, json, keywords);
+            super(keywords, id, json);
             this.evaluationKeyword = evaluationKeyword;
         }
 
@@ -151,13 +388,13 @@ public abstract class BasicJsonSchema extends AbstractJsonSchema implements Prob
     /**
      * JSON Schema with multiple evalutable keywords.
      */
-    private static final class Many extends BasicJsonSchema {
+    static final class Many extends BasicJsonSchema {
 
         private final List<EvaluationKeyword> evaluationKeywords;
 
-        private Many(URI id, JsonObject json, Map<String, Keyword> keywords,
+        Many(Map<String, Keyword> keywords, IdKeyword id, JsonObject json,
                 List<EvaluationKeyword> evaluationKeywords) {
-            super(id, json, keywords);
+            super(keywords, id, json);
             this.evaluationKeywords = evaluationKeywords;
         }
 

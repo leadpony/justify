@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2020 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import jakarta.json.spi.JsonProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.keyword.IdKeyword;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.internal.keyword.core.Id;
 
@@ -53,12 +54,13 @@ public class SchemaCatalogTest {
         assertThat(actual).isEqualTo(schema);
     }
 
-    private static JsonSchema createSchema(URI id) {
+    private static JsonSchema createSchema(URI uri) {
         JsonObjectBuilder builder = jsonProvider.createObjectBuilder();
         Map<String, Keyword> keywords = new HashMap<>();
-        JsonValue json = jsonProvider.createValue(id.toString());
-        keywords.put("$id", new Id(json, id));
+        JsonValue json = jsonProvider.createValue(uri.toString());
+        IdKeyword id = new Id(json, uri);
+        keywords.put("$id", id);
         builder.add("$id", json);
-        return BasicJsonSchema.of(id, builder.build(), keywords);
+        return BasicJsonSchema.of(keywords, id, builder.build());
     }
 }

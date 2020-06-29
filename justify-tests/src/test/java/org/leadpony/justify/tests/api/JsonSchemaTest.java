@@ -37,7 +37,6 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -347,7 +346,6 @@ public class JsonSchemaTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Disabled
     @ParameterizedTest
     @JsonSource("/org/jsonschema/draft201909/schema-identification.json")
     public void collectIdentifiedSchemasShouldReturnExpectedSchemas(JsonObject test) {

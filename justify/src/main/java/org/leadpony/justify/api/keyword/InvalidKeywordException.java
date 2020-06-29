@@ -15,30 +15,32 @@
  */
 package org.leadpony.justify.api.keyword;
 
-import jakarta.json.JsonValue;
-
 /**
- * A definition of a keyword.
+ * An exception thrown if the keyword is invalid.
  *
  * @author leadpony
  * @since 4.0
  */
-public interface KeywordType {
+public class InvalidKeywordException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Returns the name of the keyword.
+     * Construsts this exception with the specified detail message.
      *
-     * @return the name of the keyword, cannot be {@code null}.
+     * @param message the detail message.
      */
-    String name();
+    public InvalidKeywordException(String message) {
+        super(message);
+    }
 
     /**
-     * Creates a keyword of this type.
+     * Construsts this exception with the specified detail message and cause.
      *
-     * @param jsonValue the value of the keyword.
-     * @param schemaParser the parser of subschemas.
-     * @return the created keyword, cannot be {@code null}.
-     * @throws InvalidKeywordException if the input JSON value is invalid.
+     * @param message the detail message.
+     * @param cause the cause of this exception.
      */
-    Keyword createKeyword(JsonValue jsonValue, SubschemaParser schemaParser);
+    public InvalidKeywordException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

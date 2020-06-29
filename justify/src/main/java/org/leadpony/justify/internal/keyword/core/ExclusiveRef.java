@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 the Justify authors.
+ * Copyright 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,35 @@
  */
 package org.leadpony.justify.internal.keyword.core;
 
-import java.net.URI;
-
+import org.leadpony.justify.api.keyword.JsonSchemaReference;
+import org.leadpony.justify.api.keyword.Keyword;
+import org.leadpony.justify.api.keyword.KeywordType;
 import jakarta.json.JsonValue;
 
-import org.leadpony.justify.api.SpecVersion;
-import org.leadpony.justify.api.keyword.KeywordType;
-import org.leadpony.justify.internal.annotation.KeywordClass;
-import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.KeywordTypes;
-
 /**
- * A keyword type representing "id" keyword defined by the draft-04.
- *
  * @author leadpony
  */
-@KeywordClass("id")
-@Spec(SpecVersion.DRAFT_04)
-public class LegacyId extends Id {
+public class ExclusiveRef extends Ref {
 
-    static final KeywordType TYPE = KeywordTypes.mappingUri("id", LegacyId::new);
+    static final KeywordType TYPE = new RefKeywordType() {
 
-    LegacyId(JsonValue json, URI value) {
-        super(json, value);
+        @Override
+        protected Keyword map(JsonValue jsonValue, JsonSchemaReference reference) {
+            return new ExclusiveRef(jsonValue, reference);
+        }
+    };
+
+    public ExclusiveRef(JsonValue jsonValue, JsonSchemaReference reference) {
+        super(jsonValue, reference);
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
+    }
+
+    @Override
+    public boolean isExclusive() {
+        return true;
     }
 }

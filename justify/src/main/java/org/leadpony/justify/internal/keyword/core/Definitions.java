@@ -17,17 +17,13 @@
 package org.leadpony.justify.internal.keyword.core;
 
 import java.util.Map;
-import java.util.Optional;
-
 import jakarta.json.JsonValue;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.api.keyword.KeywordType;
 import org.leadpony.justify.internal.annotation.KeywordClass;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.keyword.AbstractKeyword;
 import org.leadpony.justify.internal.keyword.KeywordTypes;
-import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 
 /**
  * @author leadpony
@@ -36,29 +32,16 @@ import org.leadpony.justify.internal.keyword.JsonSchemaMap;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class Definitions extends AbstractKeyword {
+public class Definitions extends Defs {
 
     static final KeywordType TYPE = KeywordTypes.mappingSchemaMap("definitions", Definitions::new);
 
-    private final JsonSchemaMap schemaMap;
-
     public Definitions(JsonValue json, Map<String, JsonSchema> definitionMap) {
-        super(json);
-        this.schemaMap = JsonSchemaMap.of(definitionMap);
+        super(json, definitionMap);
     }
 
     @Override
     public KeywordType getType() {
         return TYPE;
-    }
-
-    @Override
-    public Map<String, JsonSchema> getSchemasAsMap() {
-        return schemaMap;
-    }
-
-    @Override
-    public Optional<JsonSchema> findSchema(String jsonPointer) {
-        return schemaMap.findSchema(jsonPointer);
     }
 }

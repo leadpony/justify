@@ -17,9 +17,10 @@
 package org.leadpony.justify.internal.base;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
- * Utility methods operating on instances of {@link URI}.
+ * A utility class operating on instances of {@link URI}.
  *
  * @author leadpony
  */
@@ -35,6 +36,35 @@ public final class URIs {
 
     public static URI withEmptyFragment(URI uri) {
         return uri.resolve("#");
+    }
+
+    public static URI removeFragment(URI uri) {
+        String fragment = uri.getFragment();
+        if (fragment != null) {
+            try {
+                return new URI(uri.getScheme(), uri.getSchemeSpecificPart(), null);
+            } catch (URISyntaxException e) {
+                // Never happens
+                throw new IllegalArgumentException(e);
+            }
+        } else {
+            return uri;
+        }
+    }
+
+    /**
+     * Removes the fragment if it is empty.
+     *
+     * @param uri the original URI.
+     * @return the URI after modification.
+     */
+    public static URI removeEmptyFragment(URI uri) {
+        String fragment = uri.getFragment();
+        if ("".equals(fragment)) {
+            return removeFragment(uri);
+        } else {
+            return uri;
+        }
     }
 
     public static boolean compare(URI x, URI y) {
