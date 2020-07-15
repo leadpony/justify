@@ -56,28 +56,34 @@ import org.leadpony.justify.internal.keyword.metadata.Title;
  */
 public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> implements ObjectJsonSchema {
 
+    private final JsonValue json;
     private final Map<String, Keyword> keywordMap;
     private final IdKeyword id;
-    private final JsonValue json;
+    private final URI baseUri;
 
     private Optional<String> anchor;
 
-    public static JsonSchema of(Map<String, Keyword> keywords, IdKeyword id, JsonObject json) {
+    public static JsonSchema of(JsonObject json, Map<String, Keyword> keywords, IdKeyword id) {
+        return of(json, keywords, id, null);
+    }
+
+    public static JsonSchema of(JsonObject json, Map<String, Keyword> keywords, IdKeyword id, URI baseUri) {
         combineKeywords(keywords);
         List<EvaluationKeyword> evaluationKeywords = collectEvaluationKeywords(keywords);
         if (evaluationKeywords.isEmpty()) {
-            return new None(keywords, id, json);
+            return new None(json, keywords, id, baseUri);
         } else if (evaluationKeywords.size() == 1) {
-            return new One(keywords, id, json, evaluationKeywords.get(0));
+            return new One(json, keywords, id, baseUri, evaluationKeywords.get(0));
         } else {
-            return new Many(keywords, id, json, evaluationKeywords);
+            return new Many(json, keywords, id, baseUri, evaluationKeywords);
         }
     }
 
-    protected BasicJsonSchema(Map<String, Keyword> keywords, IdKeyword id, JsonValue json) {
+    protected BasicJsonSchema(JsonValue json, Map<String, Keyword> keywords, IdKeyword id, URI baseUri) {
+        this.json = json;
         this.keywordMap = Collections.unmodifiableMap(keywords);
         this.id = id;
-        this.json = json;
+        this.baseUri = baseUri;
     }
 
     /* As a JsonSchema */
@@ -138,6 +144,11 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
         } else {
             return null;
         }
+    }
+
+    @Override
+    public URI getBaseUri() {
+        return baseUri;
     }
 
     @Override
@@ -342,8 +353,8 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
      */
     static final class None extends BasicJsonSchema {
 
-        None(Map<String, Keyword> keywords, IdKeyword id, JsonObject json) {
-            super(keywords, id, json);
+        None(JsonObject json, Map<String, Keyword> keywords, IdKeyword id, URI baseUri) {
+            super(json, keywords, id, baseUri);
         }
 
         @Override
@@ -366,9 +377,9 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
 
         private final EvaluationKeyword evaluationKeyword;
 
-        One(Map<String, Keyword> keywords, IdKeyword id, JsonObject json,
+        One(JsonObject json, Map<String, Keyword> keywords, IdKeyword id, URI baseUri,
                 EvaluationKeyword evaluationKeyword) {
-            super(keywords, id, json);
+            super(json, keywords, id, baseUri);
             this.evaluationKeyword = evaluationKeyword;
         }
 
@@ -392,9 +403,9 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
 
         private final List<EvaluationKeyword> evaluationKeywords;
 
-        Many(Map<String, Keyword> keywords, IdKeyword id, JsonObject json,
+        Many(JsonObject json, Map<String, Keyword> keywords, IdKeyword id, URI baseUri,
                 List<EvaluationKeyword> evaluationKeywords) {
-            super(keywords, id, json);
+            super(json, keywords, id, baseUri);
             this.evaluationKeywords = evaluationKeywords;
         }
 

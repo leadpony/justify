@@ -452,7 +452,7 @@ class RootJsonSchemaParser extends AbstractSubschemaParser {
         }
 
         JsonSchema buildSchema(JsonObject json) {
-            return BasicJsonSchema.of(this.keywords, this.id, json);
+            return BasicJsonSchema.of(json, this.keywords, this.id, this.baseUri);
         }
     }
 }

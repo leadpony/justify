@@ -61,6 +61,6 @@ public class SchemaCatalogTest {
         IdKeyword id = new Id(json, uri);
         keywords.put("$id", id);
         builder.add("$id", json);
-        return BasicJsonSchema.of(keywords, id, builder.build());
+        return BasicJsonSchema.of(builder.build(), keywords, id);
     }
 }

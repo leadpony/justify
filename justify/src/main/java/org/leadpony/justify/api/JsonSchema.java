@@ -152,6 +152,10 @@ public interface JsonSchema extends EvaluatorSource {
         return Optional.empty();
     }
 
+    default URI getBaseUri() {
+        throw new IllegalStateException("No base URI");
+    }
+
     /**
      * Checks if this schema is a boolean schema.
      *
