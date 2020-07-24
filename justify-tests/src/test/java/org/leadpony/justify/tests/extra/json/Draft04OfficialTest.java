@@ -39,6 +39,7 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "definitions.json",
             "dependencies.json",
             "enum.json",
+            "format.json",
             "items.json",
             "maximum.json",
             "maxItems.json",
@@ -69,9 +70,15 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
             "optional/bignum.json",
             // Draft-04 does not have the "regex" format.
             "optional/ecmascript-regex.json",
-            "optional/format.json",
-            "optional/zeroTerminatedFloats.json",
             "optional/non-bmp-regex.json",
+            "optional/zeroTerminatedFloats.json",
+
+            "optional/format/date-time.json",
+            "optional/format/email.json",
+            "optional/format/hostname.json",
+            "optional/format/ipv4.json",
+            "optional/format/ipv6.json",
+            "optional/format/uri.json"
     };
 
     public static Stream<TestCase> optional() {

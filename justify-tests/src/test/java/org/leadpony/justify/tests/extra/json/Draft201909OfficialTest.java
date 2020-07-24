@@ -47,6 +47,7 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
             "exclusiveMaximum.json",
             "exclusiveMinimum.json",
             "format.json",
+            "id.json",
             "if-then-else.json",
             "items.json",
             "maxContains.json",
@@ -79,9 +80,46 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
         return generateTestCases(MANDATORY);
     }
 
+    private static final String[] OPTIONAL = {
+            "optional/bignum.json",
+            "optional/content.json",
+            "optional/ecmascript-regex.json",
+            "optional/non-bmp-regex.json",
+            "optional/refOfUnknownKeyword.json",
+
+            "optional/format/date.json",
+            "optional/format/date-time.json",
+            "optional/format/email.json",
+            "optional/format/hostname.json",
+            "optional/format/idn-email.json",
+            "optional/format/idn-hostname.json",
+            "optional/format/ipv4.json",
+            "optional/format/ipv6.json",
+            "optional/format/iri.json",
+            "optional/format/iri-reference.json",
+            "optional/format/json-pointer.json",
+            "optional/format/regex.json",
+            "optional/format/relative-json-pointer.json",
+            "optional/format/time.json",
+            "optional/format/uri.json",
+            "optional/format/uri-reference.json",
+            "optional/format/uri-template.json",
+            "optional/format/uuid.json"
+    };
+
+    public static Stream<TestCase> optional() {
+        return generateTestCases(OPTIONAL);
+    }
+
     @ParameterizedTest
     @MethodSource("mandatory")
     public void testMandatory(TestCase test) {
+        test(test);
+    }
+
+    @ParameterizedTest
+    @MethodSource("optional")
+    public void testOptional(TestCase test) {
         test(test);
     }
 }

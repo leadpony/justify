@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -321,7 +322,7 @@ public abstract class AbstractOfficialTest implements Loggable {
             try {
                 return new FileInputStream(name);
             } catch (FileNotFoundException e) {
-                return null;
+                throw new UncheckedIOException(name, e);
             }
         }
     }

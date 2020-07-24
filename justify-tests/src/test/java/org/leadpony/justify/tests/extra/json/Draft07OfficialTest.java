@@ -44,6 +44,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
             "enum.json",
             "exclusiveMaximum.json",
             "exclusiveMinimum.json",
+            "format.json",
             "if-then-else.json",
             "items.json",
             "maximum.json",
@@ -75,11 +76,11 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
     private static final String[] OPTIONAL = {
             "optional/bignum.json",
             "optional/content.json",
+            "optional/ecmascript-regex.json",
             "optional/non-bmp-regex.json",
 
             "optional/format/date.json",
             "optional/format/date-time.json",
-            "optional/format/ecmascript-regex.json",
             "optional/format/email.json",
             "optional/format/hostname.json",
             "optional/format/idn-email.json",
