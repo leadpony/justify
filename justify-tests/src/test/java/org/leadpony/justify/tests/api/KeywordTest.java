@@ -25,7 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.tests.helper.JsonResource;
 import org.leadpony.justify.tests.helper.ValidationServiceType;
@@ -75,8 +74,8 @@ public class KeywordTest {
     @ParameterizedTest
     @MethodSource("provideKeywordTestCases")
     public void nameShouldReturnKeywordName(KeywordTestCase test) {
-        ObjectJsonSchema schema = fromValue(test.schema).asObjectJsonSchema();
-        Keyword keyword = schema.get(test.keyword);
+        JsonSchema schema = fromValue(test.schema);
+        Keyword keyword = schema.getKeywordsAsMap().get(test.keyword);
         if (test.value != null) {
             String actual = keyword.name();
             assertThat(actual).isEqualTo(test.keyword);
@@ -88,8 +87,8 @@ public class KeywordTest {
     @ParameterizedTest
     @MethodSource("provideKeywordTestCases")
     public void getValueAsJsonShouldReturnExpectedValue(KeywordTestCase test) {
-        ObjectJsonSchema schema = fromValue(test.schema).asObjectJsonSchema();
-        Keyword keyword = schema.get(test.keyword);
+        JsonSchema schema = fromValue(test.schema);
+        Keyword keyword = schema.getKeywordsAsMap().get(test.keyword);
         if (test.value != null) {
             JsonValue actual = keyword.getValueAsJson();
             assertThat(actual).isEqualTo(test.value);

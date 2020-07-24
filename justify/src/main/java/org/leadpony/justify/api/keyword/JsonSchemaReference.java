@@ -35,5 +35,5 @@ public interface JsonSchemaReference {
      * @return the referenced JSON schema.
      * @throws IllegalStateException if the referenced schema cannot be found.
      */
-    JsonSchema getReferencedSchema();
+    JsonSchema getTargetSchema();
 }

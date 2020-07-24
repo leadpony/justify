@@ -17,6 +17,7 @@ package org.leadpony.justify.internal.schema.io;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.leadpony.justify.api.JsonSchema;
@@ -45,8 +46,9 @@ class InfiniteLoopDetector {
 
     private boolean detectLoopFrom(JsonSchema schema) {
 
-        if (schema.containsKeyword(REFERENCE_KEYWORD)) {
-            Keyword keyword = schema.asObjectJsonSchema().get(REFERENCE_KEYWORD);
+        Map<String, Keyword> keywords = schema.getKeywordsAsMap();
+        if (keywords.containsKey(REFERENCE_KEYWORD)) {
+            Keyword keyword = keywords.get(REFERENCE_KEYWORD);
             if (keyword instanceof RefKeyword) {
                 RefKeyword ref = (RefKeyword) keyword;
                 if (detectLoopFrom(ref.getSchemaReference())) {
@@ -69,7 +71,7 @@ class InfiniteLoopDetector {
             return true;
         }
         checkPoints.add(ref);
-        boolean result = detectLoopFrom(ref.getReferencedSchema());
+        boolean result = detectLoopFrom(ref.getTargetSchema());
         checkPoints.remove(ref);
         return result;
     }

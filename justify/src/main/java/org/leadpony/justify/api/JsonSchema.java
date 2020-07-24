@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.leadpony.justify.api.keyword.Keyword;
+
 import jakarta.json.JsonException;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -57,10 +59,6 @@ import jakarta.json.JsonValue.ValueType;
  * </code>
  * </pre>
  *
- * <p>
- * All instances of this type except {@link JsonSchema#TRUE} and
- * {@link JsonSchema#FALSE} can be casted to {@link ObjectJsonSchema}.
- * </p>
  * <p>
  * Any instance of this class is safe for use by multiple concurrent threads
  * after schema reading or schema building once completed.
@@ -165,14 +163,13 @@ public interface JsonSchema extends EvaluatorSource {
     boolean isBoolean();
 
     /**
-     * Returns this JSON schema as a {@code ObjectJsonSchema}.
+     * Returns all the keywords contained by this schema as a immutable map.
      *
-     * @return the instance of {@code ObjectJsonSchema}.
-     * @throws ClassCastException if this instance is not a
-     *                            {@code ObjectJsonSchema}.
+     * @return all the keywords contained by this schema.
+     * @since 4.0
      */
-    default ObjectJsonSchema asObjectJsonSchema() {
-        return ObjectJsonSchema.class.cast(this);
+    default Map<String, Keyword> getKeywordsAsMap() {
+        return Collections.emptyMap();
     }
 
     /**
@@ -344,5 +341,5 @@ public interface JsonSchema extends EvaluatorSource {
      * The JSON schema represented by an empty JSON object. This schema is always
      * evaluated as true.
      */
-    ObjectJsonSchema EMPTY = new EmptyJsonSchema();
+    JsonSchema EMPTY = new EmptyJsonSchema();
 }

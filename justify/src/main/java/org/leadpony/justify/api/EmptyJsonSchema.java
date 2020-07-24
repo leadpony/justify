@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,15 @@
  */
 package org.leadpony.justify.api;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import org.leadpony.justify.api.keyword.Keyword;
-
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * An empty JSON schema.
  *
  * @author leadpony
  */
-class EmptyJsonSchema implements ObjectJsonSchema {
+class EmptyJsonSchema implements JsonSchema {
 
     /* As a EvalautorSource */
 
@@ -43,71 +37,21 @@ class EmptyJsonSchema implements ObjectJsonSchema {
         return Evaluator.alwaysFalse(parent, this);
     }
 
+    /* As a JsonSchema */
+
+    @Override
+    public boolean isBoolean() {
+        return false;
+    }
+
+    @Override
+    public ValueType getJsonValueType() {
+        return ValueType.OBJECT;
+    }
+
     @Override
     public JsonValue toJson() {
         return JsonValue.EMPTY_JSON_OBJECT;
-    }
-
-    /* As a ObjectJsonSchema */
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return true;
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return false;
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return false;
-    }
-
-    @Override
-    public Keyword get(Object key) {
-        return null;
-    }
-
-    @Override
-    public Keyword put(String key, Keyword value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Keyword remove(Object key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends Keyword> m) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<String> keySet() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Collection<Keyword> values() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public Set<Entry<String, Keyword>> entrySet() {
-        return Collections.emptySet();
     }
 
     @Override

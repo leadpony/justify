@@ -17,7 +17,6 @@
 package org.leadpony.justify.tests.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
@@ -383,6 +382,86 @@ public class JsonSchemaTest {
         schema.walkSchemaTree(visitor);
 
         assertThat(visitor.schemas).isEqualTo(expected);
+    }
+
+    private abstract static class SpecialJsonSchemaTest {
+
+        protected final JsonSchema schema;
+
+        protected SpecialJsonSchemaTest(JsonSchema schema) {
+            this.schema = schema;
+        }
+
+        @Test
+        public void getKeywordsAsMapShouldReturnEmptyMap() {
+            assertThat(schema.getKeywordsAsMap()).isEmpty();
+        }
+    }
+
+    public static class TrueJsonSchemaTest extends SpecialJsonSchemaTest {
+
+        public TrueJsonSchemaTest() {
+            super(JsonSchema.TRUE);
+        }
+
+        @Test
+        public void isBooleanShouldReturnTrue() {
+            assertThat(schema.isBoolean()).isTrue();
+        }
+
+        @Test
+        public void getJsonValueTypeShouldReturnTrue() {
+            assertThat(schema.getJsonValueType()).isEqualTo(ValueType.TRUE);
+        }
+
+        @Test
+        public void toStringShouldReturnTrue() {
+            assertThat(schema.toString()).isEqualTo("true");
+        }
+    }
+
+    public static class FalseJsonSchemaTest extends SpecialJsonSchemaTest {
+
+        public FalseJsonSchemaTest() {
+            super(JsonSchema.FALSE);
+        }
+
+        @Test
+        public void isBooleanShouldReturnTrue() {
+            assertThat(schema.isBoolean()).isTrue();
+        }
+
+        @Test
+        public void getJsonValueTypeShouldReturnFalse() {
+            assertThat(schema.getJsonValueType()).isEqualTo(ValueType.FALSE);
+        }
+
+        @Test
+        public void toStringShouldReturnFalse() {
+            assertThat(schema.toString()).isEqualTo("false");
+        }
+    }
+
+    public static class EmptyJsonSchemaTest extends SpecialJsonSchemaTest {
+
+        public EmptyJsonSchemaTest() {
+            super(JsonSchema.EMPTY);
+        }
+
+        @Test
+        public void isBooleanShouldReturnFalse() {
+            assertThat(schema.isBoolean()).isFalse();
+        }
+
+        @Test
+        public void getJsonValueTypeShouldReturnObject() {
+            assertThat(schema.getJsonValueType()).isEqualTo(ValueType.OBJECT);
+        }
+
+        @Test
+        public void toStringShouldReturnEmptyObject() {
+            assertThat(schema.toString()).isEqualTo("{}");
+        }
     }
 
     /* helpers */

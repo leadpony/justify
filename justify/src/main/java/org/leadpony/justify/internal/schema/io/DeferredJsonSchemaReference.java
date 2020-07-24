@@ -48,7 +48,7 @@ final class DeferredJsonSchemaReference implements JsonSchemaReference {
     }
 
     @Override
-    public JsonSchema getReferencedSchema() {
+    public JsonSchema getTargetSchema() {
         if (referencedSchema == null) {
             throw new IllegalStateException("No referenced schema");
         }

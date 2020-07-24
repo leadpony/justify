@@ -35,11 +35,11 @@ public interface RefKeyword extends EvaluationKeyword, SimpleValueKeyword<URI> {
     JsonSchemaReference getSchemaReference();
 
     /**
-     * Returns the referenced JSON schema.
+     * Returns the JSON schema referenced directly.
      *
-     * @return the referenced JSON schema.
+     * @return the JSON schema referenced directly.
      */
-    default JsonSchema getReferencedSchema() {
-        return getSchemaReference().getReferencedSchema();
+    default JsonSchema getTargetSchema() {
+        return getSchemaReference().getTargetSchema();
     }
 }

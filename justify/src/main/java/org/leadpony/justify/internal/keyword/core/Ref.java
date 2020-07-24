@@ -63,7 +63,7 @@ public class Ref extends AbstractKeyword implements RefKeyword {
 
     static final KeywordType TYPE = new RefKeywordType();
 
-    protected final JsonSchemaReference reference;
+    private final JsonSchemaReference reference;
 
     Ref(JsonValue jsonValue, JsonSchemaReference reference) {
         super(jsonValue);
@@ -82,13 +82,13 @@ public class Ref extends AbstractKeyword implements RefKeyword {
 
     @Override
     public Evaluator createEvaluator(Evaluator parent, InstanceType type) {
-        JsonSchema schema = this.reference.getReferencedSchema();
+        JsonSchema schema = findtTargetSchema(parent, this.reference);
         return schema.createEvaluator(parent, type);
     }
 
     @Override
     public Evaluator createNegatedEvaluator(Evaluator parent, InstanceType type) {
-        JsonSchema schema = this.reference.getReferencedSchema();
+        JsonSchema schema = findtTargetSchema(parent, this.reference);
         return schema.createNegatedEvaluator(parent, type);
     }
 
@@ -102,5 +102,9 @@ public class Ref extends AbstractKeyword implements RefKeyword {
     @Override
     public JsonSchemaReference getSchemaReference() {
         return reference;
+    }
+
+    protected JsonSchema findtTargetSchema(Evaluator parent, JsonSchemaReference reference) {
+        return reference.getTargetSchema();
     }
 }

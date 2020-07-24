@@ -164,7 +164,7 @@ public abstract class AbstractOfficialTest implements Loggable {
         schemaReaderFactory = SERVICE.createSchemaReaderFactoryBuilder()
                 .withDefaultSpecVersion(specVersion)
                 .withSchemaResolver(new LocalSchemaResolver())
-                .withSchemaValidation(false)
+                .withSchemaValidation(true)
                 .build();
     }
 

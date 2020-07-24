@@ -19,19 +19,18 @@ package org.leadpony.justify.internal.schema;
 import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.net.URI;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
-import org.leadpony.justify.api.ObjectJsonSchema;
+import jakarta.json.JsonValue.ValueType;
+
 import org.leadpony.justify.api.JsonSchemaVisitor;
 import org.leadpony.justify.api.keyword.ApplicatorKeyword;
 import org.leadpony.justify.api.keyword.EvaluationKeyword;
@@ -54,7 +53,7 @@ import org.leadpony.justify.internal.keyword.metadata.Title;
  *
  * @author leadpony
  */
-public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> implements ObjectJsonSchema {
+public abstract class BasicJsonSchema implements JsonSchema {
 
     private final JsonValue json;
     private final Map<String, Keyword> keywordMap;
@@ -167,6 +166,11 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
     }
 
     @Override
+    public Map<String, Keyword> getKeywordsAsMap() {
+        return keywordMap;
+    }
+
+    @Override
     public boolean containsKeyword(String keyword) {
         requireNonNull(keyword, "keyword");
         return keywordMap.containsKey(keyword);
@@ -253,6 +257,11 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
     }
 
     @Override
+    public ValueType getJsonValueType() {
+        return ValueType.OBJECT;
+    }
+
+    @Override
     public final JsonValue toJson() {
         return json;
     }
@@ -276,35 +285,6 @@ public abstract class BasicJsonSchema extends AbstractMap<String, Keyword> imple
 
     public boolean hasAbsoluteId() {
         return hasId() && id().isAbsolute();
-    }
-
-    /* As a Map */
-
-    @Override
-    public int size() {
-        return keywordMap.size();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return keywordMap.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return keywordMap.containsValue(value);
-    }
-
-    @Override
-    public Keyword get(Object key) {
-        return keywordMap.get(key);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Set<Entry<String, Keyword>> entrySet() {
-        Set<?> entrySet = this.keywordMap.entrySet();
-        return (Set<Entry<String, Keyword>>) entrySet;
     }
 
     @SuppressWarnings("unchecked")

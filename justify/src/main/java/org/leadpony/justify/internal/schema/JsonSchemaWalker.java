@@ -22,7 +22,6 @@ import java.util.Map;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonSchemaVisitor;
 import org.leadpony.justify.api.JsonSchemaVisitor.Result;
-import org.leadpony.justify.api.ObjectJsonSchema;
 import org.leadpony.justify.api.keyword.Keyword;
 
 /**
@@ -48,13 +47,11 @@ class JsonSchemaWalker {
             return result;
         }
 
-        if (schema instanceof ObjectJsonSchema) {
-            Map<String, Keyword> keywordMap = (ObjectJsonSchema) schema;
-            for (Keyword keyword : keywordMap.values()) {
-                result = walkKeyword(keyword, pointer);
-                if (result == Result.TERMINATE) {
-                    return result;
-                }
+        Map<String, Keyword> keywordMap = schema.getKeywordsAsMap();
+        for (Keyword keyword : keywordMap.values()) {
+            result = walkKeyword(keyword, pointer);
+            if (result == Result.TERMINATE) {
+                return result;
             }
         }
 

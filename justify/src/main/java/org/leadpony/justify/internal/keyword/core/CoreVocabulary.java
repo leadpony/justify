@@ -56,6 +56,7 @@ public enum CoreVocabulary implements DefaultVocabulary {
             Definitions.TYPE,
             Defs.TYPE, // added
             Id.TYPE,
+            RecursiveAnchor.TYPE, // added
             RecursiveRef.TYPE, // added
             Ref.TYPE,
             Schema.TYPE);
