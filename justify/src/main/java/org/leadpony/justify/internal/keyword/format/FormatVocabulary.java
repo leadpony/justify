@@ -95,7 +95,9 @@ public enum FormatVocabulary implements DefaultVocabulary {
             Time.INSTANCE,
             Uri.INSTANCE,
             UriReference.INSTANCE,
-            UriTemplate.INSTANCE);
+            UriTemplate.INSTANCE,
+            Uuid.INSTANCE // added
+            );
 
     private final URI id;
     private final URI metaschemaId;
