@@ -23,7 +23,7 @@ import org.leadpony.justify.internal.base.AsciiCode;
  *
  * @author leadpony
  */
-class Ipv4Matcher extends FormatMatcher {
+class Ipv4Matcher extends AbstractFormatMatcher {
 
     private boolean allowLeadingZeros = false;
 
@@ -58,7 +58,7 @@ class Ipv4Matcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         return dottedQuad();
     }
 

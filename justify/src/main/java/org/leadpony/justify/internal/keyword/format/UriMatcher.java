@@ -29,7 +29,7 @@ import org.leadpony.justify.internal.base.AsciiCode;
  *      "Uniform Resource Identifier (URI): Generic Syntax", STD 66, RFC
  *      3986</a>
  */
-class UriMatcher extends FormatMatcher {
+class UriMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -41,7 +41,7 @@ class UriMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         return uri();
     }
 

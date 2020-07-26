@@ -50,7 +50,7 @@ class Ipv6Matcher extends Ipv4Matcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         int pieces = 0;
         boolean compressed = false;
 

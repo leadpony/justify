@@ -25,7 +25,7 @@ import java.util.BitSet;
  *
  * @author leadpony
  */
-class EmailMatcher extends FormatMatcher {
+class EmailMatcher extends AbstractFormatMatcher {
 
     static final int MAX_LOCAL_PART_CHARS = 64;
     static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
@@ -44,7 +44,7 @@ class EmailMatcher extends FormatMatcher {
     }
 
     @Override
-    public boolean all() {
+    public boolean test() {
         localPart();
         if (next() == '@') {
             domainPart();
@@ -152,7 +152,10 @@ class EmailMatcher extends FormatMatcher {
                 next();
             }
         }
-        createHostnameMatcher(start, pos()).all();
+        FormatMatcher matcher = createHostnameMatcher(start, pos());
+        if (!matcher.matches()) {
+            fail();
+        }
     }
 
     /**

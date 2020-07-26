@@ -36,8 +36,8 @@ class VerboseUriMatcher extends UriMatcher {
     }
 
     @Override
-    boolean all() {
-        boolean result = super.all();
+    protected boolean test() {
+        boolean result = super.test();
         if (result) {
             printComponents();
         }

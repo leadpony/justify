@@ -37,7 +37,7 @@ class UriReferenceMatcher extends UriMatcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         return uri() || relativeRef();
     }
 }

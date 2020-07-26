@@ -23,7 +23,7 @@ import org.leadpony.justify.internal.base.AsciiCode;
  *
  * @author leadpony
  */
-class UriTemplateMatcher extends FormatMatcher {
+class UriTemplateMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -35,7 +35,7 @@ class UriTemplateMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         while (hasNext()) {
             if (literals() || expression()) {
                 continue;

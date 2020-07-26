@@ -20,7 +20,7 @@ import org.leadpony.justify.internal.base.AsciiCode;
 /**
  * @author leadpony
  */
-class DurationMatcher extends FormatMatcher {
+class DurationMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -32,7 +32,7 @@ class DurationMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    protected boolean test() {
         if (hasNext('P')) {
             next();
             if (hasNext()) {
