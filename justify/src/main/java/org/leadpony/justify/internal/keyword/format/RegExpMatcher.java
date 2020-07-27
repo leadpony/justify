@@ -20,7 +20,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * The base matcher for ECMA262 regular expression pattern.

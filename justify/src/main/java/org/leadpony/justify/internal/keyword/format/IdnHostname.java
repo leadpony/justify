@@ -20,6 +20,7 @@ import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.text.Idna;
 
 /**
  * Format attribute representing "idn-hostname" attribute.
@@ -46,6 +47,6 @@ class IdnHostname extends AbstractFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return new IdnHostnameMatcher(value).matches();
+        return Idna.IDNA2008.verifyName(value);
     }
 }

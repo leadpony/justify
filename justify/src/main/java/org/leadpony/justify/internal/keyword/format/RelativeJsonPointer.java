@@ -19,8 +19,8 @@ package org.leadpony.justify.internal.keyword.format;
 import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
-import org.leadpony.justify.internal.base.AsciiCode;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Format attribute representing "relative-json-pointer" attribute.

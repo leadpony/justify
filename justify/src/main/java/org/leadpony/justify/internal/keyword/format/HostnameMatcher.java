@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.format;
 
-import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
+import static org.leadpony.justify.internal.base.text.AsciiCode.isAlphanumeric;
 
 /**
  * Matcher for hostnames.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.format;
+package org.leadpony.justify.internal.base.text;
 
 import java.lang.Character.UnicodeBlock;
 
@@ -27,7 +27,7 @@ import com.ibm.icu.text.Normalizer2;
  *
  * @author leadpony
  */
-enum IdnProperty {
+public enum IdnProperty {
     /**
      * Code points with this property value are permitted for general use in IDNs.
      */

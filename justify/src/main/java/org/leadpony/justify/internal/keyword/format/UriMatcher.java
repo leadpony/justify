@@ -18,7 +18,7 @@ package org.leadpony.justify.internal.keyword.format;
 
 import java.util.BitSet;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Matcher for URI conformant to RFC 3986.

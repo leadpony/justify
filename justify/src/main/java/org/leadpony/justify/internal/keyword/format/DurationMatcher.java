@@ -15,7 +15,7 @@
  */
 package org.leadpony.justify.internal.keyword.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * @author leadpony

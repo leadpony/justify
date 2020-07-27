@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.format;
 
-import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
+import static org.leadpony.justify.internal.base.text.AsciiCode.isAlphanumeric;
 
 import java.util.BitSet;
 
@@ -152,8 +152,7 @@ class EmailMatcher extends AbstractFormatMatcher {
                 next();
             }
         }
-        FormatMatcher matcher = createHostnameMatcher(start, pos());
-        if (!matcher.matches()) {
+        if (!checkHostname(start, pos())) {
             fail();
         }
     }
@@ -241,8 +240,8 @@ class EmailMatcher extends AbstractFormatMatcher {
                 || (c >= 93 && c <= 126);
     }
 
-    protected FormatMatcher createHostnameMatcher(int start, int end) {
-        return new HostnameMatcher(input(), start, end);
+    protected boolean checkHostname(int start, int end) {
+        return new HostnameMatcher(input(), start, end).matches();
     }
 
     private static boolean isWhiteSpace(int c) {

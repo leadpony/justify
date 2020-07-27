@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.format;
+package org.leadpony.justify.internal.base.text;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -19,7 +19,7 @@ import static org.leadpony.justify.internal.base.Arguments.requireNonNull;
 
 import java.util.Base64.Decoder;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 
 /**

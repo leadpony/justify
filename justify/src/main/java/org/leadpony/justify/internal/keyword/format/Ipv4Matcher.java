@@ -16,7 +16,7 @@ F * Copyright 2018-2019 the Justify authors.
 
 package org.leadpony.justify.internal.keyword.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Matcher for IPv4 addresses.
