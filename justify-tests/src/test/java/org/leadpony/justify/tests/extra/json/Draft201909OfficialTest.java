@@ -89,6 +89,7 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
 
             "optional/format/date.json",
             "optional/format/date-time.json",
+            "optional/format/duration.json",
             "optional/format/email.json",
             "optional/format/hostname.json",
             "optional/format/idn-email.json",

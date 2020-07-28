@@ -81,6 +81,7 @@ public enum FormatVocabulary implements DefaultVocabulary {
             "https://json-schema.org/draft/2019-09/meta/format",
             Date.INSTANCE,
             DateTime.INSTANCE,
+            Duration.INSTANCE, // added
             Email.INSTANCE,
             Hostname.INSTANCE,
             Ipv4.INSTANCE,
