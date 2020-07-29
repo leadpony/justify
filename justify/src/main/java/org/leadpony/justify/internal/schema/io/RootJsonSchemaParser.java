@@ -249,20 +249,29 @@ class RootJsonSchemaParser extends AbstractSubschemaParser {
     }
 
     private JsonSchema identifySchema(URI baseUri, JsonSchema schema) {
+        final URI newBaseUri = updateBaseUri(baseUri, schema);
         if (schema.hasId()) {
-            URI id = schema.id();
-            if (!id.isAbsolute()) {
-                id = baseUri.resolve(id);
-            }
-            addSchemaAsIdentified(id, schema);
+            addSchemaAsIdentified(newBaseUri, schema);
         }
 
         schema.getAnchor().ifPresent(anchor -> {
-            URI id = baseUri.resolve("#" + anchor);
-            addSchemaAsIdentified(id, schema);
+            URI idWithAnchor = newBaseUri.resolve("#" + anchor);
+            addSchemaAsIdentified(idWithAnchor, schema);
         });
 
         return schema;
+    }
+
+    private static URI updateBaseUri(URI baseUri, JsonSchema schema) {
+        if (schema.hasId()) {
+            URI id = schema.id();
+            if (id.isAbsolute()) {
+                return id;
+            } else {
+                return baseUri.resolve(id);
+            }
+        }
+        return baseUri;
     }
 
     private void addSchemaAsIdentified(URI id, JsonSchema schema) {

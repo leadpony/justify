@@ -34,7 +34,7 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
             "additionalItems.json",
             "additionalProperties.json",
             "allOf.json",
-            //"anchor.json",
+            "anchor.json",
             "anyOf.json",
             "boolean_schema.json",
             "const.json",
