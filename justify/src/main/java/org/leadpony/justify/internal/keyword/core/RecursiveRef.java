@@ -71,6 +71,11 @@ public class RecursiveRef extends Ref {
     }
 
     @Override
+    public boolean isDirect() {
+        return false;
+    }
+
+    @Override
     protected JsonSchema findtTargetSchema(Evaluator parent, JsonSchemaReference reference) {
         final JsonSchema direct = reference.getTargetSchema();
         if (testSchemaIsTarget(direct)) {

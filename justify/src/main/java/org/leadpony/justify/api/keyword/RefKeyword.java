@@ -25,7 +25,31 @@ import org.leadpony.justify.api.JsonSchema;
  * @author leadpony
  * @since 4.0
  */
-public interface RefKeyword extends EvaluationKeyword, SimpleValueKeyword<URI> {
+public interface RefKeyword extends ApplicatorKeyword, SimpleValueKeyword<URI> {
+
+    /**
+     * {@inheritDoc}}
+     */
+    @Override
+    default ApplicableLocation getApplicableLocation() {
+        return ApplicableLocation.CURRENT;
+    }
+
+    /**
+     * {@inheritDoc}}
+     */
+    @Override
+    default boolean isInPlace() {
+        return true;
+    }
+
+    /**
+     * Returns whether this keyword is direct reference or not.
+     *
+     * @return {@code true} if this keyword is direct reference, {@code false}
+     *         otherwise.
+     */
+    boolean isDirect();
 
     /**
      * Returns the JSON schema reference.

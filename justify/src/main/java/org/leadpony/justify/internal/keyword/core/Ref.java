@@ -16,6 +16,10 @@
 package org.leadpony.justify.internal.keyword.core;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import jakarta.json.JsonValue;
 
@@ -76,6 +80,32 @@ public class Ref extends AbstractKeyword implements RefKeyword {
     }
 
     @Override
+    public boolean containsSchemas() {
+        return true;
+    }
+
+    @Override
+    public Map<String, JsonSchema> getSchemasAsMap() {
+        Map<String, JsonSchema> schemaMap = new HashMap<>();
+        schemaMap.put("", getTargetSchema());
+        return schemaMap;
+    }
+
+    @Override
+    public Stream<JsonSchema> getSchemasAsStream() {
+        return Stream.of(getTargetSchema());
+    }
+
+    @Override
+    public Optional<JsonSchema> findSchema(String jsonPointer) {
+        if (jsonPointer.isEmpty()) {
+            return Optional.of(getTargetSchema());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public boolean canEvaluate() {
         return true;
     }
@@ -100,11 +130,16 @@ public class Ref extends AbstractKeyword implements RefKeyword {
     }
 
     @Override
+    public boolean isDirect() {
+        return true;
+    }
+
+    @Override
     public JsonSchemaReference getSchemaReference() {
         return reference;
     }
 
     protected JsonSchema findtTargetSchema(Evaluator parent, JsonSchemaReference reference) {
-        return reference.getTargetSchema();
+        return getTargetSchema();
     }
 }

@@ -54,4 +54,14 @@ public interface ApplicatorKeyword extends EvaluationKeyword {
      * @return the location.
      */
     ApplicableLocation getApplicableLocation();
+
+    /**
+     * Returns whether this keyword is an in-place applicator or not.
+     *
+     * @return {@code true} if this keyword is an in-place applicator, {@code false}
+     *         otherwise.
+     */
+    default boolean isInPlace() {
+        return getApplicableLocation() == ApplicableLocation.CURRENT;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 package org.leadpony.justify.internal.schema.io;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 
 import org.leadpony.justify.api.JsonSchema;
+import org.leadpony.justify.api.keyword.ApplicatorKeyword;
 import org.leadpony.justify.api.keyword.JsonSchemaReference;
 import org.leadpony.justify.api.keyword.Keyword;
 import org.leadpony.justify.api.keyword.RefKeyword;
+import org.leadpony.justify.internal.base.Sets;
 
 /**
  * A detector of infinite recursive looping starting from a schema reference.
@@ -32,47 +32,42 @@ import org.leadpony.justify.api.keyword.RefKeyword;
  */
 class InfiniteLoopDetector {
 
-    private static final String REFERENCE_KEYWORD = "$ref";
-
-    private final Set<JsonSchemaReference> checkPoints = new HashSet<>();
+    private final Set<JsonSchema> visited = Sets.newIdentitySet();
 
     boolean detectInfiniteLoop(JsonSchemaReference ref) {
-        try {
-            return detectLoopFrom(ref);
-        } finally {
-            checkPoints.clear();
-        }
+        assert visited.isEmpty();
+        return detectLoopFrom(ref.getTargetSchema());
     }
 
     private boolean detectLoopFrom(JsonSchema schema) {
-
-        Map<String, Keyword> keywords = schema.getKeywordsAsMap();
-        if (keywords.containsKey(REFERENCE_KEYWORD)) {
-            Keyword keyword = keywords.get(REFERENCE_KEYWORD);
-            if (keyword instanceof RefKeyword) {
-                RefKeyword ref = (RefKeyword) keyword;
-                if (detectLoopFrom(ref.getSchemaReference())) {
-                    return true;
-                }
-            }
-        }
-
-        Iterator<JsonSchema> it = schema.getInPlaceSubschemas().iterator();
-        while (it.hasNext()) {
-            if (detectLoopFrom(it.next())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean detectLoopFrom(JsonSchemaReference ref) {
-        if (checkPoints.contains(ref)) {
+        if (visited.contains(schema)) {
             return true;
         }
-        checkPoints.add(ref);
-        boolean result = detectLoopFrom(ref.getTargetSchema());
-        checkPoints.remove(ref);
-        return result;
+
+        try {
+            visited.add(schema);
+            return walkSubschemas(schema);
+        } finally {
+            visited.remove(schema);
+        }
+    }
+
+    private boolean walkSubschemas(JsonSchema schema) {
+        Collection<Keyword> keywords = schema.getKeywordsAsMap().values();
+        return keywords.stream()
+            .filter(k -> k instanceof ApplicatorKeyword)
+            .map(k -> (ApplicatorKeyword) k)
+            .filter(InfiniteLoopDetector::isInPlaceApplicator)
+            .flatMap(Keyword::getSchemasAsStream)
+            .anyMatch(this::detectLoopFrom);
+    }
+
+    private static boolean isInPlaceApplicator(ApplicatorKeyword keyword) {
+        if (keyword instanceof RefKeyword) {
+            RefKeyword ref = (RefKeyword) keyword;
+            return ref.isDirect();
+        } else {
+            return keyword.isInPlace();
+        }
     }
 }
