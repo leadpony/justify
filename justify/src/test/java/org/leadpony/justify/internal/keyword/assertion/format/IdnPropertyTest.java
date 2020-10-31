@@ -29,6 +29,7 @@ import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.justify.internal.base.text.IdnProperty;
 
 /**
  * A test class for {@link IdnProperty}.

@@ -36,7 +36,7 @@ class IriReferenceMatcher extends IriMatcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         return uri() || relativeRef();
     }
 }

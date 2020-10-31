@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
+import static org.leadpony.justify.internal.base.text.AsciiCode.isAlphanumeric;
 
 /**
  * Matcher for hostnames.
@@ -24,7 +24,7 @@ import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
  * @author leadpony
  * @see <a href="https://tools.ietf.org/html/rfc1123">RFC 1123</a>
  */
-class HostnameMatcher extends FormatMatcher {
+class HostnameMatcher extends AbstractFormatMatcher {
 
     static final int MAX_LABEL_CHARS = 63;
     static final int MAX_DOMAIN_CHARS = 253;
@@ -38,7 +38,7 @@ class HostnameMatcher extends FormatMatcher {
     }
 
     @Override
-    public boolean all() {
+    public boolean test() {
         final int start = pos();
         subdomain();
         int length = pos() - start;

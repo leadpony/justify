@@ -15,12 +15,12 @@
  */
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * @author leadpony
  */
-class DurationMatcher extends FormatMatcher {
+class DurationMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -32,7 +32,7 @@ class DurationMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         if (hasNext('P')) {
             next();
             if (hasNext()) {

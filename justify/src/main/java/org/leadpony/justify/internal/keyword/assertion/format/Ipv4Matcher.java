@@ -16,14 +16,14 @@ F * Copyright 2018-2019 the Justify authors.
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Matcher for IPv4 addresses.
  *
  * @author leadpony
  */
-class Ipv4Matcher extends FormatMatcher {
+class Ipv4Matcher extends AbstractFormatMatcher {
 
     private boolean allowLeadingZeros = false;
 
@@ -58,7 +58,7 @@ class Ipv4Matcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         return dottedQuad();
     }
 

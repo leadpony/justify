@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.leadpony.justify.internal.keyword.assertion.format;
+
+import org.leadpony.justify.internal.base.text.Idna;
 
 /**
  * Matcher for internationalized email addresses.
@@ -64,7 +66,7 @@ class IdnEmailMatcher extends EmailMatcher {
     }
 
     @Override
-    protected FormatMatcher createHostnameMatcher(int start, int end) {
-        return new IdnHostnameMatcher(input(), start, end);
+    protected boolean checkHostname(int start, int end) {
+        return Idna.IDNA2008.verifyName(input().subSequence(start, end));
     }
 }

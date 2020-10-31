@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
  *
  * @author leadpony
  */
-abstract class FormatMatcher {
+abstract class AbstractFormatMatcher {
 
     private final CharSequence input;
     private final int length;
@@ -34,7 +34,7 @@ abstract class FormatMatcher {
      *
      * @param input the input character sequence.
      */
-    protected FormatMatcher(CharSequence input) {
+    protected AbstractFormatMatcher(CharSequence input) {
         this.input = input;
         this.length = input.length();
         this.index = 0;
@@ -47,7 +47,7 @@ abstract class FormatMatcher {
      * @param start the start index, inclusive.
      * @param end the end index, exclusive.
      */
-    protected FormatMatcher(CharSequence input, int start, int end) {
+    protected AbstractFormatMatcher(CharSequence input, int start, int end) {
         this.input = input;
         this.length = end;
         this.index = start;
@@ -60,7 +60,7 @@ abstract class FormatMatcher {
      */
     boolean matches() {
         try {
-            return all();
+            return test();
         } catch (FormatMismatchException | NoSuchElementException e) {
             return false;
         }
@@ -72,7 +72,7 @@ abstract class FormatMatcher {
      * @throws NoSuchElementException if unexpected end of input is detected.
      * @throws FormatMismatchException if the input did not match the format.
      */
-    abstract boolean all();
+    abstract boolean test();
 
     /**
      * Returns the input character sequence.

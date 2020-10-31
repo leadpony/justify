@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.leadpony.justify.internal.keyword.assertion.format;
+package org.leadpony.justify.internal.base.text;
 
 import java.lang.Character.UnicodeBlock;
 
@@ -27,7 +27,7 @@ import com.ibm.icu.text.Normalizer2;
  *
  * @author leadpony
  */
-enum IdnProperty {
+public enum IdnProperty {
     /**
      * Code points with this property value are permitted for general use in IDNs.
      */

@@ -16,14 +16,14 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Matcher for URI template conformant to RFC 6570.
  *
  * @author leadpony
  */
-class UriTemplateMatcher extends FormatMatcher {
+class UriTemplateMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -35,7 +35,7 @@ class UriTemplateMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         while (hasNext()) {
             if (literals() || expression()) {
                 continue;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import static org.leadpony.justify.internal.base.AsciiCode.isAlphanumeric;
+import static org.leadpony.justify.internal.base.text.AsciiCode.isAlphanumeric;
 
 import java.util.BitSet;
 
@@ -25,7 +25,7 @@ import java.util.BitSet;
  *
  * @author leadpony
  */
-class EmailMatcher extends FormatMatcher {
+class EmailMatcher extends AbstractFormatMatcher {
 
     static final int MAX_LOCAL_PART_CHARS = 64;
     static final String ATOM_TEXT_CHARS = "!#$%&'*+-/=?^_`{|}~";
@@ -44,7 +44,7 @@ class EmailMatcher extends FormatMatcher {
     }
 
     @Override
-    public boolean all() {
+    public boolean test() {
         localPart();
         if (next() == '@') {
             domainPart();
@@ -152,7 +152,9 @@ class EmailMatcher extends FormatMatcher {
                 next();
             }
         }
-        createHostnameMatcher(start, pos()).all();
+        if (!checkHostname(start, pos())) {
+            fail();
+        }
     }
 
     /**
@@ -238,8 +240,8 @@ class EmailMatcher extends FormatMatcher {
                 || (c >= 93 && c <= 126);
     }
 
-    protected FormatMatcher createHostnameMatcher(int start, int end) {
-        return new HostnameMatcher(input(), start, end);
+    protected boolean checkHostname(int start, int end) {
+        return new HostnameMatcher(input(), start, end).matches();
     }
 
     private static boolean isWhiteSpace(int c) {

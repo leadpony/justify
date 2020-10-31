@@ -15,13 +15,13 @@
  */
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * @author leadpony
  *
  */
-final class UuidMatcher extends FormatMatcher {
+final class UuidMatcher extends AbstractFormatMatcher {
 
     /**
      * Constructs this matcher.
@@ -33,7 +33,7 @@ final class UuidMatcher extends FormatMatcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         return timeLow()
             && hyphen()
             && timeMid()

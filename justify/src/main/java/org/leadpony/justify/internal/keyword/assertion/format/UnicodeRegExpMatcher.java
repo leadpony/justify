@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * @author leadpony

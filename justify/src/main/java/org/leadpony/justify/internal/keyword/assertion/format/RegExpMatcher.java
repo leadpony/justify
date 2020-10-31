@@ -20,14 +20,14 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * The base matcher for ECMA262 regular expression pattern.
  *
  * @author leadpony
  */
-abstract class RegExpMatcher extends FormatMatcher {
+abstract class RegExpMatcher extends AbstractFormatMatcher {
 
     @SuppressWarnings("serial")
     private static final BitSet SYNTAX_CHAR_SET = new BitSet() {
@@ -68,7 +68,7 @@ abstract class RegExpMatcher extends FormatMatcher {
     }
 
     @Override
-    public boolean all() {
+    public boolean test() {
         disjunction();
         if (hasNext()) {
             return false;

@@ -16,7 +16,7 @@
 
 package org.leadpony.justify.internal.keyword.assertion.format;
 
-import org.leadpony.justify.internal.base.AsciiCode;
+import org.leadpony.justify.internal.base.text.AsciiCode;
 
 /**
  * Matcher for IPv6 addresses.
@@ -50,7 +50,7 @@ class Ipv6Matcher extends Ipv4Matcher {
     }
 
     @Override
-    boolean all() {
+    boolean test() {
         int pieces = 0;
         boolean compressed = false;
 
