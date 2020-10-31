@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `ObjectJsonSchema` interface.
 
+## 3.0.0 - 2020-10-31
+### Changed
+- Updated Jakarta JSON Processing API to 2.0.0 officially released.
+
+## Fixed
+- Bug in `pattern` keyword.
+- Bug in `idn-hostname` format.
+
 ## 3.0.0-RC2 - 2020-05-12
 _This is a pre-release because the Jakarta JSON Processing API is also a pre-release._
 

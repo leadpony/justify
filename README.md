@@ -25,9 +25,9 @@ Justify is a JSON validator based on [JSON Schema Specification] and [Jakarta JS
 _For Justify version 2.x users:_
 Please refer to [old README](./README-v2.md) instead of this one for more appropriate instructions.
 
-The difference between Justify version 2.x and 3.x is:
-* Justify 2.x uses JSON-P API version 1.x, which is defined in the old package `javax.json`.
+The difference between Justify version 3.x and 2.x is:
 * Justify 3.x uses JSON-P API version 2.x, which is defined in the new package `jakarta.json`.
+* Justify 2.x uses JSON-P API version 1.x, which is defined in the old package `javax.json`.
 
 ### Minimum Setup
 
@@ -38,13 +38,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>3.0.0-RC2</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation 'org.leadpony.justify:justify:3.0.0-RC2'
+implementation 'org.leadpony.justify:justify:3.0.0'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -66,14 +66,14 @@ Please add exactly one dependency to your build as shown below.
     <groupId>org.glassfish</groupId>
     <artifactId>jakarta.json</artifactId>
     <classifier>module</classifier>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly 'org.glassfish:jakarta.json:2.0.0-RC2:module'
+runtimeOnly 'org.glassfish:jakarta.json:2.0.0:module'
 ```
 
 Please note that the classifier `module` is required when using this implementation.
@@ -84,14 +84,14 @@ Please note that the classifier `module` is required when using this implementat
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy-classic</artifactId>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly 'org.leadpony.joy:joy-classic:2.0.0-RC2'
+runtimeOnly 'org.leadpony.joy:joy-classic:2.0.0'
 ```
 
 ### Using with the Streaming API of JSON Processing
@@ -236,7 +236,7 @@ Just replacing the JSON-P implementation with `joy-yaml` provided by [Joy] proje
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy-yaml</artifactId>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
