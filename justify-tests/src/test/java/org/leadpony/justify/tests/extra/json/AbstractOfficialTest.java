@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -320,7 +321,7 @@ public abstract class AbstractOfficialTest implements Loggable {
             try {
                 return new FileInputStream(name);
             } catch (FileNotFoundException e) {
-                return null;
+                throw new UncheckedIOException(name, e);
             }
         }
     }

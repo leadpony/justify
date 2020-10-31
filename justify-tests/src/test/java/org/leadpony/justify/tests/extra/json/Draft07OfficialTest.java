@@ -44,6 +44,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
             "enum.json",
             "exclusiveMaximum.json",
             "exclusiveMinimum.json",
+            "format.json",
             "if-then-else.json",
             "items.json",
             "maximum.json",

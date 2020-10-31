@@ -44,6 +44,7 @@ public class Draft06OfficialTest extends AbstractOfficialTest {
             "enum.json",
             "exclusiveMaximum.json",
             "exclusiveMinimum.json",
+            "format.json",
             "items.json",
             "maximum.json",
             "maxItems.json",
@@ -72,11 +73,19 @@ public class Draft06OfficialTest extends AbstractOfficialTest {
     }
 
     private static final String[] OPTIONAL = {
-            "optional/bignum.json",
             // Draft-06 does not have the "regex" format.
+            "optional/bignum.json",
             "optional/ecmascript-regex.json",
-            "optional/format.json",
             "optional/non-bmp-regex.json",
+            "optional/format/date-time.json",
+            "optional/format/email.json",
+            "optional/format/hostname.json",
+            "optional/format/ipv4.json",
+            "optional/format/ipv6.json",
+            "optional/format/json-pointer.json",
+            "optional/format/uri.json",
+            "optional/format/uri-reference.json",
+            "optional/format/uri-template.json",
     };
 
     public static Stream<TestCase> optional() {
