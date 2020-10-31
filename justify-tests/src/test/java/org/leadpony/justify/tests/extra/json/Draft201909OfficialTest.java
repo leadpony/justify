@@ -84,6 +84,7 @@ public class Draft201909OfficialTest extends AbstractOfficialTest {
             "optional/bignum.json",
             "optional/content.json",
             "optional/ecmascript-regex.json",
+            "optional/float-overflow.json",
             "optional/non-bmp-regex.json",
             "optional/refOfUnknownKeyword.json",
 

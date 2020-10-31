@@ -67,9 +67,10 @@ public class Draft04OfficialTest extends AbstractOfficialTest {
     }
 
     private static final String[] OPTIONAL = {
-            "optional/bignum.json",
             // Draft-04 does not have the "regex" format.
+            "optional/bignum.json",
             "optional/ecmascript-regex.json",
+            "optional/float-overflow.json",
             "optional/non-bmp-regex.json",
             "optional/zeroTerminatedFloats.json",
 

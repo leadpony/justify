@@ -77,6 +77,7 @@ public class Draft07OfficialTest extends AbstractOfficialTest {
             "optional/bignum.json",
             "optional/content.json",
             "optional/ecmascript-regex.json",
+            "optional/float-overflow.json",
             "optional/non-bmp-regex.json",
 
             "optional/format/date.json",
