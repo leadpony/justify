@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0 - 2020-10-31
+### Changed
+- Updated Jakarta JSON Processing API to 2.0.0 officially released.
+
+## Fixed
+- Bug in `pattern` keyword.
+- Bug in `idn-hostname` format.
+
 ## 3.0.0-RC2 - 2020-05-12
 ### Added
 - A new API `JsonValidationService.newInstance(JsonProvider)`.

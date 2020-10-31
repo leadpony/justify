@@ -34,13 +34,13 @@ This software is available in the [Maven Central Repository] and the following d
 <dependency>
     <groupId>org.leadpony.justify</groupId>
     <artifactId>justify</artifactId>
-    <version>3.0.0-RC2</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
 *Gradle*
 ```
-implementation 'org.leadpony.justify:justify:3.0.0-RC2'
+implementation 'org.leadpony.justify:justify:3.0.0'
 ```
 
 Note that the addition of this dependency brings the following artifacts as transitive dependencies.
@@ -62,14 +62,14 @@ Please add exactly one dependency to your build as shown below.
     <groupId>org.glassfish</groupId>
     <artifactId>jakarta.json</artifactId>
     <classifier>module</classifier>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly 'org.glassfish:jakarta.json:2.0.0-RC2:module'
+runtimeOnly 'org.glassfish:jakarta.json:2.0.0:module'
 ```
 
 Please note that the classifier `module` is required when using this implementation.
@@ -80,14 +80,14 @@ Please note that the classifier `module` is required when using this implementat
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy-classic</artifactId>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
 
 *Gradle*
 ```
-runtimeOnly 'org.leadpony.joy:joy-classic:2.0.0-RC2'
+runtimeOnly 'org.leadpony.joy:joy-classic:2.0.0'
 ```
 
 ### Using with the Streaming API of JSON Processing
@@ -232,7 +232,7 @@ Just replacing the JSON-P implementation with `joy-yaml` provided by [Joy] proje
 <dependency>
     <groupId>org.leadpony.joy</groupId>
     <artifactId>joy-yaml</artifactId>
-    <version>2.0.0-RC2</version>
+    <version>2.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
