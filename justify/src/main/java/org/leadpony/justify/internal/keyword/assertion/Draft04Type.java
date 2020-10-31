@@ -15,12 +15,14 @@
  */
 package org.leadpony.justify.internal.keyword.assertion;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import jakarta.json.stream.JsonParser;
 
 import org.leadpony.justify.api.EvaluatorContext;
 import org.leadpony.justify.api.InstanceType;
@@ -75,10 +77,17 @@ public final class Draft04Type {
     }
 
     private static InstanceType getNarrowType(InstanceType type, EvaluatorContext context) {
-        if (type == InstanceType.NUMBER
-                && context.getParser().isIntegralNumber()) {
+        if (type != InstanceType.NUMBER) {
+            return type;
+        }
+        JsonParser parser = context.getParser();
+        if (parser.isIntegralNumber()) {
             return InstanceType.INTEGER;
         } else {
+            BigDecimal value = parser.getBigDecimal();
+            if (value.scale() <= 0) {
+                return InstanceType.INTEGER;
+            }
             return type;
         }
     }

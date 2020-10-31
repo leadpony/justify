@@ -106,7 +106,7 @@ public abstract class Type extends AbstractAssertion {
             return InstanceType.INTEGER;
         } else {
             BigDecimal value = parser.getBigDecimal().stripTrailingZeros();
-            if (value.scale() == 0) {
+            if (value.scale() <= 0) {
                 return InstanceType.INTEGER;
             }
             return type;
