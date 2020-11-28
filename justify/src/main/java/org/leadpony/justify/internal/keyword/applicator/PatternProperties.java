@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -35,6 +32,8 @@ import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.keyword.Evaluatable;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.keyword.SchemaKeyword;
+import org.leadpony.regexp4j.RegExp;
+import org.leadpony.regexp4j.SyntaxError;
 
 /**
  * @author leadpony
@@ -43,7 +42,7 @@ import org.leadpony.justify.internal.keyword.SchemaKeyword;
 @Spec(SpecVersion.DRAFT_04)
 @Spec(SpecVersion.DRAFT_06)
 @Spec(SpecVersion.DRAFT_07)
-public class PatternProperties extends AbstractProperties<Pattern> {
+public class PatternProperties extends AbstractProperties<RegExp> {
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -53,21 +52,21 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     public static KeywordMapper mapper() {
         return (value, context) -> {
             if (value.getValueType() == ValueType.OBJECT) {
-                Map<Pattern, JsonSchema> schemas = new LinkedHashMap<>();
+                Map<RegExp, JsonSchema> schemas = new LinkedHashMap<>();
                 try {
                     for (Map.Entry<String, JsonValue> entry : value.asJsonObject().entrySet()) {
-                        Pattern pattern = Pattern.compile(entry.getKey());
-                        schemas.put(pattern, context.asJsonSchema(entry.getValue()));
+                        RegExp regex = new RegExp(entry.getKey());
+                        schemas.put(regex, context.asJsonSchema(entry.getValue()));
                     }
                     return new PatternProperties(value, schemas);
-                } catch (PatternSyntaxException e) {
+                } catch (SyntaxError e) {
                 }
             }
             throw new IllegalArgumentException();
         };
     }
 
-    public PatternProperties(JsonValue json, Map<Pattern, JsonSchema> properties) {
+    public PatternProperties(JsonValue json, Map<RegExp, JsonSchema> properties) {
         super(json, properties);
     }
 
@@ -83,9 +82,9 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     public JsonSchema getSubschema(Iterator<String> jsonPointer) {
         if (jsonPointer.hasNext()) {
             String token = jsonPointer.next();
-            for (Pattern key : propertyMap.keySet()) {
-                if (key.pattern().equals(token)) {
-                    return propertyMap.get(key);
+            for (RegExp regex : propertyMap.keySet()) {
+                if (regex.getSource().equals(token)) {
+                    return propertyMap.get(regex);
                 }
             }
         }
@@ -95,10 +94,9 @@ public class PatternProperties extends AbstractProperties<Pattern> {
     @Override
     protected boolean findSubschemas(String keyName, Consumer<JsonSchema> consumer) {
         boolean found = false;
-        for (Pattern pattern : propertyMap.keySet()) {
-            Matcher m = pattern.matcher(keyName);
-            if (m.find()) {
-                consumer.accept(propertyMap.get(pattern));
+        for (RegExp regex : propertyMap.keySet()) {
+            if (regex.test(keyName)) {
+                consumer.accept(propertyMap.get(regex));
                 found = true;
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
@@ -81,6 +81,7 @@ import org.leadpony.justify.internal.keyword.assertion.MinLength;
 import org.leadpony.justify.internal.keyword.assertion.MinProperties;
 import org.leadpony.justify.internal.keyword.assertion.Minimum;
 import org.leadpony.justify.internal.keyword.assertion.MultipleOf;
+import org.leadpony.justify.internal.keyword.assertion.Pattern;
 import org.leadpony.justify.internal.keyword.assertion.Required;
 import org.leadpony.justify.internal.keyword.assertion.Type;
 import org.leadpony.justify.internal.keyword.assertion.UniqueItems;
@@ -96,6 +97,8 @@ import org.leadpony.justify.internal.keyword.core.Schema;
 import org.leadpony.justify.spi.ContentEncodingScheme;
 import org.leadpony.justify.spi.ContentMimeType;
 import org.leadpony.justify.spi.FormatAttribute;
+import org.leadpony.regexp4j.RegExp;
+import org.leadpony.regexp4j.SyntaxError;
 
 /**
  * The default implementation of {@link JsonSchemaBuilder}.
@@ -274,10 +277,11 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     @Override
     public JsonSchemaBuilder withPattern(String pattern) {
         requireNonNull(pattern, "pattern");
-        Pattern compiled = Pattern.compile(pattern);
-        addKeyword(
-                new org.leadpony.justify.internal.keyword.assertion.Pattern(
-                        toJson(pattern), compiled));
+        try {
+            addKeyword(new Pattern(toJson(pattern), pattern));
+        } catch (SyntaxError e) {
+            throw new PatternSyntaxException(e.getDescription(), pattern, e.getIndex());
+        }
         return this;
     }
 
@@ -403,21 +407,29 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
     public JsonSchemaBuilder withPatternProperty(String pattern, JsonSchema subschema) {
         requireNonNull(pattern, "pattern");
         requireNonNull(subschema, "subschema");
-        Pattern compiled = Pattern.compile(pattern);
-        getBuilder("patternProperties", PatternPropertiesBuilder::new)
-                .append(compiled, subschema);
+        try {
+            RegExp regex = new RegExp(pattern);
+            getBuilder("patternProperties", PatternPropertiesBuilder::new)
+                    .append(regex, subschema);
+        } catch (SyntaxError e) {
+            throw new PatternSyntaxException(e.getDescription(), pattern, e.getIndex());
+        }
         return this;
     }
 
     @Override
     public JsonSchemaBuilder withPatternProperties(Map<String, JsonSchema> subschemas) {
         requireNonNull(subschemas, "subschemas");
-        Map<Pattern, JsonSchema> compiledMap = new HashMap<>();
-        subschemas.forEach((pattern, subschema) -> {
-            compiledMap.put(Pattern.compile(pattern), subschema);
-        });
-        getBuilder("patternProperties", PatternPropertiesBuilder::new)
-                .append(compiledMap);
+        Map<RegExp, JsonSchema> map = new HashMap<>();
+        try {
+            subschemas.forEach((pattern, subschema) -> {
+                map.put(new RegExp(pattern), subschema);
+            });
+            getBuilder("patternProperties", PatternPropertiesBuilder::new)
+                    .append(map);
+        } catch (SyntaxError e) {
+            throw new PatternSyntaxException(e.getDescription(), e.getPattern(), e.getIndex());
+        }
         return this;
     }
 
@@ -813,16 +825,16 @@ class DefaultJsonSchemaBuilder implements JsonSchemaBuilder {
      *
      * @author leadpony
      */
-    static class PatternPropertiesBuilder extends AbstractKeywordBuilder<Pattern, JsonSchema> {
+    static class PatternPropertiesBuilder extends AbstractKeywordBuilder<RegExp, JsonSchema> {
 
         PatternPropertiesBuilder(JsonBuilderFactory factory) {
             super(factory);
         }
 
         @Override
-        void append(Pattern key, JsonSchema value) {
+        void append(RegExp key, JsonSchema value) {
             super.append(key, value);
-            this.objectBuilder.add(key.toString(), value.toJson());
+            this.objectBuilder.add(key.getSource(), value.toJson());
         }
 
         @Override

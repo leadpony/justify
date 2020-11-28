@@ -43,14 +43,14 @@
                 <version>68.1</version>
             </dependency>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit.version}</version>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${jsonp.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit.version}</version>
+                <groupId>jakarta.json.bind</groupId>
+                <artifactId>jakarta.json.bind-api</artifactId>
+                <version>${jsonb.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -58,30 +58,9 @@
                 <version>3.18.0</version>
             </dependency>
             <dependency>
-                <groupId>jakarta.json</groupId>
-                <artifactId>jakarta.json-api</artifactId>
-                <version>${jsonp.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.json</artifactId>
-                <version>${jsonp.version}</version>
-                <classifier>module</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.leadpony.joy</groupId>
-                <artifactId>joy-classic</artifactId>
-                <version>${joy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.leadpony.joy</groupId>
-                <artifactId>joy-yaml</artifactId>
-                <version>${joy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.json.bind</groupId>
-                <artifactId>jakarta.json.bind-api</artifactId>
-                <version>${jsonb.version}</version>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>9.4.33.v20201020</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse</groupId>
@@ -100,9 +79,35 @@
                 <version>2.0.1</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>9.4.33.v20201020</version>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.json</artifactId>
+                <version>${jsonp.version}</version>
+                <classifier>module</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.leadpony.joy</groupId>
+                <artifactId>joy-classic</artifactId>
+                <version>${joy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.leadpony.joy</groupId>
+                <artifactId>joy-yaml</artifactId>
+                <version>${joy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.leadpony.regexp4j</groupId>
+                <artifactId>regexp4j</artifactId>
+                <version>0.1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

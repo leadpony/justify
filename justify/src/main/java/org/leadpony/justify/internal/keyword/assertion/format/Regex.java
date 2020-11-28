@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018, 2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.leadpony.justify.api.Localizable;
 import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
+import org.leadpony.regexp4j.RegExpValidator;
 
 /**
  * A format attribute representing "regex" attribute.
@@ -52,22 +53,6 @@ class Regex extends AbstractFormatAttribute {
 
     @Override
     public boolean test(String value) {
-        return testWithoutUnicodeFlag(value);
-    }
-
-    public boolean test(String value, String flags) {
-        if (flags.indexOf('u') >= 0) {
-            return testWithUnicodeFlag(value);
-        } else {
-            return testWithoutUnicodeFlag(value);
-        }
-    }
-
-    private boolean testWithUnicodeFlag(String value) {
-        return new UnicodeRegExpMatcher(value).matches();
-    }
-
-    private boolean testWithoutUnicodeFlag(String value) {
-        return new NonUnicodeRegExpMatcher(value).matches();
+        return RegExpValidator.validate(value);
     }
 }

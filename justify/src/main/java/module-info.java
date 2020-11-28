@@ -24,6 +24,7 @@ module org.leadpony.justify {
     requires com.ibm.icu;
     requires transitive jakarta.json;
     requires java.logging;
+    requires org.leadpony.regexp4j;
 
     uses org.leadpony.justify.spi.ContentEncodingScheme;
     uses org.leadpony.justify.spi.ContentMimeType;

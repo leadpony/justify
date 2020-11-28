@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 the Justify authors.
+ * Copyright 2018-2020 the Justify authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.leadpony.justify.internal.keyword.assertion;
 
-import java.util.regex.PatternSyntaxException;
-
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -26,9 +24,10 @@ import org.leadpony.justify.api.SpecVersion;
 import org.leadpony.justify.internal.annotation.KeywordType;
 import org.leadpony.justify.internal.annotation.Spec;
 import org.leadpony.justify.internal.base.Message;
-import org.leadpony.justify.internal.base.regex.Ecma262Pattern;
 import org.leadpony.justify.internal.keyword.KeywordMapper;
 import org.leadpony.justify.internal.problem.ProblemBuilder;
+import org.leadpony.regexp4j.RegExp;
+import org.leadpony.regexp4j.SyntaxError;
 
 /**
  * Assertion specified with "pattern" validation keyword.
@@ -41,7 +40,7 @@ import org.leadpony.justify.internal.problem.ProblemBuilder;
 @Spec(SpecVersion.DRAFT_07)
 public class Pattern extends AbstractStringAssertion {
 
-    private final java.util.regex.Pattern pattern;
+    private final RegExp regex;
 
     /**
      * Returns the mapper which maps a JSON value to this keyword.
@@ -53,8 +52,8 @@ public class Pattern extends AbstractStringAssertion {
             if (value.getValueType() == ValueType.STRING) {
                 String string = ((JsonString) value).getString();
                 try {
-                    return new Pattern(value, Ecma262Pattern.compile(string));
-                } catch (PatternSyntaxException e) {
+                    return new Pattern(value, string);
+                } catch (SyntaxError e) {
                     throw new IllegalArgumentException(e);
                 }
             }
@@ -62,27 +61,27 @@ public class Pattern extends AbstractStringAssertion {
         };
     }
 
-    public Pattern(JsonValue json, java.util.regex.Pattern pattern) {
+    public Pattern(JsonValue json, String pattern) {
         super(json);
-        this.pattern = pattern;
+        this.regex = new RegExp(pattern);
     }
 
     @Override
     protected boolean testValue(String value) {
-        return pattern.matcher(value).find();
+        return regex.test(value);
     }
 
     @Override
     protected Problem createProblem(ProblemBuilder builder) {
         return builder.withMessage(Message.INSTANCE_PROBLEM_PATTERN)
-            .withParameter("pattern", pattern.toString())
+            .withParameter("pattern", regex.getSource())
             .build();
     }
 
     @Override
     protected Problem createNegatedProblem(ProblemBuilder builder) {
         return builder.withMessage(Message.INSTANCE_PROBLEM_NOT_PATTERN)
-            .withParameter("pattern", pattern.toString())
+            .withParameter("pattern", regex.getSource())
             .build();
     }
 }
