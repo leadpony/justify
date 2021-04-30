@@ -116,6 +116,21 @@
                             </descriptors>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>assemble-fatjar</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.leadpony.justify.cli.Launcher</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
